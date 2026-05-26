@@ -247,8 +247,9 @@ function RecoveryScene({
   return (
     <div
       aria-label={`Scène animée: ${recoveryStorySteps[activeIndex]?.title ?? ""}`}
+      aria-live="polite"
       className={cn(
-        "relative min-h-[820px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm sm:min-h-[580px]",
+        "relative min-h-[940px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm sm:min-h-[660px]",
         reducedMotion && "motion-reduce:transition-none"
       )}
       role="img"
@@ -429,7 +430,7 @@ function RecoveryScene({
 
       <div
         className={cn(
-          "absolute bottom-28 left-5 right-5 rounded-xl border border-[#cfe1dc] bg-white px-4 py-3 opacity-0 shadow-sm transition sm:left-auto sm:right-6 sm:w-[42%]",
+          "absolute left-5 right-5 top-[770px] rounded-xl border border-[#cfe1dc] bg-white px-4 py-3 opacity-0 shadow-sm transition sm:left-5 sm:right-auto sm:top-[470px] sm:w-[48%]",
           isAtLeast("merchant_validates") && "opacity-100",
           reducedMotion && "transition-none"
         )}
