@@ -1,4 +1,5 @@
 import { PageShell } from "@/components/layout/page-shell";
+import { AiTargetingSection } from "@/components/marketing/ai-targeting-section";
 import { HomeStorySection } from "@/components/marketing/home-story-section";
 import { ButtonLink } from "@/components/ui/button";
 
@@ -62,6 +63,7 @@ export default function HomePage() {
       </section>
 
       <HomeStorySection />
+      <AiTargetingSection />
     </PageShell>
   );
 }
