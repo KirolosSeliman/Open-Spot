@@ -1,4 +1,5 @@
 import { PageShell } from "@/components/layout/page-shell";
+import { HomeStorySection } from "@/components/marketing/home-story-section";
 import { ButtonLink } from "@/components/ui/button";
 
 const homepageCopy = {
@@ -17,23 +18,6 @@ const homepageCopy = {
     "Gardez votre système actuel",
     "SMS ciblés",
     "Validation par le commerce"
-  ],
-  storyPreview: [
-    {
-      title: "Annulation à 14 h",
-      description:
-        "Une cliente annule. La place est vide, mais la journée n'est pas perdue."
-    },
-    {
-      title: "L'agent trie",
-      description:
-        "Il aide à choisir les clients pertinents au lieu d'envoyer un SMS à tout le monde."
-    },
-    {
-      title: "Vous confirmez",
-      description:
-        "Les réponses arrivent, vous choisissez qui confirmer, et la place est récupérée."
-    }
   ]
 };
 
@@ -77,37 +61,7 @@ export default function HomePage() {
         <HeroCartoonPanel />
       </section>
 
-      <section
-        className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6"
-        id="comment-ca-marche"
-      >
-        <div className="border-t border-[var(--line)] pt-10">
-          <p className="text-sm font-semibold uppercase tracking-wide text-[var(--primary)]">
-            Comment ça fonctionne
-          </p>
-          <h2 className="mt-3 max-w-3xl text-3xl font-bold leading-tight text-[var(--foreground)] sm:text-4xl">
-            Une annulation. Un agent IA. Une place récupérée.
-          </h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-3">
-            {homepageCopy.storyPreview.map((item, index) => (
-              <article
-                className="rounded-lg border border-[var(--line)] bg-white p-5 shadow-sm"
-                key={item.title}
-              >
-                <p className="text-sm font-bold text-[var(--accent)]">
-                  0{index + 1}
-                </p>
-                <h3 className="mt-3 text-lg font-bold text-[var(--foreground)]">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                  {item.description}
-                </p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HomeStorySection />
     </PageShell>
   );
 }
