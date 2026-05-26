@@ -55,6 +55,20 @@ npm run build
 npm audit --audit-level=moderate
 ```
 
+## Auth and Organization Smoke Test
+
+After deploying with Supabase environment variables:
+
+1. Visit `/signup`.
+2. Create a test merchant account.
+3. If Supabase email confirmation is enabled, confirm the email and sign in.
+4. Visit `/onboarding`.
+5. Create an organization with a unique slug.
+6. Confirm `/dashboard` shows the organization name, role `owner`, default language, timezone, service count, and customer count.
+7. Confirm a signed-out browser is redirected from `/dashboard` to `/sign-in`.
+
+The first organization/member bootstrap uses `SUPABASE_SERVICE_ROLE_KEY` server-side only. Never expose this value in client code.
+
 ## Webhook URLs
 
 Production URLs once deployed:

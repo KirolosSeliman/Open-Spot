@@ -1,31 +1,64 @@
 import { PageShell } from "@/components/layout/page-shell";
 import { SectionHeading } from "@/components/marketing/section-heading";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { signUpAction } from "@/lib/auth/actions";
+import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current";
 
-export default function SignupPage() {
+type SignupPageProps = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function SignupPage({ searchParams }: SignupPageProps) {
+  await redirectAuthenticatedUserByWorkspace();
+  const { error } = await searchParams;
+
   return (
     <PageShell>
       <section className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
         <SectionHeading
-          description="Initial onboarding captures business basics, language, services, QR waitlist setup, and customer import next steps."
-          eyebrow="Onboarding"
-          title="Set up your cancellation recovery workspace."
+          description="Create your merchant account first, then set up your organization workspace."
+          eyebrow="Sign up"
+          title="Start your 2e Chance RDV account."
         />
         <Card className="mt-8">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input className="min-h-11 rounded-md border border-[var(--line)] px-3" placeholder="Organization name" />
-            <input className="min-h-11 rounded-md border border-[var(--line)] px-3" placeholder="Business type" />
-            <select className="min-h-11 rounded-md border border-[var(--line)] px-3">
-              <option>English</option>
-              <option>Francais</option>
-            </select>
-            <select className="min-h-11 rounded-md border border-[var(--line)] px-3">
-              <option>America/Toronto</option>
-            </select>
-          </div>
+          {error ? (
+            <p className="mb-4 rounded-md border border-[#f2b8b5] bg-[#fdebea] p-3 text-sm text-[#8a1f17]">
+              {error}
+            </p>
+          ) : null}
+          <form action={signUpAction} className="grid gap-4">
+            <label className="grid gap-2 text-sm font-semibold" htmlFor="email">
+              Email
+              <input
+                className="min-h-11 rounded-md border border-[var(--line)] px-3"
+                id="email"
+                name="email"
+                required
+                type="email"
+              />
+            </label>
+            <label
+              className="grid gap-2 text-sm font-semibold"
+              htmlFor="password"
+            >
+              Password
+              <input
+                className="min-h-11 rounded-md border border-[var(--line)] px-3"
+                id="password"
+                minLength={8}
+                name="password"
+                required
+                type="password"
+              />
+            </label>
+            <Button type="submit">Create account</Button>
+          </form>
           <p className="mt-5 text-sm leading-6 text-[var(--muted)]">
-            After account creation, merchants should add services, copy the
-            waitlist QR link, and import customers without automatic opt-in.
+            If email confirmation is enabled in Supabase, confirm the email and
+            sign in before organization onboarding.
           </p>
         </Card>
       </section>

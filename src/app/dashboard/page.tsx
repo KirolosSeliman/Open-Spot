@@ -2,11 +2,11 @@ import { StatusTile } from "@/components/dashboard/status-tile";
 import { PageShell } from "@/components/layout/page-shell";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { Card } from "@/components/ui/card";
-import { requireDashboardUser } from "@/lib/auth/session";
+import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { calculateDashboardMetrics } from "@/lib/reports/metrics";
 
 export default async function DashboardPage() {
-  const auth = await requireDashboardUser();
+  const workspace = await getActiveOrganizationWorkspace();
   const metrics = calculateDashboardMetrics({
     openingsCreated: 0,
     openingsFilled: 0,
@@ -21,9 +21,17 @@ export default async function DashboardPage() {
     <PageShell>
       <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
         <SectionHeading
-          description="Operational placeholder for merchants. Later phases will connect this to Supabase data and RLS-protected organization state."
+          description={
+            workspace.status === "ready"
+              ? `${workspace.organization.name} is active. Role: ${workspace.organization.role}.`
+              : "Supabase environment values are not configured yet, so live merchant data is intentionally unavailable."
+          }
           eyebrow="Merchant dashboard"
-          title="Track openings, replies, and recovered revenue."
+          title={
+            workspace.status === "ready"
+              ? `Welcome, ${workspace.organization.name}`
+              : "Track openings, replies, and recovered revenue."
+          }
         />
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <StatusTile
@@ -44,7 +52,11 @@ export default async function DashboardPage() {
           <StatusTile
             detail="Customers eligible only after explicit opt-in."
             label="Waitlist customers"
-            value={String(metrics.waitlistCustomers)}
+            value={
+              workspace.status === "ready"
+                ? String(workspace.counts.customers)
+                : String(metrics.waitlistCustomers)
+            }
           />
           <StatusTile
             detail="Outbound and inbound simulator messages."
@@ -58,11 +70,39 @@ export default async function DashboardPage() {
           />
         </div>
         <Card className="mt-6">
-          <p className="text-sm leading-6 text-[var(--muted)]">
-            {auth.status === "unconfigured"
-              ? "Supabase environment values are not configured yet, so live merchant data is intentionally unavailable."
-              : `Signed in as ${auth.user.email ?? auth.user.id}. Live organization data will be added through RLS-protected queries.`}
-          </p>
+          {workspace.status === "ready" ? (
+            <dl className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <dt className="font-semibold">Default language</dt>
+                <dd className="mt-1 text-[var(--muted)]">
+                  {workspace.organization.defaultLanguage}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-semibold">Timezone</dt>
+                <dd className="mt-1 text-[var(--muted)]">
+                  {workspace.organization.timezone}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-semibold">Services</dt>
+                <dd className="mt-1 text-[var(--muted)]">
+                  {workspace.counts.services}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-semibold">Signed in</dt>
+                <dd className="mt-1 break-all text-[var(--muted)]">
+                  {workspace.user.email ?? workspace.user.id}
+                </dd>
+              </div>
+            </dl>
+          ) : (
+            <p className="text-sm leading-6 text-[var(--muted)]">
+              Supabase environment values are not configured yet, so live
+              merchant data is intentionally unavailable.
+            </p>
+          )}
         </Card>
       </section>
     </PageShell>

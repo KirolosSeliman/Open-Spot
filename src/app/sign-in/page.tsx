@@ -1,22 +1,61 @@
 import { PageShell } from "@/components/layout/page-shell";
 import { SectionHeading } from "@/components/marketing/section-heading";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { signInAction } from "@/lib/auth/actions";
+import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current";
 
-export default function SignInPage() {
+type SignInPageProps = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function SignInPage({ searchParams }: SignInPageProps) {
+  await redirectAuthenticatedUserByWorkspace();
+  const { error } = await searchParams;
+
   return (
     <PageShell>
       <section className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
         <SectionHeading
-          description="Authentication is wired for Supabase, but the interactive sign-in form is intentionally deferred until the auth UI phase."
+          description="Sign in with your merchant email and password to manage your cancellation recovery workspace."
           eyebrow="Sign in"
-          title="Merchant access will require Supabase Auth."
+          title="Access your 2e Chance RDV dashboard."
         />
         <Card className="mt-8">
-          <p className="text-sm leading-6 text-[var(--muted)]">
-            Configure `NEXT_PUBLIC_SUPABASE_URL` and
-            `NEXT_PUBLIC_SUPABASE_ANON_KEY` before enabling live merchant sign
-            in. Service role keys must never be exposed in this page.
-          </p>
+          {error ? (
+            <p className="mb-4 rounded-md border border-[#f2b8b5] bg-[#fdebea] p-3 text-sm text-[#8a1f17]">
+              {error}
+            </p>
+          ) : null}
+          <form action={signInAction} className="grid gap-4">
+            <label className="grid gap-2 text-sm font-semibold" htmlFor="email">
+              Email
+              <input
+                className="min-h-11 rounded-md border border-[var(--line)] px-3"
+                id="email"
+                name="email"
+                required
+                type="email"
+              />
+            </label>
+            <label
+              className="grid gap-2 text-sm font-semibold"
+              htmlFor="password"
+            >
+              Password
+              <input
+                className="min-h-11 rounded-md border border-[var(--line)] px-3"
+                id="password"
+                minLength={8}
+                name="password"
+                required
+                type="password"
+              />
+            </label>
+            <Button type="submit">Sign in</Button>
+          </form>
         </Card>
       </section>
     </PageShell>

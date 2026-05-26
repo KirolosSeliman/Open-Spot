@@ -66,3 +66,9 @@ Not included in the MVP:
 - Never expose service keys or SMS provider credentials in client-side code.
 - Never allow one organization to read another organization's customers, openings, messages, or bookings.
 - Always require merchant validation before confirming a recovered booking.
+
+## Auth And Organization Status
+
+The app includes Supabase email/password sign-up, sign-in, sign-out, and an organization onboarding flow. A signed-in user without an organization is directed to `/onboarding`; creating an organization also creates the current user as `owner`.
+
+Live testing requires `.env.local` with Supabase URL, anon key, and a server-only service role key. Do not commit `.env.local`.
