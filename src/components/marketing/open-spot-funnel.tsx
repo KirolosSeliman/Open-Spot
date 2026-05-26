@@ -45,6 +45,11 @@ const copy = {
         replyTwo: "Oui, dispo à 14 h 30",
         replyThree: "Merci mais pas dispo aujourd’hui",
         repliesNote: "Les réponses arrivent en temps réel.",
+        aiTitle: "Ciblage intelligent par IA",
+        aiInsightOne: "Client priorisé : n’a pas réservé depuis 2 semaines",
+        aiInsightTwo: "Critère : intérêt pour ce service",
+        aiInsightThree:
+          "L’IA sélectionne les bons contacts pour maximiser vos chances de récupérer ce créneau.",
         manual: "Vous confirmez manuellement",
         recovered: "Créneau récupéré",
         confirmed: "Le rendez-vous est confirmé.",
@@ -116,7 +121,7 @@ const copy = {
       badge: "Ciblage intelligent",
       title: "Ciblez les bons clients avant que le créneau reste vide",
       text:
-        "Open Spot peut utiliser un agent IA pour aider à identifier les clients les plus pertinents à alerter selon vos règles, vos services et l’historique disponible.",
+        "Open Spot utilise un agent IA pour aider à identifier les clients les plus pertinents à alerter selon vos règles, vos services et l’historique disponible.",
       example:
         "Exemple : prioriser un client qui n’a pas réservé depuis 2 semaines, mais qui vient habituellement pour ce type de service.",
       note: "Zéro réservation automatique. Vous restez maître de votre agenda.",
@@ -139,7 +144,14 @@ const copy = {
         ["Maya", "Priorité haute"],
         ["2 semaines sans visite", "Signal utile"],
         ["Confirmation", "Manuelle"]
-      ]
+      ],
+      workflow: [
+        "Lancer l’alerte",
+        "Alertes envoyées",
+        "Réponses reçues",
+        "Confirmation manuelle"
+      ],
+      secondary: "Découvrir comment ça fonctionne"
     },
     personalization: {
       title: "Chaque commerce fonctionne différemment. Open Spot s’adapte au vôtre.",
@@ -192,9 +204,9 @@ const copy = {
       trust: ["Sans engagement", "Mise en place rapide", "Adapté à votre commerce"]
     },
     final: {
-      title: "Une alerte simple, un contrôle total.",
+      title: "Prêt à transformer vos annulations en rendez-vous récupérés ?",
       text:
-        "Open Spot vous aide à prévenir les bons clients, suivre les réponses et confirmer manuellement le rendez-vous qui convient à votre commerce.",
+        "Réservez un appel. On regarde votre commerce, vos services, vos annulations et la meilleure façon de connecter Open Spot à votre réalité.",
       ready: "Je suis prêt à récupérer mes annulations",
       questions: "Parler à quelqu’un"
     }
@@ -235,6 +247,11 @@ const copy = {
         replyTwo: "Yes, 2:30 works",
         replyThree: "Thanks, but not today",
         repliesNote: "Replies arrive in real time.",
+        aiTitle: "AI smart targeting",
+        aiInsightOne: "Prioritized customer: has not booked in 2 weeks",
+        aiInsightTwo: "Signal: interest in this service",
+        aiInsightThree:
+          "AI selects the right contacts to improve your chances of recovering this spot.",
         manual: "You confirm manually",
         recovered: "Spot recovered",
         confirmed: "The appointment is confirmed.",
@@ -329,7 +346,14 @@ const copy = {
         ["Maya", "High priority"],
         ["2 weeks since last visit", "Useful signal"],
         ["Confirmation", "Manual"]
-      ]
+      ],
+      workflow: [
+        "Launch the alert",
+        "Alerts sent",
+        "Replies received",
+        "Manual confirmation"
+      ],
+      secondary: "See how it works"
     },
     personalization: {
       title: "Every business works differently. Open Spot adapts to yours.",
@@ -381,9 +405,9 @@ const copy = {
       trust: ["No commitment", "Fast setup", "Adapted to your business"]
     },
     final: {
-      title: "One simple alert, full control.",
+      title: "Ready to turn cancellations into recovered appointments?",
       text:
-        "Open Spot helps you reach the right customers, track replies, and manually confirm the appointment that fits your business.",
+        "Book a call. We’ll look at your business, services, cancellations, and the best way to connect Open Spot to your reality.",
       ready: "I’m ready to recover cancellations",
       questions: "Talk to someone"
     }
@@ -408,17 +432,16 @@ export function OpenSpotFunnel() {
         <SectorSection t={t} />
         <ProblemSection t={t} />
         <WorkflowSection t={t} />
-        <AiSection t={t} />
         <PersonalizationSection t={t} />
         <MetricsSection t={t} />
         <TrustSection t={t} />
         <PricingSection t={t} />
+        <AiSection t={t} />
         <FinalCtaSection t={t} />
       </main>
     </>
   );
 }
-
 function MarketingHeader({
   locale,
   onToggleLocale,
@@ -430,7 +453,7 @@ function MarketingHeader({
 }) {
   return (
     <header className="sticky top-0 z-30 border-b border-white/70 bg-[#fbfaf7]/90 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+      <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6">
         <Link
           className="rounded-md text-base font-black tracking-tight text-[#14262e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
@@ -446,7 +469,7 @@ function MarketingHeader({
           <HeaderLink href="#prix">{t.nav.pricing}</HeaderLink>
           <HeaderLink href="/book-call/questions">{t.nav.call}</HeaderLink>
         </nav>
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <button
             aria-label={locale === "fr" ? "Afficher la page en anglais" : "Show page in French"}
             className="rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
@@ -456,7 +479,7 @@ function MarketingHeader({
             {locale === "fr" ? "FR / EN" : "EN / FR"}
           </button>
           <Link
-            className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="hidden rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:inline-flex"
             href="/book-call/questions"
           >
             {t.nav.call}
@@ -466,7 +489,6 @@ function MarketingHeader({
     </header>
   );
 }
-
 function HeaderLink({ href, children }: { href: string; children: string }) {
   return (
     <Link
@@ -489,7 +511,7 @@ function Section({
 }) {
   return (
     <section
-      className={cn("mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 lg:py-20", className)}
+      className={cn("mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:py-16", className)}
       id={id}
     >
       {children}
@@ -499,18 +521,18 @@ function Section({
 
 function HeroSection({ t }: { t: Copy }) {
   return (
-    <Section className="grid min-h-[calc(100vh-4rem)] items-center gap-10 pt-10 lg:grid-cols-[0.95fr_1.05fr]">
-      <div className="os-reveal max-w-3xl">
+    <Section className="pt-8 pb-10 sm:pt-10 lg:pt-14 lg:pb-14">
+      <div className="os-reveal mx-auto max-w-4xl text-center">
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--primary)]">
           {t.hero.eyebrow}
         </p>
-        <h1 className="mt-5 text-4xl font-black leading-[1.02] tracking-tight text-[#14262e] sm:text-5xl lg:text-6xl">
+        <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight text-[#14262e] sm:text-5xl lg:text-6xl">
           {t.hero.title}
         </h1>
-        <p className="mt-6 max-w-2xl text-base leading-8 text-[var(--muted)] sm:text-lg">
+        <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
           {t.hero.subtitle}
         </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Link className="os-primary-cta" href="/book-call/questions">
             {t.hero.primary}
           </Link>
@@ -518,7 +540,7 @@ function HeroSection({ t }: { t: Copy }) {
             {t.hero.secondary}
           </Link>
         </div>
-        <ul className="mt-7 flex flex-wrap gap-2" aria-label="Trust indicators">
+        <ul className="mt-7 flex flex-wrap justify-center gap-2" aria-label="Trust indicators">
           {t.hero.chips.map((chip) => (
             <li className="os-chip" key={chip}>
               {chip}
@@ -526,7 +548,9 @@ function HeroSection({ t }: { t: Copy }) {
           ))}
         </ul>
       </div>
-      <HeroMockup t={t} />
+      <div className="mt-10 lg:mt-12">
+        <HeroMockup t={t} />
+      </div>
     </Section>
   );
 }
@@ -535,10 +559,10 @@ function HeroMockup({ t }: { t: Copy }) {
   return (
     <div
       aria-label="Open Spot product preview showing a merchant launching an alert, receiving SMS replies, and manually confirming a recovered spot."
-      className="os-reveal os-hero-mockup relative mx-auto w-full max-w-[630px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-3 shadow-[0_28px_90px_rgba(36,54,66,0.16)] backdrop-blur sm:p-5"
+      className="os-reveal os-hero-mockup mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/88 p-3 shadow-[0_28px_90px_rgba(36,54,66,0.14)] backdrop-blur sm:p-5 lg:p-6"
       role="img"
     >
-      <div className="relative rounded-[1.65rem] border border-[#e5ebe7] bg-[#fbfaf7] p-3 shadow-sm sm:p-4">
+      <div className="rounded-[1.65rem] border border-[#e5ebe7] bg-[#fbfaf7] p-3 shadow-sm sm:p-4 lg:p-5">
         <div className="flex items-center justify-between gap-3 border-b border-[#e4ebe7] pb-3">
           <div className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#14262e] text-xs font-black text-white">
@@ -549,143 +573,159 @@ function HeroMockup({ t }: { t: Copy }) {
               <p className="text-[11px] font-bold text-[var(--muted)]">SMS assistant</p>
             </div>
           </div>
-          <span className="grid h-9 w-9 place-items-center rounded-full border border-[#dce6e2] bg-white text-sm text-[#254047]">
-            ◦
+          <span
+            aria-hidden="true"
+            className="grid h-9 w-9 place-items-center rounded-full border border-[#dce6e2] bg-white text-sm text-[#254047]"
+          >
+            !
           </span>
         </div>
 
-        <div className="mt-4 flex items-start justify-between gap-3">
-          <div>
-            <p className="text-xl font-black text-[#14262e]">{t.hero.visual.cancelled}</p>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
-              {t.hero.visual.subtitle}
-            </p>
-          </div>
-          <span className="rounded-full bg-[#fdebea] px-3 py-1 text-sm font-black text-[#8a1f17]">
-            14:30
-          </span>
-        </div>
-
-        <div className="mt-4 grid gap-3 lg:grid-cols-[0.92fr_1.08fr]">
-          <div className="space-y-3">
-            <div className="relative rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#eaf5f2] text-base font-black text-[var(--primary-strong)]">
-                    ✂
-                  </span>
-                  <div>
-                    <p className="text-sm font-black text-[#14262e]">
-                      {t.hero.visual.service}
-                    </p>
-                    <p className="mt-1 text-xs font-bold text-[var(--muted)]">
-                      {t.hero.visual.duration}
-                    </p>
-                  </div>
-                </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_0.9fr]">
+          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm sm:p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-2xl font-black text-[#14262e]">
+                  {t.hero.visual.cancelled}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
+                  {t.hero.visual.subtitle}
+                </p>
               </div>
-              <div className="os-launch-button mt-4 w-full rounded-xl bg-[#14262e] px-4 py-3 text-center text-sm font-black text-white shadow-lg">
-                {t.hero.visual.button}
-              </div>
-              <div className="os-cursor" aria-hidden="true" />
+              <span className="rounded-full bg-[#fdebea] px-3 py-1 text-sm font-black text-[#8a1f17]">
+                14:30
+              </span>
             </div>
 
-            <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-              <div className="mb-3 flex items-center justify-between">
-                <p className="text-sm font-black text-[#14262e]">
-                  {t.hero.visual.targetedTitle}
-                </p>
-                <span className="rounded-full bg-[#eaf5f2] px-2.5 py-1 text-xs font-black text-[var(--primary-strong)]">
-                  {t.hero.visual.targetedCount}
+            <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-[#edf1ee] bg-[#fbfaf7] p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className="grid h-11 w-11 place-items-center rounded-xl bg-[#eaf5f2] text-sm font-black text-[var(--primary-strong)]"
+                >
+                  ✂
                 </span>
+                <div>
+                  <p className="text-base font-black text-[#14262e]">
+                    {t.hero.visual.service}
+                  </p>
+                  <p className="mt-1 text-sm font-bold text-[var(--muted)]">
+                    {t.hero.visual.duration}
+                  </p>
+                </div>
               </div>
-              <div className="space-y-2.5">
-                {t.hero.visual.clients.map((client, index) => (
-                  <div
-                    className={cn(
-                      "os-target-row grid gap-3 rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3",
-                      index === 1 && "os-delay-1",
-                      index === 2 && "os-delay-2"
-                    )}
-                    key={client.name}
-                  >
-                    <div className="flex items-start gap-3">
-                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#dfece8] text-[11px] font-black text-[#15534b]">
-                        {client.initials}
-                      </span>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-sm font-black text-[#14262e]">{client.name}</p>
-                          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.08em] text-[var(--primary-strong)]">
-                            SMS
-                          </span>
-                        </div>
-                        <p className="mt-1 text-xs font-black text-[#254047]">
-                          {client.label}
-                        </p>
-                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-                          {client.detail}
-                        </p>
+              <div className="os-launch-button relative rounded-xl bg-[#14262e] px-5 py-3 text-center text-sm font-black text-white shadow-lg">
+                {t.hero.visual.button}
+                <span className="os-cursor" aria-hidden="true" />
+              </div>
+            </div>
+          </div>
+
+          <div className="os-recovered-card rounded-2xl border border-[#c8e0d8] bg-[#edf7f4] p-4 shadow-sm sm:p-5">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
+              {t.hero.visual.manual}
+            </p>
+            <p className="mt-3 text-2xl font-black text-[#14262e]">
+              {t.hero.visual.recovered}
+            </p>
+            <p className="mt-2 text-sm font-bold leading-6 text-[var(--muted)]">
+              {t.hero.visual.confirmed}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-3 grid gap-3 lg:grid-cols-[1.15fr_0.8fr_1fr]">
+          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-sm font-black text-[#14262e]">
+                {t.hero.visual.targetedTitle}
+              </p>
+              <span className="rounded-full bg-[#eaf5f2] px-2.5 py-1 text-xs font-black text-[var(--primary-strong)]">
+                {t.hero.visual.targetedCount}
+              </span>
+            </div>
+            <div className="space-y-2.5">
+              {t.hero.visual.clients.map((client, index) => (
+                <div
+                  className={cn(
+                    "os-target-row rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3",
+                    index === 1 && "os-delay-1",
+                    index === 2 && "os-delay-2"
+                  )}
+                  key={client.name}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#dfece8] text-[11px] font-black text-[#15534b]">
+                      {client.initials}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-sm font-black text-[#14262e]">{client.name}</p>
+                        <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.08em] text-[var(--primary-strong)]">
+                          SMS
+                        </span>
                       </div>
+                      <p className="mt-1 text-xs font-black text-[#254047]">{client.label}</p>
+                      <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                        {client.detail}
+                      </p>
+                    </div>
+                    {index === 0 ? (
                       <span className="os-status-pill shrink-0 rounded-full bg-white px-2 py-1 text-[10px] font-black text-[#8a4b11]">
                         {client.status}
                       </span>
-                    </div>
+                    ) : null}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-black text-[#14262e]">
-                    {t.hero.visual.sendTitle}
-                  </p>
-                  <p className="mt-1 text-xs font-bold text-[var(--muted)]">
-                    {t.hero.visual.sendStatus}
-                  </p>
-                </div>
-                <span className="os-paper-plane grid h-10 w-10 place-items-center rounded-full bg-[#eef3ff] text-sm font-black text-[#4f61b5]">
-                  ➤
-                </span>
+          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-sm font-black text-[#14262e]">
+                  {t.hero.visual.sendTitle}
+                </p>
+                <p className="mt-1 text-xs font-bold text-[var(--muted)]">
+                  {t.hero.visual.sendStatus}
+                </p>
               </div>
-              <div className="mt-4 space-y-2" aria-hidden="true">
-                <span className="os-motion-line block h-1.5 rounded-full bg-[#cddbd6]" />
-                <span className="os-motion-line os-delay-1 block h-1.5 rounded-full bg-[#dbe7e3]" />
-                <span className="os-motion-line os-delay-2 block h-1.5 rounded-full bg-[#e8efec]" />
-              </div>
+              <span className="os-paper-plane grid h-10 w-10 place-items-center rounded-full bg-[#eef3ff] text-sm font-black text-[#4f61b5]">
+                ➤
+              </span>
             </div>
+            <div className="mt-5 space-y-2" aria-hidden="true">
+              <span className="os-motion-line block h-1.5 rounded-full bg-[#cddbd6]" />
+              <span className="os-motion-line os-delay-1 block h-1.5 rounded-full bg-[#dbe7e3]" />
+              <span className="os-motion-line os-delay-2 block h-1.5 rounded-full bg-[#e8efec]" />
+            </div>
+            <div className="mt-5 rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--primary-strong)]">
+                {t.hero.visual.aiTitle}
+              </p>
+              <ul className="mt-3 space-y-2 text-xs font-bold leading-5 text-[#254047]">
+                <li>{t.hero.visual.aiInsightOne}</li>
+                <li>{t.hero.visual.aiInsightTwo}</li>
+                <li>{t.hero.visual.aiInsightThree}</li>
+              </ul>
+            </div>
+          </div>
 
-            <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-              <p className="text-sm font-black text-[#14262e]">{t.hero.visual.repliesTitle}</p>
-              <div className="mt-3 space-y-2">
-                <SmsBubble>{t.hero.visual.replyOne}</SmsBubble>
-                <SmsBubble delay>{t.hero.visual.replyTwo}</SmsBubble>
-                <SmsBubble>{t.hero.visual.replyThree}</SmsBubble>
-              </div>
-              <p className="mt-3 text-xs font-bold text-[var(--muted)]">
-                {t.hero.visual.repliesNote}
-              </p>
+          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+            <p className="text-sm font-black text-[#14262e]">{t.hero.visual.repliesTitle}</p>
+            <div className="mt-3 space-y-2">
+              <SmsBubble>{t.hero.visual.replyOne}</SmsBubble>
+              <SmsBubble delay>{t.hero.visual.replyTwo}</SmsBubble>
+              <SmsBubble>{t.hero.visual.replyThree}</SmsBubble>
             </div>
-
-            <div className="os-recovered-card rounded-2xl border border-[#c8e0d8] bg-[#edf7f4] p-4">
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
-                {t.hero.visual.manual}
-              </p>
-              <p className="mt-2 text-xl font-black text-[#14262e]">
-                {t.hero.visual.recovered}
-              </p>
-              <p className="mt-1 text-sm font-bold text-[var(--muted)]">
-                {t.hero.visual.confirmed}
-              </p>
-            </div>
+            <p className="mt-3 text-xs font-bold text-[var(--muted)]">
+              {t.hero.visual.repliesNote}
+            </p>
           </div>
         </div>
 
-        <p className="mt-4 rounded-2xl border border-[#e2e9e5] bg-white px-4 py-3 text-xs font-bold leading-5 text-[#254047]">
+        <p className="mt-3 rounded-2xl border border-[#e2e9e5] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#254047]">
           {t.hero.visual.controlNote}
         </p>
       </div>
@@ -697,7 +737,7 @@ function SmsBubble({ children, delay = false }: { children: string; delay?: bool
   return (
     <div
       className={cn(
-        "os-sms-bubble rounded-2xl rounded-bl-md bg-[#fbfaf7] px-3 py-2.5 text-xs font-bold text-[#14262e]",
+        "os-sms-bubble rounded-2xl rounded-bl-md bg-[#fbfaf7] px-3 py-2.5 text-sm font-bold text-[#14262e]",
         delay && "os-delay-2"
       )}
     >
@@ -708,7 +748,7 @@ function SmsBubble({ children, delay = false }: { children: string; delay?: bool
 
 function SectorSection({ t }: { t: Copy }) {
   return (
-    <Section className="pt-8">
+    <Section className="pt-6 lg:pt-8">
       <div className="os-reveal rounded-[2rem] border border-white/70 bg-white/70 p-5 shadow-sm sm:p-8">
         <h2 className="max-w-3xl text-2xl font-black tracking-tight text-[#14262e] sm:text-3xl">
           {t.sectors.title}
@@ -798,8 +838,8 @@ function WorkflowSection({ t }: { t: Copy }) {
 
 function AiSection({ t }: { t: Copy }) {
   return (
-    <Section>
-      <div className="grid gap-8 rounded-[2rem] border border-white/70 bg-[#edf7f4]/70 p-5 shadow-sm sm:p-8 lg:grid-cols-[0.88fr_1.12fr] lg:p-10">
+    <Section className="pt-8 lg:pt-10">
+      <div className="grid gap-8 rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(237,247,244,0.92),rgba(255,247,237,0.7))] p-5 shadow-sm sm:p-8 lg:grid-cols-[0.82fr_1.18fr] lg:p-10">
         <div className="os-reveal">
           <p className="inline-flex rounded-full border border-[#c4ddd5] bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
             {t.ai.badge}
@@ -814,18 +854,12 @@ function AiSection({ t }: { t: Copy }) {
           <p className="mt-3 rounded-2xl border border-[#c4ddd5] bg-[#fbfffd] px-4 py-3 text-sm font-black leading-6 text-[var(--primary-strong)]">
             {t.ai.note}
           </p>
+          <Link className="os-secondary-cta mt-6" href="#comment-ca-marche">
+            {t.ai.secondary}
+          </Link>
         </div>
         <div className="os-reveal rounded-[1.5rem] bg-white p-4 shadow-sm sm:p-5">
-          <div className="flex items-center gap-3">
-            <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
-              AI
-            </div>
-            <div>
-              <p className="text-sm font-black text-[#14262e]">Open Spot Assistant</p>
-              <p className="text-xs text-[var(--muted)]">Prioritization preview</p>
-            </div>
-          </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-3">
             {t.ai.benefits.map(([title, text]) => (
               <div
                 className="rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-3"
@@ -836,13 +870,34 @@ function AiSection({ t }: { t: Copy }) {
               </div>
             ))}
           </div>
-          <div className="mt-5 grid gap-3">
-            {t.ai.rows.map(([label, status]) => (
-              <div className="grid gap-2 rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-3 sm:grid-cols-[1fr_auto] sm:items-center" key={label}>
-                <p className="text-sm font-bold text-[#14262e]">{label}</p>
-                <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-[var(--primary-strong)]">
-                  {status}
+          <div className="mt-5 rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-4">
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
+                AI
+              </div>
+              <div>
+                <p className="text-sm font-black text-[#14262e]">Open Spot Assistant</p>
+                <p className="text-xs text-[var(--muted)]">Prioritization preview</p>
+              </div>
+            </div>
+            <div className="mt-5 grid gap-3">
+              {t.ai.rows.map(([label, status]) => (
+                <div className="grid gap-2 rounded-2xl border border-[#e5ebe7] bg-white p-3 sm:grid-cols-[1fr_auto] sm:items-center" key={label}>
+                  <p className="text-sm font-bold text-[#14262e]">{label}</p>
+                  <span className="rounded-full bg-[#eaf5f2] px-3 py-1 text-xs font-black text-[var(--primary-strong)]">
+                    {status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-4">
+            {t.ai.workflow.map((step, index) => (
+              <div className="rounded-2xl border border-[#e5ebe7] bg-white p-3" key={step}>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
+                  {index + 1}
                 </span>
+                <p className="mt-3 text-sm font-black leading-5 text-[#14262e]">{step}</p>
               </div>
             ))}
           </div>
@@ -927,7 +982,7 @@ function TrustSection({ t }: { t: Copy }) {
 
 function PricingSection({ t }: { t: Copy }) {
   return (
-    <Section id="prix">
+    <Section id="prix" className="pb-8 lg:pb-10">
       <div className="mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white p-6 text-center shadow-[0_24px_70px_rgba(36,54,66,0.12)] sm:p-10">
         <p className="mx-auto inline-flex rounded-full border border-[#c4ddd5] bg-[#edf7f4] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
           {t.pricing.badge}
@@ -966,7 +1021,7 @@ function PricingSection({ t }: { t: Copy }) {
 
 function FinalCtaSection({ t }: { t: Copy }) {
   return (
-    <Section className="pb-20">
+    <Section className="pb-20 pt-8 lg:pt-10">
       <div className="os-reveal rounded-[2rem] bg-[#14262e] px-5 py-10 text-center text-white shadow-[0_30px_90px_rgba(20,38,46,0.22)] sm:px-8 lg:py-16">
         <h2 className="mx-auto max-w-4xl text-3xl font-black tracking-tight sm:text-5xl">
           {t.final.title}
