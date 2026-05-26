@@ -83,6 +83,20 @@ export const recoveryStorySteps: RecoveryStoryStep[] = [
 
 const sceneOrder = recoveryStorySteps.map((step) => step.sceneState);
 
+const manualChannels = ["Téléphone", "DM", "Contacts", "47 clients?"];
+
+const targetRows = [
+  ["A réservé il y a 5 jours", "Skip"],
+  ["N’a pas réservé depuis 3 semaines", "SMS"],
+  ["Intéressé par coupe/barbe", "SMS"]
+] as const;
+
+const replyRows = [
+  ["Sarah", "OUI", "14:03"],
+  ["Lina", "OUI", "14:06"],
+  ["Marc", "OUI", "14:08"]
+] as const;
+
 export function AnimatedRecoveryStory() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -227,12 +241,14 @@ function RecoveryScene({
   const stateIndex = sceneOrder.indexOf(activeState);
   const isAtLeast = (state: SceneState) => stateIndex >= sceneOrder.indexOf(state);
   const isRecovered = activeState === "recovered";
+  const isManualStress = activeState === "manual_stress";
+  const showManualClutter = isAtLeast("manual_stress") && !isAtLeast("ai_targets");
 
   return (
     <div
-      aria-label={`Scene animee: ${recoveryStorySteps[activeIndex]?.title ?? ""}`}
+      aria-label={`Scène animée: ${recoveryStorySteps[activeIndex]?.title ?? ""}`}
       className={cn(
-        "relative min-h-[700px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm sm:min-h-[520px]",
+        "relative min-h-[820px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm sm:min-h-[580px]",
         reducedMotion && "motion-reduce:transition-none"
       )}
       role="img"
@@ -262,17 +278,39 @@ function RecoveryScene({
 
       <div
         className={cn(
-          "absolute left-6 top-32 h-32 w-28 rounded-t-full border-8 border-[#21313b] bg-[#d6ebe4] transition duration-500 sm:left-8 sm:top-28 sm:h-36 sm:w-32",
-          isAtLeast("manual_stress") && "rotate-[-2deg]",
+          "absolute left-6 top-36 h-32 w-28 rounded-t-full border-8 border-[#21313b] bg-[#d6ebe4] transition duration-500 sm:left-8 sm:top-30 sm:h-36 sm:w-32",
+          isManualStress && "rotate-[-3deg]",
           isAtLeast("merchant_validates") && "rotate-0 bg-[#cde7df]",
           reducedMotion && "transition-none"
         )}
       >
+        <div
+          className={cn(
+            "absolute -top-8 left-8 h-9 w-9 rounded-full bg-[#cfa176] opacity-0 transition sm:left-10",
+            isRecovered && "opacity-100",
+            reducedMotion && "transition-none"
+          )}
+        />
         <div className="absolute left-4 top-16 h-12 w-20 rounded-t-3xl bg-[#b98b61]" />
         <div className="absolute -bottom-7 left-4 h-9 w-24 rounded-b-xl bg-[#21313b]" />
+        <div
+          className={cn(
+            "absolute left-6 top-7 rounded-full bg-white px-2 py-1 text-[10px] font-bold text-[#8a1f17] opacity-100 transition",
+            isRecovered && "opacity-0",
+            reducedMotion && "transition-none"
+          )}
+        >
+          vide
+        </div>
       </div>
 
-      <div className="absolute left-16 right-5 top-28 rounded-2xl bg-white px-4 py-3 text-sm font-semibold leading-5 text-[var(--foreground)] shadow-md sm:left-24 sm:right-auto sm:max-w-[190px]">
+      <div
+        className={cn(
+          "absolute left-16 right-5 top-28 rounded-2xl bg-white px-4 py-3 text-sm font-semibold leading-5 text-[var(--foreground)] shadow-md transition sm:left-24 sm:right-auto sm:max-w-[210px]",
+          isManualStress && "translate-y-1 rotate-[-1deg]",
+          reducedMotion && "transition-none"
+        )}
+      >
         {isAtLeast("merchant_validates")
           ? "Je choisis qui confirmer."
           : isAtLeast("ai_appears")
@@ -284,10 +322,12 @@ function RecoveryScene({
         className={cn(
           "absolute right-6 top-56 grid h-24 w-24 place-items-center rounded-full border border-[#b9d9cf] bg-[#e9f7f2] opacity-0 shadow-md transition duration-500 sm:right-8 sm:top-28 sm:h-32 sm:w-32",
           isAtLeast("ai_appears") && "opacity-100",
-          isAtLeast("ai_targets") && !reducedMotion && "scale-105",
+          isAtLeast("ai_targets") && !reducedMotion && "scale-105 shadow-lg",
           reducedMotion && "transition-none"
         )}
       >
+        <div className="absolute -inset-3 rounded-full border border-[#b9d9cf] bg-[#e9f7f2]/35" />
+        <div className="absolute -right-2 top-1 h-5 w-5 rounded-full bg-white shadow-sm" />
         <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-center text-xs font-bold leading-4 text-[var(--primary-strong)] sm:h-24 sm:w-24">
           Agent
           <br />
@@ -295,14 +335,38 @@ function RecoveryScene({
         </div>
       </div>
 
-      <div className="absolute left-5 right-5 top-[360px] grid gap-2 sm:right-auto sm:top-[280px] sm:w-[46%]">
-        {["Pas pertinent", "Déjà réservé", "Bonne candidate"].map((item, index) => {
-          const isSelected = isAtLeast("ai_targets") && index === 2;
+      <div
+        aria-hidden={!showManualClutter}
+        className={cn(
+          "absolute left-5 right-5 top-[320px] grid grid-cols-2 gap-2 opacity-0 transition sm:left-[42%] sm:right-auto sm:top-[258px] sm:w-[34%]",
+          showManualClutter && "opacity-100",
+          reducedMotion && "transition-none"
+        )}
+      >
+        {manualChannels.map((channel, index) => (
+          <div
+            className={cn(
+              "rounded-xl border border-[#f0d9b8] bg-[#fff7ed] px-3 py-2 text-xs font-bold text-[#8a4b11] shadow-sm",
+              !reducedMotion && index % 2 === 0 && "rotate-[-2deg]",
+              !reducedMotion && index % 2 === 1 && "rotate-[2deg]"
+            )}
+            key={channel}
+          >
+            {channel}
+          </div>
+        ))}
+      </div>
+
+      <div className="absolute left-5 right-5 top-[430px] grid gap-2 sm:right-auto sm:top-[326px] sm:w-[48%]">
+        {targetRows.map(([item, status]) => {
+          const isSmsCandidate = status === "SMS";
+          const isSelected = isAtLeast("ai_targets") && isSmsCandidate;
 
           return (
             <div
               className={cn(
-                "flex items-center justify-between rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm transition",
+                "flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[var(--foreground)] opacity-55 shadow-sm transition",
+                isAtLeast("ai_targets") && "opacity-100",
                 isSelected && "ring-2 ring-[var(--primary)]",
                 reducedMotion && "transition-none"
               )}
@@ -317,28 +381,68 @@ function RecoveryScene({
                     : "bg-[#f1f3ef] text-[var(--muted)]"
                 )}
               >
-                {isSelected ? "SMS" : "Skip"}
+                {isAtLeast("ai_targets") ? status : "..."}
               </span>
             </div>
           );
         })}
       </div>
 
-      <div className="absolute left-5 right-5 top-[500px] grid gap-2 sm:left-auto sm:top-[284px] sm:w-[44%]">
-        {["Oui, je peux venir", "Dispo si plus tard", "Pas cette fois"].map(
-          (reply, index) => (
+      <div
+        aria-hidden={!isAtLeast("sms_sent")}
+        className="absolute left-5 right-5 top-[560px] grid gap-2 sm:left-auto sm:right-6 sm:top-[312px] sm:w-[42%]"
+      >
+        {["SMS vers Sarah", "SMS vers Lina"].map((message, index) => (
+          <div
+            className={cn(
+              "rounded-full bg-[var(--primary)] px-4 py-2 text-xs font-bold text-white opacity-0 shadow-md transition duration-500",
+              isAtLeast("sms_sent") && "opacity-100",
+              isAtLeast("sms_sent") && !reducedMotion && index === 0 && "translate-x-2",
+              isAtLeast("sms_sent") && !reducedMotion && index === 1 && "-translate-x-2",
+              reducedMotion && "transition-none"
+            )}
+            key={message}
+          >
+            {message}
+          </div>
+        ))}
+      </div>
+
+      <div className="absolute left-5 right-5 top-[642px] grid gap-2 sm:left-auto sm:right-6 sm:top-[412px] sm:w-[42%]">
+        {replyRows.map(([name, answer, time], index) => {
+          const isVisible = isAtLeast("replies") && index <= activeIndex - 5;
+
+          return (
             <div
               className={cn(
-                "rounded-xl border border-[#cfe1dc] bg-[#edf7f4] px-3 py-2 text-xs font-bold text-[var(--primary-strong)] opacity-30 transition",
-                isAtLeast("replies") && index <= activeIndex - 5 && "opacity-100",
+                "rounded-xl border border-[#cfe1dc] bg-[#edf7f4] px-3 py-2 text-xs font-bold text-[var(--primary-strong)] opacity-25 transition duration-500",
+                isVisible && "opacity-100",
                 reducedMotion && "transition-none"
               )}
-              key={reply}
+              key={name}
             >
-              #{index + 1} {reply}
+              #{index + 1} {name} — {answer} — {time}
             </div>
-          )
+          );
+        })}
+      </div>
+
+      <div
+        className={cn(
+          "absolute bottom-28 left-5 right-5 rounded-xl border border-[#cfe1dc] bg-white px-4 py-3 opacity-0 shadow-sm transition sm:left-auto sm:right-6 sm:w-[42%]",
+          isAtLeast("merchant_validates") && "opacity-100",
+          reducedMotion && "transition-none"
         )}
+      >
+        <p className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+          Validation humaine
+        </p>
+        <p className="mt-1 text-sm font-bold text-[var(--foreground)]">
+          Sarah confirmée
+        </p>
+        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+          Le commerce garde le dernier mot.
+        </p>
       </div>
 
       <div className="absolute bottom-5 left-5 right-5 rounded-xl bg-[#21313b] px-4 py-4 text-white shadow-md">
@@ -353,6 +457,18 @@ function RecoveryScene({
         <p className="mt-1 text-xs leading-5 text-[#d6ebe4]">
           Les réponses aident à décider. La confirmation reste humaine.
         </p>
+      </div>
+
+      <div
+        aria-hidden={!isRecovered}
+        className={cn(
+          "absolute right-6 top-24 rounded-full bg-[var(--accent)] px-4 py-2 text-xs font-black uppercase tracking-wide text-white opacity-0 shadow-lg transition duration-500",
+          isRecovered && "opacity-100",
+          isRecovered && !reducedMotion && "-rotate-2 scale-105",
+          reducedMotion && "transition-none"
+        )}
+      >
+        Place récupérée
       </div>
     </div>
   );
