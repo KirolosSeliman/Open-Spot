@@ -6,9 +6,10 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { NavItem } from "@/types/app";
 
 const navItems: NavItem[] = [
-  { href: "/pricing", label: "Pricing" },
+  { href: "/#comment-ca-marche", label: "Comment ça marche" },
+  { href: "/pricing", label: "Prix" },
   { href: "/contact", label: "Contact" },
-  { href: "/dashboard", label: "Dashboard" }
+  { href: "/dashboard", label: "Tableau de bord" }
 ];
 
 export async function SiteHeader() {
@@ -28,7 +29,7 @@ export async function SiteHeader() {
         <Link className="text-base font-bold" href="/">
           2e Chance RDV
         </Link>
-        <nav aria-label="Main navigation" className="flex flex-wrap gap-2">
+        <nav aria-label="Navigation principale" className="flex flex-wrap gap-2">
           {navItems.map((item) => (
             <Link
               className="rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]"
@@ -44,7 +45,7 @@ export async function SiteHeader() {
                 className="rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]"
                 type="submit"
               >
-                Sign out
+                Déconnexion
               </button>
             </form>
           ) : (
@@ -52,9 +53,15 @@ export async function SiteHeader() {
               className="rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]"
               href="/sign-in"
             >
-              Sign in
+              Connexion
             </Link>
           )}
+          <Link
+            className="rounded-md bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--primary-strong)]"
+            href="/remplir-mes-annulations"
+          >
+            Remplir mes annulations
+          </Link>
         </nav>
       </div>
     </header>
