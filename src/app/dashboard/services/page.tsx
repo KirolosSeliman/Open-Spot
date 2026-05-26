@@ -1,31 +1,68 @@
-import { PageShell } from "@/components/layout/page-shell";
-import { SectionHeading } from "@/components/marketing/section-heading";
-import { Card } from "@/components/ui/card";
-import { requireDashboardUser } from "@/lib/auth/session";
+import {
+  DashboardPageHeader,
+  EmptyState,
+  Panel,
+  StatusBadge,
+  TableShell,
+  tableCellClass,
+  tableHeadClass
+} from "@/components/dashboard/dashboard-ui";
+import { dashboardServices, formatCurrency } from "@/lib/dashboard/mock-data";
 
-export default async function ServicesPage() {
-  await requireDashboardUser();
-
+export default function ServicesPage() {
   return (
-    <PageShell>
-      <section className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
-        <SectionHeading
-          description="Create, edit, and deactivate services with normal price and duration."
-          eyebrow="Services"
-          title="Keep service setup simple and reusable."
-        />
-        <Card className="mt-8">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <input className="min-h-11 rounded-md border border-[var(--line)] px-3" placeholder="Service name" />
-            <input className="min-h-11 rounded-md border border-[var(--line)] px-3" placeholder="Duration minutes" type="number" />
-            <input className="min-h-11 rounded-md border border-[var(--line)] px-3" placeholder="Normal price cents" type="number" />
-            <select className="min-h-11 rounded-md border border-[var(--line)] px-3">
-              <option>Active</option>
-              <option>Inactive</option>
-            </select>
-          </div>
-        </Card>
-      </section>
-    </PageShell>
+    <div className="grid gap-6">
+      <DashboardPageHeader
+        action={
+          <button
+            className="rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white"
+            type="button"
+          >
+            Add service
+          </button>
+        }
+        description="Les services alimentent la génération automatique de SMS, la sélection de clients et les statistiques."
+        title="Services"
+      />
+      <Panel title="Catalogue de services">
+        {dashboardServices.length > 0 ? (
+          <TableShell>
+            <thead>
+              <tr>
+                <th className={tableHeadClass}>Service name</th>
+                <th className={tableHeadClass}>Duration</th>
+                <th className={tableHeadClass}>Estimated price</th>
+                <th className={tableHeadClass}>Category</th>
+                <th className={tableHeadClass}>Active/inactive</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--line)] bg-white">
+              {dashboardServices.map((service) => (
+                <tr key={service.id}>
+                  <td className={`${tableCellClass} font-black`}>
+                    {service.name}
+                  </td>
+                  <td className={tableCellClass}>
+                    {service.durationMinutes} min
+                  </td>
+                  <td className={tableCellClass}>
+                    {formatCurrency(service.estimatedPriceCents)}
+                  </td>
+                  <td className={tableCellClass}>{service.category}</td>
+                  <td className={tableCellClass}>
+                    <StatusBadge>{service.active ? "Actif" : "Inactif"}</StatusBadge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </TableShell>
+        ) : (
+          <EmptyState
+            description="Ajoutez les services vendus par le commerce afin de personnaliser les alertes SMS et les analyses."
+            title="Aucun service configuré."
+          />
+        )}
+      </Panel>
+    </div>
   );
 }

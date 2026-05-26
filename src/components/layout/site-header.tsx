@@ -7,7 +7,7 @@ import type { NavItem } from "@/types/app";
 
 const navItems: NavItem[] = [
   { href: "/#comment-ca-marche", label: "Comment ça marche" },
-  { href: "/#pourquoi-open-spot", label: "Pourquoi Open Spot" },
+  { href: "/#pourquoi-open-spot", label: "Pourquoi 2e Chance" },
   { href: "/pricing", label: "Prix" },
   { href: "/book-call/questions", label: "Réserver un appel" }
 ];
@@ -24,51 +24,69 @@ export async function SiteHeader() {
   }
 
   return (
-    <header className="border-b border-[var(--line)] bg-[rgba(248,247,244,0.92)]">
-      <div className="mx-auto flex min-h-16 w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link
-          className="rounded-md text-base font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
-          href="/"
-        >
-          Open Spot
-        </Link>
-        <nav
-          aria-label="Navigation principale"
-          className="flex w-full items-center gap-2 overflow-x-auto pb-1 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:pb-0"
-        >
-          {navItems.map((item) => (
+    <header className="sticky top-0 z-40 bg-[rgba(248,247,244,0.72)] px-3 py-3 backdrop-blur">
+      <div className="mx-auto max-w-6xl">
+        <div className="rounded-[2rem] border border-[rgba(223,230,226,0.92)] bg-white/88 px-3 py-3 shadow-[0_16px_45px_rgba(36,54,66,0.08)] sm:px-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <Link
-              className="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-              href={item.href}
-              key={item.href}
+              className="rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
+              href="/"
             >
-              {item.label}
+              2e Chance RDV
             </Link>
-          ))}
-          {isSignedIn ? (
-            <form action={signOutAction}>
-              <button
-                className="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-                type="submit"
-              >
-                Déconnexion
-              </button>
-            </form>
-          ) : (
-            <Link
-              className="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-              href="/sign-in"
+
+            <nav
+              aria-label="Navigation principale"
+              className="order-3 flex w-full gap-1 overflow-x-auto pb-1 md:order-2 md:w-auto md:overflow-visible md:pb-0"
             >
-              Connexion
-            </Link>
-          )}
-          <Link
-            className="shrink-0 rounded-md bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-            href="/book-call/questions"
-          >
-            Réserver un appel
-          </Link>
-        </nav>
+              {navItems.map((item) => (
+                <Link
+                  className="shrink-0 rounded-full px-3 py-2 text-sm font-bold text-[var(--muted)] transition hover:bg-[#f2f7f4] hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                  href={item.href}
+                  key={item.href}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="order-2 flex shrink-0 items-center gap-2 md:order-3">
+              {isSignedIn ? (
+                <>
+                  <Link
+                    className="hidden rounded-full border border-[var(--line)] bg-white px-3 py-2 text-sm font-bold text-[var(--foreground)] transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:inline-flex"
+                    href="/dashboard"
+                  >
+                    Dashboard
+                  </Link>
+                  <form action={signOutAction}>
+                    <button
+                      className="rounded-full px-3 py-2 text-sm font-bold text-[var(--muted)] transition hover:bg-[#f2f7f4] hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                      type="submit"
+                    >
+                      Déconnexion
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link
+                    className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-sm font-bold text-[var(--foreground)] transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                    href="/sign-in"
+                  >
+                    Connexion
+                  </Link>
+                  <Link
+                    className="rounded-full bg-[var(--primary)] px-3 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(35,117,107,0.18)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                    href="/signup"
+                  >
+                    Créer un compte
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );
