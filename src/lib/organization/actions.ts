@@ -9,25 +9,6 @@ import {
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
-type OrganizationBootstrapClient = {
-  from: (table: string) => {
-    insert: (values: Record<string, unknown>) => {
-      select: (columns: string) => {
-        single: () => Promise<{
-          data: { id: string } | null;
-          error: { message: string; code?: string } | null;
-        }>;
-      };
-    };
-    delete: () => {
-      eq: (
-        column: string,
-        value: string
-      ) => Promise<{ error: { message: string } | null }>;
-    };
-  };
-};
-
 function onboardingError(message: string): never {
   redirect(`/onboarding?error=${encodeURIComponent(message)}`);
 }
@@ -62,17 +43,13 @@ export async function createOrganizationAction(formData: FormData) {
     onboardingError("Supabase service role is not configured on the server.");
   }
 
-  await bootstrapOrganizationForUser(
-    serviceClient as unknown as OrganizationBootstrapClient,
-    user.id,
-    payload.value
-  );
+  await bootstrapOrganizationForUser(serviceClient, user.id, payload.value);
 
   redirect("/dashboard");
 }
 
 async function bootstrapOrganizationForUser(
-  serviceClient: OrganizationBootstrapClient,
+  serviceClient: NonNullable<ReturnType<typeof createSupabaseServiceClient>>,
   userId: string,
   input: OrganizationCreateInput
 ) {

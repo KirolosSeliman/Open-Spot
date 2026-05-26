@@ -38,21 +38,6 @@ export type OrganizationWorkspace =
       };
     };
 
-type MembershipRow = {
-  organization_id: string;
-  role: "owner" | "manager" | "staff";
-};
-
-type OrganizationRow = {
-  id: string;
-  name: string;
-  slug: string;
-  email: string | null;
-  phone: string | null;
-  timezone: string;
-  default_language: "en" | "fr";
-};
-
 export async function getActiveOrganizationWorkspace(): Promise<OrganizationWorkspace> {
   if (!isSupabaseConfigured()) {
     return {
@@ -97,7 +82,7 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
     throw new Error(membershipError.message);
   }
 
-  const membership = (memberships?.[0] ?? null) as MembershipRow | null;
+  const membership = memberships?.[0] ?? null;
   const organizationRedirect = decideWorkspaceRedirect({
     isConfigured: true,
     hasUser: true,
@@ -120,8 +105,8 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
     .eq("id", activeMembership.organization_id)
     .single();
 
-  if (organizationError) {
-    throw new Error(organizationError.message);
+  if (organizationError || !organization) {
+    throw new Error(organizationError?.message ?? "Organization not found.");
   }
 
   const [servicesResult, customersResult] = await Promise.all([
@@ -135,8 +120,6 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
       .eq("organization_id", activeMembership.organization_id)
   ]);
 
-  const organizationRow = organization as OrganizationRow;
-
   return {
     status: "ready",
     user: {
@@ -144,13 +127,13 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
       email: currentUser.email
     },
     organization: {
-      id: organizationRow.id,
-      name: organizationRow.name,
-      slug: organizationRow.slug,
-      email: organizationRow.email,
-      phone: organizationRow.phone,
-      timezone: organizationRow.timezone,
-      defaultLanguage: organizationRow.default_language,
+      id: organization.id,
+      name: organization.name,
+      slug: organization.slug,
+      email: organization.email,
+      phone: organization.phone,
+      timezone: organization.timezone,
+      defaultLanguage: organization.default_language,
       role: activeMembership.role
     },
     counts: {

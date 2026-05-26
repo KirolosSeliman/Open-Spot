@@ -10,21 +10,6 @@ type ValidateRouteProps = {
   }>;
 };
 
-type ValidationRpcClient = {
-  rpc: (
-    functionName: "validate_opening_offer",
-    args: {
-      target_opening_id: string;
-      target_offer_id: string;
-      recovered_value_cents: number;
-      commission_cents: number;
-    }
-  ) => Promise<{
-    data: unknown;
-    error: { message: string } | null;
-  }>;
-};
-
 export async function POST(request: Request, { params }: ValidateRouteProps) {
   const { id } = await params;
   const payload = await request.json().catch(() => ({}));
@@ -66,8 +51,7 @@ export async function POST(request: Request, { params }: ValidateRouteProps) {
     );
   }
 
-  const rpcClient = supabase as unknown as ValidationRpcClient;
-  const { data, error } = await rpcClient.rpc("validate_opening_offer", {
+  const { data, error } = await supabase.rpc("validate_opening_offer", {
     target_opening_id: id,
     target_offer_id: selectedOfferId,
     recovered_value_cents: recoveredValueCents,
