@@ -32,13 +32,47 @@ const copy = {
       ],
       visual: {
         cancelled: "Créneau annulé",
-        service: "Coupe + mise en plis",
+        subtitle: "Un créneau vient de se libérer",
+        service: "Coupe régulière",
+        duration: "45 min",
         button: "Lancer l’alerte",
-        sent: "Alerte envoyée à 3 clients pertinents",
-        replyOne: "Oui, je peux venir",
+        targetedTitle: "Clients ciblés",
+        targetedCount: "3",
+        sendTitle: "Envoi des alertes",
+        sendStatus: "SMS en cours",
+        repliesTitle: "Réponses des clients",
+        replyOne: "Oui, je peux venir !",
         replyTwo: "Oui, dispo à 14 h 30",
+        replyThree: "Merci mais pas dispo aujourd’hui",
+        repliesNote: "Les réponses arrivent en temps réel.",
         manual: "Vous confirmez manuellement",
-        recovered: "Créneau récupéré"
+        recovered: "Créneau récupéré",
+        confirmed: "Le rendez-vous est confirmé.",
+        controlNote:
+          "Vous gardez le contrôle : la confirmation du rendez-vous se fait toujours manuellement.",
+        clients: [
+          {
+            initials: "MA",
+            name: "Maya",
+            label: "Prioritaire",
+            detail: "Client priorisé : n’a pas réservé depuis 2 semaines",
+            status: "Envoi…"
+          },
+          {
+            initials: "SA",
+            name: "Sarah",
+            label: "Intéressée par ce service",
+            detail: "N’a pas réservé depuis 10 jours",
+            status: "Prêt"
+          },
+          {
+            initials: "LI",
+            name: "Lina",
+            label: "Cliente fidèle",
+            detail: "N’a pas réservé depuis 3 semaines",
+            status: "Prêt"
+          }
+        ]
       }
     },
     sectors: {
@@ -72,23 +106,39 @@ const copy = {
       note:
         "Open Spot ne remplace pas votre calendrier. Il s’ajoute à votre façon de travailler.",
       steps: [
-        ["Un client annule", "Vous gardez votre calendrier actuel."],
-        ["Vous lancez l’alerte", "Open Spot prépare une alerte SMS ciblée."],
-        ["Les clients répondent par SMS", "Les réponses arrivent clairement."],
-        ["Vous choisissez qui confirmer", "Le commerce garde le dernier mot."]
+        ["Lancer l’alerte", "Vous partez du créneau annulé, sans changer votre calendrier."],
+        ["Alertes envoyées", "Open Spot prépare une alerte SMS ciblée pour les bons contacts."],
+        ["Réponses reçues", "Les réponses arrivent clairement, dans l’ordre."],
+        ["Confirmation manuelle", "Vous choisissez la personne à confirmer."]
       ]
     },
     ai: {
-      title: "Un ciblage plus intelligent, sans perdre le contrôle.",
+      badge: "Ciblage intelligent",
+      title: "Ciblez les bons clients avant que le créneau reste vide",
       text:
-        "Open Spot peut vous aider à prioriser les bons clients selon le type de service, la langue, l’intérêt et l’historique disponible. L’objectif n’est pas d’envoyer plus de messages. L’objectif est d’envoyer les bons messages aux bonnes personnes.",
-      note:
-        "L’assistant aide à prioriser. Le commerce garde toujours le dernier mot.",
+        "Open Spot peut utiliser un agent IA pour aider à identifier les clients les plus pertinents à alerter selon vos règles, vos services et l’historique disponible.",
+      example:
+        "Exemple : prioriser un client qui n’a pas réservé depuis 2 semaines, mais qui vient habituellement pour ce type de service.",
+      note: "Zéro réservation automatique. Vous restez maître de votre agenda.",
+      benefits: [
+        [
+          "Ciblage pertinent",
+          "L’agent aide à viser les clients les plus susceptibles de répondre."
+        ],
+        [
+          "Réponse plus rapide",
+          "Les alertes partent en quelques secondes aux bons contacts."
+        ],
+        [
+          "Vous gardez le contrôle",
+          "Vous confirmez chaque créneau. Rien n’est réservé sans votre accord."
+        ]
+      ],
       rows: [
-        ["Service pertinent", "Priorité haute"],
-        ["Langue préférée", "Message adapté"],
-        ["Réservation récente", "À éviter"],
-        ["Client intéressé", "SMS possible"]
+        ["Coupe régulière", "Service compatible"],
+        ["Maya", "Priorité haute"],
+        ["2 semaines sans visite", "Signal utile"],
+        ["Confirmation", "Manuelle"]
       ]
     },
     personalization: {
@@ -130,19 +180,21 @@ const copy = {
       ]
     },
     pricing: {
-      title: "Un prix simple pour commencer à récupérer vos créneaux perdus.",
+      badge: "Tarification transparente",
+      title: "Simple, clair et rentable",
       price: "34,99 $ / mois",
       commission:
         "+ commission sur rendez-vous récupéré, discutée selon votre fonctionnement",
       text:
         "L’appel permet de vérifier votre volume, vos services et la meilleure façon de connecter Open Spot à votre commerce.",
       ready: "Je suis prêt à récupérer mes annulations",
-      questions: "Parler à quelqu’un"
+      questions: "Parler à quelqu’un",
+      trust: ["Sans engagement", "Mise en place rapide", "Adapté à votre commerce"]
     },
     final: {
-      title: "Prêt à arrêter de laisser vos annulations devenir des pertes ?",
+      title: "Une alerte simple, un contrôle total.",
       text:
-        "Réservez un appel. On regarde votre commerce, vos annulations, votre liste client et la meilleure façon de configurer Open Spot pour vous.",
+        "Open Spot vous aide à prévenir les bons clients, suivre les réponses et confirmer manuellement le rendez-vous qui convient à votre commerce.",
       ready: "Je suis prêt à récupérer mes annulations",
       questions: "Parler à quelqu’un"
     }
@@ -170,13 +222,47 @@ const copy = {
       ],
       visual: {
         cancelled: "Cancelled spot",
-        service: "Cut + styling",
+        subtitle: "A spot just opened up",
+        service: "Regular haircut",
+        duration: "45 min",
         button: "Launch alert",
-        sent: "Alert sent to 3 relevant customers",
-        replyOne: "Yes, I can come in",
+        targetedTitle: "Targeted customers",
+        targetedCount: "3",
+        sendTitle: "Alert delivery",
+        sendStatus: "SMS in progress",
+        repliesTitle: "Customer replies",
+        replyOne: "Yes, I can come in!",
         replyTwo: "Yes, 2:30 works",
+        replyThree: "Thanks, but not today",
+        repliesNote: "Replies arrive in real time.",
         manual: "You confirm manually",
-        recovered: "Spot recovered"
+        recovered: "Spot recovered",
+        confirmed: "The appointment is confirmed.",
+        controlNote:
+          "You keep control: the appointment confirmation is always handled manually.",
+        clients: [
+          {
+            initials: "MA",
+            name: "Maya",
+            label: "Priority",
+            detail: "Prioritized customer: has not booked in 2 weeks",
+            status: "Sending..."
+          },
+          {
+            initials: "SA",
+            name: "Sarah",
+            label: "Interested in this service",
+            detail: "Has not booked in 10 days",
+            status: "Ready"
+          },
+          {
+            initials: "LI",
+            name: "Lina",
+            label: "Loyal customer",
+            detail: "Has not booked in 3 weeks",
+            status: "Ready"
+          }
+        ]
       }
     },
     sectors: {
@@ -210,23 +296,39 @@ const copy = {
       note:
         "Open Spot does not replace your calendar. It fits into the way you already work.",
       steps: [
-        ["A customer cancels", "You keep your current calendar."],
-        ["You launch the alert", "Open Spot prepares a targeted SMS alert."],
-        ["Customers reply by SMS", "Replies arrive clearly."],
-        ["You choose who to confirm", "The business keeps the final say."]
+        ["Launch the alert", "You start from the cancelled spot without changing your calendar."],
+        ["Alerts sent", "Open Spot prepares a targeted SMS alert for the right contacts."],
+        ["Replies received", "Replies arrive clearly, in order."],
+        ["Manual confirmation", "You choose who to confirm."]
       ]
     },
     ai: {
-      title: "Smarter targeting, without losing control.",
+      badge: "Smart targeting",
+      title: "Target the right customers before the spot stays empty",
       text:
-        "Open Spot can help prioritize the right customers based on service type, language, interest, and available history. The goal is not to send more messages. The goal is to send the right messages to the right people.",
-      note:
-        "The assistant helps prioritize. The business always keeps the final say.",
+        "Open Spot can use an AI agent to help identify the most relevant customers to alert based on your rules, services, and available history.",
+      example:
+        "Example: prioritize a customer who has not booked in 2 weeks, but usually comes in for this type of service.",
+      note: "Zero automatic booking. You stay in control of your calendar.",
+      benefits: [
+        [
+          "Relevant targeting",
+          "The agent helps focus on customers most likely to reply."
+        ],
+        [
+          "Faster response",
+          "Alerts go out in seconds to the right contacts."
+        ],
+        [
+          "You keep control",
+          "You confirm every spot. Nothing is booked without your approval."
+        ]
+      ],
       rows: [
-        ["Relevant service", "High priority"],
-        ["Preferred language", "Adapted message"],
-        ["Recent booking", "Avoid"],
-        ["Interested customer", "SMS possible"]
+        ["Regular haircut", "Compatible service"],
+        ["Maya", "High priority"],
+        ["2 weeks since last visit", "Useful signal"],
+        ["Confirmation", "Manual"]
       ]
     },
     personalization: {
@@ -267,19 +369,21 @@ const copy = {
       ]
     },
     pricing: {
-      title: "Simple pricing to start recovering lost spots.",
+      badge: "Transparent pricing",
+      title: "Simple, clear, and profitable",
       price: "$34.99 / month",
       commission:
         "+ recovered-booking commission, discussed based on your workflow",
       text:
         "The call helps verify your volume, services, and the best way to connect Open Spot to your business.",
       ready: "I’m ready to recover cancellations",
-      questions: "Talk to someone"
+      questions: "Talk to someone",
+      trust: ["No commitment", "Fast setup", "Adapted to your business"]
     },
     final: {
-      title: "Ready to stop turning cancellations into lost revenue?",
+      title: "One simple alert, full control.",
       text:
-        "Book a call. We’ll look at your business, cancellations, customer list, and the best way to configure Open Spot for you.",
+        "Open Spot helps you reach the right customers, track replies, and manually confirm the appointment that fits your business.",
       ready: "I’m ready to recover cancellations",
       questions: "Talk to someone"
     }
@@ -431,73 +535,159 @@ function HeroMockup({ t }: { t: Copy }) {
   return (
     <div
       aria-label="Open Spot product preview showing a merchant launching an alert, receiving SMS replies, and manually confirming a recovered spot."
-      className="os-reveal os-hero-mockup relative mx-auto min-h-[590px] w-full max-w-[610px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/78 p-4 shadow-[0_28px_90px_rgba(36,54,66,0.16)] backdrop-blur sm:min-h-[560px] sm:p-5"
+      className="os-reveal os-hero-mockup relative mx-auto w-full max-w-[630px] overflow-hidden rounded-[2rem] border border-white/70 bg-white/85 p-3 shadow-[0_28px_90px_rgba(36,54,66,0.16)] backdrop-blur sm:p-5"
       role="img"
     >
-      <div className="absolute -right-16 -top-20 h-56 w-56 rounded-full bg-[#c7d9ff]/60 blur-3xl" />
-      <div className="absolute -bottom-24 -left-16 h-60 w-60 rounded-full bg-[#c8eadf]/70 blur-3xl" />
+      <div className="relative rounded-[1.65rem] border border-[#e5ebe7] bg-[#fbfaf7] p-3 shadow-sm sm:p-4">
+        <div className="flex items-center justify-between gap-3 border-b border-[#e4ebe7] pb-3">
+          <div className="flex items-center gap-2">
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#14262e] text-xs font-black text-white">
+              OS
+            </span>
+            <div>
+              <p className="text-sm font-black text-[#14262e]">Open Spot</p>
+              <p className="text-[11px] font-bold text-[var(--muted)]">SMS assistant</p>
+            </div>
+          </div>
+          <span className="grid h-9 w-9 place-items-center rounded-full border border-[#dce6e2] bg-white text-sm text-[#254047]">
+            ◦
+          </span>
+        </div>
 
-      <div className="relative rounded-3xl border border-[#e5ebe7] bg-[#fbfaf7] p-4 shadow-sm">
-        <div className="flex items-center justify-between gap-3">
+        <div className="mt-4 flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
-              Open Spot
-            </p>
-            <p className="mt-1 text-lg font-black text-[#14262e]">
-              {t.hero.visual.cancelled}
+            <p className="text-xl font-black text-[#14262e]">{t.hero.visual.cancelled}</p>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
+              {t.hero.visual.subtitle}
             </p>
           </div>
-          <span className="rounded-full bg-[#fdebea] px-3 py-1 text-xs font-black text-[#8a1f17]">
+          <span className="rounded-full bg-[#fdebea] px-3 py-1 text-sm font-black text-[#8a1f17]">
             14:30
           </span>
         </div>
-        <div className="mt-4 rounded-2xl bg-white p-4 shadow-sm">
-          <p className="text-sm font-bold text-[#14262e]">{t.hero.visual.service}</p>
-          <div className="mt-3 h-2 rounded-full bg-[#e7ece8]">
-            <div className="os-alert-line h-2 rounded-full bg-[var(--primary)]" />
-          </div>
-        </div>
-        <div className="os-launch-button mt-4 w-full rounded-2xl bg-[#14262e] px-4 py-3 text-center text-sm font-black text-white shadow-lg">
-          {t.hero.visual.button}
-        </div>
-        <div className="os-cursor" aria-hidden="true" />
-      </div>
 
-      <div className="relative mt-4 grid gap-3 sm:grid-cols-[0.9fr_1.1fr]">
-        <div className="space-y-3">
-          {["Maya", "Sarah", "Lina"].map((name, index) => (
-            <div
-              className={cn(
-                "os-client-card rounded-2xl border border-[#e1e9e5] bg-white p-3 shadow-sm",
-                index === 1 && "os-delay-1",
-                index === 2 && "os-delay-2"
-              )}
-              key={name}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-black text-[#14262e]">{name}</span>
-                <span className="rounded-full bg-[#eaf5f2] px-2 py-1 text-[11px] font-bold text-[var(--primary-strong)]">
-                  SMS
+        <div className="mt-4 grid gap-3 lg:grid-cols-[0.92fr_1.08fr]">
+          <div className="space-y-3">
+            <div className="relative rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex gap-3">
+                  <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#eaf5f2] text-base font-black text-[var(--primary-strong)]">
+                    ✂
+                  </span>
+                  <div>
+                    <p className="text-sm font-black text-[#14262e]">
+                      {t.hero.visual.service}
+                    </p>
+                    <p className="mt-1 text-xs font-bold text-[var(--muted)]">
+                      {t.hero.visual.duration}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="os-launch-button mt-4 w-full rounded-xl bg-[#14262e] px-4 py-3 text-center text-sm font-black text-white shadow-lg">
+                {t.hero.visual.button}
+              </div>
+              <div className="os-cursor" aria-hidden="true" />
+            </div>
+
+            <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-sm font-black text-[#14262e]">
+                  {t.hero.visual.targetedTitle}
+                </p>
+                <span className="rounded-full bg-[#eaf5f2] px-2.5 py-1 text-xs font-black text-[var(--primary-strong)]">
+                  {t.hero.visual.targetedCount}
                 </span>
               </div>
-              <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
-                {t.hero.visual.sent}
+              <div className="space-y-2.5">
+                {t.hero.visual.clients.map((client, index) => (
+                  <div
+                    className={cn(
+                      "os-target-row grid gap-3 rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3",
+                      index === 1 && "os-delay-1",
+                      index === 2 && "os-delay-2"
+                    )}
+                    key={client.name}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-[#dfece8] text-[11px] font-black text-[#15534b]">
+                        {client.initials}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-sm font-black text-[#14262e]">{client.name}</p>
+                          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.08em] text-[var(--primary-strong)]">
+                            SMS
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs font-black text-[#254047]">
+                          {client.label}
+                        </p>
+                        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+                          {client.detail}
+                        </p>
+                      </div>
+                      <span className="os-status-pill shrink-0 rounded-full bg-white px-2 py-1 text-[10px] font-black text-[#8a4b11]">
+                        {client.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-black text-[#14262e]">
+                    {t.hero.visual.sendTitle}
+                  </p>
+                  <p className="mt-1 text-xs font-bold text-[var(--muted)]">
+                    {t.hero.visual.sendStatus}
+                  </p>
+                </div>
+                <span className="os-paper-plane grid h-10 w-10 place-items-center rounded-full bg-[#eef3ff] text-sm font-black text-[#4f61b5]">
+                  ➤
+                </span>
+              </div>
+              <div className="mt-4 space-y-2" aria-hidden="true">
+                <span className="os-motion-line block h-1.5 rounded-full bg-[#cddbd6]" />
+                <span className="os-motion-line os-delay-1 block h-1.5 rounded-full bg-[#dbe7e3]" />
+                <span className="os-motion-line os-delay-2 block h-1.5 rounded-full bg-[#e8efec]" />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+              <p className="text-sm font-black text-[#14262e]">{t.hero.visual.repliesTitle}</p>
+              <div className="mt-3 space-y-2">
+                <SmsBubble>{t.hero.visual.replyOne}</SmsBubble>
+                <SmsBubble delay>{t.hero.visual.replyTwo}</SmsBubble>
+                <SmsBubble>{t.hero.visual.replyThree}</SmsBubble>
+              </div>
+              <p className="mt-3 text-xs font-bold text-[var(--muted)]">
+                {t.hero.visual.repliesNote}
               </p>
             </div>
-          ))}
-        </div>
-        <div className="space-y-3">
-          <SmsBubble>{t.hero.visual.replyOne}</SmsBubble>
-          <SmsBubble delay>{t.hero.visual.replyTwo}</SmsBubble>
-          <div className="rounded-2xl border border-[#d7e7e1] bg-[#edf7f4] p-4">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--primary-strong)]">
-              {t.hero.visual.manual}
-            </p>
-            <p className="mt-2 text-lg font-black text-[#14262e]">
-              {t.hero.visual.recovered}
-            </p>
+
+            <div className="os-recovered-card rounded-2xl border border-[#c8e0d8] bg-[#edf7f4] p-4">
+              <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
+                {t.hero.visual.manual}
+              </p>
+              <p className="mt-2 text-xl font-black text-[#14262e]">
+                {t.hero.visual.recovered}
+              </p>
+              <p className="mt-1 text-sm font-bold text-[var(--muted)]">
+                {t.hero.visual.confirmed}
+              </p>
+            </div>
           </div>
         </div>
+
+        <p className="mt-4 rounded-2xl border border-[#e2e9e5] bg-white px-4 py-3 text-xs font-bold leading-5 text-[#254047]">
+          {t.hero.visual.controlNote}
+        </p>
       </div>
     </div>
   );
@@ -507,11 +697,11 @@ function SmsBubble({ children, delay = false }: { children: string; delay?: bool
   return (
     <div
       className={cn(
-        "os-sms-bubble rounded-3xl rounded-bl-md bg-white px-4 py-3 text-sm font-bold text-[#14262e] shadow-sm",
+        "os-sms-bubble rounded-2xl rounded-bl-md bg-[#fbfaf7] px-3 py-2.5 text-xs font-bold text-[#14262e]",
         delay && "os-delay-2"
       )}
     >
-      “{children}”
+      &quot;{children}&quot;
     </div>
   );
 }
@@ -593,7 +783,7 @@ function WorkflowSection({ t }: { t: Copy }) {
         <h2>{t.workflow.title}</h2>
         <p>{t.workflow.note}</p>
       </div>
-      <div className="mt-10 grid gap-4 md:grid-cols-4">
+      <div className="os-workflow-grid mt-10 grid gap-4 md:grid-cols-4">
         {t.workflow.steps.map(([title, text], index) => (
           <article className="os-step-card os-reveal" key={title}>
             <span>{index + 1}</span>
@@ -609,17 +799,23 @@ function WorkflowSection({ t }: { t: Copy }) {
 function AiSection({ t }: { t: Copy }) {
   return (
     <Section>
-      <div className="grid gap-8 rounded-[2rem] border border-white/70 bg-[#edf7f4]/70 p-5 shadow-sm sm:p-8 lg:grid-cols-[0.85fr_1.15fr] lg:p-10">
+      <div className="grid gap-8 rounded-[2rem] border border-white/70 bg-[#edf7f4]/70 p-5 shadow-sm sm:p-8 lg:grid-cols-[0.88fr_1.12fr] lg:p-10">
         <div className="os-reveal">
-          <h2 className="text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
+          <p className="inline-flex rounded-full border border-[#c4ddd5] bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
+            {t.ai.badge}
+          </p>
+          <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
             {t.ai.title}
           </h2>
           <p className="mt-5 text-base leading-8 text-[var(--muted)]">{t.ai.text}</p>
-          <p className="mt-5 rounded-2xl border border-[#c4ddd5] bg-white px-4 py-3 text-sm font-bold leading-6 text-[var(--primary-strong)]">
+          <p className="mt-5 rounded-2xl border border-[#dbe8e4] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#254047]">
+            {t.ai.example}
+          </p>
+          <p className="mt-3 rounded-2xl border border-[#c4ddd5] bg-[#fbfffd] px-4 py-3 text-sm font-black leading-6 text-[var(--primary-strong)]">
             {t.ai.note}
           </p>
         </div>
-        <div className="os-reveal rounded-[1.5rem] bg-white p-4 shadow-sm">
+        <div className="os-reveal rounded-[1.5rem] bg-white p-4 shadow-sm sm:p-5">
           <div className="flex items-center gap-3">
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
               AI
@@ -628,6 +824,17 @@ function AiSection({ t }: { t: Copy }) {
               <p className="text-sm font-black text-[#14262e]">Open Spot Assistant</p>
               <p className="text-xs text-[var(--muted)]">Prioritization preview</p>
             </div>
+          </div>
+          <div className="mt-5 grid gap-3 sm:grid-cols-3">
+            {t.ai.benefits.map(([title, text]) => (
+              <div
+                className="rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-3"
+                key={title}
+              >
+                <p className="text-sm font-black text-[#14262e]">{title}</p>
+                <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{text}</p>
+              </div>
+            ))}
           </div>
           <div className="mt-5 grid gap-3">
             {t.ai.rows.map(([label, status]) => (
@@ -722,7 +929,10 @@ function PricingSection({ t }: { t: Copy }) {
   return (
     <Section id="prix">
       <div className="mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white p-6 text-center shadow-[0_24px_70px_rgba(36,54,66,0.12)] sm:p-10">
-        <h2 className="text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
+        <p className="mx-auto inline-flex rounded-full border border-[#c4ddd5] bg-[#edf7f4] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
+          {t.pricing.badge}
+        </p>
+        <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
           {t.pricing.title}
         </h2>
         <p className="mt-8 text-5xl font-black tracking-tight text-[#14262e]">
@@ -742,6 +952,13 @@ function PricingSection({ t }: { t: Copy }) {
             {t.pricing.questions}
           </Link>
         </div>
+        <ul className="mt-6 flex flex-wrap justify-center gap-2" aria-label="Pricing trust indicators">
+          {t.pricing.trust.map((item) => (
+            <li className="os-chip" key={item}>
+              {item}
+            </li>
+          ))}
+        </ul>
       </div>
     </Section>
   );

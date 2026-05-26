@@ -151,12 +151,13 @@ select {
 }
 
 .os-step-card {
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(224, 235, 229, 0.9);
   border-radius: 1.5rem;
   background: rgba(255, 255, 255, 0.76);
   box-shadow: 0 16px 40px rgba(36, 54, 66, 0.08);
-  min-height: 15rem;
+  min-height: 13.5rem;
   padding: 1.25rem;
+  position: relative;
 }
 
 .os-step-card span {
@@ -194,10 +195,11 @@ select {
   border-radius: 999px;
   box-shadow: 0 10px 22px rgba(20, 38, 46, 0.24);
   height: 1.15rem;
-  left: 52%;
+  left: 64%;
   position: absolute;
-  top: 58%;
+  top: 62%;
   width: 1.15rem;
+  z-index: 2;
 }
 
 .os-launch-button {
@@ -223,8 +225,26 @@ select {
 }
 
 .os-client-card,
-.os-sms-bubble {
+.os-sms-bubble,
+.os-target-row {
   animation: os-float-in 5s ease-in-out infinite;
+}
+
+.os-status-pill {
+  animation: os-status-shift 5s ease-in-out infinite;
+}
+
+.os-paper-plane {
+  animation: os-plane-send 5s ease-in-out infinite;
+}
+
+.os-motion-line {
+  animation: os-motion-line 5s ease-in-out infinite;
+  transform-origin: left center;
+}
+
+.os-recovered-card {
+  animation: os-recovered-glow 5s ease-in-out infinite;
 }
 
 .os-delay-1 {
@@ -334,6 +354,74 @@ select {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes os-status-shift {
+  0%,
+  28% {
+    background: #ffffff;
+    color: #8a4b11;
+  }
+  48%,
+  100% {
+    background: #eaf5f2;
+    color: #15534b;
+  }
+}
+
+@keyframes os-plane-send {
+  0%,
+  24% {
+    transform: translateX(-8px) translateY(4px) rotate(-10deg);
+    opacity: 0.55;
+  }
+  46%,
+  100% {
+    transform: translateX(3px) translateY(-3px) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes os-motion-line {
+  0%,
+  25% {
+    opacity: 0.28;
+    transform: scaleX(0.22);
+  }
+  52%,
+  100% {
+    opacity: 1;
+    transform: scaleX(0.92);
+  }
+}
+
+@keyframes os-recovered-glow {
+  0%,
+  46% {
+    box-shadow: 0 0 0 rgba(35, 117, 107, 0);
+    transform: translateY(4px);
+  }
+  64%,
+  100% {
+    box-shadow: 0 14px 34px rgba(35, 117, 107, 0.12);
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 768px) {
+  .os-workflow-grid {
+    position: relative;
+  }
+
+  .os-workflow-grid::before {
+    background: linear-gradient(90deg, transparent, #cfe0da 14%, #cfe0da 86%, transparent);
+    content: "";
+    height: 1px;
+    left: 8%;
+    position: absolute;
+    right: 8%;
+    top: 2.5rem;
   }
 }
 
