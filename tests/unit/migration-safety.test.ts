@@ -13,6 +13,16 @@ const migration = readFileSync(
   "utf8"
 );
 
+const securityAdvisorMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260526001000_phase_2_security_advisor_hardening.sql"
+  ),
+  "utf8"
+);
+
 const organizationScopedTables = [
   "organizations",
   "organization_members",
@@ -49,5 +59,16 @@ describe("phase 2 migration safety", () => {
     expect(migration).toContain("unique_customer_phone_per_org");
     expect(migration).toContain("sms_consent_status");
     expect(migration).toContain("opening_offers_opening_customer_unique");
+  });
+
+  it("hardens functions reported by Supabase Security Advisor", () => {
+    expect(securityAdvisorMigration).toContain(
+      "set search_path = pg_catalog, private, public"
+    );
+    expect(securityAdvisorMigration).toContain("pg_catalog.now()");
+    expect(securityAdvisorMigration).toContain(
+      "revoke all on function public.rls_auto_enable() from public, anon, authenticated"
+    );
+    expect(securityAdvisorMigration).not.toContain("grant execute");
   });
 });
