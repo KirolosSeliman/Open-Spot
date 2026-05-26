@@ -10,7 +10,7 @@ create or replace function public.validate_opening_offer(
 returns uuid
 language plpgsql
 security invoker
-set search_path = public
+set search_path = ''
 as $$
 declare
   target_organization_id uuid;
@@ -51,7 +51,7 @@ begin
 
   update public.openings
   set status = 'filled',
-      updated_at = now()
+      updated_at = pg_catalog.now()
   where id = target_opening_id;
 
   update public.opening_offers
@@ -59,7 +59,7 @@ begin
       when id = target_offer_id then 'selected'::public.opening_offer_status
       else 'rejected'::public.opening_offer_status
     end,
-    updated_at = now()
+    updated_at = pg_catalog.now()
   where opening_id = target_opening_id
     and organization_id = target_organization_id
     and status in ('pending', 'sent', 'responded');
@@ -82,7 +82,7 @@ begin
     'confirmed',
     recovered_value_cents,
     commission_cents,
-    now()
+    pg_catalog.now()
   )
   returning id into target_booking_request_id;
 
@@ -104,7 +104,7 @@ begin
     'opening.offer.validated',
     'opening_offers',
     target_offer_id,
-    jsonb_build_object(
+    pg_catalog.jsonb_build_object(
       'opening_id', target_opening_id,
       'booking_request_id', target_booking_request_id,
       'customer_id', target_customer_id
@@ -116,6 +116,6 @@ end;
 $$;
 
 revoke all on function public.validate_opening_offer(uuid, uuid, integer, integer)
-from public, anon;
+from public, anon, service_role;
 grant execute on function public.validate_opening_offer(uuid, uuid, integer, integer)
 to authenticated;

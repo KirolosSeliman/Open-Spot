@@ -93,9 +93,10 @@ end $$;
 create or replace function private.set_updated_at()
 returns trigger
 language plpgsql
+set search_path = pg_catalog, private, public
 as $$
 begin
-  new.updated_at = now();
+  new.updated_at = pg_catalog.now();
   return new;
 end;
 $$;
@@ -352,7 +353,7 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = public, auth
+set search_path = ''
 as $$
   select exists (
     select 1
@@ -370,7 +371,7 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = public, auth
+set search_path = ''
 as $$
   select exists (
     select 1

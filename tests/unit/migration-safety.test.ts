@@ -53,6 +53,16 @@ const organizationDataQualityMigration = readFileSync(
   "utf8"
 );
 
+const rpcHardeningMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260526005000_phase_8_rpc_sql_hardening.sql"
+  ),
+  "utf8"
+);
+
 const organizationActions = readFileSync(
   join(process.cwd(), "src", "lib", "organization", "actions.ts"),
   "utf8"
@@ -188,5 +198,25 @@ describe("phase 2 migration safety", () => {
     expect(organizationDataQualityMigration).toContain("'single_org_mode', true");
     expect(organizationDataQualityMigration).not.toContain("'email', normalized_email");
     expect(organizationDataQualityMigration).not.toContain("'phone', normalized_phone");
+  });
+
+  it("keeps service-role waitlist RPC access explicit and hardens RPC search paths", () => {
+    expect(rpcHardeningMigration).toContain("set search_path = ''");
+    expect(rpcHardeningMigration).toContain(
+      "create or replace function private.is_org_member"
+    );
+    expect(rpcHardeningMigration).toContain(
+      "create or replace function private.has_org_role"
+    );
+    expect(rpcHardeningMigration).toContain(
+      "revoke all on function public.register_waitlist_signup"
+    );
+    expect(rpcHardeningMigration).toContain("from public, anon, authenticated, service_role");
+    expect(rpcHardeningMigration).toContain(") to service_role;");
+    expect(rpcHardeningMigration).toContain(
+      "grant execute on function public.validate_opening_offer"
+    );
+    expect(rpcHardeningMigration).toContain("to authenticated;");
+    expect(rpcHardeningMigration).not.toContain("set search_path = public");
   });
 });

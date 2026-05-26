@@ -15,7 +15,7 @@ create or replace function public.register_waitlist_signup(
 returns uuid
 language plpgsql
 security invoker
-set search_path = public
+set search_path = ''
 as $$
 declare
   target_organization_id uuid;
@@ -43,13 +43,13 @@ begin
     customer_full_name,
     customer_phone_e164,
     customer_preferred_language,
-    nullif(service_interest, '')
+    pg_catalog.nullif(service_interest, '')
   )
   on conflict (organization_id, phone_e164)
   do update set
     full_name = excluded.full_name,
     preferred_language = excluded.preferred_language,
-    updated_at = now()
+    updated_at = pg_catalog.now()
   returning id into target_customer_id;
 
   insert into public.sms_consents (
@@ -68,7 +68,7 @@ begin
     'opted_in',
     'qr_waitlist',
     consent_copy,
-    now()
+    pg_catalog.now()
   )
   on conflict (organization_id, customer_id)
   do update set
@@ -76,9 +76,9 @@ begin
     status = 'opted_in',
     source = 'qr_waitlist',
     consent_text = excluded.consent_text,
-    consented_at = now(),
+    consented_at = pg_catalog.now(),
     unsubscribed_at = null,
-    updated_at = now();
+    updated_at = pg_catalog.now();
 
   insert into public.waitlist_entries (
     organization_id,
@@ -93,10 +93,10 @@ begin
     target_organization_id,
     target_customer_id,
     'active',
-    coalesce(preferred_days, '{}'),
-    coalesce(preferred_time_windows, '{}'),
+    pg_catalog.coalesce(preferred_days, '{}'::text[]),
+    pg_catalog.coalesce(preferred_time_windows, '{}'::text[]),
     wants_discount,
-    nullif(service_interest, '')
+    pg_catalog.nullif(service_interest, '')
   )
   returning id into target_waitlist_entry_id;
 
@@ -114,7 +114,7 @@ begin
     'waitlist.signup.created',
     'waitlist_entries',
     target_waitlist_entry_id,
-    jsonb_build_object(
+    pg_catalog.jsonb_build_object(
       'source', 'qr_waitlist',
       'customer_id', target_customer_id,
       'consent_status', 'opted_in'
@@ -136,3 +136,15 @@ revoke all on function public.register_waitlist_signup(
   boolean,
   text
 ) from public, anon, authenticated;
+
+grant execute on function public.register_waitlist_signup(
+  text,
+  text,
+  text,
+  public.supported_language,
+  text,
+  text[],
+  text[],
+  boolean,
+  text
+) to service_role;
