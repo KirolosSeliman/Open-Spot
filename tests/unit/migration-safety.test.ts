@@ -43,6 +43,16 @@ const singleOrganizationMigration = readFileSync(
   "utf8"
 );
 
+const organizationDataQualityMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260526004000_phase_6_org_data_quality_audit.sql"
+  ),
+  "utf8"
+);
+
 const organizationActions = readFileSync(
   join(process.cwd(), "src", "lib", "organization", "actions.ts"),
   "utf8"
@@ -162,5 +172,21 @@ describe("phase 2 migration safety", () => {
     );
     expect(organizationActions).toContain('.from("organization_members")');
     expect(organizationActions).toContain('redirect("/dashboard")');
+  });
+
+  it("keeps organization creation auditable without storing contact PII in metadata", () => {
+    expect(organizationDataQualityMigration).toContain(
+      "Business email must be valid if provided."
+    );
+    expect(organizationDataQualityMigration).toContain(
+      "Phone number must be a valid E.164 number."
+    );
+    expect(organizationDataQualityMigration).toContain(
+      "Timezone is not supported yet."
+    );
+    expect(organizationDataQualityMigration).toContain("'organization.created'");
+    expect(organizationDataQualityMigration).toContain("'single_org_mode', true");
+    expect(organizationDataQualityMigration).not.toContain("'email', normalized_email");
+    expect(organizationDataQualityMigration).not.toContain("'phone', normalized_phone");
   });
 });

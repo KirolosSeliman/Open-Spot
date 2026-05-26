@@ -29,7 +29,7 @@ describe("organization onboarding", () => {
         name: "Salon Demo",
         slug: "salon-demo",
         email: "owner@example.com",
-        phone: "514-555-0100",
+        phone: "+15145550100",
         timezone: "America/Toronto",
         defaultLanguage: "fr"
       }
@@ -46,6 +46,27 @@ describe("organization onboarding", () => {
     ).toEqual({
       ok: false,
       errors: ["Business name is required.", "Slug is required."]
+    });
+  });
+
+  it("rejects invalid organization contact and locale data", () => {
+    expect(
+      buildOrganizationCreateInput({
+        name: "Salon Demo",
+        slug: "Salon Demo",
+        email: "owner@",
+        phone: "123",
+        timezone: "Europe/Paris",
+        defaultLanguage: "es"
+      })
+    ).toEqual({
+      ok: false,
+      errors: [
+        "Business email must be valid if provided.",
+        "Phone number must be a valid E.164 number.",
+        "Timezone is not supported yet.",
+        "Default language must be English or French."
+      ]
     });
   });
 
