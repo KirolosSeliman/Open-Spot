@@ -23,6 +23,21 @@ const securityAdvisorMigration = readFileSync(
   "utf8"
 );
 
+const organizationBootstrapMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260526002000_phase_4_organization_bootstrap_rpc.sql"
+  ),
+  "utf8"
+);
+
+const organizationActions = readFileSync(
+  join(process.cwd(), "src", "lib", "organization", "actions.ts"),
+  "utf8"
+);
+
 const organizationScopedTables = [
   "organizations",
   "organization_members",
@@ -70,5 +85,55 @@ describe("phase 2 migration safety", () => {
       "revoke all on function public.rls_auto_enable() from public, anon, authenticated"
     );
     expect(securityAdvisorMigration).not.toContain("grant execute");
+  });
+
+  it("creates organizations through an authenticated transaction-safe RPC", () => {
+    const publicRpcDefinition = organizationBootstrapMigration.slice(
+      organizationBootstrapMigration.indexOf(
+        "create or replace function public.create_organization_with_owner"
+      ),
+      organizationBootstrapMigration.indexOf(
+        "revoke all on function public.create_organization_with_owner"
+      )
+    );
+
+    expect(organizationBootstrapMigration).toContain(
+      "create or replace function public.create_organization_with_owner"
+    );
+    expect(organizationBootstrapMigration).toContain(
+      "create or replace function private.create_organization_with_owner"
+    );
+    expect(organizationBootstrapMigration).toContain("security definer");
+    expect(organizationBootstrapMigration).toContain("security invoker");
+    expect(organizationBootstrapMigration).toContain("set search_path = ''");
+    expect(organizationBootstrapMigration).toContain(
+      "request_user_id uuid := auth.uid()"
+    );
+    expect(organizationBootstrapMigration).toContain(
+      "insert into public.organizations"
+    );
+    expect(organizationBootstrapMigration).toContain(
+      "insert into public.organization_members"
+    );
+    expect(organizationBootstrapMigration).toContain(
+      "insert into public.organization_billing_settings"
+    );
+    expect(organizationBootstrapMigration).toContain(
+      "insert into public.audit_logs"
+    );
+    expect(organizationBootstrapMigration).toContain(
+      ") from public, anon, authenticated;"
+    );
+    expect(organizationBootstrapMigration).toContain(") to authenticated;");
+    expect(publicRpcDefinition).toContain("security invoker");
+    expect(publicRpcDefinition).not.toContain("security definer");
+  });
+
+  it("does not use service-role manual rollback for organization bootstrap", () => {
+    expect(organizationActions).toContain(
+      'supabase.rpc("create_organization_with_owner"'
+    );
+    expect(organizationActions).not.toContain("createSupabaseServiceClient");
+    expect(organizationActions).not.toContain(".delete()");
   });
 });

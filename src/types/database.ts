@@ -623,6 +623,17 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      create_organization_with_owner: {
+        Args: {
+          organization_name: string;
+          organization_slug: string;
+          organization_email: string;
+          organization_phone: string;
+          organization_timezone: string;
+          organization_default_language: Database["public"]["Enums"]["supported_language"];
+        };
+        Returns: string;
+      };
       register_waitlist_signup: {
         Args: {
           organization_slug: string;

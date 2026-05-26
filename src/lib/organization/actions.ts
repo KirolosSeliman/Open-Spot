@@ -7,7 +7,6 @@ import {
   type OrganizationCreateInput
 } from "@/lib/organization/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 function onboardingError(message: string): never {
   redirect(`/onboarding?error=${encodeURIComponent(message)}`);
@@ -37,68 +36,29 @@ export async function createOrganizationAction(formData: FormData) {
     redirect("/sign-in");
   }
 
-  const serviceClient = createSupabaseServiceClient();
-
-  if (!serviceClient) {
-    onboardingError("Supabase service role is not configured on the server.");
-  }
-
-  await bootstrapOrganizationForUser(serviceClient, user.id, payload.value);
+  await bootstrapOrganizationForUser(supabase, payload.value);
 
   redirect("/dashboard");
 }
 
 async function bootstrapOrganizationForUser(
-  serviceClient: NonNullable<ReturnType<typeof createSupabaseServiceClient>>,
-  userId: string,
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
   input: OrganizationCreateInput
 ) {
-  const { data: organization, error: organizationError } = await serviceClient
-    .from("organizations")
-    .insert({
-      name: input.name,
-      slug: input.slug,
-      email: input.email,
-      phone: input.phone,
-      timezone: input.timezone,
-      default_language: input.defaultLanguage
-    })
-    .select("id")
-    .single();
+  const { error } = await supabase.rpc("create_organization_with_owner", {
+    organization_name: input.name,
+    organization_slug: input.slug,
+    organization_email: input.email ?? "",
+    organization_phone: input.phone ?? "",
+    organization_timezone: input.timezone,
+    organization_default_language: input.defaultLanguage
+  });
 
-  if (organizationError || !organization) {
-    if (organizationError?.code === "23505") {
+  if (error) {
+    if (error.code === "23505") {
       onboardingError("This organization slug is already used.");
     }
 
-    onboardingError(organizationError?.message ?? "Organization creation failed.");
-  }
-
-  const membershipResult = await serviceClient
-    .from("organization_members")
-    .insert({
-      organization_id: organization.id,
-      user_id: userId,
-      role: "owner"
-    })
-    .select("id")
-    .single();
-
-  if (membershipResult.error) {
-    await serviceClient.from("organizations").delete().eq("id", organization.id);
-    onboardingError(membershipResult.error.message);
-  }
-
-  const billingResult = await serviceClient
-    .from("organization_billing_settings")
-    .insert({
-      organization_id: organization.id
-    })
-    .select("id")
-    .single();
-
-  if (billingResult.error) {
-    await serviceClient.from("organizations").delete().eq("id", organization.id);
-    onboardingError(billingResult.error.message);
+    onboardingError(error.message || "Organization creation failed.");
   }
 }

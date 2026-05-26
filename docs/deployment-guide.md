@@ -43,6 +43,7 @@ Apply Supabase migrations in filename order:
 3. `20260525203000_phase_4_manual_validation_rpc.sql`
 4. `20260525214500_phase_7_billing_cost_controls.sql`
 5. `20260526001000_phase_2_security_advisor_hardening.sql`
+6. `20260526002000_phase_4_organization_bootstrap_rpc.sql`
 
 ## Migration Tracking Drift
 
@@ -74,6 +75,7 @@ supabase migration repair 20260525191500 --status applied --linked
 supabase migration repair 20260525203000 --status applied --linked
 supabase migration repair 20260525214500 --status applied --linked
 supabase migration repair 20260526001000 --status applied --linked
+supabase migration repair 20260526002000 --status applied --linked
 ```
 
 6. Recheck history:
