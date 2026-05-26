@@ -6,12 +6,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "2e Chance RDV",
   description:
-    "Bilingual SMS-first cancellation recovery for appointment-based businesses."
+    "Récupération d'annulations de dernière minute par SMS ciblés pour commerces sur rendez-vous."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="fr">
       <body>{children}</body>
     </html>
   );

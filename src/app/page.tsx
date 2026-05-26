@@ -72,7 +72,7 @@ function HeroCartoonPanel() {
   return (
     <div
       aria-label="Illustration: une annulation est récupérée avec un assistant IA et des SMS ciblés."
-      className="relative min-h-[440px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm"
+      className="relative min-h-[540px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm sm:min-h-[440px]"
       role="img"
     >
       <div className="absolute inset-x-5 top-5 flex items-center justify-between rounded-xl bg-white px-4 py-3 shadow-sm">
@@ -89,24 +89,24 @@ function HeroCartoonPanel() {
         </span>
       </div>
 
-      <div className="absolute left-7 top-32 h-44 w-36 rounded-t-full border-8 border-[#21313b] bg-[#d6ebe4]">
+      <div className="absolute left-5 top-36 h-36 w-28 rounded-t-full border-8 border-[#21313b] bg-[#d6ebe4] sm:left-7 sm:top-32 sm:h-44 sm:w-36">
         <div className="absolute left-3 top-20 h-16 w-24 rounded-t-3xl bg-[#b98b61]" />
         <div className="absolute -bottom-8 left-4 h-10 w-28 rounded-b-xl bg-[#21313b]" />
       </div>
 
-      <div className="absolute left-24 top-28 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[var(--foreground)] shadow-md">
+      <div className="absolute left-16 right-5 top-28 rounded-2xl bg-white px-4 py-3 text-sm font-semibold text-[var(--foreground)] shadow-md sm:left-24 sm:right-auto">
         Ouf... qui peut venir vite&nbsp;?
       </div>
 
-      <div className="absolute right-10 top-28 grid h-28 w-28 place-items-center rounded-full border border-[#b9d9cf] bg-[#e9f7f2] shadow-md">
-        <div className="grid h-20 w-20 place-items-center rounded-full bg-white text-center text-xs font-bold leading-4 text-[var(--primary-strong)]">
+      <div className="absolute right-6 top-48 grid h-24 w-24 place-items-center rounded-full border border-[#b9d9cf] bg-[#e9f7f2] shadow-md sm:right-10 sm:top-28 sm:h-28 sm:w-28">
+        <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-center text-xs font-bold leading-4 text-[var(--primary-strong)] sm:h-20 sm:w-20">
           Agent
           <br />
           IA
         </div>
       </div>
 
-      <div className="absolute right-6 top-64 grid w-56 gap-3">
+      <div className="absolute left-5 right-5 top-72 grid gap-3 sm:left-auto sm:right-6 sm:top-64 sm:w-56">
         {["Maya · coupe récente", "Sam · dispo mardi", "Nora · préfère SMS"].map(
           (customer) => (
             <div

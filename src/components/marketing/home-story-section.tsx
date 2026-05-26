@@ -99,7 +99,7 @@ function CartoonRecoveryScene() {
   return (
     <div
       aria-label="Scène illustrée: une annulation est ciblée par l'agent IA, les SMS partent, les réponses sont classées, puis le commerce confirme une place."
-      className="relative min-h-[520px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm"
+      className="relative min-h-[700px] overflow-hidden rounded-2xl border border-[var(--line)] bg-[#fffaf1] p-5 shadow-sm sm:min-h-[520px]"
       role="img"
     >
       <div className="absolute left-5 right-5 top-5 rounded-xl bg-white p-4 shadow-sm">
@@ -118,25 +118,25 @@ function CartoonRecoveryScene() {
         </div>
       </div>
 
-      <div className="absolute left-8 top-28 h-36 w-32 rounded-t-full border-8 border-[#21313b] bg-[#d6ebe4]">
+      <div className="absolute left-6 top-32 h-32 w-28 rounded-t-full border-8 border-[#21313b] bg-[#d6ebe4] sm:left-8 sm:top-28 sm:h-36 sm:w-32">
         <div className="absolute left-4 top-16 h-12 w-20 rounded-t-3xl bg-[#b98b61]" />
         <div className="absolute -bottom-7 left-4 h-9 w-24 rounded-b-xl bg-[#21313b]" />
       </div>
-      <div className="absolute left-24 top-28 max-w-[180px] rounded-2xl bg-white px-4 py-3 text-sm font-semibold leading-5 text-[var(--foreground)] shadow-md">
+      <div className="absolute left-16 right-5 top-28 rounded-2xl bg-white px-4 py-3 text-sm font-semibold leading-5 text-[var(--foreground)] shadow-md sm:left-24 sm:right-auto sm:max-w-[180px]">
         Je pourrais texter 47 personnes... ou respirer.
       </div>
 
-      <div className="absolute right-8 top-28 grid h-32 w-32 place-items-center rounded-full border border-[#b9d9cf] bg-[#e9f7f2] shadow-md">
-        <div className="grid h-24 w-24 place-items-center rounded-full bg-white text-center text-xs font-bold leading-4 text-[var(--primary-strong)]">
+      <div className="absolute right-6 top-56 grid h-24 w-24 place-items-center rounded-full border border-[#b9d9cf] bg-[#e9f7f2] shadow-md sm:right-8 sm:top-28 sm:h-32 sm:w-32">
+        <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-center text-xs font-bold leading-4 text-[var(--primary-strong)] sm:h-24 sm:w-24">
           Agent
           <br />
           IA
         </div>
       </div>
-      <div className="absolute right-28 top-52 h-10 w-10 rounded-full border border-[#b9d9cf] bg-white" />
-      <div className="absolute right-20 top-60 h-6 w-6 rounded-full bg-[#edf7f4]" />
+      <div className="absolute right-24 top-72 h-8 w-8 rounded-full border border-[#b9d9cf] bg-white sm:right-28 sm:top-52 sm:h-10 sm:w-10" />
+      <div className="absolute right-20 top-80 h-5 w-5 rounded-full bg-[#edf7f4] sm:right-20 sm:top-60 sm:h-6 sm:w-6" />
 
-      <div className="absolute left-5 top-[280px] grid w-[46%] gap-2">
+      <div className="absolute left-5 right-5 top-[360px] grid gap-2 sm:right-auto sm:top-[280px] sm:w-[46%]">
         {["Pas pertinent", "Déjà réservé", "Bonne candidate"].map((item, index) => (
           <div
             className="flex items-center justify-between rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[var(--foreground)] shadow-sm"
@@ -156,7 +156,7 @@ function CartoonRecoveryScene() {
         ))}
       </div>
 
-      <div className="absolute right-5 top-[284px] grid w-[44%] gap-2">
+      <div className="absolute left-5 right-5 top-[500px] grid gap-2 sm:left-auto sm:top-[284px] sm:w-[44%]">
         {["Oui, je peux venir", "Dispo si plus tard", "Pas cette fois"].map(
           (reply, index) => (
             <div

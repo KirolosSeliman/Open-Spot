@@ -26,13 +26,19 @@ export async function SiteHeader() {
   return (
     <header className="border-b border-[var(--line)] bg-[rgba(248,247,244,0.92)]">
       <div className="mx-auto flex min-h-16 w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link className="text-base font-bold" href="/">
+        <Link
+          className="rounded-md text-base font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
+          href="/"
+        >
           2e Chance RDV
         </Link>
-        <nav aria-label="Navigation principale" className="flex flex-wrap gap-2">
+        <nav
+          aria-label="Navigation principale"
+          className="flex w-full items-center gap-2 overflow-x-auto pb-1 sm:w-auto sm:flex-wrap sm:justify-end sm:overflow-visible sm:pb-0"
+        >
           {navItems.map((item) => (
             <Link
-              className="rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]"
+              className="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
               href={item.href}
               key={item.href}
             >
@@ -42,7 +48,7 @@ export async function SiteHeader() {
           {isSignedIn ? (
             <form action={signOutAction}>
               <button
-                className="rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]"
+                className="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
                 type="submit"
               >
                 Déconnexion
@@ -50,14 +56,14 @@ export async function SiteHeader() {
             </form>
           ) : (
             <Link
-              className="rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)]"
+              className="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-[var(--muted)] hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
               href="/sign-in"
             >
               Connexion
             </Link>
           )}
           <Link
-            className="rounded-md bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--primary-strong)]"
+            className="shrink-0 rounded-md bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/remplir-mes-annulations"
           >
             Remplir mes annulations
