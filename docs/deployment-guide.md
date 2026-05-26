@@ -104,17 +104,37 @@ npm audit --audit-level=moderate
 
 ## Auth and Organization Smoke Test
 
-After deploying with Supabase environment variables:
+After deploying with Supabase environment variables and applying all migrations in order:
 
-1. Visit `/signup`.
-2. Create a test merchant account.
-3. If Supabase email confirmation is enabled, confirm the email and sign in.
-4. Visit `/onboarding`.
-5. Create an organization with a unique slug.
-6. Confirm `/dashboard` shows the organization name, role `owner`, default language, timezone, service count, and customer count.
-7. Confirm a signed-out browser is redirected from `/dashboard` to `/sign-in`.
+1. Keep `SMS_PROVIDER=simulator` and `ALLOW_REAL_SMS_SENDS=false`.
+2. Visit `/signup`.
+3. Create a dedicated test merchant account, not a real merchant account.
+4. If Supabase email confirmation is enabled, confirm the email and sign in.
+5. Confirm a signed-in user with no organization lands on `/onboarding`.
+6. Create an organization with a unique slug, valid email if provided, and a Canadian phone number or valid E.164 number if provided.
+7. Confirm `/dashboard` shows the organization name, role `owner`, default language, timezone, service count, and customer count.
+8. Confirm a signed-out browser is redirected from `/dashboard` to `/sign-in`.
+9. Confirm a signed-in user who already has an organization is redirected away from `/onboarding` to `/dashboard`.
+10. In Supabase SQL Editor, verify bootstrap records were created without exposing secrets:
 
-The first organization/member bootstrap uses `SUPABASE_SERVICE_ROLE_KEY` server-side only. Never expose this value in client code.
+```sql
+select role
+from public.organization_members
+where user_id = '<test-user-id>';
+
+select billing_status, subscription_status
+from public.organization_billing_settings
+order by created_at desc
+limit 1;
+
+select action, entity_type, metadata
+from public.audit_logs
+where action = 'organization.created'
+order by created_at desc
+limit 1;
+```
+
+The organization bootstrap uses an authenticated RPC and `auth.uid()` inside Postgres. Keep `SUPABASE_SERVICE_ROLE_KEY` server-side only for routes that still require it, and never expose this value in client code.
 
 ## Webhook URLs
 
