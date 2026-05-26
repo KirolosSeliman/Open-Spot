@@ -75,6 +75,8 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
     .from("organization_members")
     .select("organization_id, role")
     .eq("user_id", currentUser.id)
+    // Temporary single-org mode still orders deterministically for old data and
+    // future switcher work.
     .order("created_at", { ascending: true })
     .limit(1);
 

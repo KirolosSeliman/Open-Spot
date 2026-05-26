@@ -33,6 +33,16 @@ const organizationBootstrapMigration = readFileSync(
   "utf8"
 );
 
+const singleOrganizationMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260526003000_phase_5_single_org_until_switcher.sql"
+  ),
+  "utf8"
+);
+
 const organizationActions = readFileSync(
   join(process.cwd(), "src", "lib", "organization", "actions.ts"),
   "utf8"
@@ -135,5 +145,22 @@ describe("phase 2 migration safety", () => {
     );
     expect(organizationActions).not.toContain("createSupabaseServiceClient");
     expect(organizationActions).not.toContain(".delete()");
+  });
+
+  it("prevents accidental second organizations until a switcher exists", () => {
+    expect(singleOrganizationMigration).toContain(
+      "organization_members_single_org_per_user_idx"
+    );
+    expect(singleOrganizationMigration).toContain(
+      "on public.organization_members(user_id)"
+    );
+    expect(singleOrganizationMigration).toContain(
+      "having count(*) > 1"
+    );
+    expect(singleOrganizationMigration).toContain(
+      "User already belongs to an organization."
+    );
+    expect(organizationActions).toContain('.from("organization_members")');
+    expect(organizationActions).toContain('redirect("/dashboard")');
   });
 });

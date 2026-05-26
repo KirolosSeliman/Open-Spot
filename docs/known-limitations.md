@@ -9,8 +9,8 @@
 - Real Supabase project connection was not available in this environment.
 - Migrations were statically reviewed but not applied.
 - Supabase Auth UI and server actions now exist for email/password sign-up, sign-in, and sign-out.
-- Organization creation and owner bootstrap are implemented through a controlled server action that verifies the current user and uses the server-only service role for the first organization/member write.
-- Organization switching is not implemented; the first membership is used as the active organization.
+- Organization creation and owner bootstrap are implemented through an authenticated RPC that creates organization, owner membership, billing settings, and audit records transactionally.
+- Organization switching is not implemented; each user is temporarily limited to one organization membership, and the first membership is used as the active organization.
 - Dashboard pages mostly render operational shells and empty states.
 - CSV import persistence is not connected to Supabase yet.
 - Opening creation persistence is not connected to Supabase yet.

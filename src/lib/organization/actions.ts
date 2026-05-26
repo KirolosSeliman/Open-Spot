@@ -36,6 +36,20 @@ export async function createOrganizationAction(formData: FormData) {
     redirect("/sign-in");
   }
 
+  const { data: existingMembership, error: membershipError } = await supabase
+    .from("organization_members")
+    .select("id")
+    .eq("user_id", user.id)
+    .limit(1);
+
+  if (membershipError) {
+    onboardingError(membershipError.message);
+  }
+
+  if (existingMembership && existingMembership.length > 0) {
+    redirect("/dashboard");
+  }
+
   await bootstrapOrganizationForUser(supabase, payload.value);
 
   redirect("/dashboard");
@@ -55,6 +69,10 @@ async function bootstrapOrganizationForUser(
   });
 
   if (error) {
+    if (error.message.includes("already belongs to an organization")) {
+      redirect("/dashboard");
+    }
+
     if (error.code === "23505") {
       onboardingError("This organization slug is already used.");
     }
