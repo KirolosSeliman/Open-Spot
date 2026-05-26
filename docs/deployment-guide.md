@@ -42,6 +42,47 @@ Apply Supabase migrations in filename order:
 2. `20260525191500_phase_3_waitlist_signup_rpc.sql`
 3. `20260525203000_phase_4_manual_validation_rpc.sql`
 4. `20260525214500_phase_7_billing_cost_controls.sql`
+5. `20260526001000_phase_2_security_advisor_hardening.sql`
+
+## Migration Tracking Drift
+
+The live Supabase project may already contain the tables, RLS policies, and functions from these migration files even if `supabase migration list` shows no matching remote migration history. That usually means the SQL was applied manually or through a tool path that did not write rows to `supabase_migrations.schema_migrations`.
+
+Do not reset the database, drop tables, or blindly reapply migrations to fix tracking. Preserve existing merchant, waitlist, consent, SMS, booking, commission, and audit data.
+
+Safe owner workflow:
+
+1. Install and authenticate the Supabase CLI.
+2. Link the project, if it is not already linked:
+
+```bash
+supabase link --project-ref fuksavmwmfqyfmjcbgsx
+```
+
+3. Inspect migration history before changing anything:
+
+```bash
+supabase migration list --linked
+```
+
+4. Confirm the live schema matches each local migration before repairing history. At minimum, verify all expected tables, RLS policies, enums, RPC functions, trigger functions, and the Phase 2 security-advisor hardening are present.
+5. After confirming a migration was already applied to the live schema, mark only that migration version as applied. This updates migration history; it does not rerun the SQL:
+
+```bash
+supabase migration repair 20260525180000 --status applied --linked
+supabase migration repair 20260525191500 --status applied --linked
+supabase migration repair 20260525203000 --status applied --linked
+supabase migration repair 20260525214500 --status applied --linked
+supabase migration repair 20260526001000 --status applied --linked
+```
+
+6. Recheck history:
+
+```bash
+supabase migration list --linked
+```
+
+Only use `supabase db push --linked` after migration history is consistent. If any local migration has not actually been applied live, apply it normally in filename order instead of marking it as applied.
 
 ## Verification Commands
 
