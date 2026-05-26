@@ -4,9 +4,9 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "2e Chance RDV",
+  title: "Open Spot — Récupérez vos annulations par SMS",
   description:
-    "Récupération d'annulations de dernière minute par SMS ciblés pour commerces sur rendez-vous."
+    "Open Spot aide les salons, barbiers, esthétiques, ongleries et commerces à rendez-vous à remplir leurs annulations de dernière minute avec des alertes SMS contrôlées."
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -7,9 +7,9 @@ import type { NavItem } from "@/types/app";
 
 const navItems: NavItem[] = [
   { href: "/#comment-ca-marche", label: "Comment ça marche" },
+  { href: "/#pourquoi-open-spot", label: "Pourquoi Open Spot" },
   { href: "/pricing", label: "Prix" },
-  { href: "/contact", label: "Contact" },
-  { href: "/dashboard", label: "Tableau de bord" }
+  { href: "/book-call/questions", label: "Réserver un appel" }
 ];
 
 export async function SiteHeader() {
@@ -30,7 +30,7 @@ export async function SiteHeader() {
           className="rounded-md text-base font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
         >
-          2e Chance RDV
+          Open Spot
         </Link>
         <nav
           aria-label="Navigation principale"
@@ -64,9 +64,9 @@ export async function SiteHeader() {
           )}
           <Link
             className="shrink-0 rounded-md bg-[var(--primary)] px-3 py-2 text-sm font-semibold text-white hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-            href="/remplir-mes-annulations"
+            href="/book-call/questions"
           >
-            Remplir mes annulations
+            Réserver un appel
           </Link>
         </nav>
       </div>
