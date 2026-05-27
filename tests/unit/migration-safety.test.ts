@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { execSync } from "node:child_process";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -59,6 +60,16 @@ const rpcHardeningMigration = readFileSync(
     "supabase",
     "migrations",
     "20260526005000_phase_8_rpc_sql_hardening.sql"
+  ),
+  "utf8"
+);
+
+const rpcPermissionHotfixMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260526006000_phase_9_rpc_permission_hotfix.sql"
   ),
   "utf8"
 );
@@ -218,5 +229,89 @@ describe("phase 2 migration safety", () => {
     );
     expect(rpcHardeningMigration).toContain("to authenticated;");
     expect(rpcHardeningMigration).not.toContain("set search_path = public");
+  });
+
+  it("applies post-phase-8 RPC permission fixes in an additive hotfix migration", () => {
+    const changedAppliedMigrations = execSync(
+      "git diff --name-only -- supabase/migrations/20260525180000_phase_2_multi_tenant_foundation.sql supabase/migrations/20260525191500_phase_3_waitlist_signup_rpc.sql supabase/migrations/20260525203000_phase_4_manual_validation_rpc.sql supabase/migrations/20260526005000_phase_8_rpc_sql_hardening.sql",
+      { encoding: "utf8" }
+    ).trim();
+
+    expect(changedAppliedMigrations).toBe("");
+    expect(rpcPermissionHotfixMigration).toContain(
+      "-- Phase 9: Additive RPC permission and conflict hotfix."
+    );
+  });
+
+  it("does not grant private RLS helper execution to service_role by default", () => {
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /revoke all on function private\.is_org_member\(uuid\)\s+from public, anon, authenticated, service_role;/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /revoke all on function private\.has_org_role\(uuid, public\.organization_role\[\]\)\s+from public, anon, authenticated, service_role;/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /grant usage on schema private to authenticated;/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /grant execute on function private\.is_org_member\(uuid\) to authenticated;/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /grant execute on function private\.has_org_role\(uuid, public\.organization_role\[\]\) to authenticated;/i
+    );
+    expect(rpcPermissionHotfixMigration).not.toMatch(
+      /grant (usage on schema private|execute on function private\.(?:is_org_member|has_org_role)[^;]*) to [^;]*service_role/i
+    );
+  });
+
+  it("keeps register_waitlist_signup executable only by service_role", () => {
+    const waitlistGrantStatements =
+      rpcPermissionHotfixMigration.match(
+        /grant execute on function public\.register_waitlist_signup\([\s\S]*?\)\s+to [^;]+;/gi
+      ) ?? [];
+
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /create or replace function public\.register_waitlist_signup\([\s\S]*?\)\s+returns uuid\s+language plpgsql\s+security invoker\s+set search_path = ''/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /revoke all on function public\.register_waitlist_signup\(\s*text,\s*text,\s*text,\s*public\.supported_language,\s*text,\s*text\[\],\s*text\[\],\s*boolean,\s*text\s*\)\s+from public, anon, authenticated, service_role;/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /grant execute on function public\.register_waitlist_signup\(\s*text,\s*text,\s*text,\s*public\.supported_language,\s*text,\s*text\[\],\s*text\[\],\s*boolean,\s*text\s*\)\s+to service_role;/i
+    );
+    expect(waitlistGrantStatements).toHaveLength(1);
+    expect(waitlistGrantStatements[0]).toMatch(/to service_role;$/i);
+  });
+
+  it("keeps validate_opening_offer executable only by authenticated users", () => {
+    const validationGrantStatements =
+      rpcPermissionHotfixMigration.match(
+        /grant execute on function public\.validate_opening_offer\([\s\S]*?\)\s+to [^;]+;/gi
+      ) ?? [];
+
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /create or replace function public\.validate_opening_offer\([\s\S]*?\)\s+returns uuid\s+language plpgsql\s+security invoker\s+set search_path = ''/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /revoke all on function public\.validate_opening_offer\(uuid, uuid, integer, integer\)\s+from public, anon, authenticated, service_role;/i
+    );
+    expect(rpcPermissionHotfixMigration).toMatch(
+      /grant execute on function public\.validate_opening_offer\(uuid, uuid, integer, integer\)\s+to authenticated;/i
+    );
+    expect(validationGrantStatements).toHaveLength(1);
+    expect(validationGrantStatements[0]).toMatch(/to authenticated;$/i);
+  });
+
+  it("handles the partial unique booking request index with on conflict do nothing", () => {
+    const conflictClauseIndex = rpcPermissionHotfixMigration.indexOf(
+      "on conflict do nothing"
+    );
+    const returningIndex = rpcPermissionHotfixMigration.indexOf(
+      "returning id into target_booking_request_id"
+    );
+
+    expect(conflictClauseIndex).toBeGreaterThan(-1);
+    expect(returningIndex).toBeGreaterThan(conflictClauseIndex);
+    expect(rpcPermissionHotfixMigration).not.toContain("on constraint");
   });
 });
