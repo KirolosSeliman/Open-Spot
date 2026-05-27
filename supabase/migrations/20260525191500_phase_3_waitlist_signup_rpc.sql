@@ -93,8 +93,8 @@ begin
     target_organization_id,
     target_customer_id,
     'active',
-    pg_catalog.coalesce(preferred_days, '{}'::text[]),
-    pg_catalog.coalesce(preferred_time_windows, '{}'::text[]),
+    coalesce(preferred_days, '{}'::text[]),
+    coalesce(preferred_time_windows, '{}'::text[]),
     wants_discount,
     nullif(service_interest, ''::text)
   )

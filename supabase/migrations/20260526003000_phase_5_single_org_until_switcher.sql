@@ -40,7 +40,7 @@ declare
   normalized_slug text := pg_catalog.lower(pg_catalog.btrim(organization_slug));
   normalized_email text := nullif(pg_catalog.btrim(organization_email), ''::text);
   normalized_phone text := nullif(pg_catalog.btrim(organization_phone), ''::text);
-  normalized_timezone text := pg_catalog.coalesce(
+  normalized_timezone text := coalesce(
     nullif(pg_catalog.btrim(organization_timezone), ''::text),
     'America/Toronto'
   );

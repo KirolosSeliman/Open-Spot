@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -73,10 +73,26 @@ const organizationNullifHotfixMigration = readFileSync(
   "utf8"
 );
 
+const conditionalExpressionHotfixMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260527001000_fix_invalid_pg_catalog_conditional_expressions.sql"
+  ),
+  "utf8"
+);
+
 const organizationActions = readFileSync(
   join(process.cwd(), "src", "lib", "organization", "actions.ts"),
   "utf8"
 );
+
+const allMigrationSql = readdirSync(join(process.cwd(), "supabase", "migrations"))
+  .filter((file) => file.endsWith(".sql"))
+  .map((file) =>
+    readFileSync(join(process.cwd(), "supabase", "migrations", file), "utf8")
+  );
 
 const organizationScopedTables = [
   "organizations",
@@ -230,20 +246,13 @@ describe("phase 2 migration safety", () => {
     expect(rpcHardeningMigration).not.toContain("set search_path = public");
   });
 
-  it("does not schema-qualify nullif in Supabase migrations", () => {
-    const schemaQualifiedNullif = "pg_catalog." + "nullif";
-    const migrations = [
-      migration,
-      securityAdvisorMigration,
-      organizationBootstrapMigration,
-      singleOrganizationMigration,
-      organizationDataQualityMigration,
-      rpcHardeningMigration,
-      organizationNullifHotfixMigration
-    ];
+  it("does not schema-qualify SQL conditional expressions in Supabase migrations", () => {
+    const forbiddenExpressions = ["pg_catalog." + "nullif", "pg_catalog." + "coalesce"];
 
-    for (const migrationSql of migrations) {
-      expect(migrationSql).not.toContain(schemaQualifiedNullif);
+    for (const migrationSql of allMigrationSql) {
+      for (const forbiddenExpression of forbiddenExpressions) {
+        expect(migrationSql).not.toContain(forbiddenExpression);
+      }
     }
   });
 
@@ -266,5 +275,31 @@ describe("phase 2 migration safety", () => {
       "grant execute on function private.create_organization_with_owner"
     );
     expect(organizationNullifHotfixMigration).toContain(") to authenticated;");
+  });
+
+  it("repairs invalid conditional expression calls without destructive data changes", () => {
+    expect(conditionalExpressionHotfixMigration).toContain(
+      "create or replace function private.create_organization_with_owner"
+    );
+    expect(conditionalExpressionHotfixMigration).toContain(
+      "create or replace function public.register_waitlist_signup"
+    );
+    expect(conditionalExpressionHotfixMigration).toContain("set search_path = ''");
+    expect(conditionalExpressionHotfixMigration).toContain("coalesce(");
+    expect(conditionalExpressionHotfixMigration).toContain("nullif(");
+    expect(conditionalExpressionHotfixMigration).not.toContain(
+      "pg_catalog." + "coalesce"
+    );
+    expect(conditionalExpressionHotfixMigration).not.toContain(
+      "pg_catalog." + "nullif"
+    );
+    expect(conditionalExpressionHotfixMigration).not.toMatch(/\bdrop\s+table\b/i);
+    expect(conditionalExpressionHotfixMigration).not.toMatch(/\btruncate\b/i);
+    expect(conditionalExpressionHotfixMigration).not.toMatch(
+      /\bdelete\s+from\s+public\.organizations\b/i
+    );
+    expect(conditionalExpressionHotfixMigration).not.toMatch(
+      /\bdelete\s+from\s+public\.organization_members\b/i
+    );
   });
 });

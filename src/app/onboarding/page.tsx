@@ -1,4 +1,5 @@
 import { PageShell } from "@/components/layout/page-shell";
+import { PhoneInput } from "@/components/forms/phone-input";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,7 +24,7 @@ export default async function OnboardingPage({
         <SectionHeading
           description="Créez l’espace de travail de votre commerce pour gérer vos services, clients, listes d’attente, ouvertures, SMS et rapports."
           eyebrow="Configuration du commerce"
-          title="Configurons votre espace Open Spot."
+          title="Configurons votre espace de travail."
         />
         <Card className="mt-8">
           {error ? (
@@ -62,11 +63,14 @@ export default async function OnboardingPage({
               </label>
               <label className="grid gap-2 text-sm font-semibold" htmlFor="phone">
                 Téléphone professionnel
-                <input
+                <PhoneInput
                   className="min-h-11 rounded-md border border-[var(--line)] px-3"
                   id="phone"
                   name="phone"
                 />
+                <span className="text-xs font-medium text-[var(--muted)]">
+                  Le +1 sera ajouté automatiquement.
+                </span>
               </label>
               <label
                 className="grid gap-2 text-sm font-semibold"
