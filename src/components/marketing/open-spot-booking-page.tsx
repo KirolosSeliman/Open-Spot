@@ -17,9 +17,9 @@ const bookingCopy = {
     },
     ready: {
       eyebrow: "Configuration",
-      title: "Configurons Open Spot pour votre commerce.",
+      title: "Configurons 2e Chance RDV pour votre commerce.",
       subtitle:
-        "Vous êtes prêt à récupérer vos annulations. L’appel sert à comprendre votre fonctionnement, vos services, votre liste client et la meilleure façon de connecter Open Spot à votre réalité.",
+        "Vous êtes prêt à récupérer vos annulations. L’appel sert à comprendre votre fonctionnement, vos services, votre liste client et la meilleure façon de connecter 2e Chance RDV à votre réalité.",
       primary: "Réserver mon appel de configuration",
       prepTitle: "Ce qu’on prépare ensemble",
       prep: [
@@ -42,13 +42,13 @@ const bookingCopy = {
       eyebrow: "Questions",
       title: "Vous avez des questions ? Parlons-en simplement.",
       subtitle:
-        "On vous explique comment Open Spot fonctionne, si c’est adapté à votre commerce, et comment les alertes SMS peuvent aider à remplir vos annulations sans changer votre système actuel.",
+        "On vous explique comment 2e Chance RDV fonctionne, si c’est adapté à votre commerce, et comment les alertes SMS peuvent aider à remplir vos annulations sans changer votre système actuel.",
       primary: "Réserver un appel découverte",
       prepTitle: "Questions fréquentes",
       prep: [
         "Est-ce que mes clients doivent installer une app ? Non, ils répondent par SMS.",
         "Est-ce que le premier qui répond est confirmé automatiquement ? Non, vous choisissez toujours qui confirmer.",
-        "Est-ce que je dois changer mon logiciel de rendez-vous ? Non, Open Spot s’ajoute à votre système actuel.",
+        "Est-ce que je dois changer mon logiciel de rendez-vous ? Non, 2e Chance RDV s’ajoute à votre système actuel.",
         "Comment fonctionne le consentement SMS ? On le clarifie avant d’envoyer des alertes.",
         "Est-ce adapté à mon commerce ? L’appel sert justement à le vérifier."
       ],
@@ -74,9 +74,9 @@ const bookingCopy = {
     },
     ready: {
       eyebrow: "Setup",
-      title: "Let’s configure Open Spot for your business.",
+      title: "Let’s configure 2e Chance RDV for your business.",
       subtitle:
-        "You’re ready to recover cancellations. The call helps us understand your workflow, services, customer list, and the best way to connect Open Spot to your reality.",
+        "You’re ready to recover cancellations. The call helps us understand your workflow, services, customer list, and the best way to connect 2e Chance RDV to your reality.",
       primary: "Book my setup call",
       prepTitle: "What we prepare together",
       prep: [
@@ -99,13 +99,13 @@ const bookingCopy = {
       eyebrow: "Questions",
       title: "Have questions? Let’s talk simply.",
       subtitle:
-        "We’ll explain how Open Spot works, whether it fits your business, and how SMS alerts can help fill cancellations without changing your current system.",
+        "We’ll explain how 2e Chance RDV works, whether it fits your business, and how SMS alerts can help fill cancellations without changing your current system.",
       primary: "Book a discovery call",
       prepTitle: "Frequently asked questions",
       prep: [
         "Do my customers need to install an app? No, they reply by SMS.",
         "Is the first person who replies automatically confirmed? No, you always choose who to confirm.",
-        "Do I need to change my booking software? No, Open Spot fits beside your current system.",
+        "Do I need to change my booking software? No, 2e Chance RDV fits beside your current system.",
         "How does SMS consent work? We clarify it before sending alerts.",
         "Is this right for my business? The call is meant to verify that."
       ],
@@ -137,7 +137,7 @@ export function OpenSpotBookingPage({ kind }: { kind: BookingKind }) {
       <header className="border-b border-white/70 bg-[#fbfaf7]/90 backdrop-blur-xl">
         <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Link className="rounded-md text-base font-black text-[#14262e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]" href="/">
-            Open Spot
+            2e Chance RDV
           </Link>
           <div className="flex items-center gap-2">
             <button

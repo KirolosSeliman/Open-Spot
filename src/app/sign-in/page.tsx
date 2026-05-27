@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { PageShell } from "@/components/layout/page-shell";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { Button } from "@/components/ui/button";
@@ -56,6 +58,15 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             </label>
             <Button type="submit">Sign in</Button>
           </form>
+          <p className="mt-5 text-sm leading-6 text-[var(--muted)]">
+            Pas encore de compte ?{" "}
+            <Link
+              className="font-black text-[var(--primary-strong)] underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+              href="/signup"
+            >
+              Créer un compte
+            </Link>
+          </p>
         </Card>
       </section>
     </PageShell>

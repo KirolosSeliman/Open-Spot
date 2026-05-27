@@ -12,7 +12,7 @@ const copy = {
   fr: {
     nav: {
       how: "Comment ça marche",
-      why: "Pourquoi Open Spot",
+      why: "Pourquoi 2e Chance RDV",
       pricing: "Prix",
       call: "Réserver un appel",
       switchLabel: "English"
@@ -21,7 +21,7 @@ const copy = {
       eyebrow: "Alertes SMS pour annulations de dernière minute",
       title: "Vos annulations ne devraient pas rester des pertes.",
       subtitle:
-        "Quand une place se libère, Open Spot vous aide à lancer une alerte SMS aux bons clients. Ils répondent, vous choisissez qui confirmer, et votre créneau peut redevenir un rendez-vous.",
+        "Quand une place se libère, 2e Chance RDV vous aide à lancer une alerte SMS aux bons clients. Ils répondent, vous choisissez qui confirmer, et votre créneau peut redevenir un rendez-vous.",
       primary: "Réserver un appel",
       secondary: "Voir comment ça fonctionne",
       chips: [
@@ -95,7 +95,7 @@ const copy = {
       title:
         "Une annulation, ce n’est pas juste une case vide. C’est du temps, de l’énergie et du revenu qui disparaissent.",
       text:
-        "Vous avez déjà payé le local, l’équipe est prête, le temps est réservé. Quand le créneau reste vide, la perte est réelle. Open Spot transforme ce moment de stress en action simple : lancer une alerte aux clients qui veulent vraiment une place.",
+        "Vous avez déjà payé le local, l’équipe est prête, le temps est réservé. Quand le créneau reste vide, la perte est réelle. 2e Chance RDV transforme ce moment de stress en action simple : lancer une alerte aux clients qui veulent vraiment une place.",
       before: "Avant",
       after: "Après",
       beforeItems: ["14 h 30 — Annulé", "Revenu perdu", "Texter à la main"],
@@ -109,10 +109,10 @@ const copy = {
       title:
         "De la place vide au client confirmé, sans changer votre système de rendez-vous.",
       note:
-        "Open Spot ne remplace pas votre calendrier. Il s’ajoute à votre façon de travailler.",
+        "2e Chance RDV ne remplace pas votre calendrier. Il s’ajoute à votre façon de travailler.",
       steps: [
         ["Lancer l’alerte", "Vous partez du créneau annulé, sans changer votre calendrier."],
-        ["Alertes envoyées", "Open Spot prépare une alerte SMS ciblée pour les bons contacts."],
+        ["Alertes envoyées", "2e Chance RDV prépare une alerte SMS ciblée pour les bons contacts."],
         ["Réponses reçues", "Les réponses arrivent clairement, dans l’ordre."],
         ["Confirmation manuelle", "Vous choisissez la personne à confirmer."]
       ]
@@ -121,7 +121,7 @@ const copy = {
       badge: "Ciblage intelligent",
       title: "Ciblez les bons clients avant que le créneau reste vide",
       text:
-        "Open Spot utilise un agent IA pour aider à identifier les clients les plus pertinents à alerter selon vos règles, vos services et l’historique disponible.",
+        "2e Chance RDV utilise un agent IA pour aider à identifier les clients les plus pertinents à alerter selon vos règles, vos services et l’historique disponible.",
       example:
         "Exemple : prioriser un client qui n’a pas réservé depuis 2 semaines, mais qui vient habituellement pour ce type de service.",
       note: "Zéro réservation automatique. Vous restez maître de votre agenda.",
@@ -154,9 +154,9 @@ const copy = {
       secondary: "Découvrir comment ça fonctionne"
     },
     personalization: {
-      title: "Chaque commerce fonctionne différemment. Open Spot s’adapte au vôtre.",
+      title: "Chaque commerce fonctionne différemment. 2e Chance RDV s’adapte au vôtre.",
       text:
-        "Votre liste client, vos services, vos horaires, votre façon de confirmer les rendez-vous. L’appel sert à comprendre votre réalité et à brancher Open Spot proprement, sans vous forcer à changer de système.",
+        "Votre liste client, vos services, vos horaires, votre façon de confirmer les rendez-vous. L’appel sert à comprendre votre réalité et à brancher 2e Chance RDV proprement, sans vous forcer à changer de système.",
       cards: [
         "Vos services",
         "Votre liste client",
@@ -181,7 +181,7 @@ const copy = {
     trust: {
       title: "Simple pour vous. Respectueux pour vos clients.",
       text:
-        "Open Spot doit être utilisé avec des clients qui ont accepté de recevoir des messages. Le produit est pensé pour protéger la confiance, pas pour brûler votre liste client.",
+        "2e Chance RDV doit être utilisé avec des clients qui ont accepté de recevoir des messages. Le produit est pensé pour protéger la confiance, pas pour brûler votre liste client.",
       cards: [
         "Consentement SMS clair",
         "Désinscription STOP",
@@ -198,7 +198,7 @@ const copy = {
       commission:
         "+ commission sur rendez-vous récupéré, discutée selon votre fonctionnement",
       text:
-        "L’appel permet de vérifier votre volume, vos services et la meilleure façon de connecter Open Spot à votre commerce.",
+        "L’appel permet de vérifier votre volume, vos services et la meilleure façon de connecter 2e Chance RDV à votre commerce.",
       ready: "Je suis prêt à récupérer mes annulations",
       questions: "Parler à quelqu’un",
       trust: ["Sans engagement", "Mise en place rapide", "Adapté à votre commerce"]
@@ -206,7 +206,7 @@ const copy = {
     final: {
       title: "Prêt à transformer vos annulations en rendez-vous récupérés ?",
       text:
-        "Réservez un appel. On regarde votre commerce, vos services, vos annulations et la meilleure façon de connecter Open Spot à votre réalité.",
+        "Réservez un appel. On regarde votre commerce, vos services, vos annulations et la meilleure façon de connecter 2e Chance RDV à votre réalité.",
       ready: "Je suis prêt à récupérer mes annulations",
       questions: "Parler à quelqu’un"
     }
@@ -214,7 +214,7 @@ const copy = {
   en: {
     nav: {
       how: "How it works",
-      why: "Why Open Spot",
+      why: "Why 2e Chance RDV",
       pricing: "Pricing",
       call: "Book a call",
       switchLabel: "Français"
@@ -223,7 +223,7 @@ const copy = {
       eyebrow: "SMS alerts for last-minute cancellations",
       title: "Your cancellations shouldn’t stay lost revenue.",
       subtitle:
-        "When a spot opens up, Open Spot helps you send an SMS alert to the right customers. They reply, you choose who to confirm, and an empty slot can become a booked appointment again.",
+        "When a spot opens up, 2e Chance RDV helps you send an SMS alert to the right customers. They reply, you choose who to confirm, and an empty slot can become a booked appointment again.",
       primary: "Book a call",
       secondary: "See how it works",
       chips: [
@@ -297,7 +297,7 @@ const copy = {
       title:
         "A cancellation is not just an empty box. It is time, energy, and revenue disappearing.",
       text:
-        "You already paid for the space, the team is ready, and the time was reserved. When the spot stays empty, the loss is real. Open Spot turns that stressful moment into one simple action: alert customers who truly want a spot.",
+        "You already paid for the space, the team is ready, and the time was reserved. When the spot stays empty, the loss is real. 2e Chance RDV turns that stressful moment into one simple action: alert customers who truly want a spot.",
       before: "Before",
       after: "After",
       beforeItems: ["2:30 PM — Cancelled", "Lost revenue", "Manual texting"],
@@ -311,10 +311,10 @@ const copy = {
       title:
         "From empty spot to confirmed customer, without changing your booking system.",
       note:
-        "Open Spot does not replace your calendar. It fits into the way you already work.",
+        "2e Chance RDV does not replace your calendar. It fits into the way you already work.",
       steps: [
         ["Launch the alert", "You start from the cancelled spot without changing your calendar."],
-        ["Alerts sent", "Open Spot prepares a targeted SMS alert for the right contacts."],
+        ["Alerts sent", "2e Chance RDV prepares a targeted SMS alert for the right contacts."],
         ["Replies received", "Replies arrive clearly, in order."],
         ["Manual confirmation", "You choose who to confirm."]
       ]
@@ -323,7 +323,7 @@ const copy = {
       badge: "Smart targeting",
       title: "Target the right customers before the spot stays empty",
       text:
-        "Open Spot can use an AI agent to help identify the most relevant customers to alert based on your rules, services, and available history.",
+        "2e Chance RDV can use an AI agent to help identify the most relevant customers to alert based on your rules, services, and available history.",
       example:
         "Example: prioritize a customer who has not booked in 2 weeks, but usually comes in for this type of service.",
       note: "Zero automatic booking. You stay in control of your calendar.",
@@ -356,9 +356,9 @@ const copy = {
       secondary: "See how it works"
     },
     personalization: {
-      title: "Every business works differently. Open Spot adapts to yours.",
+      title: "Every business works differently. 2e Chance RDV adapts to yours.",
       text:
-        "Your customer list, services, schedule, and confirmation rules. The call helps us understand your reality and connect Open Spot cleanly without forcing you to change systems.",
+        "Your customer list, services, schedule, and confirmation rules. The call helps us understand your reality and connect 2e Chance RDV cleanly without forcing you to change systems.",
       cards: [
         "Your services",
         "Your customer list",
@@ -382,7 +382,7 @@ const copy = {
     trust: {
       title: "Simple for you. Respectful for your customers.",
       text:
-        "Open Spot should be used with customers who agreed to receive messages. The product is designed to protect trust, not burn through your customer list.",
+        "2e Chance RDV should be used with customers who agreed to receive messages. The product is designed to protect trust, not burn through your customer list.",
       cards: [
         "Clear SMS consent",
         "STOP unsubscribe",
@@ -399,7 +399,7 @@ const copy = {
       commission:
         "+ recovered-booking commission, discussed based on your workflow",
       text:
-        "The call helps verify your volume, services, and the best way to connect Open Spot to your business.",
+        "The call helps verify your volume, services, and the best way to connect 2e Chance RDV to your business.",
       ready: "I’m ready to recover cancellations",
       questions: "Talk to someone",
       trust: ["No commitment", "Fast setup", "Adapted to your business"]
@@ -407,7 +407,7 @@ const copy = {
     final: {
       title: "Ready to turn cancellations into recovered appointments?",
       text:
-        "Book a call. We’ll look at your business, services, cancellations, and the best way to connect Open Spot to your reality.",
+        "Book a call. We’ll look at your business, services, cancellations, and the best way to connect 2e Chance RDV to your reality.",
       ready: "I’m ready to recover cancellations",
       questions: "Talk to someone"
     }
@@ -451,14 +451,27 @@ function MarketingHeader({
   onToggleLocale: () => void;
   t: Copy;
 }) {
+  const authLabels =
+    locale === "fr"
+      ? {
+          dashboard: "Dashboard",
+          signIn: "Connexion",
+          signUp: "Créer un compte"
+        }
+      : {
+          dashboard: "Dashboard",
+          signIn: "Sign in",
+          signUp: "Sign up"
+        };
+
   return (
     <header className="sticky top-0 z-30 border-b border-white/70 bg-[#fbfaf7]/90 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6">
+      <div className="mx-auto flex min-h-16 w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6">
         <Link
           className="rounded-md text-base font-black tracking-tight text-[#14262e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
         >
-          Open Spot
+          2e Chance RDV
         </Link>
         <nav
           aria-label={locale === "fr" ? "Navigation principale" : "Main navigation"}
@@ -467,9 +480,9 @@ function MarketingHeader({
           <HeaderLink href="#comment-ca-marche">{t.nav.how}</HeaderLink>
           <HeaderLink href="#pourquoi-open-spot">{t.nav.why}</HeaderLink>
           <HeaderLink href="#prix">{t.nav.pricing}</HeaderLink>
-          <HeaderLink href="/book-call/questions">{t.nav.call}</HeaderLink>
+          <HeaderLink href="/dashboard">{authLabels.dashboard}</HeaderLink>
         </nav>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
           <button
             aria-label={locale === "fr" ? "Afficher la page en anglais" : "Show page in French"}
             className="rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
@@ -479,12 +492,38 @@ function MarketingHeader({
             {locale === "fr" ? "FR / EN" : "EN / FR"}
           </button>
           <Link
+            className="rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-black text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] hover:bg-[#f7fbf8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:text-sm"
+            href="/sign-in"
+          >
+            {authLabels.signIn}
+          </Link>
+          <Link
+            className="rounded-full bg-[#14262e] px-3 py-2 text-xs font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#254047] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:text-sm"
+            href="/signup"
+          >
+            {authLabels.signUp}
+          </Link>
+          <Link
             className="hidden rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:inline-flex"
             href="/book-call/questions"
           >
             {t.nav.call}
           </Link>
         </div>
+        <nav
+          aria-label={
+            locale === "fr"
+              ? "Navigation mobile secondaire"
+              : "Secondary mobile navigation"
+          }
+          className="flex w-full gap-1 overflow-x-auto pt-1 lg:hidden"
+        >
+          <HeaderLink href="#comment-ca-marche">{t.nav.how}</HeaderLink>
+          <HeaderLink href="#pourquoi-open-spot">{t.nav.why}</HeaderLink>
+          <HeaderLink href="#prix">{t.nav.pricing}</HeaderLink>
+          <HeaderLink href="/dashboard">{authLabels.dashboard}</HeaderLink>
+          <HeaderLink href="/book-call/questions">{t.nav.call}</HeaderLink>
+        </nav>
       </div>
     </header>
   );
@@ -558,7 +597,7 @@ function HeroSection({ t }: { t: Copy }) {
 function HeroMockup({ t }: { t: Copy }) {
   return (
     <div
-      aria-label="Open Spot product preview showing a merchant launching an alert, receiving SMS replies, and manually confirming a recovered spot."
+      aria-label="2e Chance RDV product preview showing a merchant launching an alert, receiving SMS replies, and manually confirming a recovered spot."
       className="os-reveal os-hero-mockup mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/88 p-3 shadow-[0_28px_90px_rgba(36,54,66,0.14)] backdrop-blur sm:p-5 lg:p-6"
       role="img"
     >
@@ -569,7 +608,7 @@ function HeroMockup({ t }: { t: Copy }) {
               OS
             </span>
             <div>
-              <p className="text-sm font-black text-[#14262e]">Open Spot</p>
+              <p className="text-sm font-black text-[#14262e]">2e Chance RDV</p>
               <p className="text-[11px] font-bold text-[var(--muted)]">SMS assistant</p>
             </div>
           </div>
@@ -876,7 +915,7 @@ function AiSection({ t }: { t: Copy }) {
                 AI
               </div>
               <div>
-                <p className="text-sm font-black text-[#14262e]">Open Spot Assistant</p>
+                <p className="text-sm font-black text-[#14262e]">2e Chance RDV Assistant</p>
                 <p className="text-xs text-[var(--muted)]">Prioritization preview</p>
               </div>
             </div>
