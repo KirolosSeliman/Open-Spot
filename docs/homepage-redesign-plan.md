@@ -4,7 +4,7 @@
 
 This plan covers the marketing homepage redesign only. It must not change Supabase, Auth, RLS, database migrations, SMS delivery, Stripe, or dashboard logic.
 
-The homepage should make 2e Chance RDV understandable in a few seconds for salons, barbers, beauty/esthetic businesses, and appointment-based merchants. French is the default language.
+The homepage should make Open Spot understandable in a few seconds for salons, barbers, beauty/esthetic businesses, and appointment-based merchants. French is the default language.
 
 ## Current Homepage Audit
 
@@ -91,7 +91,7 @@ L'agent IA ne promet pas de remplir chaque place. Il aide à choisir les clients
 Differentiation copy:
 
 ```text
-2e Chance RDV travaille à côté de votre système actuel. Vos clients reçoivent un SMS, répondent simplement, et vous choisissez qui confirmer.
+Open Spot travaille à côté de votre système actuel. Vos clients reçoivent un SMS, répondent simplement, et vous choisissez qui confirmer.
 ```
 
 ## Visual Direction

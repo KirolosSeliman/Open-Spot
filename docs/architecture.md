@@ -20,7 +20,7 @@ Because no conflicting stack exists, the proposed MVP stack is:
 
 ## Application Boundaries
 
-2e Chance RDV should be built as a merchant dashboard plus a small set of public customer-facing pages and webhook endpoints.
+Open Spot should be built as a merchant dashboard plus a small set of public customer-facing pages and webhook endpoints.
 
 Main surfaces:
 

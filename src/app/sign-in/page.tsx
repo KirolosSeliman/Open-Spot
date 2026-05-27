@@ -23,7 +23,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         <SectionHeading
           description="Sign in with your merchant email and password to manage your cancellation recovery workspace."
           eyebrow="Sign in"
-          title="Access your 2e Chance RDV dashboard."
+          title="Access your Open Spot dashboard."
         />
         <Card className="mt-8">
           {error ? (

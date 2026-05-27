@@ -12,12 +12,12 @@ import {
 } from "@/lib/dashboard/mock-data";
 
 const filters = [
-  "Today",
-  "Last 7 days",
-  "Last 30 days",
-  "Current month",
-  "Current year",
-  "Custom range"
+  "Aujourd’hui",
+  "7 derniers jours",
+  "30 derniers jours",
+  "Mois en cours",
+  "Année en cours",
+  "Période personnalisée"
 ];
 
 export default function AnalyticsPage() {
@@ -55,41 +55,41 @@ export default function AnalyticsPage() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard
           detail="Estimé à partir des services récupérés."
-          label="Estimated recovered revenue by month"
+          label="Revenus estimés récupérés par mois"
           value={formatCurrency(recoveredRevenue)}
           tone="green"
         />
         <MetricCard
           detail="Confirmations faites manuellement."
-          label="Number of recovered cancellations"
+          label="Ouvertures récupérées"
           value={String(recovered.length)}
           tone="green"
         />
         <MetricCard
           detail="Réponses reçues sur SMS envoyés."
-          label="Response rate"
+          label="Taux de réponse"
           value={`${responseRate}%`}
         />
         <MetricCard
           detail="Basé sur les réponses de démonstration."
-          label="Average time to first response"
+          label="Temps moyen avant première réponse"
           value="1m 04s"
           tone="amber"
         />
         <MetricCard
           detail={findService(recovered[0]?.serviceId ?? "")?.name ?? "—"}
-          label="Most recovered services"
+          label="Services les plus récupérés"
           value="Coupe"
           tone="violet"
         />
         <MetricCard
           detail={findClient(dashboardReplies[0]?.clientId)?.name ?? "—"}
-          label="Most responsive clients"
+          label="Clients les plus réactifs"
           value="Maya"
           tone="violet"
         />
       </div>
-      <Panel title="SMS sent by period">
+      <Panel title="SMS envoyés par période">
         <div className="grid gap-4">
           {[
             ["Aujourd'hui", "7 SMS", "70%"],

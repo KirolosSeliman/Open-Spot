@@ -20,8 +20,8 @@ export default function CancellationsPage() {
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Historique des opportunités d'annulation, des clients contactés, des réponses et de la valeur estimée."
-        title="Annulations"
+        description="Historique des places disponibles, des clients contactés, des réponses et de la valeur estimée."
+        title="Ouvertures"
       />
       <Panel title="Historique">
         {dashboardCancellations.length > 0 ? (
@@ -29,13 +29,13 @@ export default function CancellationsPage() {
             <thead>
               <tr>
                 <th className={tableHeadClass}>Date</th>
-                <th className={tableHeadClass}>Time</th>
+                <th className={tableHeadClass}>Heure</th>
                 <th className={tableHeadClass}>Service</th>
-                <th className={tableHeadClass}>Clients contacted</th>
-                <th className={tableHeadClass}>Replies</th>
-                <th className={tableHeadClass}>Confirmed client</th>
-                <th className={tableHeadClass}>Status</th>
-                <th className={tableHeadClass}>Estimated value</th>
+                <th className={tableHeadClass}>Clients contactés</th>
+                <th className={tableHeadClass}>Réponses</th>
+                <th className={tableHeadClass}>Client confirmé</th>
+                <th className={tableHeadClass}>Statut</th>
+                <th className={tableHeadClass}>Valeur estimée</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--line)] bg-white">
@@ -74,8 +74,8 @@ export default function CancellationsPage() {
           </TableShell>
         ) : (
           <EmptyState
-            description="Créez une première annulation pour suivre les clients contactés, les réponses reçues et la décision de confirmation."
-            title="Aucune annulation pour le moment."
+            description="Créez une première ouverture pour suivre les clients contactés, les réponses reçues et la décision de confirmation."
+            title="Aucune ouverture pour le moment."
           />
         )}
       </Panel>

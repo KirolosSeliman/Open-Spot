@@ -6,9 +6,9 @@ import { cn } from "@/lib/utils/cn";
 
 const desktopNav = [
   { href: "/dashboard", label: "Tableau de bord" },
-  { href: "/dashboard/new-cancellation", label: "Nouvelle annulation", core: true },
+  { href: "/dashboard/new-cancellation", label: "Nouvelle ouverture", core: true },
   { href: "/dashboard/responses", label: "Réponses" },
-  { href: "/dashboard/cancellations", label: "Annulations" },
+  { href: "/dashboard/cancellations", label: "Ouvertures" },
   { href: "/dashboard/clients", label: "Clients" },
   { href: "/dashboard/waitlist", label: "Liste d'attente" },
   { href: "/dashboard/messages", label: "Messages" },
@@ -21,7 +21,7 @@ const desktopNav = [
 
 const mobileNav = [
   { href: "/dashboard", label: "Accueil" },
-  { href: "/dashboard/new-cancellation", label: "Nouvelle annulation", core: true },
+  { href: "/dashboard/new-cancellation", label: "Nouvelle ouverture", core: true },
   { href: "/dashboard/responses", label: "Réponses" },
   { href: "/dashboard/clients", label: "Clients" },
   { href: "/dashboard/settings", label: "Plus" }
@@ -49,7 +49,7 @@ export function DashboardShell({
             className="rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/"
           >
-            <p className="text-lg font-black">2e Chance RDV</p>
+            <p className="text-lg font-black">Open Spot</p>
             <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
               Récupération SMS
             </p>
@@ -84,7 +84,7 @@ export function DashboardShell({
                 className="rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
                 href="/"
               >
-                2e Chance RDV
+                Open Spot
               </Link>
               <Link
                 className="rounded-full bg-[var(--primary)] px-3 py-2 text-xs font-black text-white"

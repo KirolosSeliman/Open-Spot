@@ -15,7 +15,7 @@ export function DashboardPageHeader({
     <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-3xl">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--primary)]">
-          2e Chance RDV
+          Open Spot
         </p>
         <h1 className="mt-2 text-2xl font-black tracking-tight text-[var(--foreground)] sm:text-4xl">
           {title}

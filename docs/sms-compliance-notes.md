@@ -4,7 +4,7 @@ This document is not legal advice. Legal review is required before production SM
 
 ## Core Rule
 
-2e Chance RDV must never send cancellation-recovery SMS to a customer whose current consent status is `opted_out` or `needs_consent`.
+Open Spot must never send cancellation-recovery SMS to a customer whose current consent status is `opted_out` or `needs_consent`.
 
 Eligible marketing/recovery sends require `opted_in`.
 

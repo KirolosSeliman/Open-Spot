@@ -12,10 +12,10 @@ import type {
 
 export const dashboardBusiness: DashboardBusiness = {
   id: "business_demo_salon",
-  name: "Salon Demo 2e Chance",
+  name: "Salon Horizon",
   phone: "+1 514 555 0142",
   address: "1200 rue Saint-Denis, Montréal, QC",
-  website: "https://2echancerdv.ca",
+  website: "https://salonhorizon.ca",
   timezone: "America/Toronto",
   mainLanguage: "fr",
   smsSender: "+1 438 555 0101"

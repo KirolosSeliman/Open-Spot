@@ -7,7 +7,7 @@ describe("createHealthPayload", () => {
     const payload = createHealthPayload("simulator");
 
     expect(payload).toEqual({
-      app: "2e Chance RDV",
+      app: "Open Spot",
       status: "ok",
       smsProvider: "simulator"
     });

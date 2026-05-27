@@ -2,7 +2,7 @@
 
 ## Principles
 
-2e Chance RDV stores customer contact data and consent records. The product must treat privacy, tenant isolation, and SMS consent as launch-critical requirements.
+Open Spot stores customer contact data and consent records. The product must treat privacy, tenant isolation, and SMS consent as launch-critical requirements.
 
 Security rules:
 

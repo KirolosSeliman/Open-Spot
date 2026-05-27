@@ -74,9 +74,9 @@ async function bootstrapOrganizationForUser(
     }
 
     if (error.code === "23505") {
-      onboardingError("This organization slug is already used.");
+      onboardingError("Ce slug d’organisation est déjà utilisé.");
     }
 
-    onboardingError(error.message || "Organization creation failed.");
+    onboardingError(error.message || "La création de l’organisation a échoué.");
   }
 }

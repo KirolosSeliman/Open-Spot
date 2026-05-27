@@ -2,7 +2,7 @@
 
 ## Not Yet Launch Ready
 
-2e Chance RDV is not ready for live merchant beta until the items below are completed and verified.
+Open Spot is not ready for live merchant beta until the items below are completed and verified.
 
 ## Major Gaps
 

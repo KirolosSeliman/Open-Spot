@@ -63,6 +63,16 @@ const rpcHardeningMigration = readFileSync(
   "utf8"
 );
 
+const organizationNullifHotfixMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase",
+    "migrations",
+    "20260526007000_phase_10_organization_rpc_nullif_hotfix.sql"
+  ),
+  "utf8"
+);
+
 const organizationActions = readFileSync(
   join(process.cwd(), "src", "lib", "organization", "actions.ts"),
   "utf8"
@@ -218,5 +228,43 @@ describe("phase 2 migration safety", () => {
     );
     expect(rpcHardeningMigration).toContain("to authenticated;");
     expect(rpcHardeningMigration).not.toContain("set search_path = public");
+  });
+
+  it("does not schema-qualify nullif in Supabase migrations", () => {
+    const schemaQualifiedNullif = "pg_catalog." + "nullif";
+    const migrations = [
+      migration,
+      securityAdvisorMigration,
+      organizationBootstrapMigration,
+      singleOrganizationMigration,
+      organizationDataQualityMigration,
+      rpcHardeningMigration,
+      organizationNullifHotfixMigration
+    ];
+
+    for (const migrationSql of migrations) {
+      expect(migrationSql).not.toContain(schemaQualifiedNullif);
+    }
+  });
+
+  it("repairs the organization bootstrap RPC with safe blank handling", () => {
+    expect(organizationNullifHotfixMigration).toContain(
+      "create or replace function private.create_organization_with_owner"
+    );
+    expect(organizationNullifHotfixMigration).toContain("set search_path = ''");
+    expect(organizationNullifHotfixMigration).toContain("auth.uid()");
+    expect(organizationNullifHotfixMigration).toContain(
+      "nullif(pg_catalog.lower(pg_catalog.btrim(organization_email)), ''::text)"
+    );
+    expect(organizationNullifHotfixMigration).toContain(
+      "nullif(pg_catalog.btrim(organization_phone), ''::text)"
+    );
+    expect(organizationNullifHotfixMigration).toContain(
+      "nullif(pg_catalog.btrim(organization_timezone), ''::text)"
+    );
+    expect(organizationNullifHotfixMigration).toContain(
+      "grant execute on function private.create_organization_with_owner"
+    );
+    expect(organizationNullifHotfixMigration).toContain(") to authenticated;");
   });
 });

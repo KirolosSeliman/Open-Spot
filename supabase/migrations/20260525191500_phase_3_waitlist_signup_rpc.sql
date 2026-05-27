@@ -43,7 +43,7 @@ begin
     customer_full_name,
     customer_phone_e164,
     customer_preferred_language,
-    pg_catalog.nullif(service_interest, '')
+    nullif(service_interest, ''::text)
   )
   on conflict (organization_id, phone_e164)
   do update set
@@ -96,7 +96,7 @@ begin
     pg_catalog.coalesce(preferred_days, '{}'::text[]),
     pg_catalog.coalesce(preferred_time_windows, '{}'::text[]),
     wants_discount,
-    pg_catalog.nullif(service_interest, '')
+    nullif(service_interest, ''::text)
   )
   returning id into target_waitlist_entry_id;
 

@@ -21,9 +21,9 @@ export default async function OnboardingPage({
     <PageShell>
       <section className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
         <SectionHeading
-          description="Create the organization workspace that will own services, customers, waitlist entries, openings, SMS logs, and reports."
-          eyebrow="Organization onboarding"
-          title="Set up your merchant workspace."
+          description="Créez l’espace de travail de votre commerce pour gérer vos services, clients, listes d’attente, ouvertures, SMS et rapports."
+          eyebrow="Configuration du commerce"
+          title="Configurons votre espace Open Spot."
         />
         <Card className="mt-8">
           {error ? (
@@ -34,7 +34,7 @@ export default async function OnboardingPage({
           <form action={createOrganizationAction} className="grid gap-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-2 text-sm font-semibold" htmlFor="name">
-                Business name
+                Nom du commerce
                 <input
                   className="min-h-11 rounded-md border border-[var(--line)] px-3"
                   id="name"
@@ -48,11 +48,11 @@ export default async function OnboardingPage({
                   className="min-h-11 rounded-md border border-[var(--line)] px-3"
                   id="slug"
                   name="slug"
-                  placeholder="auto-generated if empty"
+                  placeholder="Généré automatiquement si vide"
                 />
               </label>
               <label className="grid gap-2 text-sm font-semibold" htmlFor="email">
-                Business email
+                Courriel professionnel
                 <input
                   className="min-h-11 rounded-md border border-[var(--line)] px-3"
                   id="email"
@@ -61,7 +61,7 @@ export default async function OnboardingPage({
                 />
               </label>
               <label className="grid gap-2 text-sm font-semibold" htmlFor="phone">
-                Business phone
+                Téléphone professionnel
                 <input
                   className="min-h-11 rounded-md border border-[var(--line)] px-3"
                   id="phone"
@@ -72,7 +72,7 @@ export default async function OnboardingPage({
                 className="grid gap-2 text-sm font-semibold"
                 htmlFor="timezone"
               >
-                Timezone
+                Fuseau horaire
                 <select
                   className="min-h-11 rounded-md border border-[var(--line)] px-3"
                   defaultValue="America/Toronto"
@@ -87,19 +87,19 @@ export default async function OnboardingPage({
                 className="grid gap-2 text-sm font-semibold"
                 htmlFor="defaultLanguage"
               >
-                Default language
+                Langue par défaut
                 <select
                   className="min-h-11 rounded-md border border-[var(--line)] px-3"
                   defaultValue="fr"
                   id="defaultLanguage"
                   name="defaultLanguage"
                 >
-                  <option value="fr">Francais</option>
+                  <option value="fr">Français</option>
                   <option value="en">English</option>
                 </select>
               </label>
             </div>
-            <Button type="submit">Create organization</Button>
+            <Button type="submit">Créer l’organisation</Button>
           </form>
         </Card>
       </section>

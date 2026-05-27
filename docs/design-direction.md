@@ -2,7 +2,7 @@
 
 ## Product Feel
 
-2e Chance RDV should feel trustworthy, calm, and practical for small appointment-based businesses. The product is not an enterprise control center and not a flashy consumer app.
+Open Spot should feel trustworthy, calm, and practical for small appointment-based businesses. The product is not an enterprise control center and not a flashy consumer app.
 
 Design keywords:
 

@@ -21,13 +21,10 @@ declare
   request_user_id uuid := auth.uid();
   normalized_name text := pg_catalog.btrim(organization_name);
   normalized_slug text := pg_catalog.lower(pg_catalog.btrim(organization_slug));
-  normalized_email text := pg_catalog.nullif(
-    pg_catalog.lower(pg_catalog.btrim(organization_email)),
-    ''
-  );
-  normalized_phone text := pg_catalog.nullif(pg_catalog.btrim(organization_phone), '');
+  normalized_email text := nullif(pg_catalog.lower(pg_catalog.btrim(organization_email)), ''::text);
+  normalized_phone text := nullif(pg_catalog.btrim(organization_phone), ''::text);
   normalized_timezone text := pg_catalog.coalesce(
-    pg_catalog.nullif(pg_catalog.btrim(organization_timezone), ''),
+    nullif(pg_catalog.btrim(organization_timezone), ''::text),
     'America/Toronto'
   );
   created_organization_id uuid;

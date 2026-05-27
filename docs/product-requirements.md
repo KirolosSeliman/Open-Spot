@@ -2,7 +2,7 @@
 
 ## Product Definition
 
-2e Chance RDV is a bilingual SMS-first cancellation recovery platform for appointment-based local businesses. It is an independent SaaS product and is unrelated to Vistaire.
+Open Spot is a bilingual SMS-first cancellation recovery platform for appointment-based local businesses. It is an independent SaaS product and is unrelated to Vistaire.
 
 The product helps merchants fill last-minute appointment openings by contacting opted-in customers from a waitlist. Customers do not need an app. Customers interact by SMS, while merchants use a web dashboard.
 

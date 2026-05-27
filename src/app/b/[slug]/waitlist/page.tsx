@@ -13,7 +13,7 @@ export default async function WaitlistPage({ params }: WaitlistPageProps) {
     <main className="mx-auto grid min-h-screen w-full max-w-3xl content-center gap-6 px-4 py-10 sm:px-6">
       <div>
         <p className="text-sm font-semibold uppercase tracking-wide text-[var(--primary)]">
-          2e Chance RDV
+          Open Spot
         </p>
         <h1 className="mt-3 text-3xl font-bold">Join the SMS waitlist</h1>
         <p className="mt-3 text-sm leading-6 text-[var(--muted)]">

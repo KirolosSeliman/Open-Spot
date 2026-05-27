@@ -47,7 +47,7 @@ export default function DashboardPage() {
             className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_16px_32px_rgba(35,117,107,0.2)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/dashboard/new-cancellation"
           >
-            Nouvelle annulation
+            Nouvelle ouverture
           </Link>
         }
         description={`Vue complète de ${dashboardBusiness.name} : réponses SMS, créneaux récupérés, activité récente et valeur estimée.`}
@@ -86,7 +86,7 @@ export default function DashboardPage() {
         />
         <MetricCard
           detail="Créneaux fermés sans confirmation."
-          label="Annulations non récupérées"
+          label="Ouvertures non récupérées"
           value={String(notRecovered.length)}
           tone="amber"
         />
@@ -137,8 +137,8 @@ export default function DashboardPage() {
         </Panel>
 
         <Panel
-          description="Les annulations les plus récentes avec leur statut commercial."
-          title="Annulations récentes"
+          description="Les dernières places disponibles avec leur statut commercial."
+          title="Dernières ouvertures"
         >
           <div className="grid gap-3">
             {dashboardCancellations.map((cancellation) => {

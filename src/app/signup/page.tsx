@@ -23,7 +23,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
         <SectionHeading
           description="Create your merchant account first, then set up your organization workspace."
           eyebrow="Sign up"
-          title="Start your 2e Chance RDV account."
+          title="Start your Open Spot account."
         />
         <Card className="mt-8">
           {error ? (

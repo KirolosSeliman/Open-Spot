@@ -7,7 +7,7 @@ import type { NavItem } from "@/types/app";
 
 const navItems: NavItem[] = [
   { href: "/#comment-ca-marche", label: "Comment ça marche" },
-  { href: "/#pourquoi-open-spot", label: "Pourquoi 2e Chance RDV" },
+  { href: "/#pourquoi-open-spot", label: "Pourquoi Open Spot" },
   { href: "/pricing", label: "Prix" },
   { href: "/book-call/questions", label: "Réserver un appel" }
 ];
@@ -32,7 +32,7 @@ export async function SiteHeader() {
               className="rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
               href="/"
             >
-              2e Chance RDV
+              Open Spot
             </Link>
 
             <nav

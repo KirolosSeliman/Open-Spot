@@ -5,7 +5,7 @@ export const supportedLocales: Locale[] = ["en", "fr"];
 export const dictionaries: Record<Locale, Dictionary> = {
   en: {
     common: {
-      productName: "2e Chance RDV",
+      productName: "Open Spot",
       tagline:
         "Fill last-minute cancellations by SMS without changing your current booking system."
     },
@@ -18,7 +18,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
   },
   fr: {
     common: {
-      productName: "2e Chance RDV",
+      productName: "Open Spot",
       tagline:
         "Remplissez vos annulations de derniere minute par SMS, sans changer votre systeme de rendez-vous actuel."
     },

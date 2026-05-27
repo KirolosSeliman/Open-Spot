@@ -10,8 +10,8 @@ export default function NewCancellationPage() {
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Créez une opportunité d'annulation, choisissez les clients admissibles, générez le SMS et gardez la confirmation sous contrôle manuel."
-        title="Nouvelle annulation"
+        description="Créez une place disponible, choisissez les clients admissibles, générez le SMS et gardez la confirmation sous contrôle manuel."
+        title="Nouvelle ouverture"
       />
       <NewCancellationFlow
         business={dashboardBusiness}

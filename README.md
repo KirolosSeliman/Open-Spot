@@ -1,8 +1,8 @@
-# 2e Chance RDV
+# Open Spot
 
-2e Chance RDV is a bilingual SMS-first cancellation recovery SaaS for appointment-based local businesses. It helps merchants fill last-minute openings by sending SMS offers to customers who have explicitly opted into a waitlist.
+Open Spot is a bilingual SMS-first cancellation recovery SaaS for appointment-based local businesses. It helps merchants fill last-minute openings by sending SMS offers to customers who have explicitly opted into a waitlist.
 
-The product is independent from Vistaire. It does not replace the merchant's booking system. Merchants keep using their current calendar, point-of-sale, phone, DM, or booking workflow, while 2e Chance RDV handles waitlist consent, last-minute SMS offers, replies, merchant validation, and recovered revenue reporting.
+The product is independent from Vistaire. It does not replace the merchant's booking system. Merchants keep using their current calendar, point-of-sale, phone, DM, or booking workflow, while Open Spot handles waitlist consent, last-minute SMS offers, replies, merchant validation, and recovered revenue reporting.
 
 ## MVP Positioning
 
