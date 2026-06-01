@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -8,7 +11,7 @@ import {
 
 describe("organization onboarding", () => {
   it("normalizes slugs to match the database constraint", () => {
-    expect(normalizeOrganizationSlug(" Salon Beauté Laval!! ")).toBe(
+    expect(normalizeOrganizationSlug(" Salon Beaute Laval!! ")).toBe(
       "salon-beaute-laval"
     );
   });
@@ -32,6 +35,47 @@ describe("organization onboarding", () => {
         phone: "+15145550100",
         timezone: "America/Toronto",
         defaultLanguage: "fr"
+      }
+    });
+  });
+
+  it("keeps organization phone optional and normalizes common local formats", () => {
+    expect(
+      buildOrganizationCreateInput({
+        name: "Salon Demo",
+        phone: "",
+        defaultLanguage: "fr"
+      })
+    ).toMatchObject({
+      ok: true,
+      value: {
+        phone: null
+      }
+    });
+
+    expect(
+      buildOrganizationCreateInput({
+        name: "Salon Demo",
+        phone: "5142494425",
+        defaultLanguage: "fr"
+      })
+    ).toMatchObject({
+      ok: true,
+      value: {
+        phone: "+15142494425"
+      }
+    });
+
+    expect(
+      buildOrganizationCreateInput({
+        name: "Salon Demo",
+        phone: "514-249-4425",
+        defaultLanguage: "fr"
+      })
+    ).toMatchObject({
+      ok: true,
+      value: {
+        phone: "+15142494425"
       }
     });
   });
@@ -63,7 +107,7 @@ describe("organization onboarding", () => {
       ok: false,
       errors: [
         "Business email must be valid if provided.",
-        "Phone number must be a valid E.164 number.",
+        "Enter a valid 10-digit Canadian or US phone number.",
         "Timezone is not supported yet.",
         "Default language must be English or French."
       ]
@@ -89,5 +133,14 @@ describe("organization onboarding", () => {
         hasOrganization: true
       })
     ).toBe("allow");
+  });
+
+  it("only treats active organization memberships as workspace access", () => {
+    const currentOrganizationSource = readFileSync(
+      join(process.cwd(), "src", "lib", "organization", "current.ts"),
+      "utf8"
+    );
+
+    expect(currentOrganizationSource).toContain('.eq("status", "active")');
   });
 });

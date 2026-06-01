@@ -9,7 +9,7 @@ export default function ContactPage() {
         <SectionHeading
           description="This placeholder keeps the public route ready while beta contact channels are finalized."
           eyebrow="Contact"
-          title="Talk to 2e Chance RDV."
+          title="Talk to Open Spot."
         />
         <Card className="mt-8">
           <div className="grid gap-3 sm:grid-cols-2">

@@ -1,6 +1,39 @@
-# Data Model Proposal
+# Data Model
 
-This document proposes the initial Supabase Postgres model. Phase 2 must turn this into safe migrations and RLS policies.
+This document describes the intended Open Spot Supabase model and the current
+MVP implementation shape. The source of truth for exact column names remains
+`supabase/migrations/*.sql` plus `src/types/database.ts`.
+
+## Current Implementation Status
+
+Implemented or present in the current repo:
+
+- `profiles`, `organizations`, `organization_members`, organization settings,
+  and billing settings foundation.
+- Organization-scoped `services`, `customers`, `sms_consents`,
+  `waitlist_entries`, `waitlist_entry_services`, `import_batches`, `openings`,
+  `opening_offers`, `sms_messages`, `booking_requests`, and `audit_logs`.
+- Public waitlist signup RPC/server path with explicit SMS consent.
+- Real dashboard server actions for services, customers, waitlist entries,
+  imports, opening creation, simulated replies, and manual validation RPC calls.
+- RLS migrations and anon/public table access revocation migrations.
+
+Still requiring launch verification:
+
+- Apply and verify migrations against the linked Supabase project.
+- Confirm RLS behavior with real authenticated users and organization members.
+- Verify inbound SMS persistence for STOP/reply handling against a linked
+  Supabase project and provider payloads.
+- Complete the dedicated outbound send/provider phase before any production SMS.
+
+Planned reminder expansion, not yet implemented in migrations:
+
+- `appointments`
+- `scheduled_messages`
+- `sms_templates`
+- `appointment_events`
+- Additional organization automation settings for reminders and
+  cancellation-to-recovery behavior.
 
 ## organizations
 
@@ -94,9 +127,9 @@ Key fields:
 - `organization_id`
 - `name`
 - `description`
-- `default_price_cents`
+- `normal_price_cents`
 - `duration_minutes`
-- `is_active`
+- `active`
 
 Organization scoping: required `organization_id`.
 
@@ -104,7 +137,7 @@ Privacy/security concerns: service prices may be commercially sensitive.
 
 Indexes:
 
-- `(organization_id, is_active)`
+- `(organization_id, active)`
 
 RLS expectations:
 
@@ -152,11 +185,11 @@ Key fields:
 - `phone_e164`
 - `status`
 - `source`
-- `consent_text_version`
+- `consent_text`
 - `consented_at`
-- `opted_out_at`
-- `metadata`
+- `unsubscribed_at`
 - `created_at`
+- `updated_at`
 
 Organization scoping: required `organization_id`.
 
@@ -210,12 +243,12 @@ Key fields:
 
 - `id`
 - `organization_id`
-- `created_by_profile_id`
-- `filename`
-- `status`
+- `created_by`
+- `file_name`
 - `total_rows`
 - `valid_rows`
 - `invalid_rows`
+- `duplicate_rows`
 - `created_at`
 
 Organization scoping: required `organization_id`.
@@ -240,12 +273,18 @@ Key fields:
 - `id`
 - `organization_id`
 - `service_id`
-- `starts_at`
-- `timezone`
-- `capacity`
+- `start_time`
+- `end_time`
+- `normal_price_cents`
+- `discount_type`
+- `discount_value`
+- `offer_label`
 - `status`
-- `created_by_profile_id`
+- `expires_at` (nullable legacy/optional field; not used by the current MVP
+  opening creation UI)
+- `created_by`
 - `created_at`
+- `updated_at`
 
 Organization scoping: required `organization_id`.
 
@@ -253,7 +292,7 @@ Privacy/security concerns: openings are operational business data.
 
 Indexes:
 
-- `(organization_id, starts_at)`
+- `(organization_id, start_time)`
 - `(organization_id, status)`
 
 RLS expectations:
@@ -263,17 +302,22 @@ RLS expectations:
 
 ## opening_offers
 
-Purpose: optional offer or discount attached to an opening.
+Purpose: recipient-level offer record for a customer prepared or contacted for
+an opening.
 
 Key fields:
 
 - `id`
 - `organization_id`
 - `opening_id`
-- `message_body`
-- `discount_type`
-- `discount_value`
+- `customer_id`
+- `status`
+- `sent_at`
+- `responded_at`
+- `response_text`
+- `response_rank`
 - `created_at`
+- `updated_at`
 
 Organization scoping: required `organization_id`.
 
@@ -282,6 +326,7 @@ Privacy/security concerns: offer content is customer-facing and must be reviewed
 Indexes:
 
 - `(organization_id, opening_id)`
+- Unique `(opening_id, customer_id)`
 
 RLS expectations:
 
@@ -300,13 +345,12 @@ Key fields:
 - `direction`
 - `provider`
 - `provider_message_id`
-- `to_phone_e164`
-- `from_phone_e164`
+- `from_number`
+- `to_number`
 - `body`
 - `status`
-- `sent_at`
-- `received_at`
-- `metadata`
+- `error_message`
+- `created_at`
 
 Organization scoping: required `organization_id`.
 
@@ -315,7 +359,7 @@ Privacy/security concerns: message body may contain personal data. Access must b
 Indexes:
 
 - `(organization_id, customer_id, created_at)`
-- `(organization_id, opening_id, received_at)`
+- `(organization_id, direction, from_number, created_at)`
 - Unique nullable `(provider, provider_message_id)`
 
 RLS expectations:
@@ -333,11 +377,11 @@ Key fields:
 - `organization_id`
 - `opening_id`
 - `customer_id`
-- `sms_message_id`
 - `status`
 - `requested_at`
+- `selected_offer_id`
 - `validated_at`
-- `validated_by_profile_id`
+- `validated_by`
 - `recovered_revenue_cents`
 - `commission_estimate_cents`
 
@@ -364,7 +408,7 @@ Key fields:
 
 - `id`
 - `organization_id`
-- `actor_profile_id`
+- `actor_user_id`
 - `action`
 - `entity_type`
 - `entity_id`
@@ -386,6 +430,141 @@ RLS expectations:
 - Inserts should be server-controlled.
 - Normal app flows should not update or delete audit rows.
 
+## appointments
+
+Purpose: lightweight records for existing merchant appointments that can receive
+reminders and confirmation/cancellation replies.
+
+Implemented in `20260529234235_appointment_reminders_foundation.sql`.
+
+Fields:
+
+- `id`
+- `organization_id`
+- `customer_id`
+- `service_id`
+- `starts_at`
+- `ends_at`
+- `timezone`
+- `status`: `scheduled`, `confirmed`, `cancelled`, `completed`, `no_show`
+- `reminder_status`: `not_scheduled`, `scheduled`, `sent`, `skipped`, `failed`
+- `confirmation_status`: `pending`, `confirmed_by_client`,
+  `cancelled_by_client`, `no_response`
+- `source`: `manual`, `import`, `api`, `appointment_cancellation`
+- `notes`
+- `created_by_profile_id`
+- `created_at`
+- `updated_at`
+
+Indexes:
+
+- `(organization_id, starts_at)`
+- `(organization_id, status)`
+- `(organization_id, customer_id)`
+
+RLS expectations:
+
+- Organization members can read only their appointments.
+- Operational roles can create/update.
+- Public users cannot read appointments.
+
+## scheduled_messages
+
+Purpose: durable queue for reminder, acknowledgement, and recovery SMS.
+
+Implemented in `20260529234235_appointment_reminders_foundation.sql`.
+
+Fields:
+
+- `id`
+- `organization_id`
+- `customer_id`
+- `appointment_id`
+- `opening_id`
+- `message_type`
+- `channel`
+- `scheduled_for`
+- `status`: `pending`, `processing`, `sent`, `failed`, `cancelled`, `skipped`
+- `template_key`
+- `body_snapshot`
+- `provider`
+- `provider_message_id`
+- `sent_at`
+- `failed_at`
+- `error_message`
+- `created_at`
+- `updated_at`
+
+Indexes and idempotency:
+
+- `(status, scheduled_for)` for cron selection.
+- `(organization_id, appointment_id)`.
+- `(organization_id, customer_id)`.
+- A unique or partial unique index preventing duplicate pending 24-hour
+  reminders for the same appointment/template. The current migration uses
+  `scheduled_messages_unique_pending_24h_reminder_idx` for pending/processing
+  24-hour reminders.
+
+Send-time rules:
+
+- Re-check current consent before sending.
+- Re-check appointment/opening status before sending.
+- Mark ineligible rows as `skipped`; do not send.
+
+## sms_templates
+
+Purpose: bilingual default and organization-specific templates.
+
+Implemented in `20260529234235_appointment_reminders_foundation.sql`.
+Global defaults are seeded for 24-hour appointment reminders, appointment
+confirmation acknowledgements, and appointment cancellation acknowledgements in
+French and English.
+
+Fields:
+
+- `id`
+- `organization_id` nullable for global defaults.
+- `template_key`
+- `language`
+- `body`
+- `is_active`
+- `created_at`
+- `updated_at`
+
+Indexes:
+
+- `(organization_id, template_key, language)`.
+- Unique global defaults by `(template_key, language)` when
+  `organization_id is null`.
+- Unique organization overrides by `(organization_id, template_key, language)`.
+
+## appointment_events
+
+Purpose: append-only appointment event history.
+
+Implemented in `20260529234235_appointment_reminders_foundation.sql`.
+
+Fields:
+
+- `id`
+- `organization_id`
+- `appointment_id`
+- `actor_profile_id`
+- `event_type`
+- `metadata`
+- `created_at`
+
+Indexes:
+
+- `(organization_id, appointment_id, created_at)`.
+
+RLS expectations:
+
+- Organization members can read according to role.
+- Normal app flows append events through controlled server logic.
+- Authenticated app users receive select/insert only; update/delete are not
+  granted for normal application flows.
+
 ## organization_settings
 
 Purpose: configurable organization behavior.
@@ -395,10 +574,16 @@ Key fields:
 - `id`
 - `organization_id`
 - `default_language`
-- `sms_sender_id`
-- `commission_rate_bps`
-- `commission_cap_cents`
 - `sms_daily_limit`
+- `sms_monthly_limit`
+- `waitlist_public_enabled`
+- `appointment_reminders_enabled`
+- `default_reminder_delay_hours`
+- `appointment_confirmation_requests_enabled`
+- `client_sms_cancellation_enabled`
+- `auto_create_opening_on_sms_cancellation`
+- `auto_send_recovery_sms_on_cancellation`
+- `unavailable_sms_to_non_selected_enabled`
 - `created_at`
 - `updated_at`
 
@@ -414,3 +599,15 @@ RLS expectations:
 
 - Owners/admins can read and update.
 - Other roles may read selected non-sensitive settings only if needed.
+
+Implemented reminder settings:
+
+- `appointment_reminders_enabled`
+- `default_reminder_delay_hours`, initially `24`
+- `appointment_confirmation_requests_enabled`
+- `client_sms_cancellation_enabled`
+- `auto_create_opening_on_sms_cancellation`, default `false`
+- `auto_send_recovery_sms_on_cancellation`, default `false`
+- `unavailable_sms_to_non_selected_enabled`, default `false`
+
+Defaults must be conservative. A disabled automation must not schedule or send SMS.

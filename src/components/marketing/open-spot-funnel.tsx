@@ -14,6 +14,8 @@ const copy = {
       how: "Comment ça marche",
       why: "Pourquoi Open Spot",
       pricing: "Prix",
+      login: "Connexion",
+      signup: "Créer un compte",
       call: "Réserver un appel",
       switchLabel: "English"
     },
@@ -45,11 +47,11 @@ const copy = {
         replyTwo: "Oui, dispo à 14 h 30",
         replyThree: "Merci mais pas dispo aujourd’hui",
         repliesNote: "Les réponses arrivent en temps réel.",
-        aiTitle: "Ciblage intelligent par IA",
-        aiInsightOne: "Client priorisé : n’a pas réservé depuis 2 semaines",
-        aiInsightTwo: "Critère : intérêt pour ce service",
-        aiInsightThree:
-          "L’IA sélectionne les bons contacts pour maximiser vos chances de récupérer ce créneau.",
+        targetingTitle: "Ciblage par critères",
+        targetingInsightOne: "Critère : client volontaire sur la liste SMS",
+        targetingInsightTwo: "Critère : intérêt pour ce service",
+        targetingInsightThree:
+          "Vous envoyez l’alerte aux clients admissibles, puis vous choisissez qui confirmer.",
         manual: "Vous confirmez manuellement",
         recovered: "Créneau récupéré",
         confirmed: "Le rendez-vous est confirmé.",
@@ -117,18 +119,20 @@ const copy = {
         ["Confirmation manuelle", "Vous choisissez la personne à confirmer."]
       ]
     },
-    ai: {
-      badge: "Ciblage intelligent",
-      title: "Ciblez les bons clients avant que le créneau reste vide",
+    targeting: {
+      badge: "Ciblage contrôlé",
+      title: "Contactez les bons clients sans spammer toute votre liste",
       text:
-        "Open Spot utilise un agent IA pour aider à identifier les clients les plus pertinents à alerter selon vos règles, vos services et l’historique disponible.",
+        "Open Spot s’appuie sur les services, les préférences et le consentement SMS pour vous aider à contacter des clients admissibles, sans promettre de décision automatique.",
       example:
-        "Exemple : prioriser un client qui n’a pas réservé depuis 2 semaines, mais qui vient habituellement pour ce type de service.",
+        "Exemple : cibler les clients inscrits à la liste d’attente qui ont choisi ce type de service.",
+      aiRoadmap:
+        "Direction produit: l'aide par IA est prevue pour enrichir ce ciblage plus tard. Aujourd'hui, Open Spot reste base sur le consentement, les services et la validation manuelle.",
       note: "Zéro réservation automatique. Vous restez maître de votre agenda.",
       benefits: [
         [
           "Ciblage pertinent",
-          "L’agent aide à viser les clients les plus susceptibles de répondre."
+          "Les services choisis par les clients aident à préparer une alerte plus pertinente."
         ],
         [
           "Réponse plus rapide",
@@ -141,8 +145,8 @@ const copy = {
       ],
       rows: [
         ["Coupe régulière", "Service compatible"],
-        ["Maya", "Priorité haute"],
-        ["2 semaines sans visite", "Signal utile"],
+        ["Maya", "Intéressée"],
+        ["Consentement SMS", "Actif"],
         ["Confirmation", "Manuelle"]
       ],
       workflow: [
@@ -216,6 +220,8 @@ const copy = {
       how: "How it works",
       why: "Why Open Spot",
       pricing: "Pricing",
+      login: "Sign in",
+      signup: "Create account",
       call: "Book a call",
       switchLabel: "Français"
     },
@@ -247,11 +253,11 @@ const copy = {
         replyTwo: "Yes, 2:30 works",
         replyThree: "Thanks, but not today",
         repliesNote: "Replies arrive in real time.",
-        aiTitle: "AI smart targeting",
-        aiInsightOne: "Prioritized customer: has not booked in 2 weeks",
-        aiInsightTwo: "Signal: interest in this service",
-        aiInsightThree:
-          "AI selects the right contacts to improve your chances of recovering this spot.",
+        targetingTitle: "Criteria-based targeting",
+        targetingInsightOne: "Criteria: opted-in waitlist customer",
+        targetingInsightTwo: "Signal: interest in this service",
+        targetingInsightThree:
+          "You send the alert to eligible customers, then choose who to confirm.",
         manual: "You confirm manually",
         recovered: "Spot recovered",
         confirmed: "The appointment is confirmed.",
@@ -319,18 +325,20 @@ const copy = {
         ["Manual confirmation", "You choose who to confirm."]
       ]
     },
-    ai: {
-      badge: "Smart targeting",
-      title: "Target the right customers before the spot stays empty",
+    targeting: {
+      badge: "Controlled targeting",
+      title: "Contact the right customers without blasting your full list",
       text:
-        "Open Spot can use an AI agent to help identify the most relevant customers to alert based on your rules, services, and available history.",
+        "Open Spot uses services, preferences, and SMS consent to help you contact eligible customers without promising automated decisions.",
       example:
-        "Example: prioritize a customer who has not booked in 2 weeks, but usually comes in for this type of service.",
+        "Example: target waitlist customers who selected this type of service.",
+      aiRoadmap:
+        "Product direction: AI assistance is planned to improve this targeting later. Today, Open Spot remains based on consent, services, and manual validation.",
       note: "Zero automatic booking. You stay in control of your calendar.",
       benefits: [
         [
           "Relevant targeting",
-          "The agent helps focus on customers most likely to reply."
+          "Customer-selected services help prepare a more relevant alert."
         ],
         [
           "Faster response",
@@ -343,8 +351,8 @@ const copy = {
       ],
       rows: [
         ["Regular haircut", "Compatible service"],
-        ["Maya", "High priority"],
-        ["2 weeks since last visit", "Useful signal"],
+        ["Maya", "Interested"],
+        ["SMS consent", "Active"],
         ["Confirmation", "Manual"]
       ],
       workflow: [
@@ -453,7 +461,7 @@ function MarketingHeader({
 }) {
   return (
     <header className="sticky top-0 z-30 border-b border-white/70 bg-[#fbfaf7]/90 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6">
+      <div className="mx-auto flex min-h-16 w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:flex-nowrap">
         <Link
           className="rounded-md text-base font-black tracking-tight text-[#14262e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
@@ -467,23 +475,34 @@ function MarketingHeader({
           <HeaderLink href="#comment-ca-marche">{t.nav.how}</HeaderLink>
           <HeaderLink href="#pourquoi-open-spot">{t.nav.why}</HeaderLink>
           <HeaderLink href="#prix">{t.nav.pricing}</HeaderLink>
-          <HeaderLink href="/book-call/questions">{t.nav.call}</HeaderLink>
         </nav>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex w-full shrink-0 items-center gap-2 overflow-x-auto sm:w-auto sm:overflow-visible">
+          <Link
+            className="shrink-0 rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:text-sm"
+            href="/sign-in"
+          >
+            {t.nav.login}
+          </Link>
+          <Link
+            className="shrink-0 rounded-full bg-[#14262e] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#254047] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#14262e] sm:text-sm"
+            href="/signup"
+          >
+            {t.nav.signup}
+          </Link>
+          <Link
+            className="hidden shrink-0 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] md:inline-flex"
+            href="/book-call/questions"
+          >
+            {t.nav.call}
+          </Link>
           <button
             aria-label={locale === "fr" ? "Afficher la page en anglais" : "Show page in French"}
-            className="rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="shrink-0 rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             onClick={onToggleLocale}
             type="button"
           >
             {locale === "fr" ? "FR / EN" : "EN / FR"}
           </button>
-          <Link
-            className="hidden rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:inline-flex"
-            href="/book-call/questions"
-          >
-            {t.nav.call}
-          </Link>
         </div>
       </div>
     </header>
@@ -566,11 +585,11 @@ function HeroMockup({ t }: { t: Copy }) {
         <div className="flex items-center justify-between gap-3 border-b border-[#e4ebe7] pb-3">
           <div className="flex items-center gap-2">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#14262e] text-xs font-black text-white">
-              OS
+              2C
             </span>
             <div>
               <p className="text-sm font-black text-[#14262e]">Open Spot</p>
-              <p className="text-[11px] font-bold text-[var(--muted)]">SMS assistant</p>
+              <p className="text-[11px] font-bold text-[var(--muted)]">SMS recovery</p>
             </div>
           </div>
           <span
@@ -702,12 +721,12 @@ function HeroMockup({ t }: { t: Copy }) {
             </div>
             <div className="mt-5 rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3">
               <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--primary-strong)]">
-                {t.hero.visual.aiTitle}
+                {t.hero.visual.targetingTitle}
               </p>
               <ul className="mt-3 space-y-2 text-xs font-bold leading-5 text-[#254047]">
-                <li>{t.hero.visual.aiInsightOne}</li>
-                <li>{t.hero.visual.aiInsightTwo}</li>
-                <li>{t.hero.visual.aiInsightThree}</li>
+                <li>{t.hero.visual.targetingInsightOne}</li>
+                <li>{t.hero.visual.targetingInsightTwo}</li>
+                <li>{t.hero.visual.targetingInsightThree}</li>
               </ul>
             </div>
           </div>
@@ -842,25 +861,28 @@ function AiSection({ t }: { t: Copy }) {
       <div className="grid gap-8 rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(237,247,244,0.92),rgba(255,247,237,0.7))] p-5 shadow-sm sm:p-8 lg:grid-cols-[0.82fr_1.18fr] lg:p-10">
         <div className="os-reveal">
           <p className="inline-flex rounded-full border border-[#c4ddd5] bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
-            {t.ai.badge}
+            {t.targeting.badge}
           </p>
           <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
-            {t.ai.title}
+            {t.targeting.title}
           </h2>
-          <p className="mt-5 text-base leading-8 text-[var(--muted)]">{t.ai.text}</p>
+          <p className="mt-5 text-base leading-8 text-[var(--muted)]">{t.targeting.text}</p>
           <p className="mt-5 rounded-2xl border border-[#dbe8e4] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#254047]">
-            {t.ai.example}
+            {t.targeting.example}
+          </p>
+          <p className="mt-3 rounded-2xl border border-[#ead7f7] bg-[#fbf6ff] px-4 py-3 text-sm font-bold leading-6 text-[#5d3478]">
+            {t.targeting.aiRoadmap}
           </p>
           <p className="mt-3 rounded-2xl border border-[#c4ddd5] bg-[#fbfffd] px-4 py-3 text-sm font-black leading-6 text-[var(--primary-strong)]">
-            {t.ai.note}
+            {t.targeting.note}
           </p>
           <Link className="os-secondary-cta mt-6" href="#comment-ca-marche">
-            {t.ai.secondary}
+            {t.targeting.secondary}
           </Link>
         </div>
         <div className="os-reveal rounded-[1.5rem] bg-white p-4 shadow-sm sm:p-5">
           <div className="grid gap-3 sm:grid-cols-3">
-            {t.ai.benefits.map(([title, text]) => (
+            {t.targeting.benefits.map(([title, text]) => (
               <div
                 className="rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-3"
                 key={title}
@@ -873,15 +895,15 @@ function AiSection({ t }: { t: Copy }) {
           <div className="mt-5 rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-4">
             <div className="flex items-center gap-3">
               <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
-                AI
+                SMS
               </div>
               <div>
-                <p className="text-sm font-black text-[#14262e]">Open Spot Assistant</p>
-                <p className="text-xs text-[var(--muted)]">Prioritization preview</p>
+                <p className="text-sm font-black text-[#14262e]">Liste d’attente</p>
+                <p className="text-xs text-[var(--muted)]">Aperçu du ciblage</p>
               </div>
             </div>
             <div className="mt-5 grid gap-3">
-              {t.ai.rows.map(([label, status]) => (
+              {t.targeting.rows.map(([label, status]) => (
                 <div className="grid gap-2 rounded-2xl border border-[#e5ebe7] bg-white p-3 sm:grid-cols-[1fr_auto] sm:items-center" key={label}>
                   <p className="text-sm font-bold text-[#14262e]">{label}</p>
                   <span className="rounded-full bg-[#eaf5f2] px-3 py-1 text-xs font-black text-[var(--primary-strong)]">
@@ -892,7 +914,7 @@ function AiSection({ t }: { t: Copy }) {
             </div>
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-4">
-            {t.ai.workflow.map((step, index) => (
+            {t.targeting.workflow.map((step, index) => (
               <div className="rounded-2xl border border-[#e5ebe7] bg-white p-3" key={step}>
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
                   {index + 1}

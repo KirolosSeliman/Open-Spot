@@ -6,7 +6,7 @@ import {
   tableCellClass,
   tableHeadClass
 } from "@/components/dashboard/dashboard-ui";
-import { dashboardTeam } from "@/lib/dashboard/mock-data";
+import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 
 const permissions = [
   {
@@ -27,7 +27,17 @@ const permissions = [
   }
 ];
 
-export default function TeamPage() {
+export default async function TeamPage() {
+  const workspace = await getActiveOrganizationWorkspace();
+  const currentMember =
+    workspace.status === "ready"
+      ? {
+          email: workspace.user.email ?? workspace.user.id,
+          role: workspace.organization.role,
+          status: "Actif"
+        }
+      : null;
+
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
@@ -39,30 +49,36 @@ export default function TeamPage() {
             Invite member
           </button>
         }
-        description="Contrôlez qui peut envoyer des SMS, confirmer un client, gérer les services ou accéder aux paramètres sensibles."
-        title="Équipe"
+        description="Controlez qui peut envoyer des SMS, confirmer un client, gerer les services ou acceder aux parametres sensibles."
+        title="Equipe"
       />
       <Panel title="Membres">
         <TableShell>
           <thead>
             <tr>
-              <th className={tableHeadClass}>Name</th>
               <th className={tableHeadClass}>Email</th>
               <th className={tableHeadClass}>Role</th>
               <th className={tableHeadClass}>Status</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--line)] bg-white">
-            {dashboardTeam.map((member) => (
-              <tr key={member.id}>
-                <td className={`${tableCellClass} font-black`}>{member.name}</td>
-                <td className={tableCellClass}>{member.email}</td>
-                <td className={tableCellClass}>{member.role}</td>
+            {currentMember ? (
+              <tr>
+                <td className={`${tableCellClass} font-black`}>
+                  {currentMember.email}
+                </td>
+                <td className={tableCellClass}>{currentMember.role}</td>
                 <td className={tableCellClass}>
-                  <StatusBadge>{member.status}</StatusBadge>
+                  <StatusBadge>{currentMember.status}</StatusBadge>
                 </td>
               </tr>
-            ))}
+            ) : (
+              <tr>
+                <td className={tableCellClass} colSpan={3}>
+                  Supabase non configure.
+                </td>
+              </tr>
+            )}
           </tbody>
         </TableShell>
       </Panel>

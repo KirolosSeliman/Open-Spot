@@ -3,7 +3,27 @@ import { describe, expect, it } from "vitest";
 import { normalizePhoneToE164 } from "@/lib/customers/phone";
 
 describe("normalizePhoneToE164", () => {
-  it("normalizes Quebec-style 10 digit numbers to +1 E.164", () => {
+  it("normalizes North American phone input to +1 E.164", () => {
+    expect(normalizePhoneToE164("5142494425")).toEqual({
+      ok: true,
+      phoneE164: "+15142494425"
+    });
+    expect(normalizePhoneToE164("514-249-4425")).toEqual({
+      ok: true,
+      phoneE164: "+15142494425"
+    });
+    expect(normalizePhoneToE164("(514) 249-4425")).toEqual({
+      ok: true,
+      phoneE164: "+15142494425"
+    });
+    expect(normalizePhoneToE164("1-514-249-4425")).toEqual({
+      ok: true,
+      phoneE164: "+15142494425"
+    });
+    expect(normalizePhoneToE164("+15142494425")).toEqual({
+      ok: true,
+      phoneE164: "+15142494425"
+    });
     expect(normalizePhoneToE164("(514) 555-0199")).toEqual({
       ok: true,
       phoneE164: "+15145550199"
@@ -20,7 +40,11 @@ describe("normalizePhoneToE164", () => {
   it("rejects unsafe or incomplete numbers", () => {
     expect(normalizePhoneToE164("555")).toEqual({
       ok: false,
-      error: "Phone number must be a valid E.164 number."
+      error: "Enter a valid 10-digit Canadian or US phone number."
+    });
+    expect(normalizePhoneToE164("12345678901234567890")).toEqual({
+      ok: false,
+      error: "Enter a valid 10-digit Canadian or US phone number."
     });
   });
 });

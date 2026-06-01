@@ -1,8 +1,10 @@
-# 2e Chance RDV
+# Open Spot
 
-2e Chance RDV is a bilingual SMS-first cancellation recovery SaaS for appointment-based local businesses. It helps merchants fill last-minute openings by sending SMS offers to customers who have explicitly opted into a waitlist.
+Open Spot is a bilingual SMS-first cancellation recovery SaaS for appointment-based local businesses. It helps merchants fill last-minute openings by sending SMS offers to customers who have explicitly opted into a waitlist.
 
-The product is independent from Vistaire. It does not replace the merchant's booking system. Merchants keep using their current calendar, point-of-sale, phone, DM, or booking workflow, while 2e Chance RDV handles waitlist consent, last-minute SMS offers, replies, merchant validation, and recovered revenue reporting.
+The next planned product expansion adds appointment reminder automation: 24-hour reminders, YES/OUI confirmation, NO/NON cancellation handling, and optional conversion of SMS-confirmed cancellations into recoverable openings. This expansion must keep Open Spot focused as an SMS automation layer, not a full booking platform or generic CRM.
+
+The product is independent from Vistaire. It does not replace the merchant's booking system. Merchants keep using their current calendar, point-of-sale, phone, DM, or booking workflow, while Open Spot handles waitlist consent, last-minute SMS offers, replies, merchant validation, and recovered revenue reporting.
 
 ## MVP Positioning
 
@@ -37,6 +39,9 @@ Included in the MVP:
 - STOP unsubscribe handling
 - Basic admin view
 - Recovered revenue reporting
+- Planned appointment reminder foundation: appointment records, scheduled SMS queue,
+  bilingual reminder templates, confirmation/cancellation replies, and safe
+  cancellation-to-recovery automation.
 
 Not included in the MVP:
 
@@ -45,9 +50,14 @@ Not included in the MVP:
 - Automatic Square, Fresha, Booksy, or GOrendezvous integrations
 - Complex staff scheduling
 - Full CRM functionality
-- AI features
+- AI-assisted targeting is planned for a later product phase and must not be
+  presented as live automation until implemented.
 - Advanced billing automation
 - Automatic booking confirmation without merchant validation
+- Full appointment calendar replacement
+- Deep booking platform integrations
+- Automatic recovery SMS after a cancelled appointment unless explicitly enabled
+  by the merchant and protected by consent checks.
 
 ## Documentation
 
@@ -66,9 +76,101 @@ Not included in the MVP:
 - Never expose service keys or SMS provider credentials in client-side code.
 - Never allow one organization to read another organization's customers, openings, messages, or bookings.
 - Always require merchant validation before confirming a recovered booking.
+- Appointment reminders must re-check current consent before SMS is sent.
+- Client cancellation replies can create recoverable openings only when configured;
+  waitlist respondents still require manual merchant validation.
 
 ## Auth And Organization Status
 
-The app includes Supabase email/password sign-up, sign-in, sign-out, and an organization onboarding flow. A signed-in user without an organization is directed to `/onboarding`; creating an organization also creates the current user as `owner`.
+The app includes Supabase email/password sign-up, sign-in, sign-out, and an organization onboarding flow. A signed-in user without an organization is directed to `/onboarding`; creating an organization creates the owner profile, organization settings, owner membership, billing defaults, and audit record in one RPC-backed flow.
 
 Live testing requires `.env.local` with Supabase URL, anon key, and a server-only service role key. Do not commit `.env.local`.
+
+## Local SMS Simulator Recovery Test
+
+Use the simulator only for local cancellation-recovery testing. Do not configure Twilio or Plivo for this flow.
+
+1. Confirm `.env.local` contains `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `SMS_PROVIDER=simulator`. For preview/production simulator testing, also set a server-only `SIMULATOR_WEBHOOK_SECRET`.
+2. Run `npm install` if dependencies are missing.
+3. Run `npm run dev`.
+4. Sign in as a merchant, complete onboarding if needed, create at least one service, and create at least one opted-in customer on the waitlist.
+5. Open `/dashboard/new-cancellation`, create an opening, and note the customer phone shown in the prepared offer or response flow.
+6. Use the simulator source number `+10000000000` as the inbound `to` number.
+
+PowerShell positive reply:
+
+```powershell
+Invoke-WebRequest -Uri "http://localhost:3000/api/sms/inbound" -Method POST -ContentType "application/json" -UseBasicParsing -Body '{"from":"+15142494425","to":"+10000000000","body":"OUI","providerMessageId":"local-oui-1"}'
+```
+
+Expected result: JSON includes `status":"received_linked"` and the reply appears in `/dashboard/responses` as waiting for manual validation. `YES` and `1` should behave the same way.
+
+PowerShell `YES` reply:
+
+```powershell
+Invoke-WebRequest -Uri "http://localhost:3000/api/sms/inbound" -Method POST -ContentType "application/json" -UseBasicParsing -Body '{"from":"+15142494425","to":"+10000000000","body":"YES","providerMessageId":"local-yes-1"}'
+```
+
+Expected result: JSON includes `status":"received_linked"` and does not mark a booking as confirmed. The merchant must still validate manually.
+
+PowerShell opt-out:
+
+```powershell
+Invoke-WebRequest -Uri "http://localhost:3000/api/sms/inbound" -Method POST -ContentType "application/json" -UseBasicParsing -Body '{"from":"+15142494425","to":"+10000000000","body":"STOP","providerMessageId":"local-stop-1"}'
+```
+
+Expected result: JSON includes `status":"received_linked"` and `action":"opted_out"`, and the customer's current SMS consent is updated to `opted_out`. `ARRET`, `UNSUBSCRIBE`, and `CANCEL` also opt out when the reply is not in appointment-reminder context.
+
+PowerShell unknown reply:
+
+```powershell
+Invoke-WebRequest -Uri "http://localhost:3000/api/sms/inbound" -Method POST -ContentType "application/json" -UseBasicParsing -Body '{"from":"+15142494425","to":"+10000000000","body":"Maybe later","providerMessageId":"local-unknown-1"}'
+```
+
+Expected result: JSON includes `status":"received_linked"` and `classification":"unknown"` when a prior simulator outbound SMS exists. If there is no prior outbound simulator SMS matching `from` and `to`, the API returns `received_unlinked`; that means the app could not safely infer organization/customer/opening context.
+
+For preview or production simulator tests, include the protected header:
+
+```powershell
+Invoke-WebRequest -Uri "https://your-preview-url.example/api/sms/inbound" -Method POST -ContentType "application/json" -Headers @{"x-open-spot-simulator-secret"="your-secret"} -UseBasicParsing -Body '{"from":"+15142494425","to":"+10000000000","body":"OUI","providerMessageId":"preview-oui-1"}'
+```
+
+After an opt-out test, create another cancellation and confirm the same customer is excluded from future eligible recipients. Replies are visible in `/dashboard/responses`; positive replies stay in manual-validation state and never auto-confirm a booking.
+
+## Twilio Webhook Foundation
+
+Open Spot stays simulator-first locally. Do not configure Twilio for local testing unless you intentionally want to test the public webhook foundation after deployment.
+
+Required server-side environment variables for Twilio:
+
+```bash
+SMS_PROVIDER=twilio
+ALLOW_REAL_SMS_SENDS=true
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your-auth-token
+TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_SOURCE_NUMBER=+1XXXXXXXXXX
+TWILIO_STATUS_CALLBACK_URL=https://project-name.vercel.app/api/webhooks/twilio/status
+APP_BASE_URL=https://project-name.vercel.app
+```
+
+`APP_BASE_URL` can be a Vercel-generated URL. A custom domain is not required. Keep all Twilio values server-only; none should use a `NEXT_PUBLIC_` prefix. Real Twilio sending stays disabled unless both `SMS_PROVIDER=twilio` and `ALLOW_REAL_SMS_SENDS=true` are set.
+
+Twilio Console setup after deployment:
+
+1. Open Twilio Console and create or open a Messaging Service.
+2. In the Messaging Service integration/webhook settings, set **Incoming Messages** to **Send a webhook**.
+3. Set the incoming webhook URL to `{APP_BASE_URL}/api/webhooks/twilio/inbound`.
+4. Set the incoming method to `POST`.
+5. Set the **Delivery Status Callback** URL to `{APP_BASE_URL}/api/webhooks/twilio/status`.
+6. Set the status callback method to `POST`.
+
+The inbound webhook validates Twilio signatures with the official Twilio SDK, parses `From`, `To`, `Body`, `MessageSid`, `SmsSid`, `AccountSid`, and `MessagingServiceSid`, then reuses the same safe inbound processing as the simulator. `OUI`, `YES`, and `1` only prepare a pending merchant-validation response; they never auto-confirm a booking. `STOP`, `ARRET`, `ARRÊT`, `UNSUBSCRIBE`, and `CANCEL` opt out only when the message can be linked to trusted context.
+
+Optional one-off Twilio smoke test after credentials are configured:
+
+```bash
+ALLOW_REAL_SMS_SENDS=true TWILIO_ACCOUNT_SID=AC... TWILIO_AUTH_TOKEN=... TWILIO_SOURCE_NUMBER=+1XXXXXXXXXX npm run twilio:smoke -- +15145551234 "Test Open Spot"
+```
+
+The smoke test refuses to send unless `ALLOW_REAL_SMS_SENDS=true`, requires a real E.164 Twilio sender number, and never prints the auth token.

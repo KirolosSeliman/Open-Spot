@@ -9,6 +9,10 @@ export type ParsedCsv = {
 };
 
 export function parseCsv(input: string): ParsedCsv {
+  if (!input.trim()) {
+    throw new Error("CSV file is empty.");
+  }
+
   const records = parseCsvRecords(input.replace(/^\uFEFF/, ""));
   const [headerRecord, ...dataRecords] = records;
 
@@ -63,6 +67,10 @@ function parseCsvRecords(input: string) {
     }
 
     currentValue += char;
+  }
+
+  if (inQuotes) {
+    throw new Error("Malformed CSV: quoted field is not closed.");
   }
 
   currentRecord.push(currentValue);

@@ -42,6 +42,96 @@ export type Database = {
         };
         Relationships: [];
       };
+      appointment_events: {
+        Row: {
+          id: string;
+          organization_id: string;
+          appointment_id: string;
+          actor_profile_id: string | null;
+          event_type: string;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          appointment_id: string;
+          actor_profile_id?: string | null;
+          event_type: string;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          appointment_id?: string;
+          actor_profile_id?: string | null;
+          event_type?: string;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      appointments: {
+        Row: {
+          id: string;
+          organization_id: string;
+          customer_id: string;
+          service_id: string | null;
+          starts_at: string;
+          ends_at: string | null;
+          timezone: string;
+          status: string;
+          reminder_status: string;
+          confirmation_status: string;
+          reminder_24h_enabled: boolean;
+          confirmation_request_enabled: boolean;
+          source: string;
+          notes: string | null;
+          created_by_profile_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          customer_id: string;
+          service_id?: string | null;
+          starts_at: string;
+          ends_at?: string | null;
+          timezone?: string;
+          status?: string;
+          reminder_status?: string;
+          confirmation_status?: string;
+          reminder_24h_enabled?: boolean;
+          confirmation_request_enabled?: boolean;
+          source?: string;
+          notes?: string | null;
+          created_by_profile_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          customer_id?: string;
+          service_id?: string | null;
+          starts_at?: string;
+          ends_at?: string | null;
+          timezone?: string;
+          status?: string;
+          reminder_status?: string;
+          confirmation_status?: string;
+          reminder_24h_enabled?: boolean;
+          confirmation_request_enabled?: boolean;
+          source?: string;
+          notes?: string | null;
+          created_by_profile_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       booking_requests: {
         Row: {
           id: string;
@@ -135,6 +225,7 @@ export type Database = {
           email: string | null;
           preferred_language: Database["public"]["Enums"]["supported_language"];
           notes: string | null;
+          source: string;
           created_at: string;
           updated_at: string;
         };
@@ -146,6 +237,7 @@ export type Database = {
           email?: string | null;
           preferred_language?: Database["public"]["Enums"]["supported_language"];
           notes?: string | null;
+          source?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -157,6 +249,7 @@ export type Database = {
           email?: string | null;
           preferred_language?: Database["public"]["Enums"]["supported_language"];
           notes?: string | null;
+          source?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -254,6 +347,8 @@ export type Database = {
           offer_label: string | null;
           status: Database["public"]["Enums"]["opening_status"];
           expires_at: string | null;
+          source: string;
+          source_appointment_id: string | null;
           created_by: string | null;
           created_at: string;
           updated_at: string;
@@ -271,6 +366,8 @@ export type Database = {
           offer_label?: string | null;
           status?: Database["public"]["Enums"]["opening_status"];
           expires_at?: string | null;
+          source?: string;
+          source_appointment_id?: string | null;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -288,6 +385,8 @@ export type Database = {
           offer_label?: string | null;
           status?: Database["public"]["Enums"]["opening_status"];
           expires_at?: string | null;
+          source?: string;
+          source_appointment_id?: string | null;
           created_by?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -348,26 +447,86 @@ export type Database = {
         };
         Relationships: [];
       };
+      organization_settings: {
+        Row: {
+          id: string;
+          organization_id: string;
+          default_language: Database["public"]["Enums"]["supported_language"];
+          sms_daily_limit: number;
+          sms_monthly_limit: number;
+          waitlist_public_enabled: boolean;
+          appointment_reminders_enabled: boolean;
+          default_reminder_delay_hours: number;
+          appointment_confirmation_requests_enabled: boolean;
+          client_sms_cancellation_enabled: boolean;
+          auto_create_opening_on_sms_cancellation: boolean;
+          auto_send_recovery_sms_on_cancellation: boolean;
+          unavailable_sms_to_non_selected_enabled: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          default_language?: Database["public"]["Enums"]["supported_language"];
+          sms_daily_limit?: number;
+          sms_monthly_limit?: number;
+          waitlist_public_enabled?: boolean;
+          appointment_reminders_enabled?: boolean;
+          default_reminder_delay_hours?: number;
+          appointment_confirmation_requests_enabled?: boolean;
+          client_sms_cancellation_enabled?: boolean;
+          auto_create_opening_on_sms_cancellation?: boolean;
+          auto_send_recovery_sms_on_cancellation?: boolean;
+          unavailable_sms_to_non_selected_enabled?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          default_language?: Database["public"]["Enums"]["supported_language"];
+          sms_daily_limit?: number;
+          sms_monthly_limit?: number;
+          waitlist_public_enabled?: boolean;
+          appointment_reminders_enabled?: boolean;
+          default_reminder_delay_hours?: number;
+          appointment_confirmation_requests_enabled?: boolean;
+          client_sms_cancellation_enabled?: boolean;
+          auto_create_opening_on_sms_cancellation?: boolean;
+          auto_send_recovery_sms_on_cancellation?: boolean;
+          unavailable_sms_to_non_selected_enabled?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       organization_members: {
         Row: {
           id: string;
           organization_id: string;
           user_id: string;
+          profile_id: string;
           role: Database["public"]["Enums"]["organization_role"];
+          status: string;
           created_at: string;
         };
         Insert: {
           id?: string;
           organization_id: string;
           user_id: string;
+          profile_id: string;
           role?: Database["public"]["Enums"]["organization_role"];
+          status?: string;
           created_at?: string;
         };
         Update: {
           id?: string;
           organization_id?: string;
           user_id?: string;
+          profile_id?: string;
           role?: Database["public"]["Enums"]["organization_role"];
+          status?: string;
           created_at?: string;
         };
         Relationships: [];
@@ -408,6 +567,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      profiles: {
+        Row: {
+          id: string;
+          auth_user_id: string;
+          full_name: string | null;
+          email: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          auth_user_id: string;
+          full_name?: string | null;
+          email?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          auth_user_id?: string;
+          full_name?: string | null;
+          email?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       services: {
         Row: {
           id: string;
@@ -442,6 +628,69 @@ export type Database = {
           normal_price_cents?: number | null;
           currency?: string;
           active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      scheduled_messages: {
+        Row: {
+          id: string;
+          organization_id: string;
+          customer_id: string;
+          appointment_id: string | null;
+          opening_id: string | null;
+          message_type: string;
+          channel: string;
+          scheduled_for: string;
+          status: string;
+          template_key: string;
+          body_snapshot: string | null;
+          provider: string | null;
+          provider_message_id: string | null;
+          sent_at: string | null;
+          failed_at: string | null;
+          error_message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          customer_id: string;
+          appointment_id?: string | null;
+          opening_id?: string | null;
+          message_type: string;
+          channel?: string;
+          scheduled_for: string;
+          status?: string;
+          template_key: string;
+          body_snapshot?: string | null;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          sent_at?: string | null;
+          failed_at?: string | null;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          customer_id?: string;
+          appointment_id?: string | null;
+          opening_id?: string | null;
+          message_type?: string;
+          channel?: string;
+          scheduled_for?: string;
+          status?: string;
+          template_key?: string;
+          body_snapshot?: string | null;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          sent_at?: string | null;
+          failed_at?: string | null;
+          error_message?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -495,6 +744,7 @@ export type Database = {
           organization_id: string;
           customer_id: string | null;
           opening_id: string | null;
+          appointment_id: string | null;
           direction: Database["public"]["Enums"]["sms_direction"];
           provider: string;
           provider_message_id: string | null;
@@ -510,6 +760,7 @@ export type Database = {
           organization_id: string;
           customer_id?: string | null;
           opening_id?: string | null;
+          appointment_id?: string | null;
           direction: Database["public"]["Enums"]["sms_direction"];
           provider: string;
           provider_message_id?: string | null;
@@ -525,6 +776,7 @@ export type Database = {
           organization_id?: string;
           customer_id?: string | null;
           opening_id?: string | null;
+          appointment_id?: string | null;
           direction?: Database["public"]["Enums"]["sms_direction"];
           provider?: string;
           provider_message_id?: string | null;
@@ -534,6 +786,39 @@ export type Database = {
           status?: string;
           error_message?: string | null;
           created_at?: string;
+        };
+        Relationships: [];
+      };
+      sms_templates: {
+        Row: {
+          id: string;
+          organization_id: string | null;
+          template_key: string;
+          language: string;
+          body: string;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id?: string | null;
+          template_key: string;
+          language: string;
+          body: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string | null;
+          template_key?: string;
+          language?: string;
+          body?: string;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
         };
         Relationships: [];
       };
@@ -587,6 +872,7 @@ export type Database = {
           preferred_time_windows: string[];
           discount_interest: boolean;
           notes: string | null;
+          source: string;
           created_at: string;
           updated_at: string;
         };
@@ -600,6 +886,7 @@ export type Database = {
           preferred_time_windows?: string[];
           discount_interest?: boolean;
           notes?: string | null;
+          source?: string;
           created_at?: string;
           updated_at?: string;
         };
@@ -613,8 +900,33 @@ export type Database = {
           preferred_time_windows?: string[];
           discount_interest?: boolean;
           notes?: string | null;
+          source?: string;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      waitlist_entry_services: {
+        Row: {
+          id: string;
+          organization_id: string;
+          waitlist_entry_id: string;
+          service_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          waitlist_entry_id: string;
+          service_id: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          waitlist_entry_id?: string;
+          service_id?: string;
+          created_at?: string;
         };
         Relationships: [];
       };
@@ -634,6 +946,23 @@ export type Database = {
         };
         Returns: string;
       };
+      create_opening_with_offers: {
+        Args: {
+          target_organization_id: string;
+          target_service_id: string | null;
+          opening_title: string;
+          opening_start_time: string;
+          opening_end_time: string;
+          opening_offer_label: string | null;
+        };
+        Returns: string;
+      };
+      get_public_waitlist_signup_data: {
+        Args: {
+          organization_slug: string;
+        };
+        Returns: Json;
+      };
       register_waitlist_signup: {
         Args: {
           organization_slug: string;
@@ -644,9 +973,19 @@ export type Database = {
           preferred_days: string[];
           preferred_time_windows: string[];
           wants_discount: boolean;
+          consent_accepted: boolean;
           consent_copy: string;
+          signup_source: string;
+          service_ids: string[];
         };
         Returns: string;
+      };
+      record_simulator_broadcast_audit: {
+        Args: {
+          target_opening_id: string;
+          sent_count: number;
+        };
+        Returns: undefined;
       };
       validate_opening_offer: {
         Args: {

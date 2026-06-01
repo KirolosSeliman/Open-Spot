@@ -9,6 +9,8 @@ export type PhoneNormalizationResult =
     };
 
 const e164Pattern = /^\+[1-9][0-9]{7,14}$/;
+export const invalidNorthAmericanPhoneMessage =
+  "Enter a valid 10-digit Canadian or US phone number.";
 
 export function normalizePhoneToE164(input: string): PhoneNormalizationResult {
   const trimmed = input.trim();
@@ -38,6 +40,6 @@ export function normalizePhoneToE164(input: string): PhoneNormalizationResult {
 
   return {
     ok: false,
-    error: "Phone number must be a valid E.164 number."
+    error: invalidNorthAmericanPhoneMessage
   };
 }

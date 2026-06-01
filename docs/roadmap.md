@@ -126,6 +126,79 @@ Expected output:
 - Manual QA checklist
 - Known limitations and beta-readiness verdict
 
+## Appointment Reminder Expansion
+
+This expansion starts after the current cancellation-recovery foundation is
+stable. It must be implemented in the prompt-pack order and must not turn Open
+Spot into a full booking platform.
+
+### Reminder Phase 01: Audit and Product Scope
+
+Goal: align documentation, product scope, architecture, data model proposal,
+roadmap, and SMS compliance rules before implementation.
+
+Gate: docs updated, no migrations or runtime feature work started.
+
+### Reminder Phase 02: Database, RLS, and Tenant Safety
+
+Goal: add `appointments`, `scheduled_messages`, `sms_templates`,
+`appointment_events`, conservative automation settings, RLS policies, indexes,
+and idempotency constraints.
+
+Gate: migrations are additive, RLS is tenant-safe, and no SMS sending is added.
+
+### Reminder Phase 03: Appointment Domain and UI
+
+Goal: add minimal merchant appointment management and server-side appointment
+state transitions.
+
+Gate: merchants can create/view/update/cancel basic appointments without
+replacing their booking system.
+
+### Reminder Phase 04: Scheduled Message Cron Engine
+
+Goal: process due scheduled messages through a protected, idempotent cron route.
+
+Gate: simulator-first sending, consent re-checks, appointment status re-checks,
+and duplicate-send prevention are implemented.
+
+### Reminder Phase 05: Templates and Inbound Reply Parser
+
+Goal: add bilingual reminder/acknowledgement templates and parser rules for
+YES/OUI, NO/NON, STOP/ARRET, and ambiguous CANCEL handling.
+
+Gate: opt-out has highest priority and waitlist replies remain merchant-validated.
+
+### Reminder Phase 06: Cancellation-to-Recovery Workflow
+
+Goal: when configured, turn client SMS cancellations into recoverable openings
+without automatically confirming waitlist respondents.
+
+Gate: duplicate openings/messages are prevented and manual validation remains
+mandatory.
+
+### Reminder Phase 07: Dashboard Reporting
+
+Goal: show reminder outcomes, cancellation outcomes, manual follow-up queues,
+and recovered appointment metrics without double-counting.
+
+Gate: metrics are organization-scoped and recovered revenue is counted only
+after merchant validation.
+
+### Reminder Phase 08: Automation Bundles
+
+Goal: productize Essential SMS, Anti No-Show, and Recovery Pro settings/copy
+with conservative defaults.
+
+Gate: settings do not overpromise or bypass consent/manual validation.
+
+### Reminder Phase 09: Final Security and QA
+
+Goal: final security, performance, QA, environment, and beta-readiness review.
+
+Gate: no known path sends SMS to opted-out/non-consented customers, duplicates
+real sends, leaks tenant data, or auto-confirms recovered bookings.
+
 ## Phase Discipline
 
 Do not move to a later phase while the current phase has unresolved critical issues. Later-phase requirements discovered early should be documented instead of implemented out of sequence.

@@ -12,6 +12,7 @@ describe("filterEligibleOpeningRecipients", () => {
           consentStatus: "opted_in",
           waitlistStatus: "active",
           serviceId: "hair",
+          serviceInterestIds: ["hair"],
           alreadyOffered: false
         },
         {
@@ -20,6 +21,7 @@ describe("filterEligibleOpeningRecipients", () => {
           consentStatus: "needs_consent",
           waitlistStatus: "active",
           serviceId: "hair",
+          serviceInterestIds: ["hair"],
           alreadyOffered: false
         },
         {
@@ -28,6 +30,7 @@ describe("filterEligibleOpeningRecipients", () => {
           consentStatus: "opted_out",
           waitlistStatus: "active",
           serviceId: "hair",
+          serviceInterestIds: ["hair"],
           alreadyOffered: false
         },
         {
@@ -36,6 +39,7 @@ describe("filterEligibleOpeningRecipients", () => {
           consentStatus: "opted_in",
           waitlistStatus: "paused",
           serviceId: "hair",
+          serviceInterestIds: ["hair"],
           alreadyOffered: false
         },
         {
@@ -44,7 +48,76 @@ describe("filterEligibleOpeningRecipients", () => {
           consentStatus: "opted_in",
           waitlistStatus: "active",
           serviceId: "hair",
+          serviceInterestIds: ["hair"],
           alreadyOffered: true
+        }
+      ],
+      "hair"
+    );
+
+    expect(recipients.map((recipient) => recipient.customerId)).toEqual(["a"]);
+  });
+
+  it("matches against selected service interests and supports general waitlist fallback", () => {
+    const recipients = filterEligibleOpeningRecipients(
+      [
+        {
+          customerId: "multi",
+          phoneE164: "+15145550199",
+          consentStatus: "opted_in",
+          waitlistStatus: "active",
+          serviceId: null,
+          serviceInterestIds: ["color", "hair"],
+          alreadyOffered: false
+        },
+        {
+          customerId: "general",
+          phoneE164: "+15145550198",
+          consentStatus: "opted_in",
+          waitlistStatus: "active",
+          serviceId: null,
+          serviceInterestIds: [],
+          alreadyOffered: false
+        },
+        {
+          customerId: "miss",
+          phoneE164: "+15145550197",
+          consentStatus: "opted_in",
+          waitlistStatus: "active",
+          serviceId: null,
+          serviceInterestIds: ["nails"],
+          alreadyOffered: false
+        }
+      ],
+      "hair"
+    );
+
+    expect(recipients.map((recipient) => recipient.customerId)).toEqual([
+      "multi",
+      "general"
+    ]);
+  });
+
+  it("does not return duplicate customers when service interests repeat", () => {
+    const recipients = filterEligibleOpeningRecipients(
+      [
+        {
+          customerId: "a",
+          phoneE164: "+15145550199",
+          consentStatus: "opted_in",
+          waitlistStatus: "active",
+          serviceId: null,
+          serviceInterestIds: ["hair", "hair"],
+          alreadyOffered: false
+        },
+        {
+          customerId: "a",
+          phoneE164: "+15145550199",
+          consentStatus: "opted_in",
+          waitlistStatus: "active",
+          serviceId: "hair",
+          serviceInterestIds: ["hair"],
+          alreadyOffered: false
         }
       ],
       "hair"

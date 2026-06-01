@@ -1,5 +1,36 @@
 import type { SmsProviderClient } from "@/lib/sms/provider";
 
+export const SIMULATOR_WEBHOOK_SECRET_HEADER = "x-open-spot-simulator-secret";
+
+export function isSimulatorWebhookAllowed({
+  providerName,
+  requestSecret,
+  configuredSecret = process.env.SIMULATOR_WEBHOOK_SECRET,
+  nodeEnv = process.env.NODE_ENV,
+  vercelEnv = process.env.VERCEL_ENV
+}: {
+  providerName: string;
+  requestSecret?: string | null;
+  configuredSecret?: string;
+  nodeEnv?: string;
+  vercelEnv?: string;
+}) {
+  if (providerName !== "simulator") {
+    return true;
+  }
+
+  const deployedEnvironment =
+    nodeEnv === "production" ||
+    vercelEnv === "preview" ||
+    vercelEnv === "production";
+
+  if (!deployedEnvironment) {
+    return true;
+  }
+
+  return Boolean(configuredSecret) && requestSecret === configuredSecret;
+}
+
 export function createSimulatorSmsProvider(): SmsProviderClient {
   return {
     getProviderName() {

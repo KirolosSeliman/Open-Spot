@@ -2,7 +2,7 @@
 
 ## Principles
 
-2e Chance RDV stores customer contact data and consent records. The product must treat privacy, tenant isolation, and SMS consent as launch-critical requirements.
+Open Spot stores customer contact data and consent records. The product must treat privacy, tenant isolation, and SMS consent as launch-critical requirements.
 
 Security rules:
 
@@ -13,6 +13,14 @@ Security rules:
 - SMS provider secrets must never be exposed client-side.
 - Imported customers must not be considered opted in unless explicit proof is stored.
 - Opted-out customers must never receive cancellation-recovery SMS.
+- Appointment reminders and scheduled automation must re-check current consent
+  before SMS is sent.
+- Cron/webhook flows must be idempotent so retries do not duplicate SMS or
+  state transitions.
+- The Phase 02 appointment reminder foundation creates storage and RLS only.
+  Cron processing is now protected by a server-only secret and the simulator
+  remains the safe default. Real provider sending remains disabled until a later
+  provider integration phase.
 
 ## Tenant Isolation
 
@@ -27,10 +35,20 @@ All business data should be scoped to `organization_id`, including:
 - Opening offers
 - SMS messages
 - Booking requests or recovered bookings
+- Appointments
+- Scheduled messages
+- Appointment events
 - Organization settings
 - Audit logs
 
 RLS policies should restrict rows to authenticated users who belong to the matching organization. Admin/support access must be explicit and auditable.
+
+The appointment reminder foundation adds `appointments`,
+`scheduled_messages`, `sms_templates`, and `appointment_events` with RLS enabled.
+Members can read organization-scoped rows, operational roles can create/update
+appointments and scheduled message records, owners/managers manage organization
+SMS template overrides, and appointment events are append-only for normal app
+roles.
 
 ## Roles
 
@@ -66,6 +84,9 @@ Audit logs should record:
 - STOP opt-outs.
 - Opening creation and SMS send attempts.
 - Manual booking validation.
+- Appointment creation, confirmation, cancellation, and no-show state changes.
+- Scheduled reminder processing outcomes.
+- Cancellation-to-opening automation.
 - Settings changes.
 - Member and role changes.
 
@@ -78,6 +99,7 @@ Expected server-side secrets:
 - Supabase service role key.
 - SMS provider credentials.
 - Webhook signing secrets.
+- Cron secret for scheduled message processing.
 - Stripe secrets in later phases.
 
 Expected browser-safe variables:
@@ -86,6 +108,11 @@ Expected browser-safe variables:
 - Supabase anon key.
 
 All environment variables must be documented before use.
+
+Cron calls to `/api/cron/send-scheduled-messages` must include
+`Authorization: Bearer $CRON_SECRET`. The route uses server-side service role
+access, claims pending rows before provider execution, and re-checks consent and
+appointment status at send time.
 
 ## Data Minimization
 
@@ -97,6 +124,8 @@ Store only what is needed for waitlist and recovery workflows:
 - Relevant service preferences.
 - Consent state and source.
 - Message metadata needed for compliance and troubleshooting.
+- Appointment timing/status needed for reminders.
+- Scheduled message state needed for idempotent processing.
 
 Avoid storing unnecessary notes, sensitive health details, or unrelated CRM data.
 

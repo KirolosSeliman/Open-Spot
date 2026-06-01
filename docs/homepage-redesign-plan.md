@@ -4,7 +4,7 @@
 
 This plan covers the marketing homepage redesign only. It must not change Supabase, Auth, RLS, database migrations, SMS delivery, Stripe, or dashboard logic.
 
-The homepage should make 2e Chance RDV understandable in a few seconds for salons, barbers, beauty/esthetic businesses, and appointment-based merchants. French is the default language.
+The homepage should make Open Spot understandable in a few seconds for salons, barbers, beauty/esthetic businesses, and appointment-based merchants. French is the default language.
 
 ## Current Homepage Audit
 
@@ -22,7 +22,7 @@ Current issues to fix in later phases:
 
 - Header navigation and CTAs are English-first.
 - Primary homepage CTA currently points to pricing/dashboard instead of `/remplir-mes-annulations`.
-- The homepage does not mention the AI targeting assistant.
+- The homepage should describe controlled targeting without claiming automated AI decisions.
 - The page does not yet include the cartoonish scroll story.
 - There is no booking-intent page for the primary CTA.
 
@@ -30,9 +30,9 @@ Current issues to fix in later phases:
 
 The homepage should follow this order:
 
-1. Hero: immediate promise, current booking-system reassurance, AI targeting line, primary CTA, secondary CTA.
-2. Scroll story: a simple salon/barber scene showing cancellation stress, AI targeting, SMS replies, merchant validation, and recovered appointment.
-3. AI agent explanation: make clear that the assistant helps target relevant customers and reduce notification fatigue without guaranteeing bookings.
+1. Hero: immediate promise, current booking-system reassurance, controlled targeting line, primary CTA, secondary CTA.
+2. Scroll story: a simple salon/barber scene showing cancellation stress, service/consent targeting, SMS replies, merchant validation, and recovered appointment.
+3. Targeting explanation: make clear that Open Spot helps contact eligible customers without guaranteeing bookings or automating merchant decisions.
 4. Why different: not a booking system replacement, no customer app, merchant stays in control.
 5. Who it is for: salons, barbers, esthetics, and appointment-based businesses with repeat customers.
 6. Pricing preview: simple expectation-setting, without adding Stripe or checkout.
@@ -52,10 +52,10 @@ Hero subtitle:
 Gardez votre système de rendez-vous actuel. Quand une place se libère, les bons clients sont notifiés par SMS et peuvent réserver rapidement.
 ```
 
-AI line:
+Targeting line:
 
 ```text
-Un agent IA aide à cibler les bons clients pour éviter les notifications inutiles.
+Open Spot aide à contacter les clients admissibles selon les services choisis et le consentement SMS.
 ```
 
 Primary CTA:
@@ -79,33 +79,33 @@ Voir comment ça fonctionne
 Scroll story title:
 
 ```text
-Une annulation. Un agent IA. Une place récupérée.
+Une annulation. Une alerte ciblée. Une place récupérée.
 ```
 
-AI trust copy:
+Targeting trust copy:
 
 ```text
-L'agent IA ne promet pas de remplir chaque place. Il aide à choisir les clients les plus pertinents selon le contexte, pour envoyer moins de messages inutiles.
+Open Spot ne promet pas de remplir chaque place. Le ciblage aide à contacter des clients admissibles pour envoyer moins de messages inutiles.
 ```
 
 Differentiation copy:
 
 ```text
-2e Chance RDV travaille à côté de votre système actuel. Vos clients reçoivent un SMS, répondent simplement, et vous choisissez qui confirmer.
+Open Spot travaille à côté de votre système actuel. Vos clients reçoivent un SMS, répondent simplement, et vous choisissez qui confirmer.
 ```
 
 ## Visual Direction
 
 Use a modern cartoonish universal salon/barber scene. It should feel emotional, simple, slightly funny, and professional, not childish.
 
-No external images should be used. Visuals should be built with CSS/HTML/SVG-like shapes inside React components. A friendly abstract AI assistant can appear as a bubble/halo/light form, not a robot.
+No external images should be used. Visuals should be built with CSS/HTML/SVG-like shapes inside React components. A friendly SMS/list signal can appear as a bubble/halo/light form, not a robot.
 
 Story sequence:
 
 1. A last-minute appointment gets cancelled.
 2. The merchant is stressed and tries to message people manually.
-3. The AI assistant appears.
-4. The AI targets relevant customers instead of notifying everyone.
+3. Open Spot prepares an eligible customer list.
+4. The alert targets relevant customers instead of notifying everyone.
 5. Selected customers receive an SMS.
 6. Replies arrive in order.
 7. The merchant chooses who to confirm.
@@ -119,7 +119,7 @@ Do not introduce a new i18n system in this pack. Keep the copy structure English
 
 ## Guardrails
 
-- Do not claim the AI guarantees bookings.
+- Do not claim automated intelligence guarantees bookings or confirmations.
 - Do not make last-minute discounts the homepage focus.
 - Do not imply real SMS is active in local/dev mode.
 - Do not claim the full product is launched.

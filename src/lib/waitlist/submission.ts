@@ -1,8 +1,15 @@
 import { normalizePhoneToE164 } from "@/lib/customers/phone";
 import type { Locale } from "@/lib/i18n/types";
+import {
+  normalizeWaitlistSignupSource,
+  type WaitlistSignupSource
+} from "@/lib/waitlist/sources";
 
 export const waitlistConsentCopy =
-  "I agree to receive SMS about last-minute openings from this business and understand I can reply STOP to unsubscribe.";
+  "I agree to receive SMS alerts about last-minute openings from this business. I understand replying does not automatically confirm an appointment, the merchant must validate manually, message/data rates may apply, and I can reply STOP or ARRET to unsubscribe.";
+
+const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export type WaitlistSubmissionInput = {
   organizationSlug: string;
@@ -10,10 +17,12 @@ export type WaitlistSubmissionInput = {
   phone: string;
   preferredLanguage: string;
   serviceInterest?: string;
+  serviceIds?: string[];
   preferredDays?: string;
   preferredTimeWindows?: string;
   discountInterest?: boolean;
   consentAccepted: boolean;
+  signupSource?: string;
 };
 
 export type WaitlistSubmissionPayload = {
@@ -22,10 +31,13 @@ export type WaitlistSubmissionPayload = {
   phoneE164: string;
   preferredLanguage: Locale;
   serviceInterest: string;
+  serviceIds: string[];
   preferredDays: string[];
   preferredTimeWindows: string[];
   discountInterest: boolean;
+  consentAccepted: true;
   consentText: string;
+  signupSource: WaitlistSignupSource;
 };
 
 export function createWaitlistSubmissionPayload(
@@ -52,6 +64,12 @@ export function createWaitlistSubmissionPayload(
     errors.push("SMS consent is required to join the waitlist.");
   }
 
+  const serviceIds = uniqueNonEmpty(input.serviceIds);
+
+  if (serviceIds.some((serviceId) => !uuidPattern.test(serviceId))) {
+    errors.push("Selected service ids are invalid.");
+  }
+
   if (errors.length > 0 || !phone.ok) {
     return {
       ok: false,
@@ -67,12 +85,21 @@ export function createWaitlistSubmissionPayload(
       phoneE164: phone.phoneE164,
       preferredLanguage: input.preferredLanguage === "fr" ? "fr" : "en",
       serviceInterest: input.serviceInterest?.trim() ?? "",
+      serviceIds,
       preferredDays: splitList(input.preferredDays),
       preferredTimeWindows: splitList(input.preferredTimeWindows),
       discountInterest: Boolean(input.discountInterest),
-      consentText: waitlistConsentCopy
+      consentAccepted: true,
+      consentText: waitlistConsentCopy,
+      signupSource: normalizeWaitlistSignupSource(input.signupSource)
     }
   };
+}
+
+function uniqueNonEmpty(values: string[] | undefined) {
+  return Array.from(
+    new Set((values ?? []).map((value) => value.trim()).filter(Boolean))
+  );
 }
 
 function splitList(value: string | undefined) {

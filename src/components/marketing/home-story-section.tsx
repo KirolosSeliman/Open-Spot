@@ -11,7 +11,7 @@ export function HomeStorySection() {
           Comment ça fonctionne
         </p>
         <h2 className="mt-3 max-w-3xl text-3xl font-bold leading-tight text-[var(--foreground)] sm:text-4xl">
-          Une annulation. Un agent IA. Une place récupérée.
+          Une annulation. Une alerte ciblée. Une place récupérée.
         </h2>
         <p className="mt-4 max-w-2xl text-base leading-7 text-[var(--muted)]">
           Une petite histoire en huit moments, pensée pour expliquer le produit

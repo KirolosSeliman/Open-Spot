@@ -2,9 +2,14 @@
 
 ## Product Definition
 
-2e Chance RDV is a bilingual SMS-first cancellation recovery platform for appointment-based local businesses. It is an independent SaaS product and is unrelated to Vistaire.
+Open Spot is a bilingual SMS-first cancellation recovery platform for appointment-based local businesses. It is an independent SaaS product and is unrelated to Vistaire.
 
 The product helps merchants fill last-minute appointment openings by contacting opted-in customers from a waitlist. Customers do not need an app. Customers interact by SMS, while merchants use a web dashboard.
+
+The planned reminder expansion keeps that same product boundary. Open Spot may
+store lightweight appointment records so it can send reminder and confirmation
+SMS, but it must not become a complete calendar, booking marketplace, staff
+scheduler, or replacement for the merchant's existing booking system.
 
 Initial target sectors:
 
@@ -57,6 +62,29 @@ No billing-critical logic should depend on client-side calculations alone.
 - Recovered revenue reporting.
 - Simple admin view for operational support.
 
+## Reminder Automation Expansion Scope
+
+Planned in the appointment reminder expansion:
+
+- Manual or imported appointment records.
+- 24-hour appointment reminder SMS.
+- Optional later 2-hour reminder if the scheduled message engine supports it safely.
+- YES/OUI/1 appointment confirmation replies.
+- NO/NON/ANNULER/CANCEL appointment cancellation replies.
+- Cancellation-to-recovery flow when merchant settings explicitly allow it.
+- Durable scheduled message queue with idempotent cron processing.
+- Bilingual reminder, confirmation, cancellation, and recovery templates.
+- Appointment event history for state changes.
+- Reminder outcome reporting.
+
+Explicitly not part of this expansion:
+
+- Replacing Square, Fresha, Booksy, GoRendezvous, Google Calendar, or the
+  merchant's existing booking workflow.
+- Complex staff calendars, recurring appointment rules, or drag-and-drop schedule UI.
+- Automatic confirmation of a waitlist respondent after a cancellation.
+- Sending SMS to customers whose current consent is `needs_consent` or `opted_out`.
+
 ## MVP Out of Scope
 
 - Customer mobile app.
@@ -65,7 +93,9 @@ No billing-critical logic should depend on client-side calculations alone.
 - Automatic booking platform integrations.
 - Complex staff scheduling.
 - Full CRM.
-- AI features.
+- Fully implemented AI-assisted targeting. AI is a planned product direction,
+  but the current workflow must stay honest: service preferences, consent, and
+  manual validation remain the live decision path until AI is actually built.
 - Advanced billing automation.
 - Automatic booking confirmation without merchant validation.
 - Sending SMS to imported customers who have not given explicit consent.
@@ -84,6 +114,10 @@ No billing-critical logic should depend on client-side calculations alone.
 10. Imported customers without clear consent start as `needs_consent`.
 11. STOP, ARRET, UNSUBSCRIBE, and equivalent opt-out replies must be processed immediately.
 12. Sensitive actions must be auditable.
+13. Appointment reminders must re-check current consent at send time.
+14. Appointment cancellation replies can create recoverable openings only when
+    configured by the merchant.
+15. A recovered waitlist client is never confirmed automatically.
 
 ## Primary User Flows
 
@@ -116,7 +150,7 @@ Merchant creates opening
 -> Selects service, date/time, capacity, optional offer
 -> System identifies eligible opted-in waitlist customers
 -> Merchant reviews audience estimate
--> System sends SMS through simulator or provider
+-> System prepares the audience and message for a later send phase
 ```
 
 ### Reply and Validation
@@ -130,6 +164,19 @@ Customer replies YES / OUI / 1
 -> Selected customer receives confirmation
 -> Other respondents receive unavailable message when configured
 -> Recovered revenue and commission estimate are recorded
+```
+
+### Appointment Reminder and Cancellation
+
+```text
+Merchant creates or imports appointment
+-> System schedules a 24-hour reminder if enabled
+-> Cron processor claims due message idempotently
+-> System re-checks appointment status and current consent
+-> Customer replies YES/OUI to confirm or NO/NON/ANNULER/CANCEL to cancel
+-> System records the inbound message and appointment event
+-> Optional configured cancellation-to-opening workflow creates a recoverable opening
+-> Waitlist recovery still requires manual merchant validation
 ```
 
 ### Opt-Out

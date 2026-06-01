@@ -1,19 +1,19 @@
 const aiCards = [
   {
     title: "Historique de rendez-vous",
-    text: "Évitez de relancer quelqu'un qui vient tout juste de réserver."
+    text: "Evitez de relancer quelqu'un qui vient tout juste de reserver."
   },
   {
     title: "Pertinence du service",
-    text: "Priorisez les clients intéressés par le bon type de rendez-vous."
+    text: "Priorisez les clients interesses par le bon type de rendez-vous."
   },
   {
     title: "Moins de fatigue",
-    text: "Réduisez les notifications inutiles pour protéger votre liste SMS."
+    text: "Reduisez les notifications inutiles pour proteger votre liste SMS."
   },
   {
-    title: "Contrôle humain",
-    text: "L'IA aide à cibler. Le commerce choisit qui confirmer."
+    title: "Controle humain",
+    text: "Les criteres aident a preparer la liste. Le commerce choisit qui confirmer."
   }
 ];
 
@@ -23,22 +23,20 @@ export function AiTargetingSection() {
       <div className="grid gap-8 rounded-2xl border border-[var(--line)] bg-white p-5 shadow-sm sm:p-8 lg:grid-cols-[0.95fr_1.05fr] lg:p-10">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-[var(--primary)]">
-            Ciblage intelligent
+            Ciblage IA planifie
           </p>
           <h2 className="mt-3 text-3xl font-bold leading-tight text-[var(--foreground)] sm:text-4xl">
-            Des SMS plus intelligents, pas plus nombreux.
+            Des SMS plus pertinents, sans promesse automatique.
           </h2>
           <p className="mt-4 text-base leading-7 text-[var(--muted)]">
-            L&apos;agent IA aide à cibler les clients les plus pertinents selon
-            le contexte du commerce, l&apos;historique de rendez-vous et le type
-            de service. L&apos;objectif: moins de notifications inutiles, plus
-            de respect pour vos clients, et un meilleur signal pour remplir le
-            bon créneau.
+            Open Spot est pense pour enrichir plus tard la preparation de liste
+            avec de l&apos;aide par IA. Aujourd&apos;hui, la logique reste centree sur
+            les services choisis, les preferences, le consentement SMS et la
+            validation manuelle du commerce.
           </p>
           <p className="mt-4 rounded-lg border border-[#f0d9b8] bg-[#fff7ed] px-4 py-3 text-sm font-semibold leading-6 text-[#8a4b11]">
-            L&apos;IA n&apos;est pas une promesse magique et ne prend pas la
-            décision à votre place. Elle aide à prioriser; vous gardez le
-            dernier mot.
+            L&apos;IA ne confirme pas de rendez-vous et ne remplace pas la decision
+            humaine. Vous gardez le dernier mot.
           </p>
         </div>
 
@@ -68,31 +66,31 @@ export function AiTargetingSection() {
 function AiDecisionPanel() {
   return (
     <div
-      aria-label="Exemple illustré de ciblage: certains clients ne sont pas priorisés, d'autres peuvent recevoir un SMS."
+      aria-label="Exemple illustre de ciblage: certains clients ne sont pas priorises, d'autres peuvent recevoir un SMS."
       className="rounded-2xl border border-[#cfe1dc] bg-[#edf7f4] p-4"
       role="img"
     >
       <div className="flex items-center gap-3">
         <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-center text-xs font-bold leading-4 text-[var(--primary-strong)] shadow-sm">
-          Agent
+          Liste
           <br />
-          IA
+          SMS
         </div>
         <div>
           <p className="text-sm font-bold text-[var(--foreground)]">
             Qui devrait recevoir le SMS?
           </p>
           <p className="text-xs leading-5 text-[var(--muted)]">
-            Un exemple de priorisation, pas une décision automatique.
+            Un exemple de priorisation, pas une decision automatique.
           </p>
         </div>
       </div>
 
       <div className="mt-4 grid gap-3">
         {[
-          ["Ariane", "Réservé il y a 6 jours", "Pas prioritaire"],
+          ["Ariane", "Reserve il y a 6 jours", "Pas prioritaire"],
           ["Maya", "Pas venue depuis 3 semaines", "Bonne candidate"],
-          ["Noah", "Service différent", "À vérifier"]
+          ["Noah", "Service different", "A verifier"]
         ].map(([name, detail, status]) => (
           <div
             className="grid gap-3 rounded-xl bg-white p-3 text-sm shadow-sm sm:grid-cols-[0.8fr_1fr_auto] sm:items-center"

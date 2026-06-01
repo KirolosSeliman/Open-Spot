@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils/cn";
 type SceneState =
   | "cancelled"
   | "manual_stress"
-  | "ai_appears"
-  | "ai_targets"
+  | "targeting_appears"
+  | "targeting_selects"
   | "sms_sent"
   | "replies"
   | "merchant_validates"
@@ -38,18 +38,18 @@ export const recoveryStorySteps: RecoveryStoryStep[] = [
     sceneState: "manual_stress"
   },
   {
-    id: "agent-ia",
-    label: "Agent IA",
-    title: "L'agent IA apparaît sans prendre le contrôle.",
-    text: "Il aide à lire le contexte, mais le commerce reste celui qui décide.",
-    sceneState: "ai_appears"
+    id: "ciblage-assiste",
+    label: "Ciblage",
+    title: "Open Spot prépare une liste admissible.",
+    text: "Les critères de service et de consentement aident à choisir qui contacter.",
+    sceneState: "targeting_appears"
   },
   {
     id: "ciblage",
     label: "Ciblage",
-    title: "L'agent IA cible les bons clients.",
-    text: "Il aide à éviter d'envoyer des notifications à des clients qui viennent tout juste de réserver.",
-    sceneState: "ai_targets"
+    title: "Les bons clients sont priorisés.",
+    text: "Open Spot aide à éviter d'envoyer des notifications à des clients non admissibles.",
+    sceneState: "targeting_selects"
   },
   {
     id: "sms-cibles",
@@ -242,7 +242,7 @@ function RecoveryScene({
   const isAtLeast = (state: SceneState) => stateIndex >= sceneOrder.indexOf(state);
   const isRecovered = activeState === "recovered";
   const isManualStress = activeState === "manual_stress";
-  const showManualClutter = isAtLeast("manual_stress") && !isAtLeast("ai_targets");
+  const showManualClutter = isAtLeast("manual_stress") && !isAtLeast("targeting_selects");
 
   return (
     <div
@@ -314,7 +314,7 @@ function RecoveryScene({
       >
         {isAtLeast("merchant_validates")
           ? "Je choisis qui confirmer."
-          : isAtLeast("ai_appears")
+          : isAtLeast("targeting_appears")
             ? "Ok, on cible les bonnes personnes."
             : "Je pourrais texter 47 personnes... ou respirer."}
       </div>
@@ -322,17 +322,17 @@ function RecoveryScene({
       <div
         className={cn(
           "absolute right-6 top-56 grid h-24 w-24 place-items-center rounded-full border border-[#b9d9cf] bg-[#e9f7f2] opacity-0 shadow-md transition duration-500 sm:right-8 sm:top-28 sm:h-32 sm:w-32",
-          isAtLeast("ai_appears") && "opacity-100",
-          isAtLeast("ai_targets") && !reducedMotion && "scale-105 shadow-lg",
+          isAtLeast("targeting_appears") && "opacity-100",
+          isAtLeast("targeting_selects") && !reducedMotion && "scale-105 shadow-lg",
           reducedMotion && "transition-none"
         )}
       >
         <div className="absolute -inset-3 rounded-full border border-[#b9d9cf] bg-[#e9f7f2]/35" />
         <div className="absolute -right-2 top-1 h-5 w-5 rounded-full bg-white shadow-sm" />
         <div className="grid h-16 w-16 place-items-center rounded-full bg-white text-center text-xs font-bold leading-4 text-[var(--primary-strong)] sm:h-24 sm:w-24">
-          Agent
+          Liste
           <br />
-          IA
+          SMS
         </div>
       </div>
 
@@ -361,13 +361,13 @@ function RecoveryScene({
       <div className="absolute left-5 right-5 top-[430px] grid gap-2 sm:right-auto sm:top-[326px] sm:w-[48%]">
         {targetRows.map(([item, status]) => {
           const isSmsCandidate = status === "SMS";
-          const isSelected = isAtLeast("ai_targets") && isSmsCandidate;
+          const isSelected = isAtLeast("targeting_selects") && isSmsCandidate;
 
           return (
             <div
               className={cn(
                 "flex items-center justify-between gap-3 rounded-xl bg-white px-3 py-2 text-xs font-semibold text-[var(--foreground)] opacity-55 shadow-sm transition",
-                isAtLeast("ai_targets") && "opacity-100",
+                isAtLeast("targeting_selects") && "opacity-100",
                 isSelected && "ring-2 ring-[var(--primary)]",
                 reducedMotion && "transition-none"
               )}
@@ -382,7 +382,7 @@ function RecoveryScene({
                     : "bg-[#f1f3ef] text-[var(--muted)]"
                 )}
               >
-                {isAtLeast("ai_targets") ? status : "..."}
+                {isAtLeast("targeting_selects") ? status : "..."}
               </span>
             </div>
           );

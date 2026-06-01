@@ -3,13 +3,6 @@ import {
   MetricCard,
   Panel
 } from "@/components/dashboard/dashboard-ui";
-import {
-  dashboardCancellations,
-  dashboardReplies,
-  findClient,
-  findService,
-  formatCurrency
-} from "@/lib/dashboard/mock-data";
 
 const filters = [
   "Today",
@@ -21,24 +14,10 @@ const filters = [
 ];
 
 export default function AnalyticsPage() {
-  const recovered = dashboardCancellations.filter(
-    (cancellation) => cancellation.status === "Récupérée"
-  );
-  const smsSent = dashboardCancellations.reduce(
-    (total, cancellation) => total + cancellation.clientsContacted,
-    0
-  );
-  const recoveredRevenue = recovered.reduce(
-    (total, cancellation) => total + cancellation.estimatedValueCents,
-    0
-  );
-  const responseRate =
-    smsSent === 0 ? 0 : Math.round((dashboardReplies.length / smsSent) * 100);
-
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Indicateurs illustratifs pour comprendre les revenus récupérés, le taux de réponse et les services les plus performants."
+        description="Indicateurs reels de l'organisation. Les exemples de demonstration sont separes du dashboard authentifie."
         title="Statistiques"
       />
       <div className="flex flex-wrap gap-2">
@@ -54,62 +33,28 @@ export default function AnalyticsPage() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard
-          detail="Estimé à partir des services récupérés."
+          detail="Aucune confirmation reelle pour le moment."
           label="Estimated recovered revenue by month"
-          value={formatCurrency(recoveredRevenue)}
+          value="$0.00"
           tone="green"
         />
         <MetricCard
           detail="Confirmations faites manuellement."
           label="Number of recovered cancellations"
-          value={String(recovered.length)}
+          value="0"
           tone="green"
         />
         <MetricCard
-          detail="Réponses reçues sur SMS envoyés."
+          detail="Aucun SMS reel ou simule dans cette organisation."
           label="Response rate"
-          value={`${responseRate}%`}
-        />
-        <MetricCard
-          detail="Basé sur les réponses de démonstration."
-          label="Average time to first response"
-          value="1m 04s"
-          tone="amber"
-        />
-        <MetricCard
-          detail={findService(recovered[0]?.serviceId ?? "")?.name ?? "—"}
-          label="Most recovered services"
-          value="Coupe"
-          tone="violet"
-        />
-        <MetricCard
-          detail={findClient(dashboardReplies[0]?.clientId)?.name ?? "—"}
-          label="Most responsive clients"
-          value="Maya"
-          tone="violet"
+          value="0%"
         />
       </div>
       <Panel title="SMS sent by period">
-        <div className="grid gap-4">
-          {[
-            ["Aujourd'hui", "7 SMS", "70%"],
-            ["Cette semaine", "38 SMS", "52%"],
-            ["Ce mois-ci", "284 SMS", "84%"]
-          ].map(([label, value, width]) => (
-            <div key={label}>
-              <div className="flex justify-between text-sm font-black">
-                <span>{label}</span>
-                <span>{value}</span>
-              </div>
-              <div className="mt-2 h-3 rounded-full bg-[#edf1ec]">
-                <div
-                  className="h-3 rounded-full bg-[var(--primary)]"
-                  style={{ width }}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+        <p className="text-sm leading-6 text-[var(--muted)]">
+          Les volumes reels apparaitront ici apres les premieres annulations et
+          simulations SMS.
+        </p>
       </Panel>
     </div>
   );

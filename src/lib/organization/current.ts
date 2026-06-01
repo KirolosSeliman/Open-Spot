@@ -75,6 +75,7 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
     .from("organization_members")
     .select("organization_id, role")
     .eq("user_id", currentUser.id)
+    .eq("status", "active")
     // Temporary single-org mode still orders deterministically for old data and
     // future switcher work.
     .order("created_at", { ascending: true })
@@ -163,6 +164,7 @@ export async function redirectAuthenticatedUserByWorkspace() {
     .from("organization_members")
     .select("id")
     .eq("user_id", user.id)
+    .eq("status", "active")
     .limit(1);
 
   if (error) {
@@ -196,6 +198,7 @@ export async function requireOrganizationOnboardingUser() {
     .from("organization_members")
     .select("id")
     .eq("user_id", user.id)
+    .eq("status", "active")
     .limit(1);
 
   if (error) {

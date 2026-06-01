@@ -2,7 +2,21 @@ import {
   DashboardPageHeader,
   Panel
 } from "@/components/dashboard/dashboard-ui";
-import { dashboardTemplates } from "@/lib/dashboard/mock-data";
+
+const templates = [
+  {
+    id: "opening_fr",
+    name: "Last-minute opening FR",
+    locale: "fr",
+    body: "Bonjour, une place vient de se liberer chez {business_name} le {appointment_date} a {appointment_time} pour {service_name}. Repondez OUI si vous etes interesse. Votre rendez-vous sera confirme seulement apres validation par notre equipe."
+  },
+  {
+    id: "opening_en",
+    name: "Last-minute opening EN",
+    locale: "en",
+    body: "Hi, a spot just opened at {business_name} on {appointment_date} at {appointment_time} for {service_name}. Reply YES if you are interested. Your appointment will only be confirmed after our team validates it."
+  }
+];
 
 const variables = [
   "{business_name}",
@@ -18,13 +32,13 @@ export default function MessagesPage() {
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Modèles SMS bilingues, aperçu, variables disponibles et réinitialisation. Aucun message réel n'est envoyé depuis cette page."
+        description="Modeles SMS generiques. Aucun message reel n'est envoye depuis cette page."
         title="Messages"
       />
       <div className="grid gap-6 xl:grid-cols-[1fr_0.6fr]">
         <Panel title="Templates SMS">
           <div className="grid gap-4">
-            {dashboardTemplates.map((template) => (
+            {templates.map((template) => (
               <article
                 className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
                 key={template.id}
@@ -36,28 +50,11 @@ export default function MessagesPage() {
                       {template.locale}
                     </p>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      className="rounded-full border border-[var(--line)] bg-white px-3 py-1.5 text-xs font-black"
-                      type="button"
-                    >
-                      Reset to default
-                    </button>
-                    <button
-                      className="rounded-full bg-[var(--primary)] px-3 py-1.5 text-xs font-black text-white"
-                      type="button"
-                    >
-                      Save changes
-                    </button>
-                  </div>
                 </div>
                 <textarea
                   className="mt-4 min-h-28 w-full rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm leading-6"
                   defaultValue={template.body}
                 />
-                <p className="mt-3 rounded-2xl bg-white p-3 text-sm leading-6 text-[var(--muted)]">
-                  Preview: {template.body}
-                </p>
               </article>
             ))}
           </div>
@@ -75,7 +72,7 @@ export default function MessagesPage() {
           </div>
           <p className="mt-5 rounded-2xl bg-[#edf8f3] p-4 text-sm font-bold leading-6 text-[var(--primary-strong)]">
             Les templates doivent toujours rappeler que le rendez-vous est
-            confirmé seulement après validation de l&apos;équipe.
+            confirme seulement apres validation de l&apos;equipe.
           </p>
         </Panel>
       </div>

@@ -26,8 +26,14 @@ export type SmsProviderClient = {
     to: string;
     body: string;
     providerMessageId?: string;
+    smsSid?: string;
+    accountSid?: string;
+    messagingServiceSid?: string;
   }>;
 };
+
+export type SmsProviderMode = "simulation" | "real";
+export type SmsConsentStatus = "opted_in" | "needs_consent" | "opted_out";
 
 export function createSmsProviderDescriptor(
   provider: SmsProvider
@@ -36,4 +42,48 @@ export function createSmsProviderDescriptor(
     name: provider,
     sendsRealMessages: provider !== "simulator"
   };
+}
+
+export function getSmsProviderMode(
+  env: Partial<Record<string, string | undefined>> = process.env
+): SmsProviderMode {
+  if (
+    env.SMS_PROVIDER_MODE === "real" &&
+    env.SMS_REAL_SEND_ENABLED === "true" &&
+    Boolean(env.SMS_PROVIDER_API_KEY)
+  ) {
+    return "real";
+  }
+
+  return "simulation";
+}
+
+export function assertCanSendSms({
+  phoneE164,
+  consentStatus
+}: {
+  phoneE164: string;
+  consentStatus: SmsConsentStatus;
+}) {
+  if (consentStatus !== "opted_in") {
+    throw new Error("SMS consent is not opted in.");
+  }
+
+  if (!/^\+[1-9][0-9]{7,14}$/.test(phoneE164)) {
+    throw new Error("SMS phone must be valid E.164.");
+  }
+}
+
+const stopKeywords = new Set([
+  "stop",
+  "arret",
+  "arrêt",
+  "unsubscribe",
+  "cancel",
+  "desabonner",
+  "désabonner"
+]);
+
+export function isStopKeyword(body: string) {
+  return stopKeywords.has(body.trim().toLowerCase());
 }

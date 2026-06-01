@@ -2,62 +2,55 @@ import {
   DashboardPageHeader,
   Panel
 } from "@/components/dashboard/dashboard-ui";
-import { dashboardBusiness } from "@/lib/dashboard/mock-data";
+import { ImportExportPanel } from "@/components/import/import-export-panel";
+import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 
 const sections = [
-  {
-    title: "Business information",
-    fields: ["Business name", "Logo", "Phone", "Address", "Website", "Timezone", "Main language"]
-  },
   {
     title: "SMS settings",
     fields: ["SMS sender/number", "Message signature", "Automatic replies", "Opt-out keywords"]
   },
   {
-    title: "Notifications",
-    fields: ["Email alerts", "New reply notification", "Daily summary"]
-  },
-  {
     title: "Compliance",
     fields: ["SMS consent required", "STOP / UNSUBSCRIBE handling", "Consent history", "Exclude unsubscribed clients"]
-  },
-  {
-    title: "Import/export",
-    fields: ["CSV import", "Client export", "Template export"]
-  },
-  {
-    title: "Account",
-    fields: ["Email", "Password", "Session security"]
   }
 ];
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const workspace = await getActiveOrganizationWorkspace();
+  const organization =
+    workspace.status === "ready" ? workspace.organization : null;
+
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Paramètres du commerce, langue, SMS, conformité, import/export et compte."
-        title="Paramètres"
+        description="Parametres reels de l'organisation et controles de securite SMS."
+        title="Parametres"
       />
       <Panel title="Commerce actuel">
         <dl className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <dt className="font-black">Business name</dt>
-            <dd className="mt-1 text-[var(--muted)]">{dashboardBusiness.name}</dd>
+            <dd className="mt-1 text-[var(--muted)]">
+              {organization?.name ?? "Supabase non configure"}
+            </dd>
           </div>
           <div>
             <dt className="font-black">Phone</dt>
-            <dd className="mt-1 text-[var(--muted)]">{dashboardBusiness.phone}</dd>
+            <dd className="mt-1 text-[var(--muted)]">
+              {organization?.phone ?? "Non renseigne"}
+            </dd>
           </div>
           <div>
             <dt className="font-black">Timezone</dt>
             <dd className="mt-1 text-[var(--muted)]">
-              {dashboardBusiness.timezone}
+              {organization?.timezone ?? "America/Toronto"}
             </dd>
           </div>
           <div>
             <dt className="font-black">Main language</dt>
             <dd className="mt-1 text-[var(--muted)]">
-              {dashboardBusiness.mainLanguage.toUpperCase()}
+              {(organization?.defaultLanguage ?? "fr").toUpperCase()}
             </dd>
           </div>
         </dl>
@@ -79,11 +72,14 @@ export default function SettingsPage() {
           </Panel>
         ))}
       </div>
+      <Panel title="Import / export">
+        <ImportExportPanel />
+      </Panel>
       <Panel title="Compliance basics">
         <p className="text-sm leading-6 text-[var(--muted)]">
-          Les clients doivent avoir accepté de recevoir des SMS avant tout envoi.
-          Les mots-clés STOP et UNSUBSCRIBE doivent exclure automatiquement les
-          clients désinscrits des prochaines alertes.
+          Les clients doivent avoir accepte de recevoir des SMS avant tout envoi.
+          Les mots-cles STOP et UNSUBSCRIBE doivent exclure automatiquement les
+          clients desinscrits des prochaines alertes.
         </p>
       </Panel>
     </div>

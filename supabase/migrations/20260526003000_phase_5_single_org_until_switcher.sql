@@ -38,10 +38,10 @@ declare
   request_user_id uuid := auth.uid();
   normalized_name text := pg_catalog.btrim(organization_name);
   normalized_slug text := pg_catalog.lower(pg_catalog.btrim(organization_slug));
-  normalized_email text := pg_catalog.nullif(pg_catalog.btrim(organization_email), '');
-  normalized_phone text := pg_catalog.nullif(pg_catalog.btrim(organization_phone), '');
-  normalized_timezone text := pg_catalog.coalesce(
-    pg_catalog.nullif(pg_catalog.btrim(organization_timezone), ''),
+  normalized_email text := nullif(pg_catalog.btrim(organization_email), '');
+  normalized_phone text := nullif(pg_catalog.btrim(organization_phone), '');
+  normalized_timezone text := coalesce(
+    nullif(pg_catalog.btrim(organization_timezone), ''),
     'America/Toronto'
   );
   created_organization_id uuid;

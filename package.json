@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "twilio:smoke": "node scripts/twilio-smoke-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

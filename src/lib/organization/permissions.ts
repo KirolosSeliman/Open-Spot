@@ -18,3 +18,7 @@ export function canManageCustomers(role: OrganizationRole) {
 export function canValidateBookings(role: OrganizationRole) {
   return operationsRoles.includes(role);
 }
+
+export function canManageAppointments(role: OrganizationRole) {
+  return operationsRoles.includes(role);
+}

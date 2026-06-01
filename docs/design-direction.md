@@ -2,7 +2,7 @@
 
 ## Product Feel
 
-2e Chance RDV should feel trustworthy, calm, and practical for small appointment-based businesses. The product is not an enterprise control center and not a flashy consumer app.
+Open Spot should feel trustworthy, calm, and practical for small appointment-based businesses. The product is not an enterprise control center and not a flashy consumer app.
 
 Design keywords:
 
@@ -49,6 +49,7 @@ MVP screens should include:
 - Waitlist setup and QR page preview.
 - Openings list.
 - Opening detail with respondent ranking.
+- Appointments list and simple appointment detail for reminder automation.
 - Manual validation flow.
 - Recovered revenue report.
 - Settings.
@@ -61,6 +62,7 @@ Merchants may handle cancellations from a phone. The dashboard must support:
 - Creating an opening on mobile.
 - Reviewing respondents on mobile.
 - Validating a customer on mobile.
+- Reviewing reminder confirmations/cancellations on mobile.
 - Seeing clear send/failed/closed states.
 
 Tables should collapse into readable stacked lists on narrow screens.
@@ -91,6 +93,11 @@ Important statuses should be visible and unambiguous:
 - Opted in
 - Needs consent
 - Opted out
+- Reminder scheduled
+- Reminder sent
+- Confirmed by SMS
+- Cancelled by SMS
+- Needs manual follow-up
 
 ## Dangerous or Sensitive Actions
 
@@ -100,5 +107,11 @@ The UI must make consequences explicit for:
 - Importing customers.
 - Changing consent status.
 - Validating a recovered booking.
+- Enabling SMS automation.
+- Auto-creating openings from SMS cancellations.
 - Changing organization settings.
 - Changing member roles.
+
+Reminder automation UI should feel like a lightweight control layer. Avoid
+calendar-heavy patterns, drag-and-drop scheduling, or wording that implies Open
+Spot replaces the merchant's booking platform.

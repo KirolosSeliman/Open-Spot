@@ -6,12 +6,13 @@ import {
   StatusBadge
 } from "@/components/dashboard/dashboard-ui";
 import {
-  dashboardReplies,
-  findCancellation,
-  findClient,
-  findService,
-  formatCurrency
-} from "@/lib/dashboard/mock-data";
+  simulateOpeningSendAction,
+  simulateReplyAction,
+  validateSimulatedOfferAction
+} from "@/lib/dashboard/actions";
+import { loadOpeningDetail } from "@/lib/dashboard/operations-data";
+import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
+import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
 
 type CancellationDetailPageProps = {
   params: Promise<{
@@ -19,150 +20,176 @@ type CancellationDetailPageProps = {
   }>;
 };
 
+function getFirstName(fullName: string) {
+  return fullName.trim().split(/\s+/)[0] ?? "";
+}
+
 export default async function CancellationDetailPage({
   params
 }: CancellationDetailPageProps) {
   const { id } = await params;
-  const cancellation = findCancellation(id);
+  const [{ opening, service, offers }, workspace] = await Promise.all([
+    loadOpeningDetail(id),
+    getActiveOrganizationWorkspace()
+  ]);
 
-  if (!cancellation) {
+  if (!opening) {
     notFound();
   }
 
-  const service = findService(cancellation.serviceId);
-  const confirmed = findClient(cancellation.confirmedClientId);
-  const replies = dashboardReplies.filter(
-    (reply) => reply.cancellationId === cancellation.id
-  );
+  const organization =
+    workspace.status === "ready" ? workspace.organization : null;
+  const businessName = organization?.name ?? "Open Spot";
+  const previewLanguage = organization?.defaultLanguage ?? "fr";
+  const serviceName = service?.name ?? opening.title;
+  const smsPreview = generateOpeningSmsMessage({
+    businessName,
+    serviceName,
+    startsAt: opening.start_time,
+    endsAt: opening.end_time,
+    offerLabel: opening.offer_label,
+    language: previewLanguage,
+    includeOptOut: true
+  });
 
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Détails complets du créneau, du SMS envoyé, des clients contactés, des réponses et de la décision manuelle."
-        title={`${service?.name ?? "Annulation"} · ${cancellation.time}`}
+        description="Details reels du creneau. Les offres sont preparees, mais aucun SMS reel n'est envoye."
+        title={opening.title}
       />
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <Panel title="Appointment details">
           <dl className="grid gap-4 text-sm sm:grid-cols-2">
             <div>
-              <dt className="font-black">Date</dt>
-              <dd className="mt-1 text-[var(--muted)]">{cancellation.date}</dd>
-            </div>
-            <div>
-              <dt className="font-black">Time</dt>
-              <dd className="mt-1 text-[var(--muted)]">{cancellation.time}</dd>
-            </div>
-            <div>
-              <dt className="font-black">Durée</dt>
+              <dt className="font-black">Start</dt>
               <dd className="mt-1 text-[var(--muted)]">
-                {cancellation.durationMinutes} min
+                {new Date(opening.start_time).toLocaleString("fr-CA")}
               </dd>
             </div>
             <div>
-              <dt className="font-black">Employé</dt>
+              <dt className="font-black">End</dt>
               <dd className="mt-1 text-[var(--muted)]">
-                {cancellation.employeeName}
+                {new Date(opening.end_time).toLocaleString("fr-CA")}
               </dd>
             </div>
             <div>
               <dt className="font-black">Statut</dt>
               <dd className="mt-1">
-                <StatusBadge>{cancellation.status}</StatusBadge>
+                <StatusBadge>{opening.status}</StatusBadge>
               </dd>
             </div>
             <div>
-              <dt className="font-black">Valeur estimée</dt>
-              <dd className="mt-1 text-[var(--muted)]">
-                {formatCurrency(cancellation.estimatedValueCents)}
-              </dd>
+              <dt className="font-black">Offers prepared</dt>
+              <dd className="mt-1 text-[var(--muted)]">{offers.length}</dd>
             </div>
           </dl>
         </Panel>
-
-        <Panel title="Message sent">
-          <p className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 text-sm leading-6">
-            {cancellation.messageSent}
-          </p>
-          <p className="mt-3 text-sm font-bold text-[var(--primary-strong)]">
-            La confirmation finale reste manuelle.
-          </p>
-        </Panel>
-      </div>
-
-      <div className="grid gap-6 xl:grid-cols-3">
-        <Panel title="Clients contacted">
+        <Panel title="SMS preview">
           <div className="grid gap-3">
-            {cancellation.recipients.map((recipient) => {
-              const client = findClient(recipient.clientId);
-              return (
-                <div
-                  className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
-                  key={recipient.clientId}
-                >
-                  <p className="font-black">{client?.name}</p>
-                  <p className="text-sm text-[var(--muted)]">{client?.phone}</p>
-                  <p className="mt-2 text-xs font-bold text-[var(--muted)]">
-                    {recipient.smsStatus} · consentement {recipient.consentStatus}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </Panel>
-        <Panel title="Replies received">
-          <div className="grid gap-3">
-            {replies.map((reply) => {
-              const client = findClient(reply.clientId);
-              return (
-                <div
-                  className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
-                  key={reply.id}
-                >
-                  <p className="font-black">{client?.name}</p>
-                  <p className="mt-1 text-sm">“{reply.rawBody}”</p>
-                  <p className="mt-2 text-xs text-[var(--muted)]">
-                    {new Date(reply.receivedAt).toLocaleString("fr-CA")}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </Panel>
-        <Panel title="Confirmed client">
-          <div className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4">
-            <p className="font-black">{confirmed?.name ?? "Aucun client"}</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">
-              {confirmed
-                ? "Confirmé par décision manuelle de l'équipe."
-                : "Aucune confirmation n'a encore été faite."}
+            <p className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 text-sm font-bold leading-6 text-[var(--ink)]">
+              {smsPreview.body}
+            </p>
+            <div className="flex flex-wrap gap-2 text-xs font-black text-[var(--muted)]">
+              <span>{smsPreview.characterCount} characters</span>
+              <span>{smsPreview.estimatedSegments} segment(s)</span>
+            </div>
+            {smsPreview.warnings.length > 0 ? (
+              <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-xs font-bold text-[#74510f]">
+                Review suggested: {smsPreview.warnings.join(", ")}
+              </p>
+            ) : null}
+            <p className="text-xs font-bold text-[var(--muted)]">
+              Preview only. No real SMS is sent from this screen.
             </p>
           </div>
         </Panel>
       </div>
+      <Panel title="Prepared offers">
+        {offers.length > 0 ? (
+          <div className="grid gap-3">
+            <form action={simulateOpeningSendAction}>
+              <input name="openingId" type="hidden" value={opening.id} />
+              <button
+                className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                type="submit"
+              >
+                Simulate sending alert
+              </button>
+            </form>
+            {offers.map((offer) => {
+              const offerMessage = generateOpeningSmsMessage({
+                businessName,
+                serviceName,
+                startsAt: opening.start_time,
+                endsAt: opening.end_time,
+                offerLabel: opening.offer_label,
+                customerFirstName: getFirstName(offer.customerName),
+                language: offer.customerLanguage,
+                includeOptOut: true
+              });
 
-      <Panel title="Complete activity timeline">
-        <div className="grid gap-3">
-          {cancellation.activity.map((activity) => (
-            <div
-              className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
-              key={activity.id}
-            >
-              <p className="font-black">{activity.title}</p>
-              <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
-                {activity.detail}
-              </p>
-              <p className="mt-2 text-xs font-bold text-[var(--muted)]">
-                {new Date(activity.at).toLocaleString("fr-CA")}
-              </p>
-            </div>
-          ))}
-        </div>
-      </Panel>
-
-      <Panel title="Internal notes">
-        <p className="text-sm leading-6 text-[var(--muted)]">
-          {cancellation.internalNotes}
-        </p>
+              return (
+                <div
+                  className="grid gap-4 rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
+                  key={offer.id}
+                >
+                  <div>
+                    <p className="font-black">{offer.customerName}</p>
+                    <p className="mt-1 text-sm text-[var(--muted)]">
+                      {offer.customerPhone || offer.customer_id}
+                    </p>
+                  </div>
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    Status: {offer.status}
+                  </p>
+                  <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6 text-[var(--ink)]">
+                    {offer.lastOutboundMessageBody ?? offerMessage.body}
+                  </p>
+                  <form
+                    action={simulateReplyAction}
+                    className="flex flex-wrap gap-2"
+                  >
+                    <input name="openingId" type="hidden" value={opening.id} />
+                    <input name="offerId" type="hidden" value={offer.id} />
+                    <input
+                      className="min-h-10 flex-1 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
+                      name="replyBody"
+                      placeholder="Oui, disponible"
+                    />
+                    <button
+                      className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black"
+                      type="submit"
+                    >
+                      Simulate reply
+                    </button>
+                  </form>
+                  {offer.status === "responded" ? (
+                    <form action={validateSimulatedOfferAction}>
+                      <input name="openingId" type="hidden" value={opening.id} />
+                      <input name="offerId" type="hidden" value={offer.id} />
+                      <input
+                        name="recoveredValueCents"
+                        type="hidden"
+                        value={opening.normal_price_cents ?? 0}
+                      />
+                      <button
+                        className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                        type="submit"
+                      >
+                        Manually validate this respondent
+                      </button>
+                    </form>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-sm text-[var(--muted)]">
+            Aucun client admissible n&apos;a encore ete prepare pour ce creneau.
+          </p>
+        )}
       </Panel>
     </div>
   );

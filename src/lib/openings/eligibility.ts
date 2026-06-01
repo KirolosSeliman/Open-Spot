@@ -6,6 +6,7 @@ export type OpeningRecipientCandidate = {
   consentStatus: ConsentStatus;
   waitlistStatus: "active" | "paused" | "booked" | "removed";
   serviceId: string | null;
+  serviceInterestIds?: string[];
   alreadyOffered: boolean;
 };
 
@@ -13,7 +14,8 @@ export function filterEligibleOpeningRecipients(
   candidates: OpeningRecipientCandidate[],
   openingServiceId: string | null
 ) {
-  return candidates.filter((candidate) => {
+  const returnedCustomerIds = new Set<string>();
+  const eligibleCandidates = candidates.filter((candidate) => {
     if (candidate.consentStatus !== "opted_in") {
       return false;
     }
@@ -26,10 +28,35 @@ export function filterEligibleOpeningRecipients(
       return false;
     }
 
-    if (openingServiceId && candidate.serviceId !== openingServiceId) {
+    const serviceInterestIds = candidate.serviceInterestIds ?? [];
+    const hasSpecificInterests = serviceInterestIds.length > 0;
+    const matchesSelectedService = openingServiceId
+      ? serviceInterestIds.includes(openingServiceId) ||
+        candidate.serviceId === openingServiceId
+      : true;
+
+    if (openingServiceId && hasSpecificInterests && !matchesSelectedService) {
+      return false;
+    }
+
+    if (
+      openingServiceId &&
+      !hasSpecificInterests &&
+      candidate.serviceId &&
+      candidate.serviceId !== openingServiceId
+    ) {
       return false;
     }
 
     return /^\+[1-9][0-9]{7,14}$/.test(candidate.phoneE164);
+  });
+
+  return eligibleCandidates.filter((candidate) => {
+    if (returnedCustomerIds.has(candidate.customerId)) {
+      return false;
+    }
+
+    returnedCustomerIds.add(candidate.customerId);
+    return true;
   });
 }

@@ -13,7 +13,7 @@ export default function TermsPage() {
         />
         <Card className="mt-8">
           <p className="text-sm leading-6 text-[var(--muted)]">
-            2e Chance RDV helps merchants contact opted-in customers. It does not
+            Open Spot helps merchants contact opted-in customers. It does not
             automatically book appointments or replace the merchant&apos;s scheduling
             system.
           </p>

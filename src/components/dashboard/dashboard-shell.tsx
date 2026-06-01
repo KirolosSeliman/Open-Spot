@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 import type { OrganizationWorkspace } from "@/lib/organization/current";
@@ -8,9 +11,11 @@ const desktopNav = [
   { href: "/dashboard", label: "Tableau de bord" },
   { href: "/dashboard/new-cancellation", label: "Nouvelle annulation", core: true },
   { href: "/dashboard/responses", label: "Réponses" },
+  { href: "/dashboard/appointments", label: "Rendez-vous" },
   { href: "/dashboard/cancellations", label: "Annulations" },
   { href: "/dashboard/clients", label: "Clients" },
   { href: "/dashboard/waitlist", label: "Liste d'attente" },
+  { href: "/dashboard/qr-code", label: "QR / lien" },
   { href: "/dashboard/messages", label: "Messages" },
   { href: "/dashboard/services", label: "Services" },
   { href: "/dashboard/analytics", label: "Statistiques" },
@@ -23,9 +28,18 @@ const mobileNav = [
   { href: "/dashboard", label: "Accueil" },
   { href: "/dashboard/new-cancellation", label: "Nouvelle annulation", core: true },
   { href: "/dashboard/responses", label: "Réponses" },
+  { href: "/dashboard/appointments", label: "RDV" },
   { href: "/dashboard/clients", label: "Clients" },
   { href: "/dashboard/settings", label: "Plus" }
 ];
+
+function isActiveDashboardRoute(pathname: string, href: string) {
+  if (href === "/dashboard") {
+    return pathname === href;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function DashboardShell({
   workspace,
@@ -34,6 +48,7 @@ export function DashboardShell({
   workspace: OrganizationWorkspace;
   children: ReactNode;
 }) {
+  const pathname = usePathname();
   const businessName =
     workspace.status === "ready" ? workspace.organization.name : "Espace aperçu";
   const workspaceNote =
@@ -49,7 +64,7 @@ export function DashboardShell({
             className="rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/"
           >
-            <p className="text-lg font-black">2e Chance RDV</p>
+            <p className="text-lg font-black">Open Spot</p>
             <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
               Récupération SMS
             </p>
@@ -57,9 +72,12 @@ export function DashboardShell({
           <nav aria-label="Navigation dashboard" className="mt-6 grid gap-1">
             {desktopNav.map((item) => (
               <Link
+                aria-current={
+                  isActiveDashboardRoute(pathname, item.href) ? "page" : undefined
+                }
                 className={cn(
                   "rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] transition hover:bg-[#f2f7f4] hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
-                  item.core &&
+                  isActiveDashboardRoute(pathname, item.href) &&
                     "bg-[var(--primary)] text-white shadow-[0_14px_30px_rgba(35,117,107,0.18)] hover:bg-[var(--primary-strong)] hover:text-white"
                 )}
                 href={item.href}
@@ -84,7 +102,7 @@ export function DashboardShell({
                 className="rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
                 href="/"
               >
-                2e Chance RDV
+                Open Spot
               </Link>
               <Link
                 className="rounded-full bg-[var(--primary)] px-3 py-2 text-xs font-black text-white"
@@ -102,13 +120,17 @@ export function DashboardShell({
 
       <nav
         aria-label="Navigation mobile dashboard"
-        className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-5 gap-1 rounded-[1.5rem] border border-[var(--line)] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.18)] backdrop-blur lg:hidden"
+        className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-[var(--line)] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.18)] backdrop-blur lg:hidden"
       >
         {mobileNav.map((item) => (
           <Link
+            aria-current={
+              isActiveDashboardRoute(pathname, item.href) ? "page" : undefined
+            }
             className={cn(
               "flex min-h-12 items-center justify-center rounded-2xl px-1 text-center text-[0.68rem] font-black leading-tight text-[var(--muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
-              item.core && "bg-[var(--primary)] text-white"
+              isActiveDashboardRoute(pathname, item.href) &&
+                "bg-[var(--primary)] text-white"
             )}
             href={item.href}
             key={item.href}
