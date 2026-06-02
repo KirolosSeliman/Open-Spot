@@ -102,6 +102,11 @@ export function createTwilioSmsProvider(
         throw new Error("Twilio real SMS sending is disabled.");
       }
 
+      const body = input.body.trim();
+      if (!body) {
+        throw new Error("Twilio SMS body is required.");
+      }
+
       if (!env.TWILIO_ACCOUNT_SID || !env.TWILIO_AUTH_TOKEN) {
         throw new Error("Twilio sending is not configured.");
       }
@@ -120,7 +125,7 @@ export function createTwilioSmsProvider(
       const message = await client.messages.create({
         to: input.to,
         from,
-        body: input.body,
+        body,
         statusCallback: env.TWILIO_STATUS_CALLBACK_URL || undefined
       });
 

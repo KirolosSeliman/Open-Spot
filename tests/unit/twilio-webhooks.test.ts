@@ -67,6 +67,23 @@ describe("Twilio webhook foundation", () => {
     ).rejects.toThrow("Twilio real SMS sending is disabled.");
   });
 
+  it("refuses empty Twilio message bodies before attempting a real send", async () => {
+    const provider = createTwilioSmsProvider({
+      SMS_PROVIDER: "twilio",
+      ALLOW_REAL_SMS_SENDS: "true",
+      TWILIO_ACCOUNT_SID: "AC123",
+      TWILIO_AUTH_TOKEN: "secret",
+      TWILIO_SOURCE_NUMBER: "+15145551234"
+    });
+
+    await expect(
+      provider.sendSms({
+        to: "+15145550000",
+        body: "   "
+      })
+    ).rejects.toThrow("Twilio SMS body is required.");
+  });
+
   it("parses Twilio inbound fields needed for SMS replies", () => {
     expect(twilioProviderSource).toContain('formData.get("From")');
     expect(twilioProviderSource).toContain('formData.get("To")');
