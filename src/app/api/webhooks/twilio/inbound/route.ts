@@ -1,4 +1,4 @@
-import { handleInboundSmsRequest } from "@/app/api/sms/inbound/route";
+import { handleInboundSmsRequest } from "@/lib/sms/inbound-handler";
 import { createTwilioSmsProvider } from "@/lib/sms/twilio";
 
 export const runtime = "nodejs";
