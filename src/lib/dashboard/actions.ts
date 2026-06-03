@@ -22,11 +22,6 @@ import { calculateCommissionEstimate } from "@/lib/openings/commission";
 import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
 import { createSmsProvider } from "@/lib/sms/factory";
-import { SIMULATOR_SOURCE_NUMBER } from "@/lib/sms/simulator";
-import {
-  getNextResponseRank,
-  normalizeSimulatedReply
-} from "@/lib/sms/simulation";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -52,6 +47,17 @@ async function requireReadyOrganization({
 
 function redirectWithError(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
+function getSafeProviderErrorMessage(error: unknown) {
+  const rawMessage =
+    error instanceof Error ? error.message : "Provider rejected one SMS send.";
+  const twilioToken = process.env.TWILIO_AUTH_TOKEN;
+  const withoutSecret = twilioToken
+    ? rawMessage.replaceAll(twilioToken, "[redacted]")
+    : rawMessage;
+
+  return withoutSecret.slice(0, 180);
 }
 
 function revalidateServiceSurfaces(slug: string) {
@@ -965,6 +971,7 @@ async function sendOpeningSmsAlerts({
   const provider = createSmsProvider();
   const now = new Date().toISOString();
   const successfulOfferIds: string[] = [];
+  const failedReasons: string[] = [];
   const messageRecords = [];
 
   for (const offer of sendableOffers) {
@@ -1009,15 +1016,14 @@ async function sendOpeningSmsAlerts({
         body: message.body,
         status: sendResult.status
       });
-    } catch {
-      // Failed provider sends intentionally leave the offer pending.
+    } catch (error) {
+      failedReasons.push(getSafeProviderErrorMessage(error));
     }
   }
 
   if (messageRecords.length === 0) {
-    return {
-      sent: 0
-    };
+    const reason = failedReasons[0] ?? "No opted-in pending offers are available to send.";
+    throw new Error(reason);
   }
 
   const { error: messagesError } = await supabase
@@ -1059,11 +1065,18 @@ async function sendOpeningSmsAlerts({
   await supabase.rpc("record_opening_broadcast_audit", {
     target_opening_id: openingId,
     provider_name: provider.getProviderName(),
-    sent_count: messageRecords.length
+    sent_count: messageRecords.length,
+    failed_count: failedReasons.length,
+    failure_reasons: [...new Set(failedReasons)].slice(0, 5)
   });
 
   return {
-    sent: messageRecords.length
+    sent: messageRecords.length,
+    failed: failedReasons.length,
+    failureMessage:
+      failedReasons.length > 0
+        ? `${failedReasons.length} SMS send(s) failed and remain pending.`
+        : null
   };
 }
 
@@ -1086,6 +1099,7 @@ export async function createOpeningAction(formData: FormData) {
   });
   const supabase = await createSupabaseServerClient();
   let createdOpeningId: string | null = null;
+  let redirectError: string | null = null;
 
   try {
     const eligibleRecipientCount = await countEligibleOpeningRecipients({
@@ -1128,6 +1142,10 @@ export async function createOpeningAction(formData: FormData) {
       );
     }
 
+    if (smsResult.failureMessage) {
+      redirectError = smsResult.failureMessage;
+    }
+
     createdOpeningId = openingId;
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/cancellations");
@@ -1139,7 +1157,11 @@ export async function createOpeningAction(formData: FormData) {
     );
   }
 
-  redirect(`/dashboard/cancellations/${createdOpeningId}`);
+  redirect(
+    redirectError
+      ? `/dashboard/cancellations/${createdOpeningId}?error=${encodeURIComponent(redirectError)}`
+      : `/dashboard/cancellations/${createdOpeningId}`
+  );
 }
 
 export async function sendOpeningAlertsAction(formData: FormData) {
@@ -1158,10 +1180,14 @@ export async function sendOpeningAlertsAction(formData: FormData) {
     if (result.sent === 0) {
       throw new Error("No opted-in pending offers are available to send.");
     }
+
+    if (result.failureMessage) {
+      redirectWithError(`/dashboard/cancellations/${openingId}`, result.failureMessage);
+    }
   } catch (error) {
     redirectWithError(
       `/dashboard/cancellations/${openingId}`,
-      error instanceof Error ? error.message : "Opening simulation failed."
+      error instanceof Error ? error.message : "Opening SMS send failed."
     );
   }
 
@@ -1171,102 +1197,7 @@ export async function sendOpeningAlertsAction(formData: FormData) {
   redirect(`/dashboard/cancellations/${openingId}`);
 }
 
-export async function simulateReplyAction(formData: FormData) {
-  const openingId = String(formData.get("openingId") ?? "");
-  const offerId = String(formData.get("offerId") ?? "");
-  const replyBody = normalizeSimulatedReply(String(formData.get("replyBody") ?? ""));
-
-  if (!replyBody) {
-    redirectWithError(`/dashboard/cancellations/${openingId}`, "Reply body is required.");
-  }
-
-  const organization = await requireReadyOrganization({
-    canPerform: canValidateBookings
-  });
-  const supabase = await createSupabaseServerClient();
-  const { data: offer, error: offerError } = await supabase
-    .from("opening_offers")
-    .select("id, customer_id")
-    .eq("organization_id", organization.id)
-    .eq("opening_id", openingId)
-    .eq("id", offerId)
-    .single();
-
-  if (offerError || !offer) {
-    redirectWithError(
-      `/dashboard/cancellations/${openingId}`,
-      offerError?.message ?? "Offer not found."
-    );
-  }
-
-  const [{ data: ranks }, { data: customer, error: customerError }] =
-    await Promise.all([
-      supabase
-        .from("opening_offers")
-        .select("response_rank")
-        .eq("organization_id", organization.id)
-        .eq("opening_id", openingId)
-        .not("response_rank", "is", null),
-      supabase
-        .from("customers")
-        .select("phone_e164")
-        .eq("organization_id", organization.id)
-        .eq("id", offer.customer_id)
-        .single()
-    ]);
-
-  if (customerError || !customer) {
-    redirectWithError(
-      `/dashboard/cancellations/${openingId}`,
-      customerError?.message ?? "Customer not found."
-    );
-  }
-
-  const rank = getNextResponseRank((ranks ?? []).map((row) => row.response_rank));
-  const now = new Date().toISOString();
-
-  const { error: messageError } = await supabase.from("sms_messages").insert({
-    organization_id: organization.id,
-    customer_id: offer.customer_id,
-    opening_id: openingId,
-    direction: "inbound",
-    provider: "simulator",
-    from_number: customer.phone_e164,
-    to_number: SIMULATOR_SOURCE_NUMBER,
-    body: replyBody,
-    status: "received"
-  });
-
-  if (messageError) {
-    redirectWithError(`/dashboard/cancellations/${openingId}`, messageError.message);
-  }
-
-  const { error: updateError } = await supabase
-    .from("opening_offers")
-    .update({
-      status: "responded",
-      response_text: replyBody,
-      response_rank: rank,
-      responded_at: now
-    })
-    .eq("organization_id", organization.id)
-    .eq("id", offerId);
-
-  if (updateError) {
-    redirectWithError(`/dashboard/cancellations/${openingId}`, updateError.message);
-  }
-
-  await supabase
-    .from("openings")
-    .update({ status: "awaiting_validation" })
-    .eq("organization_id", organization.id)
-    .eq("id", openingId);
-
-  revalidatePath(`/dashboard/cancellations/${openingId}`);
-  redirect(`/dashboard/cancellations/${openingId}`);
-}
-
-export async function validateSimulatedOfferAction(formData: FormData) {
+export async function validateOpeningOfferAction(formData: FormData) {
   const openingId = String(formData.get("openingId") ?? "");
   const offerId = String(formData.get("offerId") ?? "");
   const recoveredValueCents = Number(formData.get("recoveredValueCents") ?? 0);

@@ -15,6 +15,10 @@ const dashboardActions = readFileSync(
   join(process.cwd(), "src/lib/dashboard/actions.ts"),
   "utf8"
 );
+const operationsData = readFileSync(
+  join(process.cwd(), "src/lib/dashboard/operations-data.ts"),
+  "utf8"
+);
 
 describe("opening SMS flow", () => {
   it("removes expiration from the opening creation UI", () => {
@@ -37,15 +41,15 @@ describe("opening SMS flow", () => {
     expect(dashboardActions).toContain("createSmsProvider");
     expect(dashboardActions).toContain("provider.sendSms");
     expect(dashboardActions).toContain("sendResult.fromNumber");
-    expect(dashboardActions).toContain("SIMULATOR_SOURCE_NUMBER");
     expect(dashboardActions).toContain(
       'consentByCustomer.get(offer.customer_id) === "opted_in"'
     );
     expect(dashboardActions).not.toContain("createSimulatorSmsProvider");
+    expect(dashboardActions).not.toContain("SIMULATOR_SOURCE_NUMBER");
     expect(dashboardActions).not.toContain("last-minute appointment opened");
   });
 
-  it("creates the simulator outbound context during opening creation", () => {
+  it("creates provider-aware outbound context during opening creation", () => {
     expect(dashboardActions).toContain("countEligibleOpeningRecipients");
     expect(dashboardActions).toContain("filterEligibleOpeningRecipients");
     expect(dashboardActions).toContain("sendOpeningSmsAlerts");
@@ -54,6 +58,25 @@ describe("opening SMS flow", () => {
     );
     expect(dashboardActions).toContain(".from(\"sms_messages\")");
     expect(dashboardActions).toContain('direction: "outbound"');
+  });
+
+  it("keeps cancellation detail send controls production-safe", () => {
+    expect(cancellationDetailPage).toContain("pendingOffers.length > 0");
+    expect(cancellationDetailPage).toContain("smsStatus.canSendOpeningAlerts");
+    expect(cancellationDetailPage).toContain("SMS alert already sent to eligible clients.");
+    expect(cancellationDetailPage).toContain("SMS sending failed:");
+    expect(cancellationDetailPage).not.toContain("Simulate reply");
+    expect(cancellationDetailPage).not.toContain("simulateReplyAction");
+  });
+
+  it("surfaces outbound SMS delivery diagnostics", () => {
+    expect(operationsData).toContain("lastOutboundMessageStatus");
+    expect(operationsData).toContain("provider_message_id");
+    expect(operationsData).toContain("from_number");
+    expect(operationsData).toContain("to_number");
+    expect(cancellationDetailPage).toContain("SMS delivery status");
+    expect(cancellationDetailPage).toContain("Provider message ID");
+    expect(cancellationDetailPage).toContain("Twilio reports this SMS was not delivered.");
   });
 
   it("records an audit log when an opening prepares an eligible audience", () => {
@@ -71,13 +94,14 @@ describe("opening SMS flow", () => {
         process.cwd(),
         "supabase",
         "migrations",
-        "20260603023000_record_provider_opening_broadcast_audit_rpc.sql"
+        "20260603024500_extend_provider_opening_broadcast_audit_rpc.sql"
       ),
       "utf8"
     );
 
     expect(dashboardActions).toContain('"create_opening_with_offers"');
     expect(dashboardActions).toContain('"record_opening_broadcast_audit"');
+    expect(dashboardActions).not.toContain('"record_simulator_broadcast_audit"');
     expect(dashboardActions).not.toContain("createSupabaseServiceClient");
     expect(migration).toContain("insert into public.audit_logs");
     expect(migration).toContain("'opening.created'");
@@ -90,6 +114,8 @@ describe("opening SMS flow", () => {
       "'sms.opening_broadcast.created'"
     );
     expect(providerBroadcastAuditMigration).toContain("provider_name text");
+    expect(providerBroadcastAuditMigration).toContain("failed_count integer");
+    expect(providerBroadcastAuditMigration).toContain("failure_reasons text[]");
     expect(providerBroadcastAuditMigration).toContain("insert into public.audit_logs");
     expect(providerBroadcastAuditMigration).toContain("private.has_org_role");
   });

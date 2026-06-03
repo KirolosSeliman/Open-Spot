@@ -18,7 +18,7 @@ export default function PricingPage() {
             </p>
             <p className="mt-3 text-3xl font-bold">CAD 34.99/month</p>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-              Merchant dashboard, waitlist, import, SMS simulator, and core
+              Merchant dashboard, waitlist, import, SMS provider, and core
               recovery workflow foundation.
             </p>
           </Card>

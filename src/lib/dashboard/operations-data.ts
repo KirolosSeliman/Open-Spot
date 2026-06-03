@@ -26,6 +26,12 @@ export type OpeningDetailOffer = OpeningOfferRow & {
   customerPhone: string;
   customerLanguage: CustomerRow["preferred_language"];
   lastOutboundMessageBody: string | null;
+  lastOutboundMessageStatus: string | null;
+  lastOutboundProvider: string | null;
+  lastOutboundProviderMessageId: string | null;
+  lastOutboundSentAt: string | null;
+  lastOutboundFromNumber: string | null;
+  lastOutboundToNumber: string | null;
 };
 
 export type ResponseQueueItem = OpeningOfferRow & {
@@ -430,7 +436,7 @@ export async function loadOpeningDetail(openingId: string): Promise<{
     customerIds.length > 0
       ? supabase
           .from("sms_messages")
-          .select("customer_id, body, created_at")
+          .select("customer_id, body, status, provider, provider_message_id, from_number, to_number, created_at")
           .eq("organization_id", organizationId)
           .eq("opening_id", openingId)
           .eq("direction", "outbound")
@@ -454,11 +460,22 @@ export async function loadOpeningDetail(openingId: string): Promise<{
   const customerById = new Map(
     (customersResult.data ?? []).map((customer) => [customer.id, customer])
   );
-  const lastMessageByCustomer = new Map<string, string>();
+  const lastMessageByCustomer = new Map<
+    string,
+    {
+      body: string;
+      status: string;
+      provider: string;
+      provider_message_id: string | null;
+      from_number: string;
+      to_number: string;
+      created_at: string;
+    }
+  >();
 
   for (const message of messagesResult.data ?? []) {
     if (message.customer_id && !lastMessageByCustomer.has(message.customer_id)) {
-      lastMessageByCustomer.set(message.customer_id, message.body);
+      lastMessageByCustomer.set(message.customer_id, message);
     }
   }
 
@@ -467,14 +484,21 @@ export async function loadOpeningDetail(openingId: string): Promise<{
     service: serviceResult.data ?? null,
     offers: offers.map((offer) => {
       const customer = customerById.get(offer.customer_id);
+      const lastOutbound = lastMessageByCustomer.get(offer.customer_id);
 
       return {
         ...offer,
         customerName: customer?.full_name ?? "Client inconnu",
         customerPhone: customer?.phone_e164 ?? "",
         customerLanguage: customer?.preferred_language ?? "fr",
-        lastOutboundMessageBody:
-          lastMessageByCustomer.get(offer.customer_id) ?? null
+        lastOutboundMessageBody: lastOutbound?.body ?? null,
+        lastOutboundMessageStatus: lastOutbound?.status ?? null,
+        lastOutboundProvider: lastOutbound?.provider ?? null,
+        lastOutboundProviderMessageId:
+          lastOutbound?.provider_message_id ?? null,
+        lastOutboundSentAt: lastOutbound?.created_at ?? null,
+        lastOutboundFromNumber: lastOutbound?.from_number ?? null,
+        lastOutboundToNumber: lastOutbound?.to_number ?? null
       };
     })
   };

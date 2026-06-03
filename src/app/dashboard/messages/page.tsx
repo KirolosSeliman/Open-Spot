@@ -32,7 +32,7 @@ export default function MessagesPage() {
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Modeles SMS generiques. Aucun message reel n'est envoye depuis cette page."
+        description="Modeles SMS generiques pour preparer une copie claire, consentie et validee par le commerçant."
         title="Messages"
       />
       <div className="grid gap-6 xl:grid-cols-[1fr_0.6fr]">

@@ -17,7 +17,7 @@ export default function AnalyticsPage() {
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Indicateurs reels de l'organisation. Les exemples de demonstration sont separes du dashboard authentifie."
+        description="Indicateurs reels de l'organisation bases sur les donnees operationnelles."
         title="Statistiques"
       />
       <div className="flex flex-wrap gap-2">
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
       <Panel title="SMS sent by period">
         <p className="text-sm leading-6 text-[var(--muted)]">
           Les volumes reels apparaitront ici apres les premieres annulations et
-          simulations SMS.
+          messages SMS.
         </p>
       </Panel>
     </div>

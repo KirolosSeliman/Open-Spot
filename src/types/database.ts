@@ -985,6 +985,8 @@ export type Database = {
           target_opening_id: string;
           provider_name: string;
           sent_count: number;
+          failed_count?: number;
+          failure_reasons?: string[];
         };
         Returns: undefined;
       };

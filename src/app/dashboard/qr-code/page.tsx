@@ -13,11 +13,15 @@ export default async function DashboardQrCodePage() {
   const workspace = await getActiveOrganizationWorkspace();
   const organization =
     workspace.status === "ready" ? workspace.organization : null;
-  const slug = organization?.slug ?? "demo";
+  const slug = organization?.slug ?? "organization";
+  const vercelUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : null;
   const baseUrl =
     process.env.APP_BASE_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
-    "http://localhost:3000";
+    vercelUrl ??
+    "";
   const publicLink = buildPublicWaitlistUrl({ baseUrl, slug });
   const qrLink = buildPublicWaitlistUrl({
     baseUrl,

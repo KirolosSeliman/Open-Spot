@@ -236,9 +236,9 @@ export default async function AppointmentsPage({
           </button>
         </form>
         <p className="mt-3 text-xs font-semibold text-[var(--muted)]">
-          Aucun SMS reel n&apos;est envoye ici. Le choix Rappel 24 h est enregistre
-          sur le rendez-vous; si les rappels sont actives et que le client est
-          opt-in, Open Spot prepare seulement une ligne planifiee.
+          Le choix Rappel 24 h est enregistre sur le rendez-vous; si les
+          rappels sont actives et que le client est opt-in, Open Spot prepare
+          une ligne planifiee traitee par le moteur SMS serveur.
         </p>
       </Panel>
 

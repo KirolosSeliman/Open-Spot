@@ -7,8 +7,7 @@ import {
 } from "@/components/dashboard/dashboard-ui";
 import {
   sendOpeningAlertsAction,
-  simulateReplyAction,
-  validateSimulatedOfferAction
+  validateOpeningOfferAction
 } from "@/lib/dashboard/actions";
 import { loadOpeningDetail } from "@/lib/dashboard/operations-data";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
@@ -23,16 +22,34 @@ type CancellationDetailPageProps = {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{
+    error?: string;
+  }>;
 };
 
 function getFirstName(fullName: string) {
   return fullName.trim().split(/\s+/)[0] ?? "";
 }
 
+function formatSmsProvider(provider: string | null) {
+  const deployedEnvironment =
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "preview" ||
+    process.env.VERCEL_ENV === "production";
+
+  if (provider === "simulator" && deployedEnvironment) {
+    return "Not configured";
+  }
+
+  return provider ?? "Not sent";
+}
+
 export default async function CancellationDetailPage({
-  params
+  params,
+  searchParams
 }: CancellationDetailPageProps) {
   const { id } = await params;
+  const { error } = await searchParams;
   const [{ opening, service, offers }, workspace] = await Promise.all([
     loadOpeningDetail(id),
     getActiveOrganizationWorkspace()
@@ -48,6 +65,27 @@ export default async function CancellationDetailPage({
   const previewLanguage = organization?.defaultLanguage ?? "fr";
   const serviceName = service?.name ?? opening.title;
   const smsStatus = getSmsRuntimeStatus();
+  const pendingOffers = offers.filter((offer) => offer.status === "pending");
+  const respondedOffers = offers.filter((offer) => offer.status === "responded");
+  const selectedOffers = offers.filter((offer) => offer.status === "selected");
+  const rejectedOffers = offers.filter((offer) => offer.status === "rejected");
+  const allOffersSentOrBeyond =
+    offers.length > 0 &&
+    offers.every((offer) =>
+      ["sent", "responded", "selected", "rejected"].includes(offer.status)
+    );
+  const sendStatusMessage =
+    selectedOffers.length > 0
+      ? "A respondent has been manually selected."
+      : rejectedOffers.length > 0 && pendingOffers.length === 0
+        ? "Validation is complete for this opening."
+        : respondedOffers.length > 0
+          ? "Waiting for customer replies and merchant validation."
+          : allOffersSentOrBeyond
+            ? "SMS alert already sent to eligible clients."
+            : pendingOffers.length > 0
+              ? "Pending eligible clients are ready for SMS sending."
+              : "No eligible pending SMS offers are available.";
   const smsPreview = generateOpeningSmsMessage({
     businessName,
     serviceName,
@@ -64,6 +102,11 @@ export default async function CancellationDetailPage({
         description={`Details reels du creneau. ${getOpeningAlertModeCopy(smsStatus)}`}
         title={opening.title}
       />
+      {error ? (
+        <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
+          SMS sending failed: {error}
+        </p>
+      ) : null}
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <Panel title="Appointment details">
           <dl className="grid gap-4 text-sm sm:grid-cols-2">
@@ -106,7 +149,7 @@ export default async function CancellationDetailPage({
               </p>
             ) : null}
             <p className="text-xs font-bold text-[var(--muted)]">
-              {getOpeningAlertModeCopy(smsStatus)}
+              {sendStatusMessage}
             </p>
           </div>
         </Panel>
@@ -114,16 +157,21 @@ export default async function CancellationDetailPage({
       <Panel title="Prepared offers">
         {offers.length > 0 ? (
           <div className="grid gap-3">
-            <form action={sendOpeningAlertsAction}>
-              <input name="openingId" type="hidden" value={opening.id} />
-              <button
-                className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={!smsStatus.canSendOpeningAlerts}
-                type="submit"
-              >
-                {getOpeningAlertButtonLabel(smsStatus)}
-              </button>
-            </form>
+            {pendingOffers.length > 0 && smsStatus.canSendOpeningAlerts ? (
+              <form action={sendOpeningAlertsAction}>
+                <input name="openingId" type="hidden" value={opening.id} />
+                <button
+                  className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                  type="submit"
+                >
+                  {getOpeningAlertButtonLabel(smsStatus)}
+                </button>
+              </form>
+            ) : (
+              <p className="mb-2 rounded-xl border border-[var(--line)] bg-white p-3 text-sm font-bold text-[var(--muted)]">
+                {sendStatusMessage}
+              </p>
+            )}
             {offers.map((offer) => {
               const offerMessage = generateOpeningSmsMessage({
                 businessName,
@@ -148,31 +196,53 @@ export default async function CancellationDetailPage({
                     </p>
                   </div>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Status: {offer.status}
+                    Offer state: {offer.status}
                   </p>
+                  <dl className="grid gap-2 rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-bold text-[var(--muted)] sm:grid-cols-2">
+                    <div>
+                      <dt>SMS provider</dt>
+                      <dd>{formatSmsProvider(offer.lastOutboundProvider)}</dd>
+                    </div>
+                    <div>
+                      <dt>SMS delivery status</dt>
+                      <dd>{offer.lastOutboundMessageStatus ?? "Pending"}</dd>
+                    </div>
+                    <div>
+                      <dt>Sent time</dt>
+                      <dd>
+                        {offer.lastOutboundSentAt
+                          ? new Date(offer.lastOutboundSentAt).toLocaleString("fr-CA")
+                          : "Not sent"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>To</dt>
+                      <dd>{offer.lastOutboundToNumber ?? offer.customerPhone}</dd>
+                    </div>
+                    <div>
+                      <dt>From</dt>
+                      <dd>{offer.lastOutboundFromNumber ?? "Not sent"}</dd>
+                    </div>
+                    {offer.lastOutboundProviderMessageId ? (
+                      <div className="sm:col-span-2">
+                        <dt>Provider message ID</dt>
+                        <dd className="break-all">
+                          {offer.lastOutboundProviderMessageId}
+                        </dd>
+                      </div>
+                    ) : null}
+                  </dl>
+                  {offer.lastOutboundMessageStatus === "failed" ||
+                  offer.lastOutboundMessageStatus === "undelivered" ? (
+                    <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
+                      Twilio reports this SMS was not delivered.
+                    </p>
+                  ) : null}
                   <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6 text-[var(--ink)]">
                     {offer.lastOutboundMessageBody ?? offerMessage.body}
                   </p>
-                  <form
-                    action={simulateReplyAction}
-                    className="flex flex-wrap gap-2"
-                  >
-                    <input name="openingId" type="hidden" value={opening.id} />
-                    <input name="offerId" type="hidden" value={offer.id} />
-                    <input
-                      className="min-h-10 flex-1 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
-                      name="replyBody"
-                      placeholder="Oui, disponible"
-                    />
-                    <button
-                      className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black"
-                      type="submit"
-                    >
-                      Simulate reply
-                    </button>
-                  </form>
                   {offer.status === "responded" ? (
-                    <form action={validateSimulatedOfferAction}>
+                    <form action={validateOpeningOfferAction}>
                       <input name="openingId" type="hidden" value={opening.id} />
                       <input name="offerId" type="hidden" value={offer.id} />
                       <input

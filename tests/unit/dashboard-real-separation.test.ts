@@ -37,12 +37,13 @@ describe("real dashboard and demo dashboard separation", () => {
     }
   });
 
-  it("keeps demo dashboard data isolated in a clearly labelled preview route", () => {
+  it("redirects the old dashboard preview route to the real dashboard", () => {
     const previewPage = readFileSync(previewPagePath, "utf8");
 
-    expect(previewPage).toContain("@/lib/dashboard/mock-data");
-    expect(previewPage).toContain("Demo data");
-    expect(previewPage).toContain("Preview only");
+    expect(previewPage).toContain('redirect("/dashboard")');
+    expect(previewPage).not.toContain("@/lib/dashboard/mock-data");
+    expect(previewPage).not.toContain("Demo data");
+    expect(previewPage).not.toContain("Preview only");
   });
 
   it("shows zero-data setup copy on the real dashboard", () => {

@@ -39,6 +39,14 @@ export function getSmsRuntimeStatus(
   const statusCallbackConfigured = Boolean(env.TWILIO_STATUS_CALLBACK_URL);
   const appBaseUrlConfigured = Boolean(env.APP_BASE_URL);
   const realSmsAllowed = env.ALLOW_REAL_SMS_SENDS === "true";
+  const deployedEnvironment =
+    env.NODE_ENV === "production" ||
+    env.VERCEL_ENV === "preview" ||
+    env.VERCEL_ENV === "production";
+
+  if (selectedProvider === "simulator" && deployedEnvironment) {
+    blockingReasons.push("SMS provider is not configured for production.");
+  }
 
   if (selectedProvider === "plivo") {
     blockingReasons.push("Plivo is not implemented yet.");
@@ -82,7 +90,11 @@ export function getOpeningAlertButtonLabel(status: SmsRuntimeStatus) {
     return "Send SMS alert";
   }
 
-  return "Simulate sending alert";
+  if (status.selectedProvider === "simulator") {
+    return "Send SMS alert";
+  }
+
+  return "SMS unavailable";
 }
 
 export function getOpeningAlertModeCopy(status: SmsRuntimeStatus) {
@@ -94,6 +106,10 @@ export function getOpeningAlertModeCopy(status: SmsRuntimeStatus) {
 
   if (status.selectedProvider === "plivo") {
     return "Plivo is not implemented yet.";
+  }
+
+  if (!status.canSendOpeningAlerts) {
+    return "SMS provider is not configured for production.";
   }
 
   return "Simulation mode: no real SMS will be sent.";

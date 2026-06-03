@@ -90,7 +90,7 @@ export default async function DashboardPage() {
             Nouvelle annulation
           </Link>
         }
-        description={`Votre espace est pret. ${organizationName} utilise maintenant des donnees reelles ou des etats vides, jamais des clients de demo.`}
+        description={`Votre espace est pret. ${organizationName} utilise maintenant vos donnees reelles et vos etats operationnels.`}
         title={`Tableau de bord de ${overview.organizationName}`}
       />
 
@@ -168,7 +168,7 @@ export default async function DashboardPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel title="Reponses recentes">
           <EmptyState
-            description="Les reponses SMS reelles apparaitront ici apres une simulation ou une integration SMS."
+            description="Les reponses SMS reelles apparaitront ici apres l'envoi d'une alerte et la reception de reponses clients."
             title="Aucune reponse pour le moment."
           />
         </Panel>
@@ -180,18 +180,6 @@ export default async function DashboardPage() {
         </Panel>
       </div>
 
-      <Panel title="Apercu commercial separe">
-        <p className="text-sm leading-6 text-[var(--muted)]">
-          Les donnees fictives restent disponibles dans une route separee et
-          clairement etiquetee.
-        </p>
-        <Link
-          className="mt-4 inline-flex rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black text-[var(--foreground)]"
-          href="/dashboard-preview"
-        >
-          Ouvrir le dashboard demo
-        </Link>
-      </Panel>
     </div>
   );
 }

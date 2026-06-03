@@ -7,7 +7,11 @@ import {
   SIMULATOR_SOURCE_NUMBER,
   SIMULATOR_WEBHOOK_SECRET_HEADER
 } from "@/lib/sms/simulator";
-import { getSmsRuntimeStatus } from "@/lib/sms/runtime-status";
+import {
+  getOpeningAlertButtonLabel,
+  getOpeningAlertModeCopy,
+  getSmsRuntimeStatus
+} from "@/lib/sms/runtime-status";
 import {
   assertCanSendSms,
   getSmsProviderMode,
@@ -98,6 +102,22 @@ describe("SMS provider safety", () => {
     expect(status.sendsRealMessages).toBe(false);
     expect(status.canSendOpeningAlerts).toBe(true);
     expect(status.blockingReasons).toEqual([]);
+  });
+
+  it("blocks simulator opening sends in deployed production surfaces", () => {
+    const status = getSmsRuntimeStatus({
+      SMS_PROVIDER: "simulator",
+      NODE_ENV: "production"
+    });
+
+    expect(status.canSendOpeningAlerts).toBe(false);
+    expect(status.blockingReasons).toContain(
+      "SMS provider is not configured for production."
+    );
+    expect(getOpeningAlertButtonLabel(status)).toBe("Send SMS alert");
+    expect(getOpeningAlertModeCopy(status)).toBe(
+      "SMS provider is not configured for production."
+    );
   });
 
   it("selects the simulator provider by default and when explicitly configured", () => {
