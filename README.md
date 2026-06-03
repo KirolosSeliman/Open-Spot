@@ -86,9 +86,27 @@ The app includes Supabase email/password sign-up, sign-in, sign-out, and an orga
 
 Live testing requires `.env.local` with Supabase URL, anon key, and a server-only service role key. Do not commit `.env.local`.
 
+## Opening Alert SMS Provider
+
+The cancellation/opening alert flow uses the selected server-side SMS provider.
+`SMS_PROVIDER=simulator` remains the safe default and records simulated outbound
+messages with `from_number=+10000000000`. When `SMS_PROVIDER=twilio` and
+`ALLOW_REAL_SMS_SENDS=true` are configured with valid Twilio credentials, the
+same opening alert flow sends real Twilio SMS to opted-in eligible customers
+only. Plivo remains unavailable until implemented.
+
+Vercel environment variable changes require a new deployment before they affect
+production. Twilio inbound webhooks require a public HTTPS URL such as a
+Vercel-generated deployment URL or custom domain.
+
+Manual merchant validation remains mandatory: `OUI`, `YES`, and `1` only create
+or update a pending merchant-validation response and never confirm a recovered
+booking automatically.
+
 ## Local SMS Simulator Recovery Test
 
-Use the simulator only for local cancellation-recovery testing. Do not configure Twilio or Plivo for this flow.
+Use the simulator for local cancellation-recovery testing unless you are
+intentionally testing Twilio with real sends enabled.
 
 1. Confirm `.env.local` contains `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `SMS_PROVIDER=simulator`. For preview/production simulator testing, also set a server-only `SIMULATOR_WEBHOOK_SECRET`.
 2. Run `npm install` if dependencies are missing.
@@ -154,7 +172,7 @@ TWILIO_STATUS_CALLBACK_URL=https://project-name.vercel.app/api/webhooks/twilio/s
 APP_BASE_URL=https://project-name.vercel.app
 ```
 
-`APP_BASE_URL` can be a Vercel-generated URL. A custom domain is not required. Keep all Twilio values server-only; none should use a `NEXT_PUBLIC_` prefix. Real Twilio sending stays disabled unless both `SMS_PROVIDER=twilio` and `ALLOW_REAL_SMS_SENDS=true` are set.
+`APP_BASE_URL` can be a Vercel-generated URL. A custom domain is not required. Keep all Twilio values server-only; none should use a `NEXT_PUBLIC_` prefix. Real Twilio sending stays disabled unless both `SMS_PROVIDER=twilio` and `ALLOW_REAL_SMS_SENDS=true` are set. If `TWILIO_MESSAGING_SERVICE_SID` is configured, Open Spot sends through the Messaging Service. `TWILIO_SOURCE_NUMBER` is still required so outbound `sms_messages.from_number` can be stored reliably for inbound reply matching.
 
 Twilio Console setup after deployment:
 

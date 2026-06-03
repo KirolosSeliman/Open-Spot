@@ -24,7 +24,9 @@ Open Spot is not ready for live merchant beta until the items below are complete
 - Outbound SMS simulator/provider workflow is intentionally excluded from the
   current task. The standalone send-opening API route still fails closed for
   real provider sending.
-- Plivo and Twilio providers intentionally fail closed.
+- Plivo intentionally fails closed. Twilio can send only when `SMS_PROVIDER=twilio`,
+  `ALLOW_REAL_SMS_SENDS=true`, and required server-only Twilio variables are
+  configured.
 - Provider webhook signature verification is not implemented.
 - Inbound SMS webhook persistence is incomplete: it classifies inbound messages
   and verifies the configured provider signature path, but STOP/reply persistence

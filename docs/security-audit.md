@@ -8,7 +8,9 @@ Not beta-launch ready for live merchants yet. The repository is now safer than t
 
 - Manual validation API no longer uses the service-role client. It calls the validation RPC through the authenticated Supabase server client so RLS and `auth.uid()` apply.
 - Public waitlist writes stay behind a server route and atomic database function; no anonymous table grants were added.
-- Real SMS providers fail closed until credentials and webhook verification are configured.
+- Plivo fails closed until implemented. Twilio real sends require
+  `SMS_PROVIDER=twilio`, `ALLOW_REAL_SMS_SENDS=true`, valid server-only
+  credentials, and webhook verification for inbound/status callbacks.
 - Production environment validation blocks real SMS providers unless `ALLOW_REAL_SMS_SENDS=true`.
 
 ## Security Checks

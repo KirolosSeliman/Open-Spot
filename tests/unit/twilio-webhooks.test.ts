@@ -6,7 +6,8 @@ import { describe, expect, it } from "vitest";
 import { classifyInboundSmsBody } from "@/lib/sms/inbound";
 import {
   createTwilioSmsProvider,
-  parseTwilioInboundRequest
+  parseTwilioInboundRequest,
+  resolveTwilioSenderOptions
 } from "@/lib/sms/twilio";
 
 const twilioProviderSource = readFileSync(
@@ -44,8 +45,9 @@ describe("Twilio webhook foundation", () => {
     expect(twilioProviderSource).toContain("TWILIO_ACCOUNT_SID");
     expect(twilioProviderSource).toContain("TWILIO_AUTH_TOKEN");
     expect(twilioProviderSource).toContain("TWILIO_SOURCE_NUMBER");
+    expect(twilioProviderSource).toContain("TWILIO_MESSAGING_SERVICE_SID");
     expect(twilioProviderSource).toContain("TWILIO_STATUS_CALLBACK_URL");
-    expect(twilioProviderSource).toContain("input.metadata?.from");
+    expect(twilioProviderSource).toContain("metadata?.from");
     expect(twilioProviderSource).toContain("client.messages.create");
   });
 
@@ -82,6 +84,45 @@ describe("Twilio webhook foundation", () => {
         body: "   "
       })
     ).rejects.toThrow("Twilio SMS body is required.");
+  });
+
+  it("requires a valid sender or messaging service for Twilio sends", () => {
+    expect(() =>
+      resolveTwilioSenderOptions({
+        TWILIO_MESSAGING_SERVICE_SID: "MG123"
+      })
+    ).toThrow("Twilio Messaging Service SID must start with MG");
+
+    expect(() => resolveTwilioSenderOptions({})).toThrow(
+      "Twilio source number or Messaging Service SID is not configured."
+    );
+
+    expect(() =>
+      resolveTwilioSenderOptions({
+        TWILIO_SOURCE_NUMBER: "5145551234"
+      })
+    ).toThrow("Twilio source number must be a valid E.164 value.");
+  });
+
+  it("prefers Messaging Service SID while retaining a source number for reply linking", () => {
+    const sender = resolveTwilioSenderOptions({
+      TWILIO_MESSAGING_SERVICE_SID: "MG12345678901234567890123456789012",
+      TWILIO_SOURCE_NUMBER: "+15145551234"
+    });
+
+    expect(sender.messageParams).toEqual({
+      messagingServiceSid: "MG12345678901234567890123456789012"
+    });
+    expect(sender.fromNumber).toBe("+15145551234");
+  });
+
+  it("falls back to a source number when no Messaging Service SID is configured", () => {
+    const sender = resolveTwilioSenderOptions({
+      TWILIO_SOURCE_NUMBER: "+15145551234"
+    });
+
+    expect(sender.messageParams).toEqual({ from: "+15145551234" });
+    expect(sender.fromNumber).toBe("+15145551234");
   });
 
   it("parses Twilio inbound fields needed for SMS replies", () => {

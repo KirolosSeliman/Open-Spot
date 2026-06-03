@@ -5,6 +5,11 @@ import {
 } from "@/components/dashboard/dashboard-ui";
 import { createOpeningAction } from "@/lib/dashboard/actions";
 import { loadOpeningCreationData } from "@/lib/dashboard/operations-data";
+import {
+  getOpeningAlertButtonLabel,
+  getOpeningAlertModeCopy,
+  getSmsRuntimeStatus
+} from "@/lib/sms/runtime-status";
 
 type NewCancellationPageProps = {
   searchParams: Promise<{
@@ -19,6 +24,7 @@ export default async function NewCancellationPage({
     searchParams,
     loadOpeningCreationData()
   ]);
+  const smsStatus = getSmsRuntimeStatus();
 
   return (
     <div className="grid gap-6">
@@ -90,10 +96,11 @@ export default async function NewCancellationPage({
               />
             </label>
             <button
-              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white md:col-span-2"
+              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
+              disabled={!smsStatus.canSendOpeningAlerts}
               type="submit"
             >
-              Prepare opening
+              {getOpeningAlertButtonLabel(smsStatus)}
             </button>
           </form>
         </Panel>
@@ -119,10 +126,15 @@ export default async function NewCancellationPage({
             />
           )}
           <p className="mt-4 rounded-2xl bg-[#edf8f3] p-4 text-sm font-bold leading-6 text-[var(--primary-strong)]">
-            Aucun SMS reel n&apos;est envoye ici. Open Spot cree l&apos;ouverture,
-            prepare les clients opted-in admissibles, puis enregistre des SMS
-            sortants avec le simulateur local.
+            {getOpeningAlertModeCopy(smsStatus)}
           </p>
+          {smsStatus.blockingReasons.length > 0 ? (
+            <ul className="mt-3 grid gap-2 text-sm font-bold text-[#8a1f17]">
+              {smsStatus.blockingReasons.map((reason) => (
+                <li key={reason}>{reason}</li>
+              ))}
+            </ul>
+          ) : null}
         </Panel>
       </div>
     </div>

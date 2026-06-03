@@ -32,21 +32,23 @@ describe("opening SMS flow", () => {
     );
   });
 
-  it("makes simulation reuse the generator without a real SMS provider", () => {
+  it("makes opening alerts use the selected SMS provider and generator", () => {
     expect(dashboardActions).toContain("generateOpeningSmsMessage");
-    expect(dashboardActions).toContain("createSimulatorSmsProvider");
+    expect(dashboardActions).toContain("createSmsProvider");
     expect(dashboardActions).toContain("provider.sendSms");
+    expect(dashboardActions).toContain("sendResult.fromNumber");
     expect(dashboardActions).toContain("SIMULATOR_SOURCE_NUMBER");
     expect(dashboardActions).toContain(
       'consentByCustomer.get(offer.customer_id) === "opted_in"'
     );
+    expect(dashboardActions).not.toContain("createSimulatorSmsProvider");
     expect(dashboardActions).not.toContain("last-minute appointment opened");
   });
 
   it("creates the simulator outbound context during opening creation", () => {
     expect(dashboardActions).toContain("countEligibleOpeningRecipients");
     expect(dashboardActions).toContain("filterEligibleOpeningRecipients");
-    expect(dashboardActions).toContain("sendSimulatorOpeningAlerts");
+    expect(dashboardActions).toContain("sendOpeningSmsAlerts");
     expect(dashboardActions).toContain(
       "No opted-in active waitlist recipients are eligible"
     );
@@ -64,30 +66,31 @@ describe("opening SMS flow", () => {
       ),
       "utf8"
     );
-    const broadcastAuditMigration = readFileSync(
+    const providerBroadcastAuditMigration = readFileSync(
       join(
         process.cwd(),
         "supabase",
         "migrations",
-        "20260531190000_record_simulator_broadcast_audit_rpc.sql"
+        "20260603023000_record_provider_opening_broadcast_audit_rpc.sql"
       ),
       "utf8"
     );
 
     expect(dashboardActions).toContain('"create_opening_with_offers"');
-    expect(dashboardActions).toContain('"record_simulator_broadcast_audit"');
+    expect(dashboardActions).toContain('"record_opening_broadcast_audit"');
     expect(dashboardActions).not.toContain("createSupabaseServiceClient");
     expect(migration).toContain("insert into public.audit_logs");
     expect(migration).toContain("'opening.created'");
     expect(migration).toContain("'eligible_recipient_count'");
     expect(migration).toContain("'prepared_offer_count'");
-    expect(broadcastAuditMigration).toContain(
-      "private.record_simulator_broadcast_audit"
+    expect(providerBroadcastAuditMigration).toContain(
+      "private.record_opening_broadcast_audit"
     );
-    expect(broadcastAuditMigration).toContain(
-      "'sms.simulator_broadcast.created'"
+    expect(providerBroadcastAuditMigration).toContain(
+      "'sms.opening_broadcast.created'"
     );
-    expect(broadcastAuditMigration).toContain("insert into public.audit_logs");
-    expect(broadcastAuditMigration).toContain("private.has_org_role");
+    expect(providerBroadcastAuditMigration).toContain("provider_name text");
+    expect(providerBroadcastAuditMigration).toContain("insert into public.audit_logs");
+    expect(providerBroadcastAuditMigration).toContain("private.has_org_role");
   });
 });

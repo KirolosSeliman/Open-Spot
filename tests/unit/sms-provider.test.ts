@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 
+import { createSmsProvider } from "@/lib/sms/factory";
 import {
+  createSimulatorSmsProvider,
   isSimulatorWebhookAllowed,
+  SIMULATOR_SOURCE_NUMBER,
   SIMULATOR_WEBHOOK_SECRET_HEADER
 } from "@/lib/sms/simulator";
+import { getSmsRuntimeStatus } from "@/lib/sms/runtime-status";
 import {
   assertCanSendSms,
   getSmsProviderMode,
@@ -85,5 +89,103 @@ describe("SMS provider safety", () => {
         requestSecret: "local-secret"
       })
     ).toBe(true);
+  });
+
+  it("reports simulator as the safe default runtime provider", () => {
+    const status = getSmsRuntimeStatus({});
+
+    expect(status.selectedProvider).toBe("simulator");
+    expect(status.sendsRealMessages).toBe(false);
+    expect(status.canSendOpeningAlerts).toBe(true);
+    expect(status.blockingReasons).toEqual([]);
+  });
+
+  it("selects the simulator provider by default and when explicitly configured", () => {
+    const previousProvider = process.env.SMS_PROVIDER;
+
+    try {
+      delete process.env.SMS_PROVIDER;
+      expect(createSmsProvider().getProviderName()).toBe("simulator");
+      process.env.SMS_PROVIDER = "simulator";
+      expect(createSmsProvider().getProviderName()).toBe("simulator");
+    } finally {
+      if (previousProvider === undefined) {
+        delete process.env.SMS_PROVIDER;
+      } else {
+        process.env.SMS_PROVIDER = previousProvider;
+      }
+    }
+  });
+
+  it("selects the Twilio provider when configured without sending SMS", () => {
+    const previousProvider = process.env.SMS_PROVIDER;
+
+    try {
+      process.env.SMS_PROVIDER = "twilio";
+      expect(createSmsProvider().getProviderName()).toBe("twilio");
+    } finally {
+      if (previousProvider === undefined) {
+        delete process.env.SMS_PROVIDER;
+      } else {
+        process.env.SMS_PROVIDER = previousProvider;
+      }
+    }
+  });
+
+  it("records the simulator source number in provider send results", async () => {
+    const result = await createSimulatorSmsProvider().sendSms({
+      to: "+15145551234",
+      body: "Test"
+    });
+
+    expect(result.provider).toBe("simulator");
+    expect(result.fromNumber).toBe(SIMULATOR_SOURCE_NUMBER);
+  });
+
+  it("keeps Twilio unavailable until real sends and required config are present", () => {
+    const disabled = getSmsRuntimeStatus({
+      SMS_PROVIDER: "twilio",
+      ALLOW_REAL_SMS_SENDS: "false",
+      TWILIO_ACCOUNT_SID: "AC123",
+      TWILIO_AUTH_TOKEN: "secret",
+      TWILIO_SOURCE_NUMBER: "+15145551234"
+    });
+
+    expect(disabled.selectedProvider).toBe("twilio");
+    expect(disabled.sendsRealMessages).toBe(false);
+    expect(disabled.canSendOpeningAlerts).toBe(false);
+    expect(disabled.blockingReasons).toContain("Real SMS sends are disabled.");
+  });
+
+  it("reports Twilio ready without exposing secrets", () => {
+    const ready = getSmsRuntimeStatus({
+      SMS_PROVIDER: "twilio",
+      ALLOW_REAL_SMS_SENDS: "true",
+      TWILIO_ACCOUNT_SID: "AC123",
+      TWILIO_AUTH_TOKEN: "super-secret-token",
+      TWILIO_MESSAGING_SERVICE_SID: "MG12345678901234567890123456789012",
+      TWILIO_SOURCE_NUMBER: "+15145551234",
+      TWILIO_STATUS_CALLBACK_URL: "https://example.com/api/webhooks/twilio/status",
+      APP_BASE_URL: "https://example.com"
+    });
+
+    expect(ready.canSendOpeningAlerts).toBe(true);
+    expect(ready.sendsRealMessages).toBe(true);
+    expect(ready.messagingServiceConfigured).toBe(true);
+    expect(ready.fromNumberConfigured).toBe(true);
+    expect(ready.statusCallbackConfigured).toBe(true);
+    expect(ready.appBaseUrlConfigured).toBe(true);
+    expect(JSON.stringify(ready)).not.toContain("super-secret-token");
+  });
+
+  it("keeps Plivo unavailable until implemented", () => {
+    const status = getSmsRuntimeStatus({
+      SMS_PROVIDER: "plivo",
+      PLIVO_SOURCE_NUMBER: "+15145551234"
+    });
+
+    expect(status.selectedProvider).toBe("plivo");
+    expect(status.canSendOpeningAlerts).toBe(false);
+    expect(status.blockingReasons).toContain("Plivo is not implemented yet.");
   });
 });

@@ -980,6 +980,14 @@ export type Database = {
         };
         Returns: string;
       };
+      record_opening_broadcast_audit: {
+        Args: {
+          target_opening_id: string;
+          provider_name: string;
+          sent_count: number;
+        };
+        Returns: undefined;
+      };
       record_simulator_broadcast_audit: {
         Args: {
           target_opening_id: string;

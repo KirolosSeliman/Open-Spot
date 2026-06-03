@@ -284,7 +284,7 @@ async function processOneScheduledMessage({
       direction: "outbound",
       provider: sendResult.provider,
       provider_message_id: sendResult.providerMessageId,
-      from_number: "+10000000000",
+      from_number: sendResult.fromNumber,
       to_number: customer.phone_e164,
       body,
       status: sendResult.status

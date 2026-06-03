@@ -14,8 +14,10 @@ The current MVP stack is:
 - Supabase Postgres
 - Supabase Row Level Security
 - Vercel
-- SMS provider abstraction and simulator utilities for a later send phase
-- Plivo/Twilio provider stubs fail closed; real sending is not implemented yet
+- SMS provider abstraction with simulator-first local behavior
+- Twilio server-side sending behind `SMS_PROVIDER=twilio` and
+  `ALLOW_REAL_SMS_SENDS=true`
+- Plivo provider fail-closed until fully implemented
 - Stripe in a later billing phase
 
 Appointment reminders and scheduled SMS automation are planned but not yet
@@ -91,22 +93,22 @@ organization configuration:
 
 ## SMS Provider Abstraction
 
-SMS sending should be hidden behind an internal interface so development can use
-a simulator and production can later use a provider. The full outbound send
-workflow is intentionally outside the current task and must not send real SMS.
+SMS sending is hidden behind an internal interface so development can use a
+simulator and production can use a provider. The opening/cancellation alert flow
+uses the selected provider through `createSmsProvider()`.
 
 Expected interface responsibilities:
 
-- Send outbound SMS only after the dedicated outbound phase adds the required
-  safety gates.
+- Send outbound SMS only after consent, organization scope, E.164, and provider
+  safety gates pass.
 - Normalize provider message IDs.
 - Verify inbound webhook authenticity where supported.
 - Parse inbound sender, recipient, body, timestamp, and provider metadata.
 - Avoid real SMS sends in local tests and production unless explicitly enabled
   by a future provider integration phase.
 
-Provider choices should remain replaceable until production selection is made.
-Current Plivo/Twilio implementations fail closed.
+Provider choices remain replaceable. The simulator is the default. Twilio sends
+only when explicitly configured and allowed. Plivo remains fail-closed.
 
 ## Appointment Reminder Architecture
 
@@ -146,8 +148,8 @@ Implemented cron foundation:
   status before a message can be sent or simulated.
 - Ineligible rows are marked `skipped`; provider or template failures are marked
   `failed`.
-- The simulator remains the safe default provider. Plivo/Twilio still fail
-  closed until the real provider phase.
+- The simulator remains the safe default provider. Twilio can send only when
+  explicitly configured and allowed. Plivo still fails closed until implemented.
 
 Inbound parsing must prioritize STOP/ARRET/UNSUBSCRIBE opt-out handling before
 appointment or waitlist intent. `CANCEL` is ambiguous: when a message is clearly

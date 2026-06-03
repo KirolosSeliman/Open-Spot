@@ -21,15 +21,14 @@ import {
 import { calculateCommissionEstimate } from "@/lib/openings/commission";
 import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
-import { createSimulatorSmsProvider } from "@/lib/sms/simulator";
+import { createSmsProvider } from "@/lib/sms/factory";
+import { SIMULATOR_SOURCE_NUMBER } from "@/lib/sms/simulator";
 import {
   getNextResponseRank,
   normalizeSimulatedReply
 } from "@/lib/sms/simulation";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-
-const SIMULATOR_SOURCE_NUMBER = "+10000000000";
 
 async function requireReadyOrganization({
   canPerform,
@@ -863,7 +862,7 @@ async function countEligibleOpeningRecipients({
   ).length;
 }
 
-async function sendSimulatorOpeningAlerts({
+async function sendOpeningSmsAlerts({
   supabase,
   organization,
   openingId
@@ -963,23 +962,32 @@ async function sendSimulatorOpeningAlerts({
     };
   }
 
-  const provider = createSimulatorSmsProvider();
+  const provider = createSmsProvider();
   const now = new Date().toISOString();
-  const messageRecords = await Promise.all(
-    sendableOffers.map(async (offer) => {
-      const customer = customerById.get(offer.customer_id);
-      const message = generateOpeningSmsMessage({
-        businessName: organization.name,
-        serviceName: serviceResult.data?.name ?? opening.title,
-        startsAt: opening.start_time,
-        endsAt: opening.end_time,
-        offerLabel: opening.offer_label,
-        customerFirstName: customer?.full_name?.trim().split(/\s+/)[0] ?? null,
-        language: customer?.preferred_language ?? organization.defaultLanguage,
-        includeOptOut: true
-      });
+  const successfulOfferIds: string[] = [];
+  const messageRecords = [];
+
+  for (const offer of sendableOffers) {
+    const customer = customerById.get(offer.customer_id);
+
+    if (!customer?.phone_e164) {
+      continue;
+    }
+
+    const message = generateOpeningSmsMessage({
+      businessName: organization.name,
+      serviceName: serviceResult.data?.name ?? opening.title,
+      startsAt: opening.start_time,
+      endsAt: opening.end_time,
+      offerLabel: opening.offer_label,
+      customerFirstName: customer.full_name?.trim().split(/\s+/)[0] ?? null,
+      language: customer.preferred_language ?? organization.defaultLanguage,
+      includeOptOut: true
+    });
+
+    try {
       const sendResult = await provider.sendSms({
-        to: customer?.phone_e164 ?? SIMULATOR_SOURCE_NUMBER,
+        to: customer.phone_e164,
         body: message.body,
         metadata: {
           openingId,
@@ -988,20 +996,29 @@ async function sendSimulatorOpeningAlerts({
         }
       });
 
-      return {
+      successfulOfferIds.push(offer.id);
+      messageRecords.push({
         organization_id: organization.id,
         customer_id: offer.customer_id,
         opening_id: openingId,
         direction: "outbound" as const,
         provider: sendResult.provider,
         provider_message_id: sendResult.providerMessageId,
-        from_number: SIMULATOR_SOURCE_NUMBER,
-        to_number: customer?.phone_e164 ?? SIMULATOR_SOURCE_NUMBER,
+        from_number: sendResult.fromNumber,
+        to_number: customer.phone_e164,
         body: message.body,
         status: sendResult.status
-      };
-    })
-  );
+      });
+    } catch {
+      // Failed provider sends intentionally leave the offer pending.
+    }
+  }
+
+  if (messageRecords.length === 0) {
+    return {
+      sent: 0
+    };
+  }
 
   const { error: messagesError } = await supabase
     .from("sms_messages")
@@ -1022,7 +1039,7 @@ async function sendSimulatorOpeningAlerts({
     .eq("status", "pending")
     .in(
       "id",
-      sendableOffers.map((offer) => offer.id)
+      successfulOfferIds
     );
 
   if (updateError) {
@@ -1039,8 +1056,9 @@ async function sendSimulatorOpeningAlerts({
     throw new Error(openingError.message);
   }
 
-  await supabase.rpc("record_simulator_broadcast_audit", {
+  await supabase.rpc("record_opening_broadcast_audit", {
     target_opening_id: openingId,
+    provider_name: provider.getProviderName(),
     sent_count: messageRecords.length
   });
 
@@ -1098,15 +1116,15 @@ export async function createOpeningAction(formData: FormData) {
       throw new Error(error?.message ?? "Opening creation failed.");
     }
 
-    const simulatorResult = await sendSimulatorOpeningAlerts({
+    const smsResult = await sendOpeningSmsAlerts({
       supabase,
       organization,
       openingId
     });
 
-    if (simulatorResult.sent === 0) {
+    if (smsResult.sent === 0) {
       throw new Error(
-        "Opening was created, but no simulator SMS could be prepared for opted-in recipients."
+        "Opening was created, but no SMS could be sent to opted-in recipients."
       );
     }
 
@@ -1124,21 +1142,21 @@ export async function createOpeningAction(formData: FormData) {
   redirect(`/dashboard/cancellations/${createdOpeningId}`);
 }
 
-export async function simulateOpeningSendAction(formData: FormData) {
+export async function sendOpeningAlertsAction(formData: FormData) {
   const openingId = String(formData.get("openingId") ?? "");
   const organization = await requireReadyOrganization({
     canPerform: canValidateBookings
   });
   const supabase = await createSupabaseServerClient();
   try {
-    const result = await sendSimulatorOpeningAlerts({
+    const result = await sendOpeningSmsAlerts({
       supabase,
       organization,
       openingId
     });
 
     if (result.sent === 0) {
-      throw new Error("No opted-in pending offers are available to simulate.");
+      throw new Error("No opted-in pending offers are available to send.");
     }
   } catch (error) {
     redirectWithError(

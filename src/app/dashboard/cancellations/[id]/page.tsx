@@ -6,13 +6,18 @@ import {
   StatusBadge
 } from "@/components/dashboard/dashboard-ui";
 import {
-  simulateOpeningSendAction,
+  sendOpeningAlertsAction,
   simulateReplyAction,
   validateSimulatedOfferAction
 } from "@/lib/dashboard/actions";
 import { loadOpeningDetail } from "@/lib/dashboard/operations-data";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
+import {
+  getOpeningAlertButtonLabel,
+  getOpeningAlertModeCopy,
+  getSmsRuntimeStatus
+} from "@/lib/sms/runtime-status";
 
 type CancellationDetailPageProps = {
   params: Promise<{
@@ -42,6 +47,7 @@ export default async function CancellationDetailPage({
   const businessName = organization?.name ?? "Open Spot";
   const previewLanguage = organization?.defaultLanguage ?? "fr";
   const serviceName = service?.name ?? opening.title;
+  const smsStatus = getSmsRuntimeStatus();
   const smsPreview = generateOpeningSmsMessage({
     businessName,
     serviceName,
@@ -55,7 +61,7 @@ export default async function CancellationDetailPage({
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Details reels du creneau. Les offres sont preparees, mais aucun SMS reel n'est envoye."
+        description={`Details reels du creneau. ${getOpeningAlertModeCopy(smsStatus)}`}
         title={opening.title}
       />
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
@@ -100,7 +106,7 @@ export default async function CancellationDetailPage({
               </p>
             ) : null}
             <p className="text-xs font-bold text-[var(--muted)]">
-              Preview only. No real SMS is sent from this screen.
+              {getOpeningAlertModeCopy(smsStatus)}
             </p>
           </div>
         </Panel>
@@ -108,13 +114,14 @@ export default async function CancellationDetailPage({
       <Panel title="Prepared offers">
         {offers.length > 0 ? (
           <div className="grid gap-3">
-            <form action={simulateOpeningSendAction}>
+            <form action={sendOpeningAlertsAction}>
               <input name="openingId" type="hidden" value={opening.id} />
               <button
-                className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={!smsStatus.canSendOpeningAlerts}
                 type="submit"
               >
-                Simulate sending alert
+                {getOpeningAlertButtonLabel(smsStatus)}
               </button>
             </form>
             {offers.map((offer) => {

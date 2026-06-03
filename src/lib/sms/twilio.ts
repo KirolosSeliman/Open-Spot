@@ -18,6 +18,48 @@ function isE164Phone(value: string) {
   return /^\+[1-9][0-9]{7,14}$/.test(value);
 }
 
+function isMessagingServiceSid(value: string) {
+  return /^MG[a-zA-Z0-9]{32}$/.test(value);
+}
+
+export function resolveTwilioSenderOptions(
+  env: TwilioEnv = process.env,
+  metadata: Record<string, string> | undefined = undefined
+) {
+  const messagingServiceSid = env.TWILIO_MESSAGING_SERVICE_SID?.trim();
+  const fromNumber = metadata?.from ?? env.TWILIO_SOURCE_NUMBER;
+
+  if (messagingServiceSid) {
+    if (!isMessagingServiceSid(messagingServiceSid)) {
+      throw new Error("Twilio Messaging Service SID must start with MG and be a valid SID.");
+    }
+
+    if (!fromNumber || !isE164Phone(fromNumber)) {
+      throw new Error(
+        "Twilio source number must be configured as valid E.164 for inbound reply linking."
+      );
+    }
+
+    return {
+      messageParams: { messagingServiceSid },
+      fromNumber
+    };
+  }
+
+  if (!fromNumber) {
+    throw new Error("Twilio source number or Messaging Service SID is not configured.");
+  }
+
+  if (!isE164Phone(fromNumber)) {
+    throw new Error("Twilio source number must be a valid E.164 value.");
+  }
+
+  return {
+    messageParams: { from: fromNumber },
+    fromNumber
+  };
+}
+
 async function readTwilioFormParams(request: Request) {
   const body = await request.clone().text();
 
@@ -111,28 +153,24 @@ export function createTwilioSmsProvider(
         throw new Error("Twilio sending is not configured.");
       }
 
-      const from = input.metadata?.from ?? env.TWILIO_SOURCE_NUMBER;
-
-      if (!from) {
-        throw new Error("Twilio source number is not configured.");
+      if (!isE164Phone(input.to)) {
+        throw new Error("Twilio destination number must be a valid E.164 value.");
       }
 
-      if (!isE164Phone(input.to) || !isE164Phone(from)) {
-        throw new Error("Twilio to/from numbers must be valid E.164 values.");
-      }
-
+      const sender = resolveTwilioSenderOptions(env, input.metadata);
       const client = twilio(env.TWILIO_ACCOUNT_SID, env.TWILIO_AUTH_TOKEN);
       const message = await client.messages.create({
         to: input.to,
-        from,
         body,
+        ...sender.messageParams,
         statusCallback: env.TWILIO_STATUS_CALLBACK_URL || undefined
       });
 
       return {
         provider: "twilio",
         providerMessageId: message.sid,
-        status: "sent"
+        status: "sent",
+        fromNumber: sender.fromNumber
       };
     },
     async verifyWebhookSignature(request) {

@@ -15,6 +15,7 @@ export type SendSmsResult = {
   provider: SmsProvider;
   providerMessageId: string;
   status: "sent" | "simulated";
+  fromNumber: string;
 };
 
 export type SmsProviderClient = {

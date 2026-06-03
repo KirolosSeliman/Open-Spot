@@ -1,6 +1,7 @@
 import type { SmsProviderClient } from "@/lib/sms/provider";
 
 export const SIMULATOR_WEBHOOK_SECRET_HEADER = "x-open-spot-simulator-secret";
+export const SIMULATOR_SOURCE_NUMBER = "+10000000000";
 
 export function isSimulatorWebhookAllowed({
   providerName,
@@ -40,7 +41,8 @@ export function createSimulatorSmsProvider(): SmsProviderClient {
       return {
         provider: "simulator",
         providerMessageId: `sim_${Buffer.from(`${input.to}:${input.body}`).toString("base64url").slice(0, 24)}`,
-        status: "simulated"
+        status: "simulated",
+        fromNumber: SIMULATOR_SOURCE_NUMBER
       };
     },
     async verifyWebhookSignature() {
