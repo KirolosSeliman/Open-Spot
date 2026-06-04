@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
+import { PhoneNumberField } from "@/components/forms/phone-number-field";
 import { cn } from "@/lib/utils/cn";
 import type { PublicWaitlistService } from "@/lib/waitlist/public-profile";
 import type { WaitlistSignupSource } from "@/lib/waitlist/sources";
@@ -87,6 +88,8 @@ export function WaitlistPreview({
           </h2>
           <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
             {merchantName} can now contact you by SMS for last-minute openings.
+            If this phone number was already registered, your waitlist
+            preferences were updated.
           </p>
         </div>
         <Button
@@ -128,22 +131,15 @@ export function WaitlistPreview({
           type="text"
         />
       </div>
-      <div>
-        <label className="text-sm font-semibold" htmlFor="phone">
-          Mobile phone
-        </label>
-        <input
-          className={cn(
-            "mt-2 min-h-11 w-full rounded-md border border-[var(--line)] px-3",
-            isKiosk && "min-h-14 text-lg"
-          )}
-          id="phone"
-          name="phone"
-          placeholder="+1 514 000 0000"
-          required
-          type="tel"
-        />
-      </div>
+      <PhoneNumberField
+        className="font-semibold"
+        id="waitlist-phone"
+        inputClassName="rounded-md"
+        isLarge={isKiosk}
+        label="Mobile phone"
+        required
+        selectClassName="rounded-md"
+      />
       <div>
         <label className="text-sm font-semibold" htmlFor="preferredLanguage">
           Preferred language

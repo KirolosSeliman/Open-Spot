@@ -37,6 +37,38 @@ describe("normalizePhoneToE164", () => {
     });
   });
 
+  it("normalizes country code plus national number input", () => {
+    expect(
+      normalizePhoneToE164({
+        countryCallingCode: "+1",
+        nationalNumber: "514-249-4425"
+      })
+    ).toEqual({
+      ok: true,
+      phoneE164: "+15142494425"
+    });
+
+    expect(
+      normalizePhoneToE164({
+        countryCallingCode: "+33",
+        nationalNumber: "6 12 34 56 78"
+      })
+    ).toEqual({
+      ok: true,
+      phoneE164: "+33612345678"
+    });
+
+    expect(
+      normalizePhoneToE164({
+        countryCallingCode: "20",
+        nationalNumber: "100 123 4567"
+      })
+    ).toEqual({
+      ok: true,
+      phoneE164: "+201001234567"
+    });
+  });
+
   it("rejects unsafe or incomplete numbers", () => {
     expect(normalizePhoneToE164("555")).toEqual({
       ok: false,
@@ -45,6 +77,24 @@ describe("normalizePhoneToE164", () => {
     expect(normalizePhoneToE164("12345678901234567890")).toEqual({
       ok: false,
       error: "Enter a valid 10-digit Canadian or US phone number."
+    });
+    expect(
+      normalizePhoneToE164({
+        countryCallingCode: "+1",
+        nationalNumber: "555"
+      })
+    ).toEqual({
+      ok: false,
+      error: "Enter a valid 10-digit Canadian or US phone number."
+    });
+    expect(
+      normalizePhoneToE164({
+        countryCallingCode: "+33",
+        nationalNumber: "abc"
+      })
+    ).toEqual({
+      ok: false,
+      error: "Enter a valid phone number."
     });
   });
 });

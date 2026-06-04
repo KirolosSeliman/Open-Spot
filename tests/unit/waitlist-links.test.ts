@@ -82,7 +82,8 @@ describe("public waitlist links and consent", () => {
     const parsed = createWaitlistSubmissionPayload({
       organizationSlug: "kiroclipz",
       fullName: "Maya",
-      phone: "5142494425",
+      phoneCountry: "+1",
+      phoneNational: "5142494425",
       preferredLanguage: "fr",
       serviceIds: [
         "69de94b6-a1c1-4ebd-8c58-949584843e88",
@@ -192,11 +193,24 @@ describe("public waitlist links and consent", () => {
       ),
       "utf8"
     );
+    const phoneField = readFileSync(
+      join(
+        process.cwd(),
+        "src",
+        "components",
+        "forms",
+        "phone-number-field.tsx"
+      ),
+      "utf8"
+    );
 
     expect(kioskPage).toContain('signupSource="kiosk"');
     expect(kioskPage).not.toContain("getActiveOrganizationWorkspace");
     expect(kioskPage).not.toContain("dashboard");
     expect(waitlistForm).toContain("formRef.current?.reset()");
+    expect(waitlistForm).toContain("PhoneNumberField");
+    expect(phoneField).toContain('countryName = "phoneCountry"');
+    expect(phoneField).toContain('nationalName = "phoneNational"');
     expect(waitlistForm).toContain("consentAccepted");
     expect(waitlistForm).not.toContain("defaultChecked");
   });

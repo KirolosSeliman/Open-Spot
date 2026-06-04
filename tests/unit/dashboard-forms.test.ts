@@ -95,7 +95,8 @@ describe("dashboard operational forms", () => {
     expect(
       buildCustomerCreateInput({
         fullName: "Maya Tremblay",
-        phone: "5142494425",
+        phoneCountry: "+1",
+        phoneNational: "514-249-4425",
         email: " MAYA@example.com ",
         preferredLanguage: "fr",
         consentStatus: "opted_in",
@@ -252,6 +253,8 @@ describe("dashboard operational forms", () => {
     expect(source).toContain("updateAppointmentAction");
     expect(source).toContain(".from(\"scheduled_messages\")");
     expect(source).toContain("consent?.status === \"opted_in\"");
+    expect(source).toContain("A client with this phone number already exists.");
+    expect(source).not.toContain(".update({\n          full_name: input.value.fullName");
     expect(source).not.toContain('formData.get("organizationId")');
   });
 });

@@ -10,6 +10,8 @@ export async function POST(request: Request) {
     organizationSlug: String(formData.get("organizationSlug") ?? ""),
     fullName: String(formData.get("fullName") ?? ""),
     phone: String(formData.get("phone") ?? ""),
+    phoneCountry: String(formData.get("phoneCountry") ?? ""),
+    phoneNational: String(formData.get("phoneNational") ?? ""),
     preferredLanguage: String(formData.get("preferredLanguage") ?? "en"),
     serviceInterest: String(formData.get("serviceInterest") ?? ""),
     serviceIds: formData.getAll("serviceIds").map(String),
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     waitlistEntryId: data,
-    status: "created"
+    status: "created_or_updated"
   });
 }
 

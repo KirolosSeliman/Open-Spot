@@ -336,6 +336,8 @@ export async function createCustomerAction(formData: FormData) {
   const input = buildCustomerCreateInput({
     fullName: formData.get("fullName"),
     phone: formData.get("phone"),
+    phoneCountry: formData.get("phoneCountry"),
+    phoneNational: formData.get("phoneNational"),
     email: formData.get("email"),
     preferredLanguage: formData.get("preferredLanguage"),
     notes: formData.get("notes"),
@@ -364,33 +366,26 @@ export async function createCustomerAction(formData: FormData) {
     redirectWithError("/dashboard/clients", existingCustomerError.message);
   }
 
-  const customerWrite = existingCustomer
-    ? await supabase
-        .from("customers")
-        .update({
-          full_name: input.value.fullName,
-          email: input.value.email,
-          preferred_language: input.value.preferredLanguage,
-          notes: input.value.notes,
-          source: "manual"
-        })
-        .eq("organization_id", organization.id)
-        .eq("id", existingCustomer.id)
-        .select("id")
-        .single()
-    : await supabase
-        .from("customers")
-        .insert({
-          organization_id: organization.id,
-          full_name: input.value.fullName,
-          phone_e164: input.value.phoneE164,
-          email: input.value.email,
-          preferred_language: input.value.preferredLanguage,
-          notes: input.value.notes,
-          source: "manual"
-        })
-        .select("id")
-        .single();
+  if (existingCustomer) {
+    redirectWithError(
+      "/dashboard/clients",
+      "A client with this phone number already exists. Edit the existing client instead of creating a new one."
+    );
+  }
+
+  const customerWrite = await supabase
+    .from("customers")
+    .insert({
+      organization_id: organization.id,
+      full_name: input.value.fullName,
+      phone_e164: input.value.phoneE164,
+      email: input.value.email,
+      preferred_language: input.value.preferredLanguage,
+      notes: input.value.notes,
+      source: "manual"
+    })
+    .select("id")
+    .single();
 
   const { data: customer, error: customerError } = customerWrite;
 

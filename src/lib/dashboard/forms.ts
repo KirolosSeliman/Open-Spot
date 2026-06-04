@@ -201,6 +201,8 @@ function buildValidatedServiceInput(input: {
 export function buildCustomerCreateInput(input: {
   fullName?: unknown;
   phone?: unknown;
+  phoneCountry?: unknown;
+  phoneNational?: unknown;
   email?: unknown;
   preferredLanguage?: unknown;
   notes?: unknown;
@@ -215,7 +217,11 @@ export function buildCustomerCreateInput(input: {
   const rawPhone = String(input.phone ?? "").trim();
   const email = cleanOptionalText(input.email)?.toLowerCase() ?? null;
   const preferredLanguage = String(input.preferredLanguage ?? "fr");
-  const phone = normalizePhoneToE164(rawPhone);
+  const phone = normalizePhoneToE164({
+    phone: rawPhone,
+    countryCallingCode: input.phoneCountry,
+    nationalNumber: input.phoneNational
+  });
   const hasConsentProof =
     input.hasConsentProof === "on" ||
     input.hasConsentProof === "true" ||

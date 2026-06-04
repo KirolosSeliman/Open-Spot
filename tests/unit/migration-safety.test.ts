@@ -652,6 +652,30 @@ describe("phase 2 migration safety", () => {
     expect(hardeningMigration).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
   });
 
+  it("preserves customer identity and reuses active waitlist entries on duplicate public signup", () => {
+    const identityMigration = readFileSync(
+      join(
+        migrationDirectory,
+        "20260603201000_preserve_customer_identity_on_waitlist_signup.sql"
+      ),
+      "utf8"
+    );
+
+    expect(identityMigration).toContain(
+      "create or replace function public.register_waitlist_signup"
+    );
+    expect(identityMigration).toContain("on conflict (organization_id, phone_e164)");
+    expect(identityMigration).not.toContain("full_name = excluded.full_name");
+    expect(identityMigration).toContain("preferred_language = excluded.preferred_language");
+    expect(identityMigration).toContain("existing_waitlist_entry_id");
+    expect(identityMigration).toContain("'waitlist.signup.updated'");
+    expect(identityMigration).toContain("'submitted_name_differs'");
+    expect(identityMigration).toContain(
+      "grant execute on function public.register_waitlist_signup"
+    );
+    expect(identityMigration).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
+  });
+
   it("revokes direct anonymous table access for public waitlist security", () => {
     const revokeMigration = readFileSync(
       join(

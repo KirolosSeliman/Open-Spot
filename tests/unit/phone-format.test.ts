@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   extractPhoneDigits,
+  formatInternationalPhoneForDisplay,
   formatNorthAmericanPhoneForDisplay
 } from "@/lib/customers/phone-format";
 
@@ -22,5 +23,12 @@ describe("phone display formatting", () => {
     expect(formatNorthAmericanPhoneForDisplay("(514) 249-4425")).toBe("514-249-4425");
     expect(formatNorthAmericanPhoneForDisplay("+15142494425")).toBe("514-249-4425");
     expect(formatNorthAmericanPhoneForDisplay("1-514-249-4425")).toBe("514-249-4425");
+  });
+
+  it("uses conservative spacing for non-North-American display", () => {
+    expect(formatInternationalPhoneForDisplay("612345678")).toBe("6123 4567 8");
+    expect(formatInternationalPhoneForDisplay("+33 6 12 34 56 78")).toBe(
+      "3361 2345 67 8"
+    );
   });
 });

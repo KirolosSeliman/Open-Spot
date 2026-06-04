@@ -14,7 +14,9 @@ const uuidPattern =
 export type WaitlistSubmissionInput = {
   organizationSlug: string;
   fullName: string;
-  phone: string;
+  phone?: string;
+  phoneCountry?: string;
+  phoneNational?: string;
   preferredLanguage: string;
   serviceInterest?: string;
   serviceIds?: string[];
@@ -46,7 +48,11 @@ export function createWaitlistSubmissionPayload(
   | { ok: true; payload: WaitlistSubmissionPayload }
   | { ok: false; errors: string[] } {
   const errors: string[] = [];
-  const phone = normalizePhoneToE164(input.phone);
+  const phone = normalizePhoneToE164({
+    phone: input.phone,
+    countryCallingCode: input.phoneCountry,
+    nationalNumber: input.phoneNational
+  });
 
   if (!input.organizationSlug.trim()) {
     errors.push("Organization slug is required.");

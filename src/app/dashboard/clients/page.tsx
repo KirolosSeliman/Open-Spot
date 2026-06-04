@@ -1,4 +1,4 @@
-import { PhoneInput } from "@/components/forms/phone-input";
+import { PhoneNumberField } from "@/components/forms/phone-number-field";
 import {
   DashboardPageHeader,
   EmptyState,
@@ -48,15 +48,12 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
               required
             />
           </label>
-          <label className="grid gap-2 text-sm font-bold md:col-span-2">
-            Telephone
-            <PhoneInput
-              className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
-              id="client-phone"
-              name="phone"
-              required
-            />
-          </label>
+          <PhoneNumberField
+            className="md:col-span-2"
+            id="client-phone"
+            label="Telephone"
+            required
+          />
           <label className="grid gap-2 text-sm font-bold md:col-span-2">
             Email
             <input

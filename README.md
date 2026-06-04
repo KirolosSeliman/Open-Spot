@@ -80,6 +80,20 @@ Not included in the MVP:
 - Client cancellation replies can create recoverable openings only when configured;
   waitlist respondents still require manual merchant validation.
 
+## Customer Identity And Phone Numbers
+
+Open Spot uses one customer identity per organization and canonical E.164 phone
+number. Dashboard client creation must reject duplicate phone numbers instead
+of silently overwriting the existing customer's name, language, notes, or SMS
+consent. Public waitlist signups may refresh consent and waitlist preferences
+for an existing phone number, but they must preserve the existing customer name
+unless a future explicit edit/merge flow is designed.
+
+If an older deployment already overwrote a customer name because the same phone
+number was entered for another person, repair that record manually from the
+dashboard/admin tooling or a reviewed SQL update. Do not guess or automatically
+roll back identity fields unless audit data proves the previous values.
+
 ## Auth And Organization Status
 
 The app includes Supabase email/password sign-up, sign-in, sign-out, and an organization onboarding flow. A signed-in user without an organization is directed to `/onboarding`; creating an organization creates the owner profile, organization settings, owner membership, billing defaults, and audit record in one RPC-backed flow.
