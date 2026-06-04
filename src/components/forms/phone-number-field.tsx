@@ -24,13 +24,15 @@ const phoneCountries = [
   { code: "TR", name: "Turkey", callingCode: "+90" }
 ] as const;
 
+export type PhoneCountryCode = (typeof phoneCountries)[number]["code"];
+
 type PhoneNumberFieldProps = {
   id: string;
   label: string;
   name?: string;
   countryName?: string;
   nationalName?: string;
-  defaultCountryCode?: (typeof phoneCountries)[number]["code"];
+  defaultCountryCode?: PhoneCountryCode;
   defaultNationalNumber?: string;
   required?: boolean;
   className?: string;

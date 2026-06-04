@@ -990,6 +990,13 @@ export type Database = {
         };
         Returns: undefined;
       };
+      record_customer_update_audit: {
+        Args: {
+          target_customer_id: string;
+          change_metadata?: Json;
+        };
+        Returns: undefined;
+      };
       record_simulator_broadcast_audit: {
         Args: {
           target_opening_id: string;

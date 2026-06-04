@@ -7,6 +7,7 @@ import {
   buildAppointmentCreateInput,
   buildAppointmentUpdateInput,
   buildCustomerCreateInput,
+  buildCustomerUpdateInput,
   buildServiceCreateInput,
   buildServiceUpdateInput,
   buildWaitlistCreateInput,
@@ -117,6 +118,101 @@ describe("dashboard operational forms", () => {
         addToWaitlist: true
       }
     });
+  });
+
+  it("validates customer updates by id and normalizes edited phone input", () => {
+    expect(
+      buildCustomerUpdateInput({
+        customerId: "customer_1",
+        fullName: "Kirolos",
+        phoneCountry: "+1",
+        phoneNational: "514-249-4425",
+        email: "kirolos@example.com",
+        preferredLanguage: "fr",
+        consentStatus: "opted_in",
+        hasConsentProof: "on",
+        organizationId: "browser_org"
+      })
+    ).toEqual({
+      ok: true,
+      value: {
+        customerId: "customer_1",
+        fullName: "Kirolos",
+        phoneE164: "+15142494425",
+        email: "kirolos@example.com",
+        preferredLanguage: "fr",
+        notes: null,
+        consentStatus: "opted_in"
+      }
+    });
+
+    expect(
+      buildCustomerUpdateInput({
+        customerId: "",
+        fullName: "",
+        phoneCountry: "+1",
+        phoneNational: "555",
+        preferredLanguage: "es"
+      })
+    ).toEqual({
+      ok: false,
+      errors: [
+        "Client id is required.",
+        "Client name is required.",
+        "Enter a valid 10-digit Canadian or US phone number.",
+        "Preferred language must be French or English."
+      ]
+    });
+  });
+
+  it("keeps customer update action scoped to selected id and blocks duplicate phones", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src", "lib", "dashboard", "actions.ts"),
+      "utf8"
+    );
+
+    expect(source).toContain("export async function updateCustomerAction");
+    const updateSource = source.slice(
+      source.indexOf("export async function updateCustomerAction"),
+      source.indexOf("export async function createWaitlistEntryAction")
+    );
+
+    expect(source).toContain('formData.get("customerId")');
+    expect(source).toContain(".eq(\"id\", input.value.customerId)");
+    expect(source).toContain(".neq(\"id\", input.value.customerId)");
+    expect(source).toContain("Another client already uses this phone number.");
+    expect(source).toContain("record_customer_update_audit");
+    expect(source).toContain("phone_changed");
+    expect(source).toContain("onConflict: \"organization_id,customer_id\"");
+    expect(updateSource).not.toContain("source: \"manual\"");
+  });
+
+  it("uses a role-checked RPC for customer update audit rows", () => {
+    const migration = readFileSync(
+      join(
+        process.cwd(),
+        "supabase",
+        "migrations",
+        "20260603213000_record_customer_update_audit_rpc.sql"
+      ),
+      "utf8"
+    );
+
+    expect(migration).toContain(
+      "create or replace function public.record_customer_update_audit"
+    );
+    expect(migration).toContain("security definer");
+    expect(migration).toContain("set search_path = ''");
+    expect(migration).toContain("private.has_org_role");
+    expect(migration).toContain("'owner', 'manager', 'staff'");
+    expect(migration).toContain("insert into public.audit_logs");
+    expect(migration).toContain("'customer.updated'");
+    expect(migration).toContain(
+      "grant execute on function public.record_customer_update_audit"
+    );
+    expect(migration).not.toMatch(
+      /on public\.audit_logs for (?:insert|update|delete) to authenticated/i
+    );
   });
 
   it("validates waitlist input without accepting organization id", () => {

@@ -7,6 +7,7 @@ import {
   buildAppointmentCreateInput,
   buildAppointmentUpdateInput,
   buildCustomerCreateInput,
+  buildCustomerUpdateInput,
   buildServiceCreateInput,
   buildServiceUpdateInput,
   buildWaitlistCreateInput
@@ -456,6 +457,143 @@ export async function createCustomerAction(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/clients");
   revalidatePath("/dashboard/waitlist");
+  redirect("/dashboard/clients");
+}
+
+export async function updateCustomerAction(formData: FormData) {
+  const input = buildCustomerUpdateInput({
+    customerId: formData.get("customerId"),
+    fullName: formData.get("fullName"),
+    phone: formData.get("phone"),
+    phoneCountry: formData.get("phoneCountry"),
+    phoneNational: formData.get("phoneNational"),
+    email: formData.get("email"),
+    preferredLanguage: formData.get("preferredLanguage"),
+    notes: formData.get("notes"),
+    consentStatus: formData.get("consentStatus"),
+    hasConsentProof: formData.get("hasConsentProof")
+  });
+
+  const customerId = String(formData.get("customerId") ?? "").trim();
+  const redirectPath = customerId
+    ? `/dashboard/clients/${customerId}/edit`
+    : "/dashboard/clients";
+
+  if (!input.ok) {
+    redirectWithError(redirectPath, input.errors.join(" "));
+  }
+
+  const organization = await requireReadyOrganization({
+    canPerform: canManageCustomers
+  });
+  const supabase = await createSupabaseServerClient();
+
+  const { data: existingCustomer, error: existingCustomerError } = await supabase
+    .from("customers")
+    .select("id, full_name, phone_e164, email, preferred_language, notes")
+    .eq("organization_id", organization.id)
+    .eq("id", input.value.customerId)
+    .maybeSingle();
+
+  if (existingCustomerError) {
+    redirectWithError(redirectPath, existingCustomerError.message);
+  }
+
+  if (!existingCustomer) {
+    redirectWithError("/dashboard/clients", "Client not found.");
+  }
+
+  const { data: duplicateCustomer, error: duplicateError } = await supabase
+    .from("customers")
+    .select("id")
+    .eq("organization_id", organization.id)
+    .eq("phone_e164", input.value.phoneE164)
+    .neq("id", input.value.customerId)
+    .maybeSingle();
+
+  if (duplicateError) {
+    redirectWithError(redirectPath, duplicateError.message);
+  }
+
+  if (duplicateCustomer) {
+    redirectWithError(
+      redirectPath,
+      "Another client already uses this phone number."
+    );
+  }
+
+  const now = new Date().toISOString();
+  const { error: updateError } = await supabase
+    .from("customers")
+    .update({
+      full_name: input.value.fullName,
+      phone_e164: input.value.phoneE164,
+      email: input.value.email,
+      preferred_language: input.value.preferredLanguage,
+      notes: input.value.notes
+    })
+    .eq("organization_id", organization.id)
+    .eq("id", input.value.customerId);
+
+  if (updateError) {
+    redirectWithError(redirectPath, updateError.message);
+  }
+
+  const consentWrite = {
+    organization_id: organization.id,
+    customer_id: input.value.customerId,
+    phone_e164: input.value.phoneE164,
+    status: input.value.consentStatus,
+    source: "dashboard_manual_edit",
+    consent_text:
+      input.value.consentStatus === "opted_in"
+        ? "Manual merchant confirmation of SMS consent during client edit."
+        : null,
+    consented_at: input.value.consentStatus === "opted_in" ? now : null,
+    unsubscribed_at: input.value.consentStatus === "opted_out" ? now : null
+  };
+
+  const { error: consentError } = await supabase.from("sms_consents").upsert(
+    consentWrite,
+    {
+      onConflict: "organization_id,customer_id"
+    }
+  );
+
+  if (consentError) {
+    redirectWithError(redirectPath, consentError.message);
+  }
+
+  const { error: auditError } = await supabase.rpc(
+    "record_customer_update_audit",
+    {
+      target_customer_id: input.value.customerId,
+      change_metadata: {
+        phone_changed: existingCustomer.phone_e164 !== input.value.phoneE164,
+        old_phone_e164: existingCustomer.phone_e164,
+        new_phone_e164: input.value.phoneE164,
+        changed_fields: {
+          full_name: existingCustomer.full_name !== input.value.fullName,
+          phone_e164: existingCustomer.phone_e164 !== input.value.phoneE164,
+          email: existingCustomer.email !== input.value.email,
+          preferred_language:
+            existingCustomer.preferred_language !==
+            input.value.preferredLanguage,
+          notes: existingCustomer.notes !== input.value.notes,
+          consent_status: true
+        }
+      }
+    }
+  );
+
+  if (auditError) {
+    redirectWithError(redirectPath, auditError.message);
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/clients");
+  revalidatePath("/dashboard/waitlist");
+  revalidatePath("/dashboard/responses");
   redirect("/dashboard/clients");
 }
 

@@ -1,4 +1,5 @@
 import { PhoneNumberField } from "@/components/forms/phone-number-field";
+import Link from "next/link";
 import {
   DashboardPageHeader,
   EmptyState,
@@ -132,6 +133,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                 <th className={tableHeadClass}>Email</th>
                 <th className={tableHeadClass}>Language</th>
                 <th className={tableHeadClass}>Consent</th>
+                <th className={tableHeadClass}>Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--line)] bg-white">
@@ -147,6 +149,14 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                   </td>
                   <td className={tableCellClass}>
                     <StatusBadge>{customer.consentStatus}</StatusBadge>
+                  </td>
+                  <td className={tableCellClass}>
+                    <Link
+                      className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black text-[var(--foreground)] transition hover:bg-[#f1f3ef]"
+                      href={`/dashboard/clients/${customer.id}/edit`}
+                    >
+                      Edit
+                    </Link>
                   </td>
                 </tr>
               ))}

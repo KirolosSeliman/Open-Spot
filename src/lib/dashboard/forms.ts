@@ -28,6 +28,10 @@ export type CustomerCreateInput = {
   addToWaitlist: boolean;
 };
 
+export type CustomerUpdateInput = Omit<CustomerCreateInput, "serviceId" | "addToWaitlist"> & {
+  customerId: string;
+};
+
 export type WaitlistCreateInput = {
   customerId: string;
   serviceId: string | null;
@@ -266,6 +270,57 @@ export function buildCustomerCreateInput(input: {
         input.addToWaitlist === "on" ||
         input.addToWaitlist === "true" ||
         input.addToWaitlist === true
+    }
+  };
+}
+
+export function buildCustomerUpdateInput(input: {
+  customerId?: unknown;
+  fullName?: unknown;
+  phone?: unknown;
+  phoneCountry?: unknown;
+  phoneNational?: unknown;
+  email?: unknown;
+  preferredLanguage?: unknown;
+  notes?: unknown;
+  consentStatus?: unknown;
+  hasConsentProof?: unknown;
+  organizationId?: unknown;
+}): FormResult<CustomerUpdateInput> {
+  const errors: string[] = [];
+  const customerId = String(input.customerId ?? "").trim();
+  const customerInput = buildCustomerCreateInput({
+    ...input,
+    serviceId: null,
+    addToWaitlist: false
+  });
+
+  if (!customerId) {
+    errors.push("Client id is required.");
+  }
+
+  if (!customerInput.ok) {
+    errors.push(...customerInput.errors);
+  }
+
+  if (errors.length > 0) {
+    return { ok: false, errors };
+  }
+
+  if (!customerInput.ok) {
+    return { ok: false, errors };
+  }
+
+  return {
+    ok: true,
+    value: {
+      customerId,
+      fullName: customerInput.value.fullName,
+      phoneE164: customerInput.value.phoneE164,
+      email: customerInput.value.email,
+      preferredLanguage: customerInput.value.preferredLanguage,
+      notes: customerInput.value.notes,
+      consentStatus: customerInput.value.consentStatus
     }
   };
 }

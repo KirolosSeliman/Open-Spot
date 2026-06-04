@@ -247,6 +247,35 @@ describe("public waitlist links and consent", () => {
     expect(waitlistForm).toContain("Which services are you interested in?");
   });
 
+  it("client dashboard exposes an explicit edit route and prefilled edit form", () => {
+    const clientsPage = readFileSync(
+      join(process.cwd(), "src", "app", "dashboard", "clients", "page.tsx"),
+      "utf8"
+    );
+    const editPage = readFileSync(
+      join(
+        process.cwd(),
+        "src",
+        "app",
+        "dashboard",
+        "clients",
+        "[id]",
+        "edit",
+        "page.tsx"
+      ),
+      "utf8"
+    );
+
+    expect(clientsPage).toContain("Actions");
+    expect(clientsPage).toContain("/dashboard/clients/${customer.id}/edit");
+    expect(editPage).toContain("loadCustomerEditData");
+    expect(editPage).toContain("updateCustomerAction");
+    expect(editPage).toContain('name="customerId"');
+    expect(editPage).toContain("PhoneNumberField");
+    expect(editPage).toContain("defaultValue={customer.full_name}");
+    expect(editPage).toContain("searchParams");
+  });
+
   it("revalidates public waitlist pages when merchant services change", () => {
     const dashboardActions = readFileSync(
       join(process.cwd(), "src", "lib", "dashboard", "actions.ts"),

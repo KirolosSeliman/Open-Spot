@@ -50,6 +50,10 @@ export type CustomerWithConsent = CustomerRow & {
   consentStatus: ConsentRow["status"] | "missing";
 };
 
+export type CustomerEditData = CustomerRow & {
+  consentStatus: ConsentRow["status"] | "missing";
+};
+
 export type AppointmentView = AppointmentRow & {
   customerName: string;
   customerPhone: string;
@@ -135,6 +139,49 @@ export async function loadCustomersWithConsent(): Promise<CustomerWithConsent[]>
     ...customer,
     consentStatus: consentByCustomer.get(customer.id)?.status ?? "missing"
   }));
+}
+
+export async function loadCustomerEditData(
+  customerId: string
+): Promise<CustomerEditData | null> {
+  const organizationId = await requireOrganizationId();
+
+  if (!organizationId) {
+    return null;
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const [customerResult, consentResult] = await Promise.all([
+    supabase
+      .from("customers")
+      .select("*")
+      .eq("organization_id", organizationId)
+      .eq("id", customerId)
+      .maybeSingle(),
+    supabase
+      .from("sms_consents")
+      .select("*")
+      .eq("organization_id", organizationId)
+      .eq("customer_id", customerId)
+      .maybeSingle()
+  ]);
+
+  if (customerResult.error) {
+    throw new Error(customerResult.error.message);
+  }
+
+  if (consentResult.error) {
+    throw new Error(consentResult.error.message);
+  }
+
+  if (!customerResult.data) {
+    return null;
+  }
+
+  return {
+    ...customerResult.data,
+    consentStatus: consentResult.data?.status ?? "missing"
+  };
 }
 
 export async function loadWaitlistView(): Promise<{
