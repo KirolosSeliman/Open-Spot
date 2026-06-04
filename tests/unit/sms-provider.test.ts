@@ -18,6 +18,10 @@ import {
   isStopKeyword,
   type SmsConsentStatus
 } from "@/lib/sms/provider";
+import {
+  getSmsDeliveryReadinessQuery,
+  isSmsPersistenceSchemaError
+} from "@/lib/sms/persistence-readiness";
 
 describe("SMS provider safety", () => {
   it("defaults to simulation unless real sending is explicitly enabled", () => {
@@ -231,6 +235,30 @@ describe("SMS provider safety", () => {
     expect(wrongDomain.deliveryDiagnostics).toContain(
       "APP_BASE_URL and TWILIO_STATUS_CALLBACK_URL use different domains. Twilio signature validation may fail."
     );
+  });
+
+  it("detects missing SMS delivery tracking schema safely", () => {
+    expect(getSmsDeliveryReadinessQuery()).toContain("error_code");
+    expect(getSmsDeliveryReadinessQuery()).toContain(
+      "status_callback_received_at"
+    );
+    expect(getSmsDeliveryReadinessQuery()).toContain("provider_status_payload");
+    expect(
+      isSmsPersistenceSchemaError({
+        code: "42703",
+        message: "column sms_messages.error_code does not exist"
+      })
+    ).toBe(true);
+    expect(
+      isSmsPersistenceSchemaError({
+        message: "Could not find the column 'delivered_at' in the schema cache"
+      })
+    ).toBe(true);
+    expect(
+      isSmsPersistenceSchemaError({
+        message: "connection timeout"
+      })
+    ).toBe(false);
   });
 
   it("keeps Plivo unavailable until implemented", () => {

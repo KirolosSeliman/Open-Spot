@@ -2,6 +2,10 @@ import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { classifyInboundSmsBody } from "@/lib/sms/inbound";
 import {
+  checkSmsDeliveryPersistenceReadiness,
+  isSmsPersistenceSchemaError
+} from "@/lib/sms/persistence-readiness";
+import {
   getWaitlistSmsEligibility,
   type WaitlistSmsEligibility
 } from "@/lib/waitlist/eligibility";
@@ -37,6 +41,13 @@ export type OpeningDetailOffer = OpeningOfferRow & {
   lastOutboundSentAt: string | null;
   lastOutboundFromNumber: string | null;
   lastOutboundToNumber: string | null;
+};
+
+export type OpeningDetailData = {
+  opening: OpeningRow | null;
+  service: Pick<ServiceRow, "id" | "name"> | null;
+  offers: OpeningDetailOffer[];
+  deliveryHistoryWarning: string | null;
 };
 
 export type ResponseQueueItem = OpeningOfferRow & {
@@ -274,13 +285,15 @@ export async function loadWaitlistView(): Promise<{
 }
 
 export async function loadOpeningCreationData() {
-  const [services, waitlist] = await Promise.all([
+  const [services, waitlist, smsPersistence] = await Promise.all([
     loadServices(),
-    loadWaitlistView()
+    loadWaitlistView(),
+    checkSmsDeliveryPersistenceReadiness()
   ]);
 
   return {
     services,
+    smsPersistence,
     eligibleCustomers: waitlist.customers.filter(
       (customer) => customer.consentStatus === "opted_in"
     )
@@ -418,18 +431,17 @@ export async function loadOpenings() {
   return data ?? [];
 }
 
-export async function loadOpeningDetail(openingId: string): Promise<{
-  opening: OpeningRow | null;
-  service: Pick<ServiceRow, "id" | "name"> | null;
-  offers: OpeningDetailOffer[];
-}> {
+export async function loadOpeningDetail(
+  openingId: string
+): Promise<OpeningDetailData> {
   const organizationId = await requireOrganizationId();
 
   if (!organizationId) {
     return {
       opening: null,
       service: null,
-      offers: []
+      offers: [],
+      deliveryHistoryWarning: null
     };
   }
 
@@ -464,12 +476,13 @@ export async function loadOpeningDetail(openingId: string): Promise<{
     return {
       opening: null,
       service: null,
-      offers: []
+      offers: [],
+      deliveryHistoryWarning: null
     };
   }
 
   const customerIds = [...new Set(offers.map((offer) => offer.customer_id))];
-  const [serviceResult, customersResult, messagesResult] = await Promise.all([
+  const [serviceResult, customersResult] = await Promise.all([
     opening.service_id
       ? supabase
           .from("services")
@@ -484,16 +497,6 @@ export async function loadOpeningDetail(openingId: string): Promise<{
           .select("id, full_name, phone_e164, preferred_language")
           .eq("organization_id", organizationId)
           .in("id", customerIds)
-      : Promise.resolve({ data: [], error: null }),
-    customerIds.length > 0
-      ? supabase
-          .from("sms_messages")
-          .select("customer_id, body, status, error_code, error_message, status_callback_received_at, delivered_at, failed_at, provider, provider_message_id, from_number, to_number, created_at")
-          .eq("organization_id", organizationId)
-          .eq("opening_id", openingId)
-          .eq("direction", "outbound")
-          .in("customer_id", customerIds)
-          .order("created_at", { ascending: false })
       : Promise.resolve({ data: [], error: null })
   ]);
 
@@ -505,8 +508,27 @@ export async function loadOpeningDetail(openingId: string): Promise<{
     throw new Error(customersResult.error.message);
   }
 
+  const messagesResult =
+    customerIds.length > 0
+      ? await supabase
+          .from("sms_messages")
+          .select("customer_id, body, status, error_code, error_message, status_callback_received_at, delivered_at, failed_at, provider, provider_message_id, from_number, to_number, created_at")
+          .eq("organization_id", organizationId)
+          .eq("opening_id", openingId)
+          .eq("direction", "outbound")
+          .in("customer_id", customerIds)
+          .order("created_at", { ascending: false })
+      : { data: [], error: null };
+  let deliveryHistoryWarning: string | null = null;
+
   if (messagesResult.error) {
-    throw new Error(messagesResult.error.message);
+    console.warn("Opening SMS delivery history query failed", {
+      openingId,
+      organizationId,
+      schemaIssue: isSmsPersistenceSchemaError(messagesResult.error)
+    });
+    deliveryHistoryWarning =
+      "SMS delivery history is temporarily unavailable. The opening and offers are still available.";
   }
 
   const customerById = new Map(
@@ -530,7 +552,7 @@ export async function loadOpeningDetail(openingId: string): Promise<{
     }
   >();
 
-  for (const message of messagesResult.data ?? []) {
+  for (const message of messagesResult.error ? [] : messagesResult.data ?? []) {
     if (message.customer_id && !lastMessageByCustomer.has(message.customer_id)) {
       lastMessageByCustomer.set(message.customer_id, message);
     }
@@ -539,6 +561,7 @@ export async function loadOpeningDetail(openingId: string): Promise<{
   return {
     opening,
     service: serviceResult.data ?? null,
+    deliveryHistoryWarning,
     offers: offers.map((offer) => {
       const customer = customerById.get(offer.customer_id);
       const lastOutbound = lastMessageByCustomer.get(offer.customer_id);

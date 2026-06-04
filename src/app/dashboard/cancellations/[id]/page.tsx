@@ -97,10 +97,11 @@ export default async function CancellationDetailPage({
 }: CancellationDetailPageProps) {
   const { id } = await params;
   const { error } = await searchParams;
-  const [{ opening, service, offers }, workspace] = await Promise.all([
-    loadOpeningDetail(id),
-    getActiveOrganizationWorkspace()
-  ]);
+  const [{ opening, service, offers, deliveryHistoryWarning }, workspace] =
+    await Promise.all([
+      loadOpeningDetail(id),
+      getActiveOrganizationWorkspace()
+    ]);
 
   if (!opening) {
     notFound();
@@ -160,6 +161,11 @@ export default async function CancellationDetailPage({
             <p key={diagnostic}>{diagnostic}</p>
           ))}
         </div>
+      ) : null}
+      {deliveryHistoryWarning ? (
+        <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+          {deliveryHistoryWarning}
+        </p>
       ) : null}
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <Panel title="Appointment details">

@@ -63,6 +63,7 @@ describe("opening SMS flow", () => {
   it("keeps cancellation detail send controls production-safe", () => {
     expect(cancellationDetailPage).toContain("pendingOffers.length > 0");
     expect(cancellationDetailPage).toContain("smsStatus.canSendOpeningAlerts");
+    expect(cancellationDetailPage).toContain("deliveryHistoryWarning");
     expect(cancellationDetailPage).toContain("SMS alert already sent to eligible clients.");
     expect(cancellationDetailPage).toContain("SMS sending failed:");
     expect(cancellationDetailPage).not.toContain("Simulate reply");
@@ -85,6 +86,17 @@ describe("opening SMS flow", () => {
     expect(operationsData).toContain("failed_at");
     expect(operationsData).toContain("error_code");
     expect(operationsData).toContain("error_message");
+    expect(operationsData).toContain("isSmsPersistenceSchemaError");
+    expect(operationsData).toContain(
+      "SMS delivery history is temporarily unavailable"
+    );
+  });
+
+  it("blocks opening SMS sends when delivery persistence is not ready", () => {
+    expect(newCancellationPage).toContain("data.smsPersistence.ready");
+    expect(newCancellationPage).toContain("smsBlockingReasons");
+    expect(dashboardActions).toContain("checkSmsDeliveryPersistenceReadiness");
+    expect(dashboardActions).toContain("smsPersistence.blockingReasons.join");
   });
 
   it("records an audit log when an opening prepares an eligible audience", () => {

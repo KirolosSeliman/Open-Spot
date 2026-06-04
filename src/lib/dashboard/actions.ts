@@ -24,6 +24,7 @@ import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
 import { createSmsProvider } from "@/lib/sms/factory";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
+import { checkSmsDeliveryPersistenceReadiness } from "@/lib/sms/persistence-readiness";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 async function requireReadyOrganization({
@@ -1046,6 +1047,12 @@ async function sendOpeningSmsAlerts({
   organization: Awaited<ReturnType<typeof requireReadyOrganization>>;
   openingId: string;
 }) {
+  const smsPersistence = await checkSmsDeliveryPersistenceReadiness();
+
+  if (!smsPersistence.ready) {
+    throw new Error(smsPersistence.blockingReasons.join(" "));
+  }
+
   const [openingResult, offersResult] = await Promise.all([
     supabase
       .from("openings")
@@ -1276,11 +1283,16 @@ export async function createOpeningAction(formData: FormData) {
       organizationId: organization.id,
       serviceId: input.value.serviceId
     });
+    const smsPersistence = await checkSmsDeliveryPersistenceReadiness();
 
     if (eligibleRecipientCount === 0) {
       throw new Error(
         "No opted-in active waitlist recipients are eligible for this opening."
       );
+    }
+
+    if (!smsPersistence.ready) {
+      throw new Error(smsPersistence.blockingReasons.join(" "));
     }
 
     const { data: openingId, error } = await supabase.rpc(

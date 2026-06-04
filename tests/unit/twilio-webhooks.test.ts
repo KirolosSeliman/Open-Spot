@@ -6,6 +6,7 @@ import { describe, expect, it } from "vitest";
 import { classifyInboundSmsBody } from "@/lib/sms/inbound";
 import {
   createTwilioSmsProvider,
+  getMonotonicTwilioDeliveryStatus,
   normalizeInitialTwilioStatus,
   normalizeTwilioDeliveryStatus,
   parseTwilioInboundRequest,
@@ -84,6 +85,27 @@ describe("Twilio webhook foundation", () => {
     expect(normalizeTwilioDeliveryStatus("undelivered")).toBe("undelivered");
     expect(normalizeTwilioDeliveryStatus("SENT")).toBe("sent");
     expect(normalizeTwilioDeliveryStatus("")).toBe("submitted_to_provider");
+  });
+
+  it("does not downgrade terminal Twilio delivery statuses", () => {
+    expect(
+      getMonotonicTwilioDeliveryStatus({
+        currentStatus: "delivered",
+        nextStatus: "sent"
+      })
+    ).toBe("delivered");
+    expect(
+      getMonotonicTwilioDeliveryStatus({
+        currentStatus: "failed",
+        nextStatus: "queued"
+      })
+    ).toBe("failed");
+    expect(
+      getMonotonicTwilioDeliveryStatus({
+        currentStatus: "sent",
+        nextStatus: "delivered"
+      })
+    ).toBe("delivered");
   });
 
   it("returns the twilio provider name and refuses disabled real sends", async () => {
@@ -262,11 +284,13 @@ describe("Twilio webhook foundation", () => {
     expect(twilioStatusRoute).toContain("parseTwilioStatusRequest");
     expect(twilioStatusRoute).toContain('provider_message_id"');
     expect(twilioStatusRoute).toContain("normalizeTwilioDeliveryStatus");
+    expect(twilioStatusRoute).toContain("getMonotonicTwilioDeliveryStatus");
     expect(twilioStatusRoute).toContain("status_callback_received_at");
     expect(twilioStatusRoute).toContain("delivered_at");
     expect(twilioStatusRoute).toContain("failed_at");
     expect(twilioStatusRoute).toContain("error_code");
     expect(twilioStatusRoute).toContain("provider_status_payload");
+    expect(twilioStatusRoute).toContain("status.errorCode ? { error_code");
     expect(twilioStatusRoute).toContain('"sms.twilio_status.received"');
     expect(twilioStatusRoute).not.toContain("TWILIO_AUTH_TOKEN=");
   });
@@ -278,6 +302,7 @@ describe("Twilio webhook foundation", () => {
     expect(smsDeliveryMigration).toContain("failed_at");
     expect(smsDeliveryMigration).toContain("provider_status_payload jsonb");
     expect(smsDeliveryMigration).toContain("sms_messages_twilio_delivery_lookup_idx");
+    expect(smsDeliveryMigration).toContain("sms_messages_opening_outbound_created_idx");
     expect(smsDeliveryMigration).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
   });
 

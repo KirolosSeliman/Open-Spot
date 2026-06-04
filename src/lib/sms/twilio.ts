@@ -52,6 +52,28 @@ export function normalizeInitialTwilioStatus(status: string | null | undefined) 
   return normalizeTwilioDeliveryStatus(status);
 }
 
+export function getMonotonicTwilioDeliveryStatus({
+  currentStatus,
+  nextStatus
+}: {
+  currentStatus: string | null | undefined;
+  nextStatus: string;
+}) {
+  const current = normalizeTwilioDeliveryStatus(currentStatus);
+  const next = normalizeTwilioDeliveryStatus(nextStatus);
+  const terminalStatuses = new Set(["delivered", "failed", "undelivered"]);
+
+  if (terminalStatuses.has(current) && !terminalStatuses.has(next)) {
+    return current;
+  }
+
+  if (current === "delivered" && next !== "delivered") {
+    return current;
+  }
+
+  return next;
+}
+
 export function resolveTwilioSenderOptions(
   env: TwilioEnv = process.env,
   metadata: Record<string, string> | undefined = undefined

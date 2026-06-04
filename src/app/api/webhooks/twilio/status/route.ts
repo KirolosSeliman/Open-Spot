@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import {
+  getMonotonicTwilioDeliveryStatus,
   normalizeTwilioDeliveryStatus,
   parseTwilioStatusRequest,
   validateTwilioWebhookRequest
@@ -68,12 +69,14 @@ export async function POST(request: Request) {
     );
   }
 
-  const deliveryStatus = normalizeTwilioDeliveryStatus(status.messageStatus);
+  const callbackStatus = normalizeTwilioDeliveryStatus(status.messageStatus);
+  const deliveryStatus = getMonotonicTwilioDeliveryStatus({
+    currentStatus: message.status,
+    nextStatus: callbackStatus
+  });
   const now = new Date().toISOString();
   const statusUpdate = {
     status: deliveryStatus,
-    error_code: status.errorCode,
-    error_message: status.errorMessage,
     status_callback_received_at: now,
     provider_status_payload: {
       message_sid: status.providerMessageId,
@@ -86,8 +89,10 @@ export async function POST(request: Request) {
       from: status.from,
       to: status.to
     },
-    ...(deliveryStatus === "delivered" ? { delivered_at: now } : {}),
-    ...(deliveryStatus === "failed" || deliveryStatus === "undelivered"
+    ...(status.errorCode ? { error_code: status.errorCode } : {}),
+    ...(status.errorMessage ? { error_message: status.errorMessage } : {}),
+    ...(callbackStatus === "delivered" ? { delivered_at: now } : {}),
+    ...(callbackStatus === "failed" || callbackStatus === "undelivered"
       ? { failed_at: now }
       : {})
   };

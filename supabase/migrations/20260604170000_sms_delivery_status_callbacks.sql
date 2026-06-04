@@ -13,6 +13,10 @@ create index if not exists sms_messages_twilio_delivery_lookup_idx
   on public.sms_messages(provider, provider_message_id, direction)
   where provider = 'twilio' and provider_message_id is not null;
 
+create index if not exists sms_messages_opening_outbound_created_idx
+  on public.sms_messages(organization_id, opening_id, direction, created_at desc)
+  where direction = 'outbound';
+
 create index if not exists sms_messages_delivery_attention_idx
   on public.sms_messages(organization_id, status, status_callback_received_at, created_at)
   where direction = 'outbound';

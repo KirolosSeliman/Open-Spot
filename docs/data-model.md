@@ -349,7 +349,12 @@ Key fields:
 - `to_number`
 - `body`
 - `status`
+- `error_code`
 - `error_message`
+- `status_callback_received_at`
+- `delivered_at`
+- `failed_at`
+- `provider_status_payload`
 - `created_at`
 
 Organization scoping: required `organization_id`.
@@ -360,12 +365,45 @@ Indexes:
 
 - `(organization_id, customer_id, created_at)`
 - `(organization_id, direction, from_number, created_at)`
-- Unique nullable `(provider, provider_message_id)`
+- `(provider, provider_message_id, direction)` for Twilio status callbacks.
+- `(organization_id, opening_id, direction, created_at)` for opening detail
+  delivery history.
 
 RLS expectations:
 
 - Organization members can read operational messages.
 - Webhook writes should use server-side privileged logic plus validation.
+
+Delivery status notes:
+
+- `sent` means Twilio sent the message toward the mobile carrier; it does not
+  prove customer receipt.
+- `delivered` is the only status that confirms delivery.
+- `failed` and `undelivered` should preserve provider error code/message when
+  Twilio supplies them.
+- `status_callback_received_at` indicates the app received a Twilio delivery
+  status callback. If it stays null after a send, verify the Twilio callback URL
+  and signature configuration.
+
+Production migration verification:
+
+```sql
+select column_name
+from information_schema.columns
+where table_schema = 'public'
+  and table_name = 'sms_messages'
+  and column_name in (
+    'error_code',
+    'error_message',
+    'status_callback_received_at',
+    'delivered_at',
+    'failed_at',
+    'provider_status_payload'
+  )
+order by column_name;
+```
+
+All listed columns must be present before enabling real Twilio sends.
 
 ## booking_requests
 

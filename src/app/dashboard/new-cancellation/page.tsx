@@ -25,6 +25,12 @@ export default async function NewCancellationPage({
     loadOpeningCreationData()
   ]);
   const smsStatus = getSmsRuntimeStatus();
+  const canSendSmsAlerts =
+    smsStatus.canSendOpeningAlerts && data.smsPersistence.ready;
+  const smsBlockingReasons = [
+    ...smsStatus.blockingReasons,
+    ...data.smsPersistence.blockingReasons
+  ];
 
   return (
     <div className="grid gap-6">
@@ -97,7 +103,7 @@ export default async function NewCancellationPage({
             </label>
             <button
               className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
-              disabled={!smsStatus.canSendOpeningAlerts}
+              disabled={!canSendSmsAlerts}
               type="submit"
             >
               {getOpeningAlertButtonLabel(smsStatus)}
@@ -128,9 +134,9 @@ export default async function NewCancellationPage({
           <p className="mt-4 rounded-2xl bg-[#edf8f3] p-4 text-sm font-bold leading-6 text-[var(--primary-strong)]">
             {getOpeningAlertModeCopy(smsStatus)}
           </p>
-          {smsStatus.blockingReasons.length > 0 ? (
+          {smsBlockingReasons.length > 0 ? (
             <ul className="mt-3 grid gap-2 text-sm font-bold text-[#8a1f17]">
-              {smsStatus.blockingReasons.map((reason) => (
+              {smsBlockingReasons.map((reason) => (
                 <li key={reason}>{reason}</li>
               ))}
             </ul>

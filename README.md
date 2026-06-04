@@ -236,6 +236,28 @@ app before testing again. When a message shows as sent to carrier but no status
 callback arrives after a few minutes, check the Twilio Message SID in Twilio
 Console and verify the callback URL/signature configuration.
 
+Before enabling real Twilio sends in production, apply Supabase migrations and
+verify delivery tracking columns exist:
+
+```sql
+select column_name
+from information_schema.columns
+where table_schema = 'public'
+  and table_name = 'sms_messages'
+  and column_name in (
+    'error_code',
+    'status_callback_received_at',
+    'delivered_at',
+    'failed_at',
+    'provider_status_payload'
+  )
+order by column_name;
+```
+
+If these columns are missing, `/dashboard/new-cancellation` blocks SMS sending
+and the cancellation detail page shows delivery history as temporarily
+unavailable instead of crashing.
+
 The inbound webhook validates Twilio signatures with the official Twilio SDK, parses `From`, `To`, `Body`, `MessageSid`, `SmsSid`, `AccountSid`, and `MessagingServiceSid`, then reuses the same safe inbound processing as the simulator. `OUI`, `YES`, and `1` only prepare a pending merchant-validation response; they never auto-confirm a booking. `STOP`, `ARRET`, `ARRÊT`, `UNSUBSCRIBE`, and `CANCEL` opt out only when the message can be linked to trusted context.
 
 Optional one-off Twilio smoke test after credentials are configured:
