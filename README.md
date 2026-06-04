@@ -103,6 +103,30 @@ Manual merchant validation remains mandatory: `OUI`, `YES`, and `1` only create
 or update a pending merchant-validation response and never confirm a recovered
 booking automatically.
 
+## Production Public URL And QR Codes
+
+The dashboard QR code page uses a single trusted public app origin for the QR
+code, public waitlist link, copy button, and kiosk link. In production this
+origin must be HTTPS and must not point to localhost, private IPs, or internal
+hosts.
+
+On Vercel, set the canonical public URL before printing or sharing QR codes:
+
+```bash
+APP_BASE_URL=https://your-production-domain.com
+NEXT_PUBLIC_APP_URL=https://your-production-domain.com
+```
+
+`APP_BASE_URL` is the preferred server-side source for production links.
+`NEXT_PUBLIC_APP_URL` may be used only for the same public, non-secret app
+origin. Never put Supabase service-role keys, Twilio auth tokens, Stripe
+secrets, or webhook secrets in `NEXT_PUBLIC_*` variables.
+
+After changing either value in Vercel, redeploy the app. QR codes or printed
+links generated before this fix should be regenerated if they encoded a
+localhost URL. When a custom domain is added later, update `APP_BASE_URL` to
+that HTTPS domain and redeploy.
+
 ## Local SMS Simulator Recovery Test
 
 Use the simulator for local cancellation-recovery testing unless you are

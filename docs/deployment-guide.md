@@ -17,9 +17,16 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 SMS_PROVIDER=simulator
 ALLOW_REAL_SMS_SENDS=false
-APP_BASE_URL=
+APP_BASE_URL=https://YOUR_DOMAIN
+NEXT_PUBLIC_APP_URL=https://YOUR_DOMAIN
 PLATFORM_ADMIN_EMAILS=
 ```
+
+`APP_BASE_URL` is required for production QR codes, public waitlist links, and
+kiosk links. It must be the canonical HTTPS Vercel deployment URL or custom
+domain. Do not set it to `http://localhost:3000` in production. After changing
+it in Vercel, redeploy and regenerate/reprint any QR codes that were created
+with the wrong origin.
 
 Provider-specific values remain empty until used:
 

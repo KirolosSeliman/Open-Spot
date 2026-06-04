@@ -42,7 +42,12 @@ describe("environment configuration", () => {
     expect(envExample).toContain("TWILIO_MESSAGING_SERVICE_SID=");
     expect(envExample).toContain("TWILIO_SOURCE_NUMBER=");
     expect(envExample).toContain("TWILIO_STATUS_CALLBACK_URL=");
-    expect(envExample).toContain("APP_BASE_URL=");
+    expect(envExample).toContain(
+      "APP_BASE_URL=https://your-production-domain.com"
+    );
+    expect(envExample).toContain(
+      "NEXT_PUBLIC_APP_URL=https://your-production-domain.com"
+    );
     expect(envExample).not.toContain("NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY");
   });
 

@@ -31,6 +31,37 @@ describe("public waitlist links and consent", () => {
     ).toBe("https://app.example.com/b/kiroclipz/waitlist/kiosk");
   });
 
+  it("encodes organization slugs and requires an absolute origin", () => {
+    expect(
+      buildPublicWaitlistUrl({
+        baseUrl: "https://app.example.com",
+        slug: "salon/centre ville",
+        source: "qr_code"
+      })
+    ).toBe(
+      "https://app.example.com/b/salon%2Fcentre%20ville/waitlist?source=qr_code"
+    );
+
+    expect(() =>
+      buildPublicWaitlistUrl({
+        baseUrl: "",
+        slug: "kiroclipz"
+      })
+    ).toThrow("A valid absolute public app URL is required.");
+  });
+
+  it("keeps unsafe origins out of the production QR page", () => {
+    const qrPage = readFileSync(
+      join(process.cwd(), "src", "app", "dashboard", "qr-code", "page.tsx"),
+      "utf8"
+    );
+
+    expect(qrPage).toContain("getPublicAppOrigin");
+    expect(qrPage).toContain("canRenderPublicLinks");
+    expect(qrPage).toContain("Les liens publics ne sont pas prets");
+    expect(qrPage).not.toContain("http://localhost:3000");
+  });
+
   it("requires explicit consent before public waitlist opt-in", () => {
     expect(
       createWaitlistSubmissionPayload({
