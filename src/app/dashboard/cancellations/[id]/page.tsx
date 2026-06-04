@@ -44,6 +44,53 @@ function formatSmsProvider(provider: string | null) {
   return provider ?? "Not sent";
 }
 
+function getSmsDeliveryLabel(status: string | null) {
+  switch (status) {
+    case "accepted":
+      return "Accepted by Twilio";
+    case "queued":
+      return "Queued by Twilio";
+    case "sending":
+      return "Sending";
+    case "sent":
+      return "Sent to carrier";
+    case "delivered":
+      return "Delivered to client";
+    case "undelivered":
+      return "Undelivered";
+    case "failed":
+      return "Failed";
+    case "submitted_to_provider":
+      return "Submitted to Twilio";
+    case "simulated":
+      return "Simulated";
+    default:
+      return status ?? "Pending";
+  }
+}
+
+function hasMissingDeliveryCallback({
+  status,
+  createdAt,
+  callbackReceivedAt
+}: {
+  status: string | null;
+  createdAt: string | null;
+  callbackReceivedAt: string | null;
+}) {
+  if (!status || callbackReceivedAt) {
+    return false;
+  }
+
+  if (!["accepted", "queued", "sending", "sent", "submitted_to_provider"].includes(status)) {
+    return false;
+  }
+
+  const createdTime = createdAt ? new Date(createdAt).getTime() : Number.NaN;
+
+  return Number.isFinite(createdTime) && Date.now() - createdTime > 2 * 60 * 1000;
+}
+
 export default async function CancellationDetailPage({
   params,
   searchParams
@@ -106,6 +153,13 @@ export default async function CancellationDetailPage({
         <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
           SMS sending failed: {error}
         </p>
+      ) : null}
+      {smsStatus.deliveryDiagnostics.length > 0 ? (
+        <div className="grid gap-2 rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+          {smsStatus.deliveryDiagnostics.map((diagnostic) => (
+            <p key={diagnostic}>{diagnostic}</p>
+          ))}
+        </div>
       ) : null}
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
         <Panel title="Appointment details">
@@ -183,6 +237,14 @@ export default async function CancellationDetailPage({
                 language: offer.customerLanguage,
                 includeOptOut: true
               });
+              const deliveryLabel = getSmsDeliveryLabel(
+                offer.lastOutboundMessageStatus
+              );
+              const missingDeliveryCallback = hasMissingDeliveryCallback({
+                status: offer.lastOutboundMessageStatus,
+                createdAt: offer.lastOutboundSentAt,
+                callbackReceivedAt: offer.lastOutboundStatusCallbackReceivedAt
+              });
 
               return (
                 <div
@@ -196,7 +258,8 @@ export default async function CancellationDetailPage({
                     </p>
                   </div>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Offer state: {offer.status}
+                    Offer state: {offer.status}. This means the alert was
+                    submitted/sent for this offer, not that the SMS was delivered.
                   </p>
                   <dl className="grid gap-2 rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-bold text-[var(--muted)] sm:grid-cols-2">
                     <div>
@@ -205,10 +268,10 @@ export default async function CancellationDetailPage({
                     </div>
                     <div>
                       <dt>SMS delivery status</dt>
-                      <dd>{offer.lastOutboundMessageStatus ?? "Pending"}</dd>
+                      <dd>{deliveryLabel}</dd>
                     </div>
                     <div>
-                      <dt>Sent time</dt>
+                      <dt>Submitted time</dt>
                       <dd>
                         {offer.lastOutboundSentAt
                           ? new Date(offer.lastOutboundSentAt).toLocaleString("fr-CA")
@@ -223,9 +286,39 @@ export default async function CancellationDetailPage({
                       <dt>From</dt>
                       <dd>{offer.lastOutboundFromNumber ?? "Not sent"}</dd>
                     </div>
+                    <div>
+                      <dt>Last status callback</dt>
+                      <dd>
+                        {offer.lastOutboundStatusCallbackReceivedAt
+                          ? new Date(
+                              offer.lastOutboundStatusCallbackReceivedAt
+                            ).toLocaleString("fr-CA")
+                          : "No callback received"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Delivered time</dt>
+                      <dd>
+                        {offer.lastOutboundDeliveredAt
+                          ? new Date(
+                              offer.lastOutboundDeliveredAt
+                            ).toLocaleString("fr-CA")
+                          : "Not delivered yet"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Failed/undelivered time</dt>
+                      <dd>
+                        {offer.lastOutboundFailedAt
+                          ? new Date(offer.lastOutboundFailedAt).toLocaleString(
+                              "fr-CA"
+                            )
+                          : "No failure reported"}
+                      </dd>
+                    </div>
                     {offer.lastOutboundProviderMessageId ? (
                       <div className="sm:col-span-2">
-                        <dt>Provider message ID</dt>
+                        <dt>Twilio Message SID / Provider message ID</dt>
                         <dd className="break-all">
                           {offer.lastOutboundProviderMessageId}
                         </dd>
@@ -236,6 +329,28 @@ export default async function CancellationDetailPage({
                   offer.lastOutboundMessageStatus === "undelivered" ? (
                     <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
                       Twilio reports this SMS was not delivered.
+                      {offer.lastOutboundErrorCode
+                        ? ` Error ${offer.lastOutboundErrorCode}.`
+                        : ""}
+                      {offer.lastOutboundErrorMessage
+                        ? ` ${offer.lastOutboundErrorMessage}`
+                        : ""}
+                    </p>
+                  ) : null}
+                  {offer.lastOutboundMessageStatus === "sent" ? (
+                    <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+                      Sent to carrier. Delivery not confirmed yet.
+                    </p>
+                  ) : null}
+                  {missingDeliveryCallback ? (
+                    <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+                      No delivery callback received yet. Verify Twilio status
+                      callback configuration.
+                    </p>
+                  ) : null}
+                  {offer.lastOutboundMessageStatus === "delivered" ? (
+                    <p className="rounded-xl border border-[#b8e0c0] bg-[#f1fff4] p-3 text-sm font-bold text-[#245d30]">
+                      Twilio confirmed this SMS was delivered to the client.
                     </p>
                   ) : null}
                   <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6 text-[var(--ink)]">

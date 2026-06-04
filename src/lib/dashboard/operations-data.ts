@@ -27,6 +27,11 @@ export type OpeningDetailOffer = OpeningOfferRow & {
   customerLanguage: CustomerRow["preferred_language"];
   lastOutboundMessageBody: string | null;
   lastOutboundMessageStatus: string | null;
+  lastOutboundErrorCode: string | null;
+  lastOutboundErrorMessage: string | null;
+  lastOutboundStatusCallbackReceivedAt: string | null;
+  lastOutboundDeliveredAt: string | null;
+  lastOutboundFailedAt: string | null;
   lastOutboundProvider: string | null;
   lastOutboundProviderMessageId: string | null;
   lastOutboundSentAt: string | null;
@@ -483,7 +488,7 @@ export async function loadOpeningDetail(openingId: string): Promise<{
     customerIds.length > 0
       ? supabase
           .from("sms_messages")
-          .select("customer_id, body, status, provider, provider_message_id, from_number, to_number, created_at")
+          .select("customer_id, body, status, error_code, error_message, status_callback_received_at, delivered_at, failed_at, provider, provider_message_id, from_number, to_number, created_at")
           .eq("organization_id", organizationId)
           .eq("opening_id", openingId)
           .eq("direction", "outbound")
@@ -512,6 +517,11 @@ export async function loadOpeningDetail(openingId: string): Promise<{
     {
       body: string;
       status: string;
+      error_code: string | null;
+      error_message: string | null;
+      status_callback_received_at: string | null;
+      delivered_at: string | null;
+      failed_at: string | null;
       provider: string;
       provider_message_id: string | null;
       from_number: string;
@@ -540,6 +550,12 @@ export async function loadOpeningDetail(openingId: string): Promise<{
         customerLanguage: customer?.preferred_language ?? "fr",
         lastOutboundMessageBody: lastOutbound?.body ?? null,
         lastOutboundMessageStatus: lastOutbound?.status ?? null,
+        lastOutboundErrorCode: lastOutbound?.error_code ?? null,
+        lastOutboundErrorMessage: lastOutbound?.error_message ?? null,
+        lastOutboundStatusCallbackReceivedAt:
+          lastOutbound?.status_callback_received_at ?? null,
+        lastOutboundDeliveredAt: lastOutbound?.delivered_at ?? null,
+        lastOutboundFailedAt: lastOutbound?.failed_at ?? null,
         lastOutboundProvider: lastOutbound?.provider ?? null,
         lastOutboundProviderMessageId:
           lastOutbound?.provider_message_id ?? null,

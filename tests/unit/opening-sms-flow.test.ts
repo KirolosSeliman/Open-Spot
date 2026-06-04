@@ -75,8 +75,16 @@ describe("opening SMS flow", () => {
     expect(operationsData).toContain("from_number");
     expect(operationsData).toContain("to_number");
     expect(cancellationDetailPage).toContain("SMS delivery status");
-    expect(cancellationDetailPage).toContain("Provider message ID");
+    expect(cancellationDetailPage).toContain("Sent to carrier. Delivery not confirmed yet.");
+    expect(cancellationDetailPage).toContain("No delivery callback received yet.");
+    expect(cancellationDetailPage).toContain("Twilio confirmed this SMS was delivered");
+    expect(cancellationDetailPage).toContain("Twilio Message SID / Provider message ID");
     expect(cancellationDetailPage).toContain("Twilio reports this SMS was not delivered.");
+    expect(operationsData).toContain("status_callback_received_at");
+    expect(operationsData).toContain("delivered_at");
+    expect(operationsData).toContain("failed_at");
+    expect(operationsData).toContain("error_code");
+    expect(operationsData).toContain("error_message");
   });
 
   it("records an audit log when an opening prepares an eligible audience", () => {

@@ -14,7 +14,16 @@ export type SendSmsInput = {
 export type SendSmsResult = {
   provider: SmsProvider;
   providerMessageId: string;
-  status: "sent" | "simulated";
+  status:
+    | "accepted"
+    | "queued"
+    | "sending"
+    | "sent"
+    | "delivered"
+    | "undelivered"
+    | "failed"
+    | "submitted_to_provider"
+    | "simulated";
   fromNumber: string;
 };
 

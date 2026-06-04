@@ -752,7 +752,12 @@ export type Database = {
           to_number: string;
           body: string;
           status: string;
+          error_code: string | null;
           error_message: string | null;
+          status_callback_received_at: string | null;
+          delivered_at: string | null;
+          failed_at: string | null;
+          provider_status_payload: Json | null;
           created_at: string;
         };
         Insert: {
@@ -768,7 +773,12 @@ export type Database = {
           to_number: string;
           body: string;
           status: string;
+          error_code?: string | null;
           error_message?: string | null;
+          status_callback_received_at?: string | null;
+          delivered_at?: string | null;
+          failed_at?: string | null;
+          provider_status_payload?: Json | null;
           created_at?: string;
         };
         Update: {
@@ -784,7 +794,12 @@ export type Database = {
           to_number?: string;
           body?: string;
           status?: string;
+          error_code?: string | null;
           error_message?: string | null;
+          status_callback_received_at?: string | null;
+          delivered_at?: string | null;
+          failed_at?: string | null;
+          provider_status_payload?: Json | null;
           created_at?: string;
         };
         Relationships: [];

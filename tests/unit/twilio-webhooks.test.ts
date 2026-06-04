@@ -6,7 +6,10 @@ import { describe, expect, it } from "vitest";
 import { classifyInboundSmsBody } from "@/lib/sms/inbound";
 import {
   createTwilioSmsProvider,
+  normalizeInitialTwilioStatus,
+  normalizeTwilioDeliveryStatus,
   parseTwilioInboundRequest,
+  parseTwilioStatusRequest,
   resolveTwilioSenderOptions
 } from "@/lib/sms/twilio";
 
@@ -25,6 +28,13 @@ const twilioStatusRoute = readFileSync(
 const packageJson = readFileSync(join(process.cwd(), "package.json"), "utf8");
 const smokeScript = readFileSync(
   join(process.cwd(), "scripts/twilio-smoke-test.mjs"),
+  "utf8"
+);
+const smsDeliveryMigration = readFileSync(
+  join(
+    process.cwd(),
+    "supabase/migrations/20260604170000_sms_delivery_status_callbacks.sql"
+  ),
   "utf8"
 );
 
@@ -49,6 +59,31 @@ describe("Twilio webhook foundation", () => {
     expect(twilioProviderSource).toContain("TWILIO_STATUS_CALLBACK_URL");
     expect(twilioProviderSource).toContain("metadata?.from");
     expect(twilioProviderSource).toContain("client.messages.create");
+    expect(twilioProviderSource).toContain(
+      "status: normalizeInitialTwilioStatus(message.status)"
+    );
+    expect(twilioProviderSource).not.toContain('status: "sent"');
+  });
+
+  it("normalizes initial Twilio statuses without pretending delivery", () => {
+    expect(normalizeInitialTwilioStatus("queued")).toBe("queued");
+    expect(normalizeInitialTwilioStatus("accepted")).toBe("accepted");
+    expect(normalizeInitialTwilioStatus("sent")).toBe("sent");
+    expect(normalizeInitialTwilioStatus("delivered")).toBe("delivered");
+    expect(normalizeInitialTwilioStatus("mystery")).toBe(
+      "submitted_to_provider"
+    );
+    expect(normalizeInitialTwilioStatus(undefined)).toBe(
+      "submitted_to_provider"
+    );
+  });
+
+  it("normalizes Twilio callback statuses", () => {
+    expect(normalizeTwilioDeliveryStatus("delivered")).toBe("delivered");
+    expect(normalizeTwilioDeliveryStatus("failed")).toBe("failed");
+    expect(normalizeTwilioDeliveryStatus("undelivered")).toBe("undelivered");
+    expect(normalizeTwilioDeliveryStatus("SENT")).toBe("sent");
+    expect(normalizeTwilioDeliveryStatus("")).toBe("submitted_to_provider");
   });
 
   it("returns the twilio provider name and refuses disabled real sends", async () => {
@@ -166,6 +201,35 @@ describe("Twilio webhook foundation", () => {
     });
   });
 
+  it("parses Twilio delivery status callback fields", async () => {
+    const request = new Request("https://example.com/api/webhooks/twilio/status", {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        MessageSid: "SM123",
+        SmsSid: "SM123",
+        AccountSid: "AC123",
+        MessagingServiceSid: "MG123",
+        MessageStatus: "undelivered",
+        ErrorCode: "30007",
+        ErrorMessage: "Carrier violation",
+        From: "+15145551234",
+        To: "+15145550000"
+      })
+    });
+
+    await expect(parseTwilioStatusRequest(request)).resolves.toMatchObject({
+      providerMessageId: "SM123",
+      messageStatus: "undelivered",
+      errorCode: "30007",
+      errorMessage: "Carrier violation",
+      from: "+15145551234",
+      to: "+15145550000"
+    });
+  });
+
   it("returns false when the Twilio signature is missing", async () => {
     const provider = createTwilioSmsProvider({
       TWILIO_AUTH_TOKEN: "secret",
@@ -197,8 +261,24 @@ describe("Twilio webhook foundation", () => {
     expect(twilioStatusRoute).toContain("validateTwilioWebhookRequest");
     expect(twilioStatusRoute).toContain("parseTwilioStatusRequest");
     expect(twilioStatusRoute).toContain('provider_message_id"');
+    expect(twilioStatusRoute).toContain("normalizeTwilioDeliveryStatus");
+    expect(twilioStatusRoute).toContain("status_callback_received_at");
+    expect(twilioStatusRoute).toContain("delivered_at");
+    expect(twilioStatusRoute).toContain("failed_at");
+    expect(twilioStatusRoute).toContain("error_code");
+    expect(twilioStatusRoute).toContain("provider_status_payload");
     expect(twilioStatusRoute).toContain('"sms.twilio_status.received"');
     expect(twilioStatusRoute).not.toContain("TWILIO_AUTH_TOKEN=");
+  });
+
+  it("adds non-destructive delivery status persistence columns", () => {
+    expect(smsDeliveryMigration).toContain("add column if not exists error_code");
+    expect(smsDeliveryMigration).toContain("status_callback_received_at");
+    expect(smsDeliveryMigration).toContain("delivered_at");
+    expect(smsDeliveryMigration).toContain("failed_at");
+    expect(smsDeliveryMigration).toContain("provider_status_payload jsonb");
+    expect(smsDeliveryMigration).toContain("sms_messages_twilio_delivery_lookup_idx");
+    expect(smsDeliveryMigration).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
   });
 
   it("keeps the Twilio smoke test behind explicit env and E.164 checks", () => {

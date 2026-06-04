@@ -12,6 +12,9 @@ export type SmsRuntimeStatus = {
   messagingServiceConfigured: boolean;
   statusCallbackConfigured: boolean;
   appBaseUrlConfigured: boolean;
+  statusCallbackPathValid: boolean;
+  statusCallbackDomainMatchesApp: boolean;
+  deliveryDiagnostics: string[];
 };
 
 function isE164Phone(value: string | undefined) {
@@ -20,6 +23,20 @@ function isE164Phone(value: string | undefined) {
 
 function isMessagingServiceSid(value: string | undefined) {
   return Boolean(value && /^MG[a-zA-Z0-9]{32}$/.test(value));
+}
+
+function getHttpsUrl(value: string | undefined) {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const url = new URL(value);
+
+    return url.protocol === "https:" ? url : null;
+  } catch {
+    return null;
+  }
 }
 
 export function getSmsRuntimeStatus(
@@ -38,6 +55,16 @@ export function getSmsRuntimeStatus(
   );
   const statusCallbackConfigured = Boolean(env.TWILIO_STATUS_CALLBACK_URL);
   const appBaseUrlConfigured = Boolean(env.APP_BASE_URL);
+  const appBaseUrl = getHttpsUrl(env.APP_BASE_URL);
+  const statusCallbackUrl = getHttpsUrl(env.TWILIO_STATUS_CALLBACK_URL);
+  const statusCallbackPathValid = Boolean(
+    statusCallbackUrl?.pathname.endsWith("/api/webhooks/twilio/status")
+  );
+  const statusCallbackDomainMatchesApp = Boolean(
+    appBaseUrl &&
+      statusCallbackUrl &&
+      appBaseUrl.hostname === statusCallbackUrl.hostname
+  );
   const realSmsAllowed = env.ALLOW_REAL_SMS_SENDS === "true";
   const deployedEnvironment =
     env.NODE_ENV === "production" ||
@@ -70,6 +97,28 @@ export function getSmsRuntimeStatus(
         "Twilio source number is required for inbound reply linking."
       );
     }
+
+    if (!appBaseUrlConfigured) {
+      blockingReasons.push("Public app URL is not configured.");
+    }
+
+    if (!statusCallbackConfigured) {
+      blockingReasons.push(
+        "Status callback URL is missing. Delivery status cannot be confirmed."
+      );
+    } else if (!statusCallbackUrl) {
+      blockingReasons.push("Status callback URL must be a public HTTPS URL.");
+    } else if (!statusCallbackPathValid) {
+      blockingReasons.push(
+        "Status callback URL must end with /api/webhooks/twilio/status."
+      );
+    }
+
+    if (appBaseUrl && statusCallbackUrl && !statusCallbackDomainMatchesApp) {
+      blockingReasons.push(
+        "APP_BASE_URL and TWILIO_STATUS_CALLBACK_URL use different domains. Twilio signature validation may fail."
+      );
+    }
   }
 
   return {
@@ -81,7 +130,14 @@ export function getSmsRuntimeStatus(
     fromNumberConfigured,
     messagingServiceConfigured,
     statusCallbackConfigured,
-    appBaseUrlConfigured
+    appBaseUrlConfigured,
+    statusCallbackPathValid,
+    statusCallbackDomainMatchesApp,
+    deliveryDiagnostics: blockingReasons.filter((reason) =>
+      reason.toLowerCase().includes("callback") ||
+      reason.toLowerCase().includes("app_base_url") ||
+      reason.toLowerCase().includes("public app url")
+    )
   };
 }
 

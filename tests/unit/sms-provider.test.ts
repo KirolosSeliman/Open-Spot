@@ -195,7 +195,42 @@ describe("SMS provider safety", () => {
     expect(ready.fromNumberConfigured).toBe(true);
     expect(ready.statusCallbackConfigured).toBe(true);
     expect(ready.appBaseUrlConfigured).toBe(true);
+    expect(ready.statusCallbackPathValid).toBe(true);
+    expect(ready.statusCallbackDomainMatchesApp).toBe(true);
     expect(JSON.stringify(ready)).not.toContain("super-secret-token");
+  });
+
+  it("reports Twilio delivery callback configuration problems safely", () => {
+    const missingCallback = getSmsRuntimeStatus({
+      SMS_PROVIDER: "twilio",
+      ALLOW_REAL_SMS_SENDS: "true",
+      TWILIO_ACCOUNT_SID: "AC123",
+      TWILIO_AUTH_TOKEN: "super-secret-token",
+      TWILIO_SOURCE_NUMBER: "+15145551234",
+      APP_BASE_URL: "https://app.example.com"
+    });
+
+    expect(missingCallback.canSendOpeningAlerts).toBe(false);
+    expect(missingCallback.deliveryDiagnostics).toContain(
+      "Status callback URL is missing. Delivery status cannot be confirmed."
+    );
+    expect(JSON.stringify(missingCallback)).not.toContain("super-secret-token");
+
+    const wrongDomain = getSmsRuntimeStatus({
+      SMS_PROVIDER: "twilio",
+      ALLOW_REAL_SMS_SENDS: "true",
+      TWILIO_ACCOUNT_SID: "AC123",
+      TWILIO_AUTH_TOKEN: "super-secret-token",
+      TWILIO_SOURCE_NUMBER: "+15145551234",
+      APP_BASE_URL: "https://app.example.com",
+      TWILIO_STATUS_CALLBACK_URL:
+        "https://other.example.com/api/webhooks/twilio/status"
+    });
+
+    expect(wrongDomain.statusCallbackDomainMatchesApp).toBe(false);
+    expect(wrongDomain.deliveryDiagnostics).toContain(
+      "APP_BASE_URL and TWILIO_STATUS_CALLBACK_URL use different domains. Twilio signature validation may fail."
+    );
   });
 
   it("keeps Plivo unavailable until implemented", () => {

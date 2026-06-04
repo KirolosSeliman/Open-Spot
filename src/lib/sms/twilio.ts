@@ -3,6 +3,15 @@ import twilio from "twilio";
 import type { SmsProviderClient } from "@/lib/sms/provider";
 
 type TwilioEnv = Partial<Record<string, string | undefined>>;
+const knownTwilioDeliveryStatuses = new Set([
+  "accepted",
+  "queued",
+  "sending",
+  "sent",
+  "delivered",
+  "undelivered",
+  "failed"
+]);
 
 function getTwilioWebhookUrl(request: Request, env: TwilioEnv = process.env) {
   const configuredBaseUrl = env.APP_BASE_URL?.replace(/\/$/, "");
@@ -20,6 +29,27 @@ function isE164Phone(value: string) {
 
 function isMessagingServiceSid(value: string) {
   return /^MG[a-zA-Z0-9]{32}$/.test(value);
+}
+
+export function normalizeTwilioDeliveryStatus(status: string | null | undefined) {
+  const normalized = String(status ?? "").trim().toLowerCase();
+
+  if (knownTwilioDeliveryStatuses.has(normalized)) {
+    return normalized as
+      | "accepted"
+      | "queued"
+      | "sending"
+      | "sent"
+      | "delivered"
+      | "undelivered"
+      | "failed";
+  }
+
+  return "submitted_to_provider" as const;
+}
+
+export function normalizeInitialTwilioStatus(status: string | null | undefined) {
+  return normalizeTwilioDeliveryStatus(status);
 }
 
 export function resolveTwilioSenderOptions(
@@ -169,7 +199,7 @@ export function createTwilioSmsProvider(
       return {
         provider: "twilio",
         providerMessageId: message.sid,
-        status: "sent",
+        status: normalizeInitialTwilioStatus(message.status),
         fromNumber: sender.fromNumber
       };
     },

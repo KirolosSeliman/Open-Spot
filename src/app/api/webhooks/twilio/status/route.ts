@@ -2,25 +2,12 @@ import { NextResponse } from "next/server";
 
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import {
+  normalizeTwilioDeliveryStatus,
   parseTwilioStatusRequest,
   validateTwilioWebhookRequest
 } from "@/lib/sms/twilio";
 
 export const runtime = "nodejs";
-
-function mapTwilioDeliveryStatus(status: string) {
-  const normalized = status.trim().toLowerCase();
-
-  if (["delivered", "sent", "queued", "sending", "accepted"].includes(normalized)) {
-    return normalized;
-  }
-
-  if (["failed", "undelivered"].includes(normalized)) {
-    return normalized;
-  }
-
-  return normalized || "status_callback_received";
-}
 
 export async function POST(request: Request) {
   const body = await request.clone().text();
@@ -81,10 +68,32 @@ export async function POST(request: Request) {
     );
   }
 
-  const deliveryStatus = mapTwilioDeliveryStatus(status.messageStatus);
+  const deliveryStatus = normalizeTwilioDeliveryStatus(status.messageStatus);
+  const now = new Date().toISOString();
+  const statusUpdate = {
+    status: deliveryStatus,
+    error_code: status.errorCode,
+    error_message: status.errorMessage,
+    status_callback_received_at: now,
+    provider_status_payload: {
+      message_sid: status.providerMessageId,
+      sms_sid: status.smsSid,
+      account_sid: status.accountSid,
+      messaging_service_sid: status.messagingServiceSid,
+      message_status: status.messageStatus,
+      error_code: status.errorCode,
+      error_message: status.errorMessage,
+      from: status.from,
+      to: status.to
+    },
+    ...(deliveryStatus === "delivered" ? { delivered_at: now } : {}),
+    ...(deliveryStatus === "failed" || deliveryStatus === "undelivered"
+      ? { failed_at: now }
+      : {})
+  };
   const { error: updateError } = await supabase
     .from("sms_messages")
-    .update({ status: deliveryStatus })
+    .update(statusUpdate)
     .eq("id", message.id)
     .eq("organization_id", message.organization_id);
 

@@ -221,6 +221,21 @@ Twilio Console setup after deployment:
 5. Set the **Delivery Status Callback** URL to `{APP_BASE_URL}/api/webhooks/twilio/status`.
 6. Set the status callback method to `POST`.
 
+`sent` in Twilio does not mean the client received the SMS. It means Twilio has
+sent the message toward the mobile network. Open Spot treats only
+`delivered` from the Twilio status callback as delivery confirmation. The
+dashboard may show `accepted`, `queued`, `sending`, `sent`, `delivered`,
+`undelivered`, `failed`, or `submitted_to_provider`; anything other than
+`delivered` is not proof of receipt.
+
+For production delivery diagnostics, `APP_BASE_URL` and
+`TWILIO_STATUS_CALLBACK_URL` must use the same public HTTPS domain, and
+`TWILIO_STATUS_CALLBACK_URL` must end with
+`/api/webhooks/twilio/status`. If either value changes in Vercel, redeploy the
+app before testing again. When a message shows as sent to carrier but no status
+callback arrives after a few minutes, check the Twilio Message SID in Twilio
+Console and verify the callback URL/signature configuration.
+
 The inbound webhook validates Twilio signatures with the official Twilio SDK, parses `From`, `To`, `Body`, `MessageSid`, `SmsSid`, `AccountSid`, and `MessagingServiceSid`, then reuses the same safe inbound processing as the simulator. `OUI`, `YES`, and `1` only prepare a pending merchant-validation response; they never auto-confirm a booking. `STOP`, `ARRET`, `ARRÊT`, `UNSUBSCRIBE`, and `CANCEL` opt out only when the message can be linked to trusted context.
 
 Optional one-off Twilio smoke test after credentials are configured:
