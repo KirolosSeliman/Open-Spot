@@ -74,6 +74,7 @@ type FormResult<T> =
     };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const optedInFormValues = new Set(["opted_in", "yes", "oui", "true", "1"]);
 
 export function parsePriceToCents(input: string) {
   const trimmed = input.trim();
@@ -221,6 +222,7 @@ export function buildCustomerCreateInput(input: {
   const rawPhone = String(input.phone ?? "").trim();
   const email = cleanOptionalText(input.email)?.toLowerCase() ?? null;
   const preferredLanguage = String(input.preferredLanguage ?? "fr");
+  const rawConsentStatus = String(input.consentStatus ?? "needs_consent");
   const phone = normalizePhoneToE164({
     phone: rawPhone,
     countryCallingCode: input.phoneCountry,
@@ -229,11 +231,13 @@ export function buildCustomerCreateInput(input: {
   const hasConsentProof =
     input.hasConsentProof === "on" ||
     input.hasConsentProof === "true" ||
-    input.hasConsentProof === true ||
-    input.consentStatus === "opted_in";
+    input.hasConsentProof === true;
   const consentStatus = mapConsentStatus(
-    String(input.consentStatus ?? "needs_consent"),
+    rawConsentStatus,
     hasConsentProof
+  );
+  const requestedOptIn = optedInFormValues.has(
+    rawConsentStatus.trim().toLowerCase()
   );
 
   if (!fullName) {
@@ -250,6 +254,10 @@ export function buildCustomerCreateInput(input: {
 
   if (preferredLanguage !== "fr" && preferredLanguage !== "en") {
     errors.push("Preferred language must be French or English.");
+  }
+
+  if (requestedOptIn && !hasConsentProof) {
+    errors.push("SMS consent proof is required to mark this client as opted in.");
   }
 
   if (errors.length > 0) {
@@ -285,12 +293,20 @@ export function buildCustomerUpdateInput(input: {
   notes?: unknown;
   consentStatus?: unknown;
   hasConsentProof?: unknown;
+  existingConsentStatus?: unknown;
   organizationId?: unknown;
 }): FormResult<CustomerUpdateInput> {
   const errors: string[] = [];
   const customerId = String(input.customerId ?? "").trim();
+  const selectedConsentStatus = String(input.consentStatus ?? "needs_consent");
+  const hasExistingOptIn = input.existingConsentStatus === "opted_in";
   const customerInput = buildCustomerCreateInput({
     ...input,
+    hasConsentProof:
+      input.hasConsentProof === "on" ||
+      input.hasConsentProof === "true" ||
+      input.hasConsentProof === true ||
+      (selectedConsentStatus === "opted_in" && hasExistingOptIn),
     serviceId: null,
     addToWaitlist: false
   });

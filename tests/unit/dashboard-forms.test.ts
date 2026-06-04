@@ -101,6 +101,7 @@ describe("dashboard operational forms", () => {
         email: " MAYA@example.com ",
         preferredLanguage: "fr",
         consentStatus: "opted_in",
+        hasConsentProof: "on",
         serviceId: "service_1",
         addToWaitlist: "on",
         organizationId: "browser_org"
@@ -117,6 +118,21 @@ describe("dashboard operational forms", () => {
         serviceId: "service_1",
         addToWaitlist: true
       }
+    });
+  });
+
+  it("does not mark new customers opted in without explicit proof", () => {
+    expect(
+      buildCustomerCreateInput({
+        fullName: "Maya Tremblay",
+        phoneCountry: "+1",
+        phoneNational: "514-249-4425",
+        preferredLanguage: "fr",
+        consentStatus: "opted_in"
+      })
+    ).toEqual({
+      ok: false,
+      errors: ["SMS consent proof is required to mark this client as opted in."]
     });
   });
 
@@ -142,6 +158,23 @@ describe("dashboard operational forms", () => {
         email: "kirolos@example.com",
         preferredLanguage: "fr",
         notes: null,
+        consentStatus: "opted_in"
+      }
+    });
+
+    expect(
+      buildCustomerUpdateInput({
+        customerId: "customer_1",
+        fullName: "Kirolos",
+        phoneCountry: "+1",
+        phoneNational: "514-249-4425",
+        preferredLanguage: "fr",
+        consentStatus: "opted_in",
+        existingConsentStatus: "opted_in"
+      })
+    ).toMatchObject({
+      ok: true,
+      value: {
         consentStatus: "opted_in"
       }
     });
@@ -181,38 +214,33 @@ describe("dashboard operational forms", () => {
     expect(source).toContain(".eq(\"id\", input.value.customerId)");
     expect(source).toContain(".neq(\"id\", input.value.customerId)");
     expect(source).toContain("Another client already uses this phone number.");
-    expect(source).toContain("record_customer_update_audit");
+    expect(updateSource).toContain(".from(\"audit_logs\").insert");
+    expect(updateSource).toContain("console.warn(\"Customer update audit failed\"");
+    expect(updateSource).toContain("genericClientSaveError");
     expect(source).toContain("phone_changed");
     expect(source).toContain("onConflict: \"organization_id,customer_id\"");
+    expect(source).toContain("existingConsentStatus: existingConsent?.status");
+    expect(source).toContain("existingConsent.consented_at");
+    expect(source).toContain("existingConsent.unsubscribed_at");
+    expect(updateSource).not.toContain("createSupabaseServiceClient");
+    expect(updateSource).not.toContain("record_customer_update_audit");
     expect(updateSource).not.toContain("source: \"manual\"");
   });
 
-  it("uses a role-checked RPC for customer update audit rows", () => {
-    const migration = readFileSync(
-      join(
-        process.cwd(),
-        "supabase",
-        "migrations",
-        "20260603213000_record_customer_update_audit_rpc.sql"
-      ),
+  it("keeps customer update audit best-effort instead of RPC-dependent", () => {
+    const source = readFileSync(
+      join(process.cwd(), "src", "lib", "dashboard", "actions.ts"),
       "utf8"
     );
+    const updateSource = source.slice(
+      source.indexOf("export async function updateCustomerAction"),
+      source.indexOf("export async function createWaitlistEntryAction")
+    );
 
-    expect(migration).toContain(
-      "create or replace function public.record_customer_update_audit"
-    );
-    expect(migration).toContain("security definer");
-    expect(migration).toContain("set search_path = ''");
-    expect(migration).toContain("private.has_org_role");
-    expect(migration).toContain("'owner', 'manager', 'staff'");
-    expect(migration).toContain("insert into public.audit_logs");
-    expect(migration).toContain("'customer.updated'");
-    expect(migration).toContain(
-      "grant execute on function public.record_customer_update_audit"
-    );
-    expect(migration).not.toMatch(
-      /on public\.audit_logs for (?:insert|update|delete) to authenticated/i
-    );
+    expect(updateSource).not.toContain(".rpc(");
+    expect(updateSource).not.toContain("redirectWithError(redirectPath, audit");
+    expect(updateSource).toContain("console.warn(\"Customer update audit failed\"");
+    expect(updateSource).toContain("redirect(\"/dashboard/clients\")");
   });
 
   it("validates waitlist input without accepting organization id", () => {
