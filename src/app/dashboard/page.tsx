@@ -84,7 +84,7 @@ export default async function DashboardPage() {
       <DashboardPageHeader
         action={
           <Link
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_16px_32px_rgba(35,117,107,0.2)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[linear-gradient(135deg,#155eef,#0b5fff)] px-5 text-sm font-black text-white shadow-[0_16px_32px_rgba(21,94,239,0.22)] transition hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/dashboard/new-cancellation"
           >
             Nouvelle annulation
@@ -152,7 +152,7 @@ export default async function DashboardPage() {
         <div className="grid gap-3 md:grid-cols-2">
           {setupItems.map((item) => (
             <Link
-              className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+              className="rounded-[1.25rem] border border-[#e2e8f0] bg-[#f8fafc] p-4 transition hover:-translate-y-0.5 hover:border-[#bfdbfe] hover:bg-white hover:shadow-[0_14px_34px_rgba(15,23,42,0.08)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
               href={item.href}
               key={item.href}
             >

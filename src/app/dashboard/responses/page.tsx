@@ -1,6 +1,7 @@
 import {
   DashboardPageHeader,
   EmptyState,
+  ManualValidationNotice,
   Panel,
   StatusBadge
 } from "@/components/dashboard/dashboard-ui";
@@ -19,11 +20,16 @@ export default async function ResponsesPage() {
         description="Le premier oui n'est jamais confirme automatiquement. L'equipe choisit manuellement."
         title="File de reponses"
       >
+        <ManualValidationNotice>
+          Confirmation manuelle requise: un OUI, YES ou 1 indique seulement un
+          interet client. Aucun rendez-vous n&apos;est confirme sans decision du
+          commercant.
+        </ManualValidationNotice>
         {responses.length > 0 ? (
-          <div className="grid gap-3">
+          <div className="mt-4 grid gap-3">
             {responses.map((response) => (
               <article
-                className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
+                className="rounded-[1.5rem] border border-[#e2e8f0] bg-[#f8fafc] p-4 shadow-sm"
                 key={response.id}
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -49,15 +55,15 @@ export default async function ResponsesPage() {
                     : "Date inconnue"}
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2 text-xs font-black text-[var(--muted)]">
-                  <span className="rounded-full bg-white px-2 py-1">
+                  <span className="rounded-full border border-[#e2e8f0] bg-white px-2 py-1">
                     Classification: {response.replyClassification}
                   </span>
                   {response.response_rank ? (
-                    <span className="rounded-full bg-white px-2 py-1">
+                    <span className="rounded-full border border-[#e2e8f0] bg-white px-2 py-1">
                       Rang #{response.response_rank}
                     </span>
                   ) : null}
-                  <span className="rounded-full bg-white px-2 py-1">
+                  <span className="rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-2 py-1 text-[#1d4ed8]">
                     En attente de validation manuelle
                   </span>
                 </div>

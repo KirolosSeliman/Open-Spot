@@ -12,19 +12,21 @@ export function DashboardPageHeader({
   action?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--primary)]">
-          Open Spot
-        </p>
-        <h1 className="mt-2 text-2xl font-black tracking-tight text-[var(--foreground)] sm:text-4xl">
-          {title}
-        </h1>
-        <p className="mt-3 text-sm leading-6 text-[var(--muted)] sm:text-base">
-          {description}
-        </p>
+    <div className="rounded-[1.75rem] border border-white/80 bg-white/78 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="max-w-3xl">
+          <p className="inline-flex rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-[var(--primary)]">
+            Open Spot operations
+          </p>
+          <h1 className="mt-3 text-2xl font-black text-[var(--foreground)] sm:text-4xl">
+            {title}
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-[var(--muted)] sm:text-base">
+            {description}
+          </p>
+        </div>
+        {action ? <div className="shrink-0">{action}</div> : null}
       </div>
-      {action ? <div className="shrink-0">{action}</div> : null}
     </div>
   );
 }
@@ -43,7 +45,7 @@ export function Panel({
   return (
     <section
       className={cn(
-        "rounded-2xl border border-[var(--line)] bg-white/86 p-5 shadow-[0_18px_45px_rgba(36,54,66,0.06)]",
+        "rounded-[1.5rem] border border-[#e2e8f0] bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]",
         className
       )}
     >
@@ -78,16 +80,16 @@ export function MetricCard({
   tone?: "neutral" | "green" | "amber" | "violet";
 }) {
   const tones = {
-    neutral: "from-white to-[#f7faf7]",
-    green: "from-white to-[#edf8f3]",
-    amber: "from-white to-[#fff7e8]",
-    violet: "from-white to-[#f2efff]"
+    neutral: "from-white to-[#f8fafc] border-[#e2e8f0]",
+    green: "from-white to-[#f0fdf4] border-[#bbf7d0]",
+    amber: "from-white to-[#fffbeb] border-[#fde68a]",
+    violet: "from-white to-[#eff6ff] border-[#bfdbfe]"
   };
 
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[var(--line)] bg-gradient-to-br p-5 shadow-sm",
+        "rounded-[1.5rem] border bg-gradient-to-br p-5 shadow-[0_16px_38px_rgba(15,23,42,0.06)]",
         tones[tone]
       )}
     >
@@ -102,9 +104,21 @@ export function MetricCard({
 
 export function StatusBadge({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex rounded-full border border-[#d9e6e1] bg-[#f4faf7] px-2.5 py-1 text-xs font-bold text-[var(--primary-strong)]">
+    <span className="inline-flex rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-2.5 py-1 text-xs font-bold text-[var(--primary)]">
       {children}
     </span>
+  );
+}
+
+export function ManualValidationNotice({
+  children = "Confirmation manuelle requise. Le premier OUI n'est jamais confirme automatiquement."
+}: {
+  children?: ReactNode;
+}) {
+  return (
+    <div className="rounded-[1.25rem] border border-[#bfdbfe] bg-[#eff6ff] p-4 text-sm font-bold leading-6 text-[#1d4ed8]">
+      {children}
+    </div>
   );
 }
 
@@ -116,7 +130,7 @@ export function EmptyState({
   description: string;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[var(--line)] bg-[#fbfaf7] p-6 text-center">
+    <div className="rounded-[1.5rem] border border-dashed border-[#cbd5e1] bg-[#f8fafc] p-6 text-center">
       <h3 className="font-black text-[var(--foreground)]">{title}</h3>
       <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-[var(--muted)]">
         {description}
@@ -137,7 +151,7 @@ export function MobileCardTable({
 
 export function TableShell({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[var(--line)]">
+    <div className="overflow-x-auto rounded-[1.25rem] border border-[#e2e8f0] bg-white">
       <table className="min-w-full divide-y divide-[var(--line)] text-left text-sm">
         {children}
       </table>
@@ -146,6 +160,6 @@ export function TableShell({ children }: { children: ReactNode }) {
 }
 
 export const tableHeadClass =
-  "bg-[#f6f7f2] px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--muted)]";
+  "bg-[#f8fafc] px-4 py-3 text-xs font-black uppercase tracking-[0.08em] text-[var(--muted)]";
 
 export const tableCellClass = "px-4 py-4 align-top text-[var(--foreground)]";

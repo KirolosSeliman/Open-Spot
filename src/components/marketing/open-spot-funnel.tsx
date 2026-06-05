@@ -460,10 +460,10 @@ function MarketingHeader({
   t: Copy;
 }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-white/70 bg-[#fbfaf7]/90 backdrop-blur-xl">
+    <header className="sticky top-0 z-30 border-b border-[#dbeafe] bg-white/88 backdrop-blur-xl">
       <div className="mx-auto flex min-h-16 w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:flex-nowrap">
         <Link
-          className="rounded-md text-base font-black tracking-tight text-[#14262e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
+          className="rounded-md text-base font-black text-[#0f172a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
         >
           Open Spot
@@ -478,26 +478,26 @@ function MarketingHeader({
         </nav>
         <div className="flex w-full shrink-0 items-center gap-2 overflow-x-auto sm:w-auto sm:overflow-visible">
           <Link
-            className="shrink-0 rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:text-sm"
+            className="shrink-0 rounded-full border border-[#dbe4f0] bg-white px-3 py-2 text-xs font-bold text-[#334155] shadow-sm transition hover:-translate-y-0.5 hover:border-[#bfdbfe] hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:text-sm"
             href="/sign-in"
           >
             {t.nav.login}
           </Link>
           <Link
-            className="shrink-0 rounded-full bg-[#14262e] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#254047] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#14262e] sm:text-sm"
+            className="shrink-0 rounded-full bg-[#0f172a] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#1e293b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0f172a] sm:text-sm"
             href="/signup"
           >
             {t.nav.signup}
           </Link>
           <Link
-            className="hidden shrink-0 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] md:inline-flex"
+            className="hidden shrink-0 rounded-full bg-[linear-gradient(135deg,#155eef,#0b5fff)] px-4 py-2 text-sm font-bold text-white shadow-[0_14px_30px_rgba(21,94,239,0.18)] transition hover:-translate-y-0.5 hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] md:inline-flex"
             href="/book-call/questions"
           >
             {t.nav.call}
           </Link>
           <button
             aria-label={locale === "fr" ? "Afficher la page en anglais" : "Show page in French"}
-            className="shrink-0 rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="shrink-0 rounded-full border border-[#dbe4f0] bg-white px-3 py-2 text-xs font-bold text-[#334155] shadow-sm transition hover:-translate-y-0.5 hover:border-[#bfdbfe] hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             onClick={onToggleLocale}
             type="button"
           >
@@ -511,14 +511,13 @@ function MarketingHeader({
 function HeaderLink({ href, children }: { href: string; children: string }) {
   return (
     <Link
-      className="rounded-full px-3 py-2 text-sm font-semibold text-[var(--muted)] transition hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+      className="rounded-full px-3 py-2 text-sm font-semibold text-[var(--muted)] transition hover:bg-[#eff6ff] hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
       href={href}
     >
       {children}
     </Link>
   );
 }
-
 function Section({
   id,
   className,
@@ -545,7 +544,7 @@ function HeroSection({ t }: { t: Copy }) {
         <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--primary)]">
           {t.hero.eyebrow}
         </p>
-        <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight text-[#14262e] sm:text-5xl lg:text-6xl">
+        <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black leading-[1.02] text-[#0f172a] sm:text-5xl lg:text-6xl">
           {t.hero.title}
         </h1>
         <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
@@ -578,33 +577,33 @@ function HeroMockup({ t }: { t: Copy }) {
   return (
     <div
       aria-label="Open Spot product preview showing a merchant launching an alert, receiving SMS replies, and manually confirming a recovered spot."
-      className="os-reveal os-hero-mockup mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/88 p-3 shadow-[0_28px_90px_rgba(36,54,66,0.14)] backdrop-blur sm:p-5 lg:p-6"
+      className="os-reveal os-hero-mockup mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 p-3 shadow-[0_28px_90px_rgba(15,23,42,0.14)] backdrop-blur sm:p-5 lg:p-6"
       role="img"
     >
-      <div className="rounded-[1.65rem] border border-[#e5ebe7] bg-[#fbfaf7] p-3 shadow-sm sm:p-4 lg:p-5">
-        <div className="flex items-center justify-between gap-3 border-b border-[#e4ebe7] pb-3">
+      <div className="rounded-[1.65rem] border border-[#e2e8f0] bg-[#f8fafc] p-3 shadow-sm sm:p-4 lg:p-5">
+        <div className="flex items-center justify-between gap-3 border-b border-[#e2e8f0] pb-3">
           <div className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#14262e] text-xs font-black text-white">
-              2C
+            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#0f172a] text-xs font-black text-white">
+              OS
             </span>
             <div>
-              <p className="text-sm font-black text-[#14262e]">Open Spot</p>
+              <p className="text-sm font-black text-[#0f172a]">Open Spot</p>
               <p className="text-[11px] font-bold text-[var(--muted)]">SMS recovery</p>
             </div>
           </div>
           <span
             aria-hidden="true"
-            className="grid h-9 w-9 place-items-center rounded-full border border-[#dce6e2] bg-white text-sm text-[#254047]"
+            className="grid h-9 w-9 place-items-center rounded-full border border-[#dbe4f0] bg-white text-sm text-[#334155]"
           >
             !
           </span>
         </div>
 
         <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_0.9fr]">
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm sm:p-5">
+          <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm sm:p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-2xl font-black text-[#14262e]">
+                <p className="text-2xl font-black text-[#0f172a]">
                   {t.hero.visual.cancelled}
                 </p>
                 <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
@@ -616,16 +615,16 @@ function HeroMockup({ t }: { t: Copy }) {
               </span>
             </div>
 
-            <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-[#edf1ee] bg-[#fbfaf7] p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <span
                   aria-hidden="true"
-                  className="grid h-11 w-11 place-items-center rounded-xl bg-[#eaf5f2] text-sm font-black text-[var(--primary-strong)]"
+                  className="grid h-11 w-11 place-items-center rounded-xl bg-[#eff6ff] text-sm font-black text-[var(--primary-strong)]"
                 >
                   ✂
                 </span>
                 <div>
-                  <p className="text-base font-black text-[#14262e]">
+                  <p className="text-base font-black text-[#0f172a]">
                     {t.hero.visual.service}
                   </p>
                   <p className="mt-1 text-sm font-bold text-[var(--muted)]">
@@ -633,18 +632,18 @@ function HeroMockup({ t }: { t: Copy }) {
                   </p>
                 </div>
               </div>
-              <div className="os-launch-button relative rounded-xl bg-[#14262e] px-5 py-3 text-center text-sm font-black text-white shadow-lg">
+              <div className="os-launch-button relative rounded-xl bg-[#0f172a] px-5 py-3 text-center text-sm font-black text-white shadow-lg">
                 {t.hero.visual.button}
                 <span className="os-cursor" aria-hidden="true" />
               </div>
             </div>
           </div>
 
-          <div className="os-recovered-card rounded-2xl border border-[#c8e0d8] bg-[#edf7f4] p-4 shadow-sm sm:p-5">
+          <div className="os-recovered-card rounded-2xl border border-[#bfdbfe] bg-[#eff6ff] p-4 shadow-sm sm:p-5">
             <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
               {t.hero.visual.manual}
             </p>
-            <p className="mt-3 text-2xl font-black text-[#14262e]">
+            <p className="mt-3 text-2xl font-black text-[#0f172a]">
               {t.hero.visual.recovered}
             </p>
             <p className="mt-2 text-sm font-bold leading-6 text-[var(--muted)]">
@@ -654,12 +653,12 @@ function HeroMockup({ t }: { t: Copy }) {
         </div>
 
         <div className="mt-3 grid gap-3 lg:grid-cols-[1.15fr_0.8fr_1fr]">
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-black text-[#14262e]">
+              <p className="text-sm font-black text-[#0f172a]">
                 {t.hero.visual.targetedTitle}
               </p>
-              <span className="rounded-full bg-[#eaf5f2] px-2.5 py-1 text-xs font-black text-[var(--primary-strong)]">
+              <span className="rounded-full bg-[#eff6ff] px-2.5 py-1 text-xs font-black text-[var(--primary-strong)]">
                 {t.hero.visual.targetedCount}
               </span>
             </div>
@@ -667,24 +666,24 @@ function HeroMockup({ t }: { t: Copy }) {
               {t.hero.visual.clients.map((client, index) => (
                 <div
                   className={cn(
-                    "os-target-row rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3",
+                    "os-target-row rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3",
                     index === 1 && "os-delay-1",
                     index === 2 && "os-delay-2"
                   )}
                   key={client.name}
                 >
                   <div className="flex items-start gap-3">
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#dfece8] text-[11px] font-black text-[#15534b]">
+                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#dbeafe] text-[11px] font-black text-[#155eef]">
                       {client.initials}
                     </span>
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-sm font-black text-[#14262e]">{client.name}</p>
+                        <p className="text-sm font-black text-[#0f172a]">{client.name}</p>
                         <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.08em] text-[var(--primary-strong)]">
                           SMS
                         </span>
                       </div>
-                      <p className="mt-1 text-xs font-black text-[#254047]">{client.label}</p>
+                      <p className="mt-1 text-xs font-black text-[#334155]">{client.label}</p>
                       <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
                         {client.detail}
                       </p>
@@ -700,10 +699,10 @@ function HeroMockup({ t }: { t: Copy }) {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
+          <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-black text-[#14262e]">
+                <p className="text-sm font-black text-[#0f172a]">
                   {t.hero.visual.sendTitle}
                 </p>
                 <p className="mt-1 text-xs font-bold text-[var(--muted)]">
@@ -715,15 +714,15 @@ function HeroMockup({ t }: { t: Copy }) {
               </span>
             </div>
             <div className="mt-5 space-y-2" aria-hidden="true">
-              <span className="os-motion-line block h-1.5 rounded-full bg-[#cddbd6]" />
-              <span className="os-motion-line os-delay-1 block h-1.5 rounded-full bg-[#dbe7e3]" />
-              <span className="os-motion-line os-delay-2 block h-1.5 rounded-full bg-[#e8efec]" />
+              <span className="os-motion-line block h-1.5 rounded-full bg-[#bfdbfe]" />
+              <span className="os-motion-line os-delay-1 block h-1.5 rounded-full bg-[#dbeafe]" />
+              <span className="os-motion-line os-delay-2 block h-1.5 rounded-full bg-[#eff6ff]" />
             </div>
-            <div className="mt-5 rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3">
+            <div className="mt-5 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] p-3">
               <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--primary-strong)]">
                 {t.hero.visual.targetingTitle}
               </p>
-              <ul className="mt-3 space-y-2 text-xs font-bold leading-5 text-[#254047]">
+              <ul className="mt-3 space-y-2 text-xs font-bold leading-5 text-[#334155]">
                 <li>{t.hero.visual.targetingInsightOne}</li>
                 <li>{t.hero.visual.targetingInsightTwo}</li>
                 <li>{t.hero.visual.targetingInsightThree}</li>
@@ -731,8 +730,8 @@ function HeroMockup({ t }: { t: Copy }) {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-            <p className="text-sm font-black text-[#14262e]">{t.hero.visual.repliesTitle}</p>
+          <div className="rounded-2xl border border-[#e2e8f0] bg-white p-4 shadow-sm">
+            <p className="text-sm font-black text-[#0f172a]">{t.hero.visual.repliesTitle}</p>
             <div className="mt-3 space-y-2">
               <SmsBubble>{t.hero.visual.replyOne}</SmsBubble>
               <SmsBubble delay>{t.hero.visual.replyTwo}</SmsBubble>
@@ -744,7 +743,7 @@ function HeroMockup({ t }: { t: Copy }) {
           </div>
         </div>
 
-        <p className="mt-3 rounded-2xl border border-[#e2e9e5] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#254047]">
+        <p className="mt-3 rounded-2xl border border-[#e2e8f0] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#334155]">
           {t.hero.visual.controlNote}
         </p>
       </div>
@@ -756,7 +755,7 @@ function SmsBubble({ children, delay = false }: { children: string; delay?: bool
   return (
     <div
       className={cn(
-        "os-sms-bubble rounded-2xl rounded-bl-md bg-[#fbfaf7] px-3 py-2.5 text-sm font-bold text-[#14262e]",
+        "os-sms-bubble rounded-2xl rounded-bl-md bg-[#f8fafc] px-3 py-2.5 text-sm font-bold text-[#0f172a]",
         delay && "os-delay-2"
       )}
     >
@@ -769,13 +768,13 @@ function SectorSection({ t }: { t: Copy }) {
   return (
     <Section className="pt-6 lg:pt-8">
       <div className="os-reveal rounded-[2rem] border border-white/70 bg-white/70 p-5 shadow-sm sm:p-8">
-        <h2 className="max-w-3xl text-2xl font-black tracking-tight text-[#14262e] sm:text-3xl">
+        <h2 className="max-w-3xl text-2xl font-black tracking-tight text-[#0f172a] sm:text-3xl">
           {t.sectors.title}
         </h2>
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
           {t.sectors.items.map((item) => (
             <div className="os-soft-card min-h-24" key={item}>
-              <span className="text-sm font-black text-[#14262e]">{item}</span>
+              <span className="text-sm font-black text-[#0f172a]">{item}</span>
             </div>
           ))}
         </div>
@@ -789,7 +788,7 @@ function ProblemSection({ t }: { t: Copy }) {
     <Section id="pourquoi-open-spot">
       <div className="grid gap-8 lg:grid-cols-[1fr_0.95fr] lg:items-center">
         <div className="os-reveal">
-          <h2 className="text-3xl font-black leading-tight tracking-tight text-[#14262e] sm:text-4xl">
+          <h2 className="text-3xl font-black leading-tight tracking-tight text-[#0f172a] sm:text-4xl">
             {t.problem.title}
           </h2>
           <p className="mt-5 text-base leading-8 text-[var(--muted)]">
@@ -819,14 +818,14 @@ function BeforeAfterCard({
       <span
         className={cn(
           "rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.15em]",
-          tone === "good" ? "bg-[#eaf5f2] text-[var(--primary-strong)]" : "bg-[#fff1df] text-[#8a4b11]"
+          tone === "good" ? "bg-[#eff6ff] text-[var(--primary-strong)]" : "bg-[#fff1df] text-[#8a4b11]"
         )}
       >
         {label}
       </span>
       <div className="mt-5 space-y-3">
         {items.map((item) => (
-          <div className="rounded-2xl bg-[#fbfaf7] px-4 py-3 text-sm font-bold text-[#14262e]" key={item}>
+          <div className="rounded-2xl bg-[#f8fafc] px-4 py-3 text-sm font-bold text-[#0f172a]" key={item}>
             {item}
           </div>
         ))}
@@ -860,20 +859,20 @@ function AiSection({ t }: { t: Copy }) {
     <Section className="pt-8 lg:pt-10">
       <div className="grid gap-8 rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(237,247,244,0.92),rgba(255,247,237,0.7))] p-5 shadow-sm sm:p-8 lg:grid-cols-[0.82fr_1.18fr] lg:p-10">
         <div className="os-reveal">
-          <p className="inline-flex rounded-full border border-[#c4ddd5] bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
+          <p className="inline-flex rounded-full border border-[#bfdbfe] bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
             {t.targeting.badge}
           </p>
-          <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-black tracking-tight text-[#0f172a] sm:text-4xl">
             {t.targeting.title}
           </h2>
           <p className="mt-5 text-base leading-8 text-[var(--muted)]">{t.targeting.text}</p>
-          <p className="mt-5 rounded-2xl border border-[#dbe8e4] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#254047]">
+          <p className="mt-5 rounded-2xl border border-[#dbe8e4] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#334155]">
             {t.targeting.example}
           </p>
           <p className="mt-3 rounded-2xl border border-[#ead7f7] bg-[#fbf6ff] px-4 py-3 text-sm font-bold leading-6 text-[#5d3478]">
             {t.targeting.aiRoadmap}
           </p>
-          <p className="mt-3 rounded-2xl border border-[#c4ddd5] bg-[#fbfffd] px-4 py-3 text-sm font-black leading-6 text-[var(--primary-strong)]">
+          <p className="mt-3 rounded-2xl border border-[#bfdbfe] bg-[#fbfffd] px-4 py-3 text-sm font-black leading-6 text-[var(--primary-strong)]">
             {t.targeting.note}
           </p>
           <Link className="os-secondary-cta mt-6" href="#comment-ca-marche">
@@ -884,29 +883,29 @@ function AiSection({ t }: { t: Copy }) {
           <div className="grid gap-3 sm:grid-cols-3">
             {t.targeting.benefits.map(([title, text]) => (
               <div
-                className="rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-3"
+                className="rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] p-3"
                 key={title}
               >
-                <p className="text-sm font-black text-[#14262e]">{title}</p>
+                <p className="text-sm font-black text-[#0f172a]">{title}</p>
                 <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{text}</p>
               </div>
             ))}
           </div>
-          <div className="mt-5 rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-4">
+          <div className="mt-5 rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] p-4">
             <div className="flex items-center gap-3">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eff6ff] text-xs font-black text-[var(--primary-strong)]">
                 SMS
               </div>
               <div>
-                <p className="text-sm font-black text-[#14262e]">Liste d’attente</p>
+                <p className="text-sm font-black text-[#0f172a]">Liste d’attente</p>
                 <p className="text-xs text-[var(--muted)]">Aperçu du ciblage</p>
               </div>
             </div>
             <div className="mt-5 grid gap-3">
               {t.targeting.rows.map(([label, status]) => (
-                <div className="grid gap-2 rounded-2xl border border-[#e5ebe7] bg-white p-3 sm:grid-cols-[1fr_auto] sm:items-center" key={label}>
-                  <p className="text-sm font-bold text-[#14262e]">{label}</p>
-                  <span className="rounded-full bg-[#eaf5f2] px-3 py-1 text-xs font-black text-[var(--primary-strong)]">
+                <div className="grid gap-2 rounded-2xl border border-[#e2e8f0] bg-white p-3 sm:grid-cols-[1fr_auto] sm:items-center" key={label}>
+                  <p className="text-sm font-bold text-[#0f172a]">{label}</p>
+                  <span className="rounded-full bg-[#eff6ff] px-3 py-1 text-xs font-black text-[var(--primary-strong)]">
                     {status}
                   </span>
                 </div>
@@ -915,11 +914,11 @@ function AiSection({ t }: { t: Copy }) {
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-4">
             {t.targeting.workflow.map((step, index) => (
-              <div className="rounded-2xl border border-[#e5ebe7] bg-white p-3" key={step}>
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
+              <div className="rounded-2xl border border-[#e2e8f0] bg-white p-3" key={step}>
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#eff6ff] text-xs font-black text-[var(--primary-strong)]">
                   {index + 1}
                 </span>
-                <p className="mt-3 text-sm font-black leading-5 text-[#14262e]">{step}</p>
+                <p className="mt-3 text-sm font-black leading-5 text-[#0f172a]">{step}</p>
               </div>
             ))}
           </div>
@@ -939,7 +938,7 @@ function PersonalizationSection({ t }: { t: Copy }) {
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {t.personalization.cards.map((card) => (
           <div className="os-soft-card os-reveal" key={card}>
-            <span className="text-sm font-black text-[#14262e]">{card}</span>
+            <span className="text-sm font-black text-[#0f172a]">{card}</span>
           </div>
         ))}
       </div>
@@ -952,7 +951,7 @@ function MetricsSection({ t }: { t: Copy }) {
     <Section>
       <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
         <div className="os-reveal">
-          <h2 className="text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
+          <h2 className="text-3xl font-black tracking-tight text-[#0f172a] sm:text-4xl">
             {t.metrics.title}
           </h2>
           <p className="mt-5 rounded-2xl border border-[#eadcc2] bg-[#fff7ed] px-4 py-3 text-sm font-bold leading-6 text-[#8a4b11]">
@@ -962,10 +961,10 @@ function MetricsSection({ t }: { t: Copy }) {
         <div className="os-reveal rounded-[2rem] border border-white/70 bg-white p-5 shadow-sm sm:p-6">
           <div className="grid gap-4 sm:grid-cols-2">
             {t.metrics.cards.map(([label, value], index) => (
-              <div className="rounded-3xl bg-[#fbfaf7] p-4" key={label}>
+              <div className="rounded-3xl bg-[#f8fafc] p-4" key={label}>
                 <p className="text-sm font-bold text-[var(--muted)]">{label}</p>
-                <p className="mt-2 text-3xl font-black text-[#14262e]">{value}</p>
-                <div className="mt-4 h-2 rounded-full bg-[#e5ebe7]">
+                <p className="mt-2 text-3xl font-black text-[#0f172a]">{value}</p>
+                <div className="mt-4 h-2 rounded-full bg-[#e2e8f0]">
                   <div
                     className={cn(
                       "os-graph-bar h-2 rounded-full bg-[var(--primary)]",
@@ -994,7 +993,7 @@ function TrustSection({ t }: { t: Copy }) {
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {t.trust.cards.map((card) => (
           <div className="os-soft-card os-reveal" key={card}>
-            <span className="text-sm font-black text-[#14262e]">{card}</span>
+            <span className="text-sm font-black text-[#0f172a]">{card}</span>
           </div>
         ))}
       </div>
@@ -1006,13 +1005,13 @@ function PricingSection({ t }: { t: Copy }) {
   return (
     <Section id="prix" className="pb-8 lg:pb-10">
       <div className="mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white p-6 text-center shadow-[0_24px_70px_rgba(36,54,66,0.12)] sm:p-10">
-        <p className="mx-auto inline-flex rounded-full border border-[#c4ddd5] bg-[#edf7f4] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
+        <p className="mx-auto inline-flex rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
           {t.pricing.badge}
         </p>
-        <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
+        <h2 className="mt-4 text-3xl font-black tracking-tight text-[#0f172a] sm:text-4xl">
           {t.pricing.title}
         </h2>
-        <p className="mt-8 text-5xl font-black tracking-tight text-[#14262e]">
+        <p className="mt-8 text-5xl font-black tracking-tight text-[#0f172a]">
           {t.pricing.price}
         </p>
         <p className="mx-auto mt-4 max-w-xl text-sm font-bold leading-6 text-[var(--muted)]">
@@ -1044,7 +1043,7 @@ function PricingSection({ t }: { t: Copy }) {
 function FinalCtaSection({ t }: { t: Copy }) {
   return (
     <Section className="pb-20 pt-8 lg:pt-10">
-      <div className="os-reveal rounded-[2rem] bg-[#14262e] px-5 py-10 text-center text-white shadow-[0_30px_90px_rgba(20,38,46,0.22)] sm:px-8 lg:py-16">
+      <div className="os-reveal rounded-[2rem] bg-[#0f172a] px-5 py-10 text-center text-white shadow-[0_30px_90px_rgba(20,38,46,0.22)] sm:px-8 lg:py-16">
         <h2 className="mx-auto max-w-4xl text-3xl font-black tracking-tight sm:text-5xl">
           {t.final.title}
         </h2>

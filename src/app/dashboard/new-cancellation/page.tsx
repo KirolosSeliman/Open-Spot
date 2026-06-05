@@ -1,6 +1,7 @@
 import {
   DashboardPageHeader,
   EmptyState,
+  ManualValidationNotice,
   Panel
 } from "@/components/dashboard/dashboard-ui";
 import { createOpeningAction } from "@/lib/dashboard/actions";
@@ -38,6 +39,10 @@ export default async function NewCancellationPage({
         description="Creez une opportunite d'annulation, preparez les clients admissibles et gardez la confirmation sous controle manuel."
         title="Nouvelle annulation"
       />
+      <ManualValidationNotice>
+        Aucune confirmation automatique: l&apos;alerte SMS prepare les reponses, puis
+        le commercant choisit manuellement qui confirmer.
+      </ManualValidationNotice>
       <div className="grid gap-6 lg:grid-cols-[1fr_0.75fr]">
         <Panel title="Details du creneau">
           {error ? (
@@ -102,7 +107,7 @@ export default async function NewCancellationPage({
               />
             </label>
             <button
-              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
+              className="min-h-11 rounded-full bg-[linear-gradient(135deg,#155eef,#0b5fff)] px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(21,94,239,0.18)] disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
               disabled={!canSendSmsAlerts}
               type="submit"
             >
@@ -115,7 +120,7 @@ export default async function NewCancellationPage({
             <div className="grid gap-3">
               {data.eligibleCustomers.map((customer) => (
                 <div
-                  className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
+                  className="rounded-[1.25rem] border border-[#e2e8f0] bg-[#f8fafc] p-4"
                   key={customer.id}
                 >
                   <p className="font-black">{customer.full_name}</p>
@@ -131,7 +136,7 @@ export default async function NewCancellationPage({
               title="Aucun client admissible."
             />
           )}
-          <p className="mt-4 rounded-2xl bg-[#edf8f3] p-4 text-sm font-bold leading-6 text-[var(--primary-strong)]">
+          <p className="mt-4 rounded-[1.25rem] border border-[#bfdbfe] bg-[#eff6ff] p-4 text-sm font-bold leading-6 text-[#1d4ed8]">
             {getOpeningAlertModeCopy(smsStatus)}
           </p>
           {smsBlockingReasons.length > 0 ? (

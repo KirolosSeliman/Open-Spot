@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import {
   DashboardPageHeader,
+  ManualValidationNotice,
   Panel,
   StatusBadge
 } from "@/components/dashboard/dashboard-ui";
@@ -150,6 +151,11 @@ export default async function CancellationDetailPage({
         description={`Details reels du creneau. ${getOpeningAlertModeCopy(smsStatus)}`}
         title={opening.title}
       />
+      <ManualValidationNotice>
+        Les reponses positives restent en attente: vous choisissez manuellement
+        le client a confirmer. Le premier OUI n&apos;est jamais confirme
+        automatiquement.
+      </ManualValidationNotice>
       {error ? (
         <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
           SMS sending failed: {error}
@@ -196,7 +202,7 @@ export default async function CancellationDetailPage({
         </Panel>
         <Panel title="SMS preview">
           <div className="grid gap-3">
-            <p className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 text-sm font-bold leading-6 text-[var(--ink)]">
+            <p className="rounded-[1.25rem] border border-[#e2e8f0] bg-[#f8fafc] p-4 text-sm font-bold leading-6 text-[var(--ink)]">
               {smsPreview.body}
             </p>
             <div className="flex flex-wrap gap-2 text-xs font-black text-[var(--muted)]">
@@ -221,7 +227,7 @@ export default async function CancellationDetailPage({
               <form action={sendOpeningAlertsAction}>
                 <input name="openingId" type="hidden" value={opening.id} />
                 <button
-                  className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                  className="mb-2 rounded-full bg-[linear-gradient(135deg,#155eef,#0b5fff)] px-4 py-2 text-sm font-black text-white shadow-[0_14px_30px_rgba(21,94,239,0.18)]"
                   type="submit"
                 >
                   {getOpeningAlertButtonLabel(smsStatus)}
@@ -254,7 +260,7 @@ export default async function CancellationDetailPage({
 
               return (
                 <div
-                  className="grid gap-4 rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
+                  className="grid gap-4 rounded-[1.5rem] border border-[#e2e8f0] bg-[#f8fafc] p-4 shadow-sm"
                   key={offer.id}
                 >
                   <div>
@@ -267,7 +273,7 @@ export default async function CancellationDetailPage({
                     Offer state: {offer.status}. This means the alert was
                     submitted/sent for this offer, not that the SMS was delivered.
                   </p>
-                  <dl className="grid gap-2 rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-bold text-[var(--muted)] sm:grid-cols-2">
+                  <dl className="grid gap-2 rounded-xl border border-[#e2e8f0] bg-white p-3 text-xs font-bold text-[var(--muted)] sm:grid-cols-2">
                     <div>
                       <dt>SMS provider</dt>
                       <dd>{formatSmsProvider(offer.lastOutboundProvider)}</dd>
@@ -372,7 +378,7 @@ export default async function CancellationDetailPage({
                         value={opening.normal_price_cents ?? 0}
                       />
                       <button
-                        className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                        className="rounded-full bg-[linear-gradient(135deg,#155eef,#0b5fff)] px-4 py-2 text-sm font-black text-white shadow-[0_14px_30px_rgba(21,94,239,0.18)]"
                         type="submit"
                       >
                         Manually validate this respondent

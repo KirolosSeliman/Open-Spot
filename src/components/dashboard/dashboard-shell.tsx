@@ -57,9 +57,9 @@ export function DashboardShell({
       : "Supabase non configuré : aperçu UI sans données persistées.";
 
   return (
-    <div className="min-h-screen bg-[#f7f5ef] text-[var(--foreground)]">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_46%,#f8fafc_100%)] text-[var(--foreground)]">
       <div className="mx-auto flex w-full max-w-[1500px] gap-6 px-3 py-3 lg:px-5">
-        <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-[var(--line)] bg-white/88 p-4 shadow-[0_24px_70px_rgba(36,54,66,0.08)] lg:flex lg:flex-col">
+        <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-white/80 bg-white/90 p-4 shadow-[0_24px_70px_rgba(15,23,42,0.10)] backdrop-blur lg:flex lg:flex-col">
           <Link
             className="rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/"
@@ -76,9 +76,9 @@ export function DashboardShell({
                   isActiveDashboardRoute(pathname, item.href) ? "page" : undefined
                 }
                 className={cn(
-                  "rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] transition hover:bg-[#f2f7f4] hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
+                  "rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] transition hover:bg-[#eff6ff] hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
                   isActiveDashboardRoute(pathname, item.href) &&
-                    "bg-[var(--primary)] text-white shadow-[0_14px_30px_rgba(35,117,107,0.18)] hover:bg-[var(--primary-strong)] hover:text-white"
+                    "bg-[linear-gradient(135deg,#155eef,#0b5fff)] text-white shadow-[0_14px_30px_rgba(21,94,239,0.22)] hover:text-white"
                 )}
                 href={item.href}
                 key={item.href}
@@ -87,16 +87,19 @@ export function DashboardShell({
               </Link>
             ))}
           </nav>
-          <div className="mt-auto rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4">
+          <div className="mt-auto rounded-2xl border border-[#dbeafe] bg-[#eff6ff] p-4">
             <p className="text-sm font-black">{businessName}</p>
             <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
               {workspaceNote}
+            </p>
+            <p className="mt-3 rounded-xl bg-white/80 px-3 py-2 text-xs font-black leading-5 text-[#1d4ed8]">
+              Validation manuelle obligatoire
             </p>
           </div>
         </aside>
 
         <div className="min-w-0 flex-1 pb-24 lg:pb-0">
-          <header className="sticky top-0 z-20 -mx-3 border-b border-[var(--line)] bg-[#f7f5ef]/92 px-3 py-3 backdrop-blur lg:hidden">
+          <header className="sticky top-0 z-20 -mx-3 border-b border-[#dbeafe] bg-white/92 px-3 py-3 backdrop-blur lg:hidden">
             <div className="flex items-center justify-between gap-3">
               <Link
                 className="rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
@@ -120,7 +123,7 @@ export function DashboardShell({
 
       <nav
         aria-label="Navigation mobile dashboard"
-        className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-[var(--line)] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.18)] backdrop-blur lg:hidden"
+        className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-white/80 bg-white/95 p-2 shadow-[0_18px_45px_rgba(15,23,42,0.18)] backdrop-blur lg:hidden"
       >
         {mobileNav.map((item) => (
           <Link
