@@ -226,17 +226,61 @@ export function normalizeOpeningResponsesFilters(params: {
   return {
     range: openingResponsesRanges.has(rawRange as OpeningResponsesRange)
       ? (rawRange as OpeningResponsesRange)
-      : "this_week",
+      : "all",
     serviceId: rawServiceId || "all",
     q
   };
 }
 
-function normalizeSearchText(value: string | null | undefined) {
+export function normalizeSearchText(value: string | null | undefined): string {
   return (value ?? "")
-    .toLowerCase()
     .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "");
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replace(/['’`]/g, "")
+    .replace(/%/g, " off ")
+    .replace(/[^a-z0-9+]+/g, " ")
+    .trim();
+}
+
+export function compactSearchText(value: string | null | undefined): string {
+  return normalizeSearchText(value).replace(/\s+/g, "");
+}
+
+export function searchableTextMatches(
+  haystackValues: Array<string | number | null | undefined>,
+  rawQuery: string
+): boolean {
+  const query = normalizeSearchText(rawQuery);
+  const compactQuery = compactSearchText(rawQuery);
+
+  if (!query && !compactQuery) {
+    return true;
+  }
+
+  const rawHaystack = haystackValues
+    .filter((value): value is string | number => value !== null && value !== undefined)
+    .join(" ");
+  const haystack = normalizeSearchText(rawHaystack);
+  const compactHaystack = compactSearchText(rawHaystack);
+
+  if (query && haystack.includes(query)) {
+    return true;
+  }
+
+  if (compactQuery && compactHaystack.includes(compactQuery)) {
+    return true;
+  }
+
+  const tokens = query.split(/\s+/).filter(Boolean);
+
+  return tokens.every(
+    (token) => haystack.includes(token) || compactHaystack.includes(token)
+  );
+}
+
+export function buildOpeningResponsesResetHref() {
+  return "/dashboard/responses?tab=openings";
 }
 
 function getOpeningRangeEnd(range: OpeningResponsesRange, now: Date) {
@@ -298,23 +342,42 @@ function matchesOpeningService(
   return group.serviceId === serviceId;
 }
 
-function getOpeningSearchHaystack(group: OpeningResponseGroup) {
-  return normalizeSearchText(
-    [
-      group.openingTitle,
-      group.serviceName,
-      group.offerLabel,
-      group.openingStatus,
-      ...group.customers.flatMap((customer) => [
-        customer.customerName,
-        customer.customerPhone,
-        customer.offerStatus,
-        customer.responseText,
-        customer.lastInboundBody,
-        customer.replyClassification
-      ])
-    ].join(" ")
-  );
+function getOpeningSearchValues(group: OpeningResponseGroup) {
+  return [
+    group.openingId,
+    group.openingTitle,
+    group.serviceName,
+    group.serviceName ? null : "Service non precise Service non précisé",
+    group.offerLabel,
+    group.openingStatus,
+    "Aucune reponse Aucune réponse",
+    "Reponse positive Réponse positive",
+    "En attente de validation",
+    "SMS envoye SMS envoyé",
+    ...group.customers.flatMap((customer) => [
+      customer.customerName,
+      customer.customerPhone,
+      customer.offerStatus,
+      customer.responseText,
+      customer.lastInboundBody,
+      customer.replyClassification,
+      customer.replyClassification === "waitlist_positive"
+        ? "Reponse positive Réponse positive"
+        : null,
+      customer.replyClassification === "none" ? "Aucune reponse Aucune réponse" : null,
+      customer.offerStatus === "sent" ? "SMS envoye SMS envoyé" : null,
+      customer.responseRank ? `rang ${customer.responseRank}` : null,
+      customer.responseRank ? `rank ${customer.responseRank}` : null,
+      customer.responseRank ? `#${customer.responseRank}` : null
+    ])
+  ];
+}
+
+export function openingGroupMatchesQuery(
+  group: OpeningResponseGroup,
+  q: string
+) {
+  return searchableTextMatches(getOpeningSearchValues(group), q);
 }
 
 export function filterOpeningResponseGroups(
@@ -322,13 +385,11 @@ export function filterOpeningResponseGroups(
   filters: OpeningResponsesFilters,
   now = new Date()
 ): OpeningResponseGroup[] {
-  const query = normalizeSearchText(filters.q);
-
   return groups.filter(
     (group) =>
       matchesOpeningRange(group, filters.range, now) &&
       matchesOpeningService(group, filters.serviceId) &&
-      (!query || getOpeningSearchHaystack(group).includes(query))
+      openingGroupMatchesQuery(group, filters.q)
   );
 }
 

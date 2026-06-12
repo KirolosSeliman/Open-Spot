@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildOpeningResponsesResetHref,
+  compactSearchText,
   filterOpeningResponseGroups,
   groupAppointmentResponseItems,
   normalizeOpeningResponsesFilters,
+  normalizeSearchText,
+  searchableTextMatches,
   sortOpeningResponseCustomers,
   type AppointmentResponseCalendarItem,
   type OpeningResponseGroup,
@@ -135,7 +139,7 @@ describe("response dashboard grouping", () => {
 
   it("normalizes opening response URL filters to safe defaults", () => {
     expect(normalizeOpeningResponsesFilters({})).toEqual({
-      range: "this_week",
+      range: "all",
       serviceId: "all",
       q: ""
     });
@@ -157,10 +161,34 @@ describe("response dashboard grouping", () => {
         q: "x".repeat(120)
       })
     ).toEqual({
-      range: "this_week",
+      range: "all",
       serviceId: "all",
       q: "x".repeat(80)
     });
+    expect(buildOpeningResponsesResetHref()).toBe(
+      "/dashboard/responses?tab=openings"
+    );
+  });
+
+  it("normalizes and matches forgiving professional search queries", () => {
+    const match = searchableTextMatches;
+
+    expect(normalizeSearchText(" TéST-1!! ")).toBe("test 1");
+    expect(compactSearchText("+1 514-249-4425")).toBe("+15142494425");
+    expect(match(["test1"], "test")).toBe(true);
+    expect(match(["test 1"], "test1")).toBe(true);
+    expect(match(["test-1"], "test1")).toBe(true);
+    expect(match(["tést"], "test")).toBe(true);
+    expect(match(["Kirolos Seliman"], "kiro")).toBe(true);
+    expect(match(["+15142494425"], "514")).toBe(true);
+    expect(match(["514 249 4425"], "514249")).toBe(true);
+    expect(match(["10% off"], "10 off")).toBe(true);
+    expect(match(["10% today only"], "10 off")).toBe(true);
+    expect(match(["OUI dispo"], "oui")).toBe(true);
+    expect(match(["Réponse positive"], "reponse positive")).toBe(true);
+    expect(match(["Service non précisé"], "service non precise")).toBe(true);
+    expect(match(["Barbe et coupe"], "coupe barbe")).toBe(true);
+    expect(match(["Completement different"], "test")).toBe(false);
   });
 
   it("filters opening response groups by range, service, and searchable text", () => {

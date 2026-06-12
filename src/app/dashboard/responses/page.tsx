@@ -7,6 +7,7 @@ import {
   StatusBadge
 } from "@/components/dashboard/dashboard-ui";
 import {
+  buildOpeningResponsesResetHref,
   filterOpeningResponseGroups,
   loadAppointmentResponseCalendar,
   loadServices,
@@ -29,7 +30,7 @@ type ResponsesPageProps = {
 
 const tabs = [
   {
-    label: "Alertes creneaux libres",
+    label: "Alertes créneaux libres",
     value: "openings"
   },
   {
@@ -79,7 +80,7 @@ function formatClassification(classification: InboundSmsClassification) {
     case "opt_out":
       return "Desabonnement";
     case "waitlist_positive":
-      return "Reponse positive";
+      return "Réponse positive";
     default:
       return "Inconnu / autre";
   }
@@ -127,14 +128,14 @@ function formatOpeningReplyStatus(customer: OpeningResponseCustomer) {
   }
 
   if (customer.replyClassification === "waitlist_positive") {
-    return "Reponse positive";
+    return "Réponse positive";
   }
 
   if (customer.replyClassification === "unknown") {
-    return "Reponse inconnue/autre";
+    return "Réponse inconnue/autre";
   }
 
-  return "SMS envoye, pas encore repondu";
+  return "SMS envoyé, pas encore répondu";
 }
 
 function TabLink({
@@ -195,7 +196,7 @@ function OpeningResponsesFiltersForm({
     >
       <input name="tab" type="hidden" value="openings" />
       <label className="grid gap-2 text-sm font-bold">
-        Periode du creneau
+        Période du créneau
         <select
           className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.range}
@@ -216,7 +217,7 @@ function OpeningResponsesFiltersForm({
           name="serviceId"
         >
           <option value="all">Tous les services</option>
-          <option value="none">Service non precise</option>
+          <option value="none">Service non précisé</option>
           {services.map((service) => (
             <option key={service.id} value={service.id}>
               {service.name}
@@ -229,9 +230,12 @@ function OpeningResponsesFiltersForm({
         <input
           className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.q}
+          aria-label="Rechercher dans les alertes de créneaux libres"
+          autoComplete="off"
+          inputMode="search"
           maxLength={80}
           name="q"
-          placeholder="Titre, client, telephone, statut, reponse SMS..."
+          placeholder="Titre, client, téléphone, SMS..."
           type="search"
         />
       </label>
@@ -244,15 +248,18 @@ function OpeningResponsesFiltersForm({
         </button>
         <Link
           className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--foreground)]"
-          href="/dashboard/responses?tab=openings"
+          href={buildOpeningResponsesResetHref()}
         >
-          Reinitialiser
+          Réinitialiser
         </Link>
       </div>
-      <p className="text-xs font-bold text-[var(--muted)] lg:col-span-4">
-        {filteredCount} annulation{filteredCount > 1 ? "s" : ""} affichee
-        {filteredCount > 1 ? "s" : ""} sur {totalCount}.
-      </p>
+      <div className="grid gap-1 text-xs font-bold text-[var(--muted)] lg:col-span-4">
+        <p>
+          {filteredCount} annulation{filteredCount > 1 ? "s" : ""} affichée
+          {filteredCount > 1 ? "s" : ""} sur {totalCount}.
+        </p>
+        {filters.q ? <p>Recherche : “{filters.q}”</p> : null}
+      </div>
     </form>
   );
 }
@@ -289,7 +296,7 @@ function AppointmentResponseCard({
             Service
           </dt>
           <dd className="mt-1 font-bold">
-            {item.serviceName ?? "Service non precise"}
+            {item.serviceName ?? "Service non précisé"}
           </dd>
         </div>
         <div>
@@ -333,8 +340,8 @@ export default async function ResponsesPage({
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Suivez les reponses SMS par contexte exact: rendez-vous existants ou alertes de creneaux libres."
-        title="Reponses"
+        description="Suivez les réponses SMS par contexte exact: rendez-vous existants ou alertes de créneaux libres."
+        title="Réponses"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -354,7 +361,7 @@ export default async function ResponsesPage({
 
       {activeTab === "appointments" ? (
         <Panel
-          description="Les reponses OUI/NON aux rappels sont regroupees par date de rendez-vous."
+          description="Les réponses OUI/NON aux rappels sont regroupées par date de rendez-vous."
           title="Confirmations rendez-vous"
         >
           {appointmentGroups.length > 0 ? (
@@ -364,7 +371,7 @@ export default async function ResponsesPage({
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <h2 className="text-lg font-black">{group.dateLabel}</h2>
                     <p className="text-sm font-bold text-[var(--muted)]">
-                      {group.items.length} reponse
+                      {group.items.length} réponse
                       {group.items.length > 1 ? "s" : ""}
                     </p>
                   </div>
@@ -378,8 +385,8 @@ export default async function ResponsesPage({
             </div>
           ) : (
             <EmptyState
-              description="Les reponses OUI/NON aux rappels apparaitront ici."
-              title="Aucune reponse de confirmation de rendez-vous recue."
+              description="Les réponses OUI/NON aux rappels apparaîtront ici."
+              title="Aucune réponse de confirmation de rendez-vous reçue."
             />
           )}
           <Link
@@ -391,8 +398,8 @@ export default async function ResponsesPage({
         </Panel>
       ) : (
         <Panel
-          description="Chaque annulation garde sa propre liste de reponses. Un OUI ne confirme jamais automatiquement un client."
-          title="Alertes creneaux libres"
+          description="Chaque annulation garde sa propre liste de réponses. Un OUI ne confirme jamais automatiquement un client."
+          title="Alertes créneaux libres"
         >
           <OpeningResponsesFiltersForm
             filteredCount={filteredOpeningGroups.length}
@@ -423,7 +430,7 @@ export default async function ResponsesPage({
                         {group.endTime ? ` - ${formatTime(group.endTime)}` : ""}
                       </p>
                       <p className="mt-1 text-sm font-bold text-[var(--muted)]">
-                        {group.serviceName ?? "Service non precise"}
+                        {group.serviceName ?? "Service non précisé"}
                         {group.offerLabel ? ` - ${group.offerLabel}` : ""}
                       </p>
                     </div>
@@ -437,16 +444,16 @@ export default async function ResponsesPage({
 
                   <div className="mt-4 grid gap-2 text-xs font-black text-[var(--muted)] sm:grid-cols-4">
                     <span className="rounded-full bg-white px-3 py-2">
-                      {group.responseCount} reponses
+                      {group.responseCount} réponses
                     </span>
                     <span className="rounded-full bg-white px-3 py-2">
                       {group.positiveCount} positifs
                     </span>
                     <span className="rounded-full bg-white px-3 py-2">
-                      {group.noReplyCount} sans reponse
+                      {group.noReplyCount} sans réponse
                     </span>
                     <span className="rounded-full bg-white px-3 py-2">
-                      {group.sentCount} SMS envoyes
+                      {group.sentCount} SMS envoyés
                     </span>
                   </div>
 
@@ -508,18 +515,28 @@ export default async function ResponsesPage({
               ))}
             </div>
           ) : (
-            <EmptyState
-              description={
-                openingGroups.length > 0
-                  ? "Ajustez la periode, le service ou la recherche pour retrouver une annulation."
-                  : "Creez une nouvelle annulation pour envoyer une alerte SMS aux clients admissibles."
-              }
-              title={
-                openingGroups.length > 0
-                  ? "Aucune annulation ne correspond aux filtres."
-                  : "Aucune reponse de creneau libre pour le moment."
-              }
-            />
+            <div className="grid gap-3">
+              <EmptyState
+                description={
+                  openingGroups.length > 0
+                    ? "Essayez une recherche plus large ou réinitialisez les filtres."
+                    : "Créez une nouvelle annulation pour envoyer une alerte SMS aux clients admissibles."
+                }
+                title={
+                  openingGroups.length > 0
+                    ? "Aucun créneau ne correspond à ces filtres."
+                    : "Aucune alerte de créneau libre pour le moment."
+                }
+              />
+              {openingGroups.length > 0 ? (
+                <Link
+                  className="justify-self-center rounded-full border border-[var(--line)] bg-white px-5 py-3 text-sm font-black text-[var(--foreground)]"
+                  href={buildOpeningResponsesResetHref()}
+                >
+                  Réinitialiser
+                </Link>
+              ) : null}
+            </div>
           )}
         </Panel>
       )}
