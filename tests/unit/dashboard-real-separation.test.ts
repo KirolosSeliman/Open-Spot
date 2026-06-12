@@ -59,7 +59,7 @@ describe("real dashboard and demo dashboard separation", () => {
     expect(dashboardPage).toContain("Creer votre premiere annulation");
   });
 
-  it("loads the real response queue from organization-scoped data", () => {
+  it("loads separated response dashboards from organization-scoped data", () => {
     const responsesPage = readFileSync(
       join(appDashboardRoot, "responses", "page.tsx"),
       "utf8"
@@ -69,10 +69,17 @@ describe("real dashboard and demo dashboard separation", () => {
       "utf8"
     );
 
-    expect(responsesPage).toContain("loadResponseQueue");
-    expect(responsesPage).toContain("response.lastInboundBody");
-    expect(responsesPage).toContain("response.replyClassification");
-    expect(operationsData).toContain("export async function loadResponseQueue");
+    expect(responsesPage).toContain("loadAppointmentResponseCalendar");
+    expect(responsesPage).toContain("loadOpeningResponseGroups");
+    expect(responsesPage).toContain("appointments");
+    expect(responsesPage).toContain("openings");
+    expect(responsesPage).toContain("Voir / valider cette annulation");
+    expect(operationsData).toContain(
+      "export async function loadAppointmentResponseCalendar"
+    );
+    expect(operationsData).toContain(
+      "export async function loadOpeningResponseGroups"
+    );
     expect(operationsData).toContain(".from(\"opening_offers\")");
     expect(operationsData).toContain(".from(\"sms_messages\")");
     expect(operationsData).toContain(".eq(\"organization_id\", organizationId)");

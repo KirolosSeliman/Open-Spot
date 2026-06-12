@@ -86,7 +86,10 @@ describe("inbound SMS persistence route", () => {
     expect(inboundHandler).toContain('.eq("provider", providerName)');
     expect(inboundHandler).toContain('.eq("to_number", fromNumber)');
     expect(inboundHandler).toContain('.eq("from_number", toNumber)');
-    expect(inboundHandler).toContain('.not("opening_id", "is", null)');
+    expect(inboundHandler).toContain('.not("customer_id", "is", null)');
+    expect(inboundHandler).toContain(
+      '.or("opening_id.not.is.null,appointment_id.not.is.null")'
+    );
   });
 
   it("keeps the Next route file as a minimal App Router wrapper", () => {

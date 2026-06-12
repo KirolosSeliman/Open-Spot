@@ -11,13 +11,6 @@ import {
 } from "@/lib/sms/simulator";
 import type { SmsProviderClient } from "@/lib/sms/provider";
 
-type InboundContextRow = {
-  organization_id: string;
-  customer_id: string | null;
-  opening_id: string | null;
-  appointment_id: string | null;
-};
-
 export async function handleInboundSmsRequest(
   request: Request,
   provider: SmsProviderClient = createSmsProvider()
@@ -105,49 +98,23 @@ export async function handleInboundSmsRequest(
     }
   }
 
-  const { data: openingContextRows, error: contextError } = await supabase
+  const { data: contextRows, error: contextError } = await supabase
     .from("sms_messages")
     .select("organization_id, customer_id, opening_id, appointment_id")
     .eq("provider", providerName)
     .eq("direction", "outbound")
     .eq("to_number", fromNumber)
     .eq("from_number", toNumber)
-    .not("opening_id", "is", null)
     .not("customer_id", "is", null)
+    .or("opening_id.not.is.null,appointment_id.not.is.null")
     .order("created_at", { ascending: false })
     .limit(1);
 
   if (contextError) {
     return NextResponse.json(
-      { error: "Inbound opening context lookup failed." },
+      { error: "Inbound context lookup failed." },
       { status: 500 }
     );
-  }
-
-  let contextRows: InboundContextRow[] | null = openingContextRows;
-
-  if (!contextRows || contextRows.length === 0) {
-    const { data: appointmentContextRows, error: appointmentContextError } =
-      await supabase
-        .from("sms_messages")
-        .select("organization_id, customer_id, opening_id, appointment_id")
-        .eq("provider", providerName)
-        .eq("direction", "outbound")
-        .eq("to_number", fromNumber)
-        .eq("from_number", toNumber)
-        .not("appointment_id", "is", null)
-        .not("customer_id", "is", null)
-        .order("created_at", { ascending: false })
-        .limit(1);
-
-    if (appointmentContextError) {
-      return NextResponse.json(
-        { error: "Inbound appointment context lookup failed." },
-        { status: 500 }
-      );
-    }
-
-    contextRows = appointmentContextRows;
   }
 
   const context = contextRows?.[0] ?? null;

@@ -36,7 +36,8 @@ describe("dashboard SMS replies", () => {
     expect(operationsDataSource).toContain('.eq("direction", "inbound")');
     expect(operationsDataSource).toContain("classifyInboundSmsBody");
     expect(operationsDataSource).toContain("lastInboundBody");
-    expect(responsesPageSource).toContain("response.replyClassification");
+    expect(responsesPageSource).toContain("customer.replyClassification");
+    expect(responsesPageSource).toContain("item.classification");
     expect(responsesPageSource).toContain("En attente de validation manuelle");
   });
 });

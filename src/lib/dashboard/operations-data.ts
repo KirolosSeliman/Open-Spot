@@ -1,6 +1,9 @@
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { classifyInboundSmsBody } from "@/lib/sms/inbound";
+import {
+  classifyInboundSmsBody,
+  type InboundSmsClassification
+} from "@/lib/sms/inbound";
 import {
   checkSmsDeliveryPersistenceReadiness,
   isSmsPersistenceSchemaError
@@ -62,6 +65,58 @@ export type ResponseQueueItem = OpeningOfferRow & {
   replyClassification: string;
 };
 
+export type AppointmentResponseCalendarItem = {
+  id: string;
+  appointmentId: string;
+  customerId: string | null;
+  customerName: string;
+  customerPhone: string;
+  serviceName: string | null;
+  appointmentStartsAt: string | null;
+  appointmentEndsAt: string | null;
+  appointmentStatus: string | null;
+  confirmationStatus: string | null;
+  timezone: string | null;
+  inboundBody: string;
+  inboundReceivedAt: string;
+  classification: InboundSmsClassification;
+};
+
+export type AppointmentResponseDayGroup = {
+  dateKey: string;
+  dateLabel: string;
+  items: AppointmentResponseCalendarItem[];
+};
+
+export type OpeningResponseCustomer = {
+  offerId: string;
+  customerId: string;
+  customerName: string;
+  customerPhone: string;
+  offerStatus: string;
+  responseRank: number | null;
+  responseText: string | null;
+  respondedAt: string | null;
+  lastInboundBody: string | null;
+  lastInboundReceivedAt: string | null;
+  replyClassification: InboundSmsClassification | "none";
+};
+
+export type OpeningResponseGroup = {
+  openingId: string;
+  openingTitle: string;
+  serviceName: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  offerLabel: string | null;
+  openingStatus: string;
+  sentCount: number;
+  responseCount: number;
+  positiveCount: number;
+  noReplyCount: number;
+  customers: OpeningResponseCustomer[];
+};
+
 export type CustomerWithConsent = CustomerRow & {
   consentStatus: ConsentRow["status"] | "missing";
 };
@@ -96,6 +151,111 @@ async function requireOrganizationId() {
   }
 
   return workspace.organization.id;
+}
+
+function getTimeValue(value: string | null | undefined) {
+  if (!value) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const time = new Date(value).getTime();
+  return Number.isFinite(time) ? time : Number.POSITIVE_INFINITY;
+}
+
+function getDateKey(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "unknown";
+  }
+
+  return date.toLocaleDateString("fr-CA");
+}
+
+function formatDateLabel(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Date du rendez-vous inconnue";
+  }
+
+  return new Intl.DateTimeFormat("fr-CA", {
+    dateStyle: "full"
+  }).format(date);
+}
+
+export function groupAppointmentResponseItems(
+  items: AppointmentResponseCalendarItem[]
+): AppointmentResponseDayGroup[] {
+  const groups = new Map<string, AppointmentResponseDayGroup>();
+
+  for (const item of items) {
+    const groupingDate = item.appointmentStartsAt ?? item.inboundReceivedAt;
+    const dateKey = getDateKey(groupingDate);
+    const dateLabel = item.appointmentStartsAt
+      ? formatDateLabel(item.appointmentStartsAt)
+      : "Date du rendez-vous inconnue";
+    const existing = groups.get(dateKey) ?? {
+      dateKey,
+      dateLabel,
+      items: []
+    };
+
+    existing.items.push(item);
+    groups.set(dateKey, existing);
+  }
+
+  return [...groups.values()]
+    .map((group) => ({
+      ...group,
+      items: [...group.items].sort(
+        (a, b) =>
+          getTimeValue(a.appointmentStartsAt ?? a.inboundReceivedAt) -
+          getTimeValue(b.appointmentStartsAt ?? b.inboundReceivedAt)
+      )
+    }))
+    .sort((a, b) => {
+      const first = getTimeValue(a.items[0]?.appointmentStartsAt ?? a.items[0]?.inboundReceivedAt);
+      const second = getTimeValue(b.items[0]?.appointmentStartsAt ?? b.items[0]?.inboundReceivedAt);
+
+      return first - second;
+    });
+}
+
+function getOpeningResponseSortBucket(customer: OpeningResponseCustomer) {
+  if (
+    customer.replyClassification === "waitlist_positive" ||
+    customer.responseRank !== null
+  ) {
+    return 0;
+  }
+
+  if (customer.lastInboundReceivedAt || customer.respondedAt) {
+    return 1;
+  }
+
+  return 2;
+}
+
+export function sortOpeningResponseCustomers(
+  customers: OpeningResponseCustomer[]
+): OpeningResponseCustomer[] {
+  return [...customers].sort((a, b) => {
+    const bucketDelta =
+      getOpeningResponseSortBucket(a) - getOpeningResponseSortBucket(b);
+
+    if (bucketDelta !== 0) {
+      return bucketDelta;
+    }
+
+    if (getOpeningResponseSortBucket(a) === 0) {
+      return (a.responseRank ?? Number.POSITIVE_INFINITY) -
+        (b.responseRank ?? Number.POSITIVE_INFINITY);
+    }
+
+    return getTimeValue(a.respondedAt ?? a.lastInboundReceivedAt) -
+      getTimeValue(b.respondedAt ?? b.lastInboundReceivedAt);
+  });
 }
 
 export async function loadServices() {
@@ -588,6 +748,318 @@ export async function loadOpeningDetail(
       };
     })
   };
+}
+
+export async function loadAppointmentResponseCalendar(): Promise<
+  AppointmentResponseDayGroup[]
+> {
+  const organizationId = await requireOrganizationId();
+
+  if (!organizationId) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: messages, error: messagesError } = await supabase
+    .from("sms_messages")
+    .select("id, customer_id, appointment_id, body, created_at")
+    .eq("organization_id", organizationId)
+    .eq("direction", "inbound")
+    .not("appointment_id", "is", null)
+    .order("created_at", { ascending: false });
+
+  if (messagesError) {
+    throw new Error(messagesError.message);
+  }
+
+  const inboundMessages = messages ?? [];
+
+  if (inboundMessages.length === 0) {
+    return [];
+  }
+
+  const appointmentIds = [
+    ...new Set(
+      inboundMessages
+        .map((message) => message.appointment_id)
+        .filter((appointmentId): appointmentId is string => Boolean(appointmentId))
+    )
+  ];
+  const customerIds = [
+    ...new Set(
+      inboundMessages
+        .map((message) => message.customer_id)
+        .filter((customerId): customerId is string => Boolean(customerId))
+    )
+  ];
+
+  const [appointmentsResult, customersResult] = await Promise.all([
+    supabase
+      .from("appointments")
+      .select(
+        "id, customer_id, service_id, starts_at, ends_at, status, confirmation_status, timezone"
+      )
+      .eq("organization_id", organizationId)
+      .in("id", appointmentIds),
+    customerIds.length > 0
+      ? supabase
+          .from("customers")
+          .select("id, full_name, phone_e164")
+          .eq("organization_id", organizationId)
+          .in("id", customerIds)
+      : Promise.resolve({ data: [], error: null })
+  ]);
+
+  if (appointmentsResult.error) {
+    throw new Error(appointmentsResult.error.message);
+  }
+
+  if (customersResult.error) {
+    throw new Error(customersResult.error.message);
+  }
+
+  const appointmentById = new Map(
+    (appointmentsResult.data ?? []).map((appointment) => [
+      appointment.id,
+      appointment
+    ])
+  );
+  const serviceIds = [
+    ...new Set(
+      (appointmentsResult.data ?? [])
+        .map((appointment) => appointment.service_id)
+        .filter((serviceId): serviceId is string => Boolean(serviceId))
+    )
+  ];
+  const servicesResult =
+    serviceIds.length > 0
+      ? await supabase
+          .from("services")
+          .select("id, name")
+          .eq("organization_id", organizationId)
+          .in("id", serviceIds)
+      : { data: [], error: null };
+
+  if (servicesResult.error) {
+    throw new Error(servicesResult.error.message);
+  }
+
+  const customerById = new Map(
+    (customersResult.data ?? []).map((customer) => [customer.id, customer])
+  );
+  const serviceById = new Map(
+    (servicesResult.data ?? []).map((service) => [service.id, service.name])
+  );
+  const items = inboundMessages.flatMap((message) => {
+    if (!message.appointment_id) {
+      return [];
+    }
+
+    const appointment = appointmentById.get(message.appointment_id);
+    const customerId = message.customer_id ?? appointment?.customer_id ?? null;
+    const customer = customerId ? customerById.get(customerId) : null;
+
+    return [{
+      id: message.id,
+      appointmentId: message.appointment_id,
+      customerId,
+      customerName: customer?.full_name ?? "Client inconnu",
+      customerPhone: customer?.phone_e164 ?? "",
+      serviceName: appointment?.service_id
+        ? serviceById.get(appointment.service_id) ?? null
+        : null,
+      appointmentStartsAt: appointment?.starts_at ?? null,
+      appointmentEndsAt: appointment?.ends_at ?? null,
+      appointmentStatus: appointment?.status ?? null,
+      confirmationStatus: appointment?.confirmation_status ?? null,
+      timezone: appointment?.timezone ?? null,
+      inboundBody: message.body,
+      inboundReceivedAt: message.created_at,
+      classification: classifyInboundSmsBody(message.body, "appointment")
+    }];
+  });
+
+  return groupAppointmentResponseItems(items);
+}
+
+export async function loadOpeningResponseGroups(): Promise<
+  OpeningResponseGroup[]
+> {
+  const organizationId = await requireOrganizationId();
+
+  if (!organizationId) {
+    return [];
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data: offers, error: offersError } = await supabase
+    .from("opening_offers")
+    .select("*")
+    .eq("organization_id", organizationId)
+    .in("status", ["sent", "responded", "selected", "rejected"])
+    .order("created_at", { ascending: true });
+
+  if (offersError) {
+    throw new Error(offersError.message);
+  }
+
+  if (!offers || offers.length === 0) {
+    return [];
+  }
+
+  const customerIds = [...new Set(offers.map((offer) => offer.customer_id))];
+  const openingIds = [...new Set(offers.map((offer) => offer.opening_id))];
+  const [customersResult, openingsResult, messagesResult] = await Promise.all([
+    supabase
+      .from("customers")
+      .select("id, full_name, phone_e164")
+      .eq("organization_id", organizationId)
+      .in("id", customerIds),
+    supabase
+      .from("openings")
+      .select("id, title, start_time, end_time, offer_label, status, service_id")
+      .eq("organization_id", organizationId)
+      .in("id", openingIds),
+    supabase
+      .from("sms_messages")
+      .select("customer_id, opening_id, body, created_at")
+      .eq("organization_id", organizationId)
+      .eq("direction", "inbound")
+      .in("opening_id", openingIds)
+      .order("created_at", { ascending: false })
+  ]);
+
+  if (customersResult.error) {
+    throw new Error(customersResult.error.message);
+  }
+
+  if (openingsResult.error) {
+    throw new Error(openingsResult.error.message);
+  }
+
+  if (messagesResult.error) {
+    throw new Error(messagesResult.error.message);
+  }
+
+  const serviceIds = [
+    ...new Set(
+      (openingsResult.data ?? [])
+        .map((opening) => opening.service_id)
+        .filter((serviceId): serviceId is string => Boolean(serviceId))
+    )
+  ];
+  const servicesResult =
+    serviceIds.length > 0
+      ? await supabase
+          .from("services")
+          .select("id, name")
+          .eq("organization_id", organizationId)
+          .in("id", serviceIds)
+      : { data: [], error: null };
+
+  if (servicesResult.error) {
+    throw new Error(servicesResult.error.message);
+  }
+
+  const customerById = new Map(
+    (customersResult.data ?? []).map((customer) => [customer.id, customer])
+  );
+  const openingById = new Map(
+    (openingsResult.data ?? []).map((opening) => [opening.id, opening])
+  );
+  const serviceById = new Map(
+    (servicesResult.data ?? []).map((service) => [service.id, service.name])
+  );
+  const lastInboundByContext = new Map<
+    string,
+    {
+      body: string;
+      created_at: string;
+    }
+  >();
+
+  for (const message of messagesResult.data ?? []) {
+    if (!message.opening_id || !message.customer_id) {
+      continue;
+    }
+
+    const key = `${message.opening_id}:${message.customer_id}`;
+
+    if (!lastInboundByContext.has(key)) {
+      lastInboundByContext.set(key, {
+        body: message.body,
+        created_at: message.created_at
+      });
+    }
+  }
+
+  const offersByOpening = new Map<string, OpeningOfferRow[]>();
+
+  for (const offer of offers) {
+    offersByOpening.set(offer.opening_id, [
+      ...(offersByOpening.get(offer.opening_id) ?? []),
+      offer
+    ]);
+  }
+
+  return [...offersByOpening.entries()]
+    .map(([openingId, openingOffers]) => {
+      const opening = openingById.get(openingId);
+      const customers = openingOffers.map((offer) => {
+        const customer = customerById.get(offer.customer_id);
+        const inbound = lastInboundByContext.get(
+          `${offer.opening_id}:${offer.customer_id}`
+        );
+        const replyClassification: OpeningResponseCustomer["replyClassification"] = inbound?.body
+          ? classifyInboundSmsBody(inbound.body, "waitlist")
+          : "none";
+
+        return {
+          offerId: offer.id,
+          customerId: offer.customer_id,
+          customerName: customer?.full_name ?? "Client inconnu",
+          customerPhone: customer?.phone_e164 ?? "",
+          offerStatus: offer.status,
+          responseRank: offer.response_rank,
+          responseText: offer.response_text,
+          respondedAt: offer.responded_at,
+          lastInboundBody: inbound?.body ?? null,
+          lastInboundReceivedAt: inbound?.created_at ?? null,
+          replyClassification
+        };
+      });
+      const sortedCustomers = sortOpeningResponseCustomers(customers);
+      const responseCount = sortedCustomers.filter(
+        (customer) =>
+          customer.lastInboundReceivedAt ||
+          customer.respondedAt ||
+          customer.responseText
+      ).length;
+      const positiveCount = sortedCustomers.filter(
+        (customer) =>
+          customer.replyClassification === "waitlist_positive" ||
+          customer.responseRank !== null ||
+          ["responded", "selected"].includes(customer.offerStatus)
+      ).length;
+
+      return {
+        openingId,
+        openingTitle: opening?.title ?? "Annulation inconnue",
+        serviceName: opening?.service_id
+          ? serviceById.get(opening.service_id) ?? null
+          : null,
+        startTime: opening?.start_time ?? null,
+        endTime: opening?.end_time ?? null,
+        offerLabel: opening?.offer_label ?? null,
+        openingStatus: opening?.status ?? "unknown",
+        sentCount: openingOffers.length,
+        responseCount,
+        positiveCount,
+        noReplyCount: Math.max(0, openingOffers.length - responseCount),
+        customers: sortedCustomers
+      };
+    })
+    .sort((a, b) => getTimeValue(b.startTime) - getTimeValue(a.startTime));
 }
 
 export async function loadResponseQueue(): Promise<ResponseQueueItem[]> {
