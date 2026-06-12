@@ -105,6 +105,7 @@ export type OpeningResponseCustomer = {
 export type OpeningResponseGroup = {
   openingId: string;
   openingTitle: string;
+  serviceId: string | null;
   serviceName: string | null;
   startTime: string | null;
   endTime: string | null;
@@ -115,6 +116,19 @@ export type OpeningResponseGroup = {
   positiveCount: number;
   noReplyCount: number;
   customers: OpeningResponseCustomer[];
+};
+
+export type OpeningResponsesRange =
+  | "this_week"
+  | "two_weeks"
+  | "one_month"
+  | "three_months"
+  | "all";
+
+export type OpeningResponsesFilters = {
+  range: OpeningResponsesRange;
+  serviceId: string | "all" | "none";
+  q: string;
 };
 
 export type CustomerWithConsent = CustomerRow & {
@@ -182,6 +196,140 @@ function formatDateLabel(value: string) {
   return new Intl.DateTimeFormat("fr-CA", {
     dateStyle: "full"
   }).format(date);
+}
+
+const openingResponsesRanges = new Set<OpeningResponsesRange>([
+  "this_week",
+  "two_weeks",
+  "one_month",
+  "three_months",
+  "all"
+]);
+
+function getSingleSearchParam(value: string | string[] | undefined) {
+  if (Array.isArray(value)) {
+    return value[0] ?? "";
+  }
+
+  return value ?? "";
+}
+
+export function normalizeOpeningResponsesFilters(params: {
+  range?: string | string[];
+  serviceId?: string | string[];
+  q?: string | string[];
+}): OpeningResponsesFilters {
+  const rawRange = getSingleSearchParam(params.range);
+  const rawServiceId = getSingleSearchParam(params.serviceId).trim();
+  const q = getSingleSearchParam(params.q).trim().slice(0, 80);
+
+  return {
+    range: openingResponsesRanges.has(rawRange as OpeningResponsesRange)
+      ? (rawRange as OpeningResponsesRange)
+      : "this_week",
+    serviceId: rawServiceId || "all",
+    q
+  };
+}
+
+function normalizeSearchText(value: string | null | undefined) {
+  return (value ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "");
+}
+
+function getOpeningRangeEnd(range: OpeningResponsesRange, now: Date) {
+  if (range === "all") {
+    return null;
+  }
+
+  const end = new Date(now);
+  const days =
+    range === "this_week"
+      ? 7
+      : range === "two_weeks"
+        ? 14
+        : range === "one_month"
+          ? 31
+          : 92;
+
+  end.setDate(end.getDate() + days);
+  return end;
+}
+
+function matchesOpeningRange(
+  group: OpeningResponseGroup,
+  range: OpeningResponsesRange,
+  now: Date
+) {
+  const rangeEnd = getOpeningRangeEnd(range, now);
+
+  if (!rangeEnd) {
+    return true;
+  }
+
+  if (!group.startTime) {
+    return false;
+  }
+
+  const startTime = new Date(group.startTime).getTime();
+  const rangeStartTime = new Date(now).setHours(0, 0, 0, 0);
+
+  return (
+    Number.isFinite(startTime) &&
+    startTime >= rangeStartTime &&
+    startTime <= rangeEnd.getTime()
+  );
+}
+
+function matchesOpeningService(
+  group: OpeningResponseGroup,
+  serviceId: OpeningResponsesFilters["serviceId"]
+) {
+  if (serviceId === "all") {
+    return true;
+  }
+
+  if (serviceId === "none") {
+    return !group.serviceId;
+  }
+
+  return group.serviceId === serviceId;
+}
+
+function getOpeningSearchHaystack(group: OpeningResponseGroup) {
+  return normalizeSearchText(
+    [
+      group.openingTitle,
+      group.serviceName,
+      group.offerLabel,
+      group.openingStatus,
+      ...group.customers.flatMap((customer) => [
+        customer.customerName,
+        customer.customerPhone,
+        customer.offerStatus,
+        customer.responseText,
+        customer.lastInboundBody,
+        customer.replyClassification
+      ])
+    ].join(" ")
+  );
+}
+
+export function filterOpeningResponseGroups(
+  groups: OpeningResponseGroup[],
+  filters: OpeningResponsesFilters,
+  now = new Date()
+): OpeningResponseGroup[] {
+  const query = normalizeSearchText(filters.q);
+
+  return groups.filter(
+    (group) =>
+      matchesOpeningRange(group, filters.range, now) &&
+      matchesOpeningService(group, filters.serviceId) &&
+      (!query || getOpeningSearchHaystack(group).includes(query))
+  );
 }
 
 export function groupAppointmentResponseItems(
@@ -1045,6 +1193,7 @@ export async function loadOpeningResponseGroups(): Promise<
       return {
         openingId,
         openingTitle: opening?.title ?? "Annulation inconnue",
+        serviceId: opening?.service_id ?? null,
         serviceName: opening?.service_id
           ? serviceById.get(opening.service_id) ?? null
           : null,

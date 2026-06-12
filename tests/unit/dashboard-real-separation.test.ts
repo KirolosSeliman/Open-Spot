@@ -71,6 +71,11 @@ describe("real dashboard and demo dashboard separation", () => {
 
     expect(responsesPage).toContain("loadAppointmentResponseCalendar");
     expect(responsesPage).toContain("loadOpeningResponseGroups");
+    expect(responsesPage).toContain("normalizeOpeningResponsesFilters");
+    expect(responsesPage).toContain("filterOpeningResponseGroups");
+    expect(responsesPage).toContain('name="range"');
+    expect(responsesPage).toContain('name="serviceId"');
+    expect(responsesPage).toContain('name="q"');
     expect(responsesPage).toContain("appointments");
     expect(responsesPage).toContain("openings");
     expect(responsesPage).toContain("Voir / valider cette annulation");

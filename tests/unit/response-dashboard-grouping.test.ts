@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  filterOpeningResponseGroups,
   groupAppointmentResponseItems,
+  normalizeOpeningResponsesFilters,
   sortOpeningResponseCustomers,
   type AppointmentResponseCalendarItem,
+  type OpeningResponseGroup,
   type OpeningResponseCustomer
 } from "@/lib/dashboard/operations-data";
 
@@ -128,5 +131,120 @@ describe("response dashboard grouping", () => {
 
     expect(sortOpeningResponseCustomers(customers).map((item) => item.offerId))
       .toEqual(["rank-1", "rank-2", "unknown", "sent"]);
+  });
+
+  it("normalizes opening response URL filters to safe defaults", () => {
+    expect(normalizeOpeningResponsesFilters({})).toEqual({
+      range: "this_week",
+      serviceId: "all",
+      q: ""
+    });
+    expect(
+      normalizeOpeningResponsesFilters({
+        range: "two_weeks",
+        serviceId: "none",
+        q: "  Kirolos  "
+      })
+    ).toEqual({
+      range: "two_weeks",
+      serviceId: "none",
+      q: "Kirolos"
+    });
+    expect(
+      normalizeOpeningResponsesFilters({
+        range: "forever",
+        serviceId: "",
+        q: "x".repeat(120)
+      })
+    ).toEqual({
+      range: "this_week",
+      serviceId: "all",
+      q: "x".repeat(80)
+    });
+  });
+
+  it("filters opening response groups by range, service, and searchable text", () => {
+    const groups: OpeningResponseGroup[] = [
+      {
+        openingId: "opening-hair",
+        openingTitle: "Annulation coupe",
+        serviceId: "service-hair",
+        serviceName: "Coupe",
+        startTime: "2026-06-16T14:00:00.000Z",
+        endTime: "2026-06-16T15:00:00.000Z",
+        offerLabel: "Rabais midi",
+        openingStatus: "awaiting_validation",
+        sentCount: 1,
+        responseCount: 1,
+        positiveCount: 1,
+        noReplyCount: 0,
+        customers: [
+          {
+            offerId: "offer-1",
+            customerId: "customer-1",
+            customerName: "Kirolos Client",
+            customerPhone: "+15145550001",
+            offerStatus: "responded",
+            responseRank: 1,
+            responseText: "Oui disponible",
+            respondedAt: "2026-06-12T10:00:00.000Z",
+            lastInboundBody: "Oui disponible",
+            lastInboundReceivedAt: "2026-06-12T10:00:00.000Z",
+            replyClassification: "waitlist_positive"
+          }
+        ]
+      },
+      {
+        openingId: "opening-none",
+        openingTitle: "Annulation sans service",
+        serviceId: null,
+        serviceName: null,
+        startTime: "2026-07-20T14:00:00.000Z",
+        endTime: "2026-07-20T15:00:00.000Z",
+        offerLabel: null,
+        openingStatus: "broadcasting",
+        sentCount: 1,
+        responseCount: 0,
+        positiveCount: 0,
+        noReplyCount: 1,
+        customers: [
+          {
+            offerId: "offer-2",
+            customerId: "customer-2",
+            customerName: "Autre Client",
+            customerPhone: "+15145550002",
+            offerStatus: "sent",
+            responseRank: null,
+            responseText: null,
+            respondedAt: null,
+            lastInboundBody: null,
+            lastInboundReceivedAt: null,
+            replyClassification: "none"
+          }
+        ]
+      }
+    ];
+
+    expect(
+      filterOpeningResponseGroups(groups, {
+        range: "this_week",
+        serviceId: "all",
+        q: ""
+      }, new Date("2026-06-12T12:00:00.000Z")).map((group) => group.openingId)
+    ).toEqual(["opening-hair"]);
+    expect(
+      filterOpeningResponseGroups(groups, {
+        range: "all",
+        serviceId: "none",
+        q: ""
+      }).map((group) => group.openingId)
+    ).toEqual(["opening-none"]);
+    expect(
+      filterOpeningResponseGroups(groups, {
+        range: "all",
+        serviceId: "all",
+        q: "kirolos"
+      }).map((group) => group.openingId)
+    ).toEqual(["opening-hair"]);
   });
 });

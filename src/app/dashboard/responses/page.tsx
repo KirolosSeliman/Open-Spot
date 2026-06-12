@@ -7,9 +7,13 @@ import {
   StatusBadge
 } from "@/components/dashboard/dashboard-ui";
 import {
+  filterOpeningResponseGroups,
   loadAppointmentResponseCalendar,
+  loadServices,
   loadOpeningResponseGroups,
+  normalizeOpeningResponsesFilters,
   type AppointmentResponseCalendarItem,
+  type OpeningResponsesFilters,
   type OpeningResponseCustomer
 } from "@/lib/dashboard/operations-data";
 import type { InboundSmsClassification } from "@/lib/sms/inbound";
@@ -17,6 +21,9 @@ import type { InboundSmsClassification } from "@/lib/sms/inbound";
 type ResponsesPageProps = {
   searchParams: Promise<{
     tab?: string;
+    range?: string;
+    serviceId?: string;
+    q?: string;
   }>;
 };
 
@@ -29,6 +36,17 @@ const tabs = [
     label: "Confirmations rendez-vous",
     value: "appointments"
   }
+];
+
+const openingRangeOptions: Array<{
+  label: string;
+  value: OpeningResponsesFilters["range"];
+}> = [
+  { label: "Cette semaine", value: "this_week" },
+  { label: "2 semaines", value: "two_weeks" },
+  { label: "1 mois", value: "one_month" },
+  { label: "3 mois", value: "three_months" },
+  { label: "Tout", value: "all" }
 ];
 
 function formatDateTime(value: string | null) {
@@ -142,6 +160,103 @@ function TabLink({
   );
 }
 
+function buildOpeningsHref(filters: OpeningResponsesFilters) {
+  const params = new URLSearchParams({
+    tab: "openings",
+    range: filters.range,
+    serviceId: filters.serviceId
+  });
+
+  if (filters.q) {
+    params.set("q", filters.q);
+  }
+
+  return `/dashboard/responses?${params.toString()}`;
+}
+
+function OpeningResponsesFiltersForm({
+  filters,
+  services,
+  totalCount,
+  filteredCount
+}: {
+  filters: OpeningResponsesFilters;
+  services: Array<{
+    id: string;
+    name: string;
+  }>;
+  totalCount: number;
+  filteredCount: number;
+}) {
+  return (
+    <form
+      className="mb-5 grid gap-3 rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 lg:grid-cols-[1fr_1fr_1.4fr_auto]"
+      method="get"
+    >
+      <input name="tab" type="hidden" value="openings" />
+      <label className="grid gap-2 text-sm font-bold">
+        Periode du creneau
+        <select
+          className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
+          defaultValue={filters.range}
+          name="range"
+        >
+          {openingRangeOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="grid gap-2 text-sm font-bold">
+        Service
+        <select
+          className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
+          defaultValue={filters.serviceId}
+          name="serviceId"
+        >
+          <option value="all">Tous les services</option>
+          <option value="none">Service non precise</option>
+          {services.map((service) => (
+            <option key={service.id} value={service.id}>
+              {service.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="grid gap-2 text-sm font-bold">
+        Recherche
+        <input
+          className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
+          defaultValue={filters.q}
+          maxLength={80}
+          name="q"
+          placeholder="Titre, client, telephone, statut, reponse SMS..."
+          type="search"
+        />
+      </label>
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 lg:content-end">
+        <button
+          className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+          type="submit"
+        >
+          Filtrer
+        </button>
+        <Link
+          className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--foreground)]"
+          href="/dashboard/responses?tab=openings"
+        >
+          Reinitialiser
+        </Link>
+      </div>
+      <p className="text-xs font-bold text-[var(--muted)] lg:col-span-4">
+        {filteredCount} annulation{filteredCount > 1 ? "s" : ""} affichee
+        {filteredCount > 1 ? "s" : ""} sur {totalCount}.
+      </p>
+    </form>
+  );
+}
+
 function AppointmentResponseCard({
   item
 }: {
@@ -204,10 +319,16 @@ export default async function ResponsesPage({
 }: ResponsesPageProps) {
   const params = await searchParams;
   const activeTab = params.tab === "appointments" ? "appointments" : "openings";
-  const [appointmentGroups, openingGroups] = await Promise.all([
+  const openingFilters = normalizeOpeningResponsesFilters(params);
+  const [appointmentGroups, openingGroups, services] = await Promise.all([
     loadAppointmentResponseCalendar(),
-    loadOpeningResponseGroups()
+    loadOpeningResponseGroups(),
+    loadServices()
   ]);
+  const filteredOpeningGroups = filterOpeningResponseGroups(
+    openingGroups,
+    openingFilters
+  );
 
   return (
     <div className="grid gap-6">
@@ -220,7 +341,11 @@ export default async function ResponsesPage({
         {tabs.map((tab) => (
           <TabLink
             active={activeTab === tab.value}
-            href={`/dashboard/responses?tab=${tab.value}`}
+            href={
+              tab.value === "openings"
+                ? buildOpeningsHref(openingFilters)
+                : "/dashboard/responses?tab=appointments"
+            }
             key={tab.value}
             label={tab.label}
           />
@@ -269,9 +394,18 @@ export default async function ResponsesPage({
           description="Chaque annulation garde sa propre liste de reponses. Un OUI ne confirme jamais automatiquement un client."
           title="Alertes creneaux libres"
         >
-          {openingGroups.length > 0 ? (
+          <OpeningResponsesFiltersForm
+            filteredCount={filteredOpeningGroups.length}
+            filters={openingFilters}
+            services={services.map((service) => ({
+              id: service.id,
+              name: service.name
+            }))}
+            totalCount={openingGroups.length}
+          />
+          {filteredOpeningGroups.length > 0 ? (
             <div className="grid gap-5">
-              {openingGroups.map((group) => (
+              {filteredOpeningGroups.map((group) => (
                 <section
                   className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
                   key={group.openingId}
@@ -375,8 +509,16 @@ export default async function ResponsesPage({
             </div>
           ) : (
             <EmptyState
-              description="Creez une nouvelle annulation pour envoyer une alerte SMS aux clients admissibles."
-              title="Aucune reponse de creneau libre pour le moment."
+              description={
+                openingGroups.length > 0
+                  ? "Ajustez la periode, le service ou la recherche pour retrouver une annulation."
+                  : "Creez une nouvelle annulation pour envoyer une alerte SMS aux clients admissibles."
+              }
+              title={
+                openingGroups.length > 0
+                  ? "Aucune annulation ne correspond aux filtres."
+                  : "Aucune reponse de creneau libre pour le moment."
+              }
             />
           )}
         </Panel>
