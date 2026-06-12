@@ -567,6 +567,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      platform_admins: {
+        Row: {
+          user_id: string;
+          role: "platform_owner" | "support" | "readonly";
+          active: boolean;
+          created_at: string;
+          created_by: string | null;
+          notes: string | null;
+        };
+        Insert: {
+          user_id: string;
+          role: "platform_owner" | "support" | "readonly";
+          active?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+          notes?: string | null;
+        };
+        Update: {
+          user_id?: string;
+          role?: "platform_owner" | "support" | "readonly";
+          active?: boolean;
+          created_at?: string;
+          created_by?: string | null;
+          notes?: string | null;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;
