@@ -1,6 +1,10 @@
 import Link from "next/link";
 
 import { Card } from "@/components/ui/card";
+import {
+  archiveOrganizationAction,
+  unarchiveOrganizationAction
+} from "@/lib/admin/actions";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
 import {
   loadAdminOrganizations,
@@ -36,6 +40,8 @@ export default async function AdminOrganizationsPage({
   const params = (await searchParams) ?? {};
   const q = getSingleSearchParam(params.q) ?? "";
   const range = normalizeAdminTimeRange(getSingleSearchParam(params.range));
+  const tab =
+    getSingleSearchParam(params.tab) === "archived" ? "archived" : "active";
   const access = await requireCurrentPlatformAdmin();
 
   if (access.status === "unconfigured") {
@@ -57,7 +63,8 @@ export default async function AdminOrganizationsPage({
   const result = await loadAdminOrganizations({
     admin: access.admin,
     query: q,
-    timeRange: range
+    timeRange: range,
+    tab
   });
 
   return (
@@ -74,6 +81,7 @@ export default async function AdminOrganizationsPage({
 
       <Card>
         <form className="grid gap-3 md:grid-cols-[1fr_auto_auto]" method="get">
+          <input name="tab" type="hidden" value={result.tab} />
           <label className="grid gap-2 text-sm font-bold">
             Search
             <input
@@ -113,6 +121,33 @@ export default async function AdminOrganizationsPage({
         </form>
       </Card>
 
+      <div className="flex flex-wrap gap-2">
+        <Link
+          className={`rounded-full border px-4 py-2 text-sm font-black ${
+            result.tab === "active"
+              ? "border-[var(--primary)] bg-[var(--primary)] text-white"
+              : "border-[var(--line)] bg-white"
+          }`}
+          href={`/admin/organizations?tab=active&range=${result.timeRange}${
+            result.query ? `&q=${encodeURIComponent(result.query)}` : ""
+          }`}
+        >
+          Active companies ({result.activeCount})
+        </Link>
+        <Link
+          className={`rounded-full border px-4 py-2 text-sm font-black ${
+            result.tab === "archived"
+              ? "border-[var(--primary)] bg-[var(--primary)] text-white"
+              : "border-[var(--line)] bg-white"
+          }`}
+          href={`/admin/organizations?tab=archived&range=${result.timeRange}${
+            result.query ? `&q=${encodeURIComponent(result.query)}` : ""
+          }`}
+        >
+          Archived companies ({result.archivedCount})
+        </Link>
+      </div>
+
       <div className="text-sm font-bold text-[var(--muted)]">
         {result.filteredCount} companies shown out of {result.totalCount}.
       </div>
@@ -132,7 +167,7 @@ export default async function AdminOrganizationsPage({
       ) : (
         <div className="overflow-hidden rounded-2xl border border-[var(--line)] bg-white shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1120px] border-collapse text-left text-sm">
+            <table className="w-full min-w-[1280px] border-collapse text-left text-sm">
               <thead className="bg-[#fbfaf7] text-xs uppercase tracking-[0.08em] text-[var(--muted)]">
                 <tr>
                   <th className="px-4 py-3">Company</th>
@@ -145,8 +180,9 @@ export default async function AdminOrganizationsPage({
                   <th className="px-4 py-3">SMS sent</th>
                   <th className="px-4 py-3">SMS failed</th>
                   <th className="px-4 py-3">Estimated SMS cost</th>
+                  <th className="px-4 py-3">Billing terms</th>
                   <th className="px-4 py-3">Last activity</th>
-                  <th className="px-4 py-3">Action</th>
+                  <th className="px-4 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -184,15 +220,57 @@ export default async function AdminOrganizationsPage({
                       {formatEstimatedSmsCost(organization.estimatedSmsCostCents)}
                     </td>
                     <td className="px-4 py-4">
+                      <p>{organization.billingTermsSummary}</p>
+                      <p className="mt-1 text-xs text-[var(--muted)]">
+                        Monthly {formatEstimatedSmsCost(organization.monthlySubscriptionCents)}
+                      </p>
+                    </td>
+                    <td className="px-4 py-4">
                       {formatDate(organization.lastActivityAt)}
                     </td>
                     <td className="px-4 py-4">
-                      <Link
-                        className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black transition hover:bg-[#f2f7f4]"
-                        href={`/admin/organizations/${organization.id}?range=${result.timeRange}`}
-                      >
-                        View overview
-                      </Link>
+                      <div className="grid gap-2">
+                        <Link
+                          className="w-fit rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black transition hover:bg-[#f2f7f4]"
+                          href={`/admin/organizations/${organization.id}?range=${result.timeRange}`}
+                        >
+                          View overview
+                        </Link>
+                        {result.tab === "archived" ? (
+                          <form action={unarchiveOrganizationAction}>
+                            <input name="organizationId" type="hidden" value={organization.id} />
+                            <input name="returnTo" type="hidden" value="/admin/organizations?tab=archived" />
+                            <button
+                              className="w-fit rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black transition hover:bg-[#f2f7f4]"
+                              type="submit"
+                            >
+                              Unarchive
+                            </button>
+                          </form>
+                        ) : (
+                          <details className="max-w-[220px]">
+                            <summary className="cursor-pointer rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black">
+                              Archive
+                            </summary>
+                            <form action={archiveOrganizationAction} className="mt-2 grid gap-2">
+                              <input name="organizationId" type="hidden" value={organization.id} />
+                              <input name="returnTo" type="hidden" value="/admin/organizations?tab=active" />
+                              <input
+                                className="min-h-10 rounded-2xl border border-[var(--line)] px-3 text-xs"
+                                name="reason"
+                                placeholder="Reason required"
+                                required
+                              />
+                              <button
+                                className="w-fit rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black"
+                                type="submit"
+                              >
+                                Confirm archive
+                              </button>
+                            </form>
+                          </details>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

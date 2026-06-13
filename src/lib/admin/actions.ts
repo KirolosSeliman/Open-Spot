@@ -9,7 +9,11 @@ import {
   type PlatformAdminAction
 } from "@/lib/admin/action-permissions";
 import { recordPlatformAdminAuditLog } from "@/lib/admin/audit";
-import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
+import { normalizeBillingTermsInput } from "@/lib/admin/billing-terms";
+import {
+  getSafeInternalRedirectPath,
+  requireCurrentPlatformAdmin
+} from "@/lib/auth/platform-admin";
 import { hasMissingStatusCallback, isFailedSmsStatus } from "@/lib/sms/status-helpers";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import type { Json } from "@/types/database";
@@ -23,6 +27,10 @@ function stringField(formData: FormData, key: string) {
 
 function backToOrganization(organizationId: string, suffix = "") {
   redirect(`/admin/organizations/${organizationId}${suffix}`);
+}
+
+function getSafeReturnTo(formData: FormData, fallback: string) {
+  return getSafeInternalRedirectPath(stringField(formData, "returnTo")) ?? fallback;
 }
 
 async function requireAdminAction({
@@ -286,6 +294,150 @@ export async function reactivateOrganizationAction(formData: FormData) {
     organizationId,
     action: "admin.organization.reactivated"
   });
+}
+
+export async function archiveOrganizationAction(formData: FormData) {
+  const organizationId = stringField(formData, "organizationId");
+  const reason = stringField(formData, "reason").slice(0, 500);
+  const returnTo = getSafeReturnTo(formData, "/admin/organizations");
+
+  if (reason.length < 3) {
+    redirect(returnTo);
+  }
+
+  const { admin, supabase } = await requireAdminAction({
+    organizationId,
+    action: "organization.archive"
+  });
+  const { data: existing } = await supabase
+    .from("platform_organization_admin_controls")
+    .select("archived_at, archived_reason")
+    .eq("organization_id", organizationId)
+    .maybeSingle();
+  const now = new Date().toISOString();
+  const { error } = await supabase.from("platform_organization_admin_controls").upsert({
+    organization_id: organizationId,
+    archived_at: now,
+    archived_by_platform_admin_id: admin.id,
+    archived_reason: reason,
+    unarchived_at: null,
+    unarchived_by_platform_admin_id: null
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  await recordPlatformAdminAuditLog({
+    admin,
+    organizationId,
+    action: "admin.organization.archived",
+    entityType: "organizations",
+    entityId: organizationId,
+    metadata: {
+      reason,
+      old_values: existing ?? null,
+      new_values: {
+        archived_at: now
+      }
+    }
+  });
+  revalidatePath("/admin/organizations");
+  revalidatePath(`/admin/organizations/${organizationId}`);
+  redirect(returnTo);
+}
+
+export async function unarchiveOrganizationAction(formData: FormData) {
+  const organizationId = stringField(formData, "organizationId");
+  const returnTo = getSafeReturnTo(formData, "/admin/organizations?tab=active");
+  const { admin, supabase } = await requireAdminAction({
+    organizationId,
+    action: "organization.unarchive"
+  });
+  const { data: existing } = await supabase
+    .from("platform_organization_admin_controls")
+    .select("archived_at, archived_reason")
+    .eq("organization_id", organizationId)
+    .maybeSingle();
+  const now = new Date().toISOString();
+  const { error } = await supabase.from("platform_organization_admin_controls").upsert({
+    organization_id: organizationId,
+    archived_at: null,
+    archived_by_platform_admin_id: null,
+    archived_reason: null,
+    unarchived_at: now,
+    unarchived_by_platform_admin_id: admin.id
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  await recordPlatformAdminAuditLog({
+    admin,
+    organizationId,
+    action: "admin.organization.unarchived",
+    entityType: "organizations",
+    entityId: organizationId,
+    metadata: {
+      old_values: existing ?? null,
+      new_values: {
+        unarchived_at: now
+      }
+    }
+  });
+  revalidatePath("/admin/organizations");
+  revalidatePath(`/admin/organizations/${organizationId}`);
+  redirect(returnTo);
+}
+
+export async function updateOrganizationBillingTermsAction(formData: FormData) {
+  const organizationId = stringField(formData, "organizationId");
+  const { admin, supabase } = await requireAdminAction({
+    organizationId,
+    action: "organization.update_billing_terms"
+  });
+  const { terms, notes } = normalizeBillingTermsInput({
+    currency: stringField(formData, "currency"),
+    monthlySubscription: stringField(formData, "monthlySubscription"),
+    filledSpotFeeMode: stringField(formData, "filledSpotFeeMode"),
+    fixedFee: stringField(formData, "fixedFee"),
+    percentage: stringField(formData, "percentage"),
+    notes: stringField(formData, "notes")
+  });
+  const { data: existing } = await supabase
+    .from("platform_organization_billing_terms")
+    .select("*")
+    .eq("organization_id", organizationId)
+    .maybeSingle();
+  const { error } = await supabase.from("platform_organization_billing_terms").upsert({
+    organization_id: organizationId,
+    currency: terms.currency,
+    monthly_subscription_cents: terms.monthlySubscriptionCents,
+    filled_spot_fee_mode: terms.filledSpotFeeMode,
+    filled_spot_fixed_fee_cents: terms.filledSpotFixedFeeCents,
+    filled_spot_percentage_bps: terms.filledSpotPercentageBps,
+    notes,
+    updated_by_platform_admin_id: admin.id
+  });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  await recordPlatformAdminAuditLog({
+    admin,
+    organizationId,
+    action: "admin.organization.billing_terms_updated",
+    entityType: "platform_organization_billing_terms",
+    entityId: organizationId,
+    metadata: {
+      old_values: existing ?? null,
+      new_values: terms
+    }
+  });
+  revalidatePath(`/admin/organizations/${organizationId}`);
+  redirect(`/admin/organizations/${organizationId}`);
 }
 
 export async function markComplianceReviewAction(formData: FormData) {

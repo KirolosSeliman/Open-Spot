@@ -11,6 +11,9 @@ export type PlatformAdminAction =
   | "organization.resume_sms"
   | "organization.disable"
   | "organization.reactivate"
+  | "organization.archive"
+  | "organization.unarchive"
+  | "organization.update_billing_terms"
   | "compliance.mark_reviewed"
   | "compliance.mark_resolved"
   | "manager_session.end"
@@ -33,7 +36,13 @@ export function canPerformPlatformAdminAction({
     return false;
   }
 
-  if (action === "organization.disable" || action === "organization.reactivate") {
+  if (
+    action === "organization.disable" ||
+    action === "organization.reactivate" ||
+    action === "organization.archive" ||
+    action === "organization.unarchive" ||
+    action === "organization.update_billing_terms"
+  ) {
     return false;
   }
 

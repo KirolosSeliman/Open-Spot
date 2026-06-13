@@ -12,7 +12,17 @@ import {
   maskPhoneNumber
 } from "@/lib/admin/metrics";
 import { canOpenPlatformAdminManagerMode } from "@/lib/admin/manager-mode";
-import { estimateSmsCostCents } from "@/lib/admin/sms-cost";
+import {
+  aggregateSmsCost,
+  estimateSmsCostCents
+} from "@/lib/admin/sms-cost";
+import {
+  aggregateFilledSpotFees,
+  defaultBillingTerms,
+  formatBillingTermsSummary,
+  type BillingTerms,
+  type FilledSpotForBilling
+} from "@/lib/admin/billing-terms";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import type { Database } from "@/types/database";
 
@@ -84,6 +94,19 @@ type AccessRow = Pick<
   Database["public"]["Tables"]["platform_admin_organization_access"]["Row"],
   "organization_id" | "access_level" | "revoked_at"
 >;
+type AdminControlsRow = Pick<
+  Database["public"]["Tables"]["platform_organization_admin_controls"]["Row"],
+  "organization_id" | "archived_at" | "archived_reason"
+>;
+type BillingTermsRow = Pick<
+  Database["public"]["Tables"]["platform_organization_billing_terms"]["Row"],
+  | "organization_id"
+  | "currency"
+  | "monthly_subscription_cents"
+  | "filled_spot_fee_mode"
+  | "filled_spot_fixed_fee_cents"
+  | "filled_spot_percentage_bps"
+>;
 
 export type AdminOrganizationAccessRow = {
   organizationId: string;
@@ -96,6 +119,8 @@ export type AdminOrganizationSummary = {
   name: string;
   slug: string | null;
   status: string;
+  archivedAt: string | null;
+  archivedReason: string | null;
   createdAt: string;
   ownerEmail: string | null;
   ownerName: string | null;
@@ -108,6 +133,10 @@ export type AdminOrganizationSummary = {
   inboundSmsCount: number;
   failedSmsCount: number;
   estimatedSmsCostCents: number;
+  billingTermsSummary: string;
+  monthlySubscriptionCents: number;
+  filledSpotFeesCents: number;
+  estimatedContributionCents: number;
   lastActivityAt: string | null;
 };
 
@@ -115,6 +144,9 @@ export type AdminOrganizationsResult = {
   organizations: AdminOrganizationSummary[];
   totalCount: number;
   filteredCount: number;
+  activeCount: number;
+  archivedCount: number;
+  tab: "active" | "archived";
   timeRange: AdminTimeRange;
   query: string;
 };
@@ -168,6 +200,15 @@ export type AdminOrganizationOverview = {
     estimatedSmsCostCents: number;
     estimatedCostPerFilledSpotCents: number | null;
     recoveredValueCents: number | null;
+  };
+  billing: {
+    terms: BillingTerms;
+    notes: string | null;
+    filledSpotsInRange: number;
+    filledSpotFeesInRangeCents: number;
+    estimatedSmsCostInRangeCents: number;
+    estimatedContributionInRangeCents: number;
+    warnings: string[];
   };
   charts: {
     filledSpotsByDay: Array<{ date: string; count: number }>;
@@ -541,6 +582,8 @@ async function loadVisibleOrganizationData({
         openingOffers: [] as OpeningOfferRow[],
         smsMessages: [] as SmsMessageRow[],
         appointments: [] as AppointmentRow[],
+        controls: [] as AdminControlsRow[],
+        billingTerms: [] as BillingTermsRow[],
         rangeStart: getRangeStart(timeRange)
       };
     }
@@ -564,11 +607,23 @@ async function loadVisibleOrganizationData({
       openingOffers: [] as OpeningOfferRow[],
       smsMessages: [] as SmsMessageRow[],
       appointments: [] as AppointmentRow[],
+      controls: [] as AdminControlsRow[],
+      billingTerms: [] as BillingTermsRow[],
       rangeStart
     };
   }
 
-  const [membersResult, customersResult, consentsResult, openingsResult, offersResult, smsResult, appointmentsResult] =
+  const [
+    membersResult,
+    customersResult,
+    consentsResult,
+    openingsResult,
+    offersResult,
+    smsResult,
+    appointmentsResult,
+    controlsResult,
+    billingTermsResult
+  ] =
     await Promise.all([
       supabase
         .from("organization_members")
@@ -601,6 +656,16 @@ async function loadVisibleOrganizationData({
       supabase
         .from("appointments")
         .select("organization_id, created_at, updated_at")
+        .in("organization_id", organizationIds),
+      supabase
+        .from("platform_organization_admin_controls")
+        .select("organization_id, archived_at, archived_reason")
+        .in("organization_id", organizationIds),
+      supabase
+        .from("platform_organization_billing_terms")
+        .select(
+          "organization_id, currency, monthly_subscription_cents, filled_spot_fee_mode, filled_spot_fixed_fee_cents, filled_spot_percentage_bps"
+        )
         .in("organization_id", organizationIds)
     ]);
 
@@ -633,7 +698,23 @@ async function loadVisibleOrganizationData({
     openingOffers: rowsOrEmpty(offersResult),
     smsMessages: rowsOrEmpty(smsResult),
     appointments: rowsOrEmpty(appointmentsResult),
+    controls: rowsOrEmpty(controlsResult),
+    billingTerms: rowsOrEmpty(billingTermsResult),
     rangeStart
+  };
+}
+
+function mapBillingTerms(row: BillingTermsRow | undefined): BillingTerms {
+  if (!row) {
+    return defaultBillingTerms;
+  }
+
+  return {
+    currency: row.currency,
+    monthlySubscriptionCents: row.monthly_subscription_cents,
+    filledSpotFeeMode: row.filled_spot_fee_mode,
+    filledSpotFixedFeeCents: row.filled_spot_fixed_fee_cents,
+    filledSpotPercentageBps: row.filled_spot_percentage_bps
   };
 }
 
@@ -649,6 +730,8 @@ function buildOrganizationSummaries({
   openingOffers,
   smsMessages,
   appointments,
+  controls,
+  billingTerms,
   rangeStart
 }: Awaited<ReturnType<typeof loadVisibleOrganizationData>> & {
   admin: AuthorizedPlatformAdmin;
@@ -657,6 +740,12 @@ function buildOrganizationSummaries({
     profiles.map((profile) => [profile.auth_user_id, profile])
   );
   const membersByOrgId = new Map<string, MemberRow[]>();
+  const controlsByOrgId = new Map(
+    controls.map((control) => [control.organization_id, control])
+  );
+  const billingTermsByOrgId = new Map(
+    billingTerms.map((terms) => [terms.organization_id, terms])
+  );
 
   for (const member of members) {
     const rows = membersByOrgId.get(member.organization_id) ?? [];
@@ -706,13 +795,37 @@ function buildOrganizationSummaries({
     const organizationAppointments = appointments.filter(
       (row) => row.organization_id === organization.id
     );
+    const organizationRangeSms = rangeSms.filter(
+      (row) => row.organization_id === organization.id && row.direction === "outbound"
+    );
+    const smsCost = aggregateSmsCost(
+      organizationRangeSms.map((row) => ({
+        id: row.id,
+        provider: row.provider,
+        direction: row.direction,
+        status: row.status,
+        segments: null
+      }))
+    );
     const outboundSmsCount = outboundSmsCounts.get(organization.id) ?? 0;
+    const control = controlsByOrgId.get(organization.id);
+    const terms = mapBillingTerms(billingTermsByOrgId.get(organization.id));
+    const filledSpots = Array.from(
+      { length: filledSpotCounts.get(organization.id) ?? 0 },
+      (_, index): FilledSpotForBilling => ({
+        id: `${organization.id}-${index}`,
+        recoveredValueCents: null
+      })
+    );
+    const filledSpotFees = aggregateFilledSpotFees({ terms, filledSpots });
 
     return {
       id: organization.id,
       name: organization.name,
       slug: organization.slug,
       status: "active",
+      archivedAt: control?.archived_at ?? null,
+      archivedReason: control?.archived_reason ?? null,
       createdAt: organization.created_at,
       ownerEmail: ownerProfile?.email ?? organization.email ?? null,
       ownerName: ownerProfile?.full_name ?? null,
@@ -727,7 +840,12 @@ function buildOrganizationSummaries({
       outboundSmsCount,
       inboundSmsCount: inboundSmsCounts.get(organization.id) ?? 0,
       failedSmsCount: failedSmsCounts.get(organization.id) ?? 0,
-      estimatedSmsCostCents: estimateSmsCostCents({ outboundSmsCount }),
+      estimatedSmsCostCents: smsCost.estimatedSmsCostCents,
+      billingTermsSummary: formatBillingTermsSummary(terms),
+      monthlySubscriptionCents: terms.monthlySubscriptionCents,
+      filledSpotFeesCents: filledSpotFees.totalFeeCents,
+      estimatedContributionCents:
+        filledSpotFees.totalFeeCents - smsCost.estimatedSmsCostCents,
       lastActivityAt: maxIso([
         organization.updated_at,
         ...organizationSms.map((row) => row.created_at),
@@ -742,14 +860,17 @@ function buildOrganizationSummaries({
 export async function loadAdminOrganizations({
   admin,
   query,
-  timeRange
+  timeRange,
+  tab = "active"
 }: {
   admin: AuthorizedPlatformAdmin;
   query?: string | null;
   timeRange?: AdminTimeRange | string | null;
+  tab?: "active" | "archived" | string | null;
 }): Promise<AdminOrganizationsResult> {
   const normalizedRange = normalizeAdminTimeRange(timeRange);
   const normalizedQuery = String(query ?? "").trim().slice(0, 80);
+  const normalizedTab = tab === "archived" ? "archived" : "active";
   const data = await loadVisibleOrganizationData({
     admin,
     timeRange: normalizedRange
@@ -758,7 +879,12 @@ export async function loadAdminOrganizations({
     admin,
     ...data
   });
-  const filteredOrganizations = summaries.filter((organization) =>
+  const visibleByTab = summaries.filter((organization) =>
+    normalizedTab === "archived"
+      ? Boolean(organization.archivedAt)
+      : !organization.archivedAt
+  );
+  const filteredOrganizations = visibleByTab.filter((organization) =>
     matchesOrganizationSearch(organization, normalizedQuery)
   );
 
@@ -766,6 +892,9 @@ export async function loadAdminOrganizations({
     organizations: filteredOrganizations,
     totalCount: summaries.length,
     filteredCount: filteredOrganizations.length,
+    activeCount: summaries.filter((organization) => !organization.archivedAt).length,
+    archivedCount: summaries.filter((organization) => organization.archivedAt).length,
+    tab: normalizedTab,
     timeRange: normalizedRange,
     query: normalizedQuery
   };
@@ -945,7 +1074,8 @@ export async function loadAdminOrganizationOverview({
     offersResult,
     bookingsResult,
     smsResult,
-    servicesResult
+    servicesResult,
+    billingTermsResult
   ] = await Promise.all([
     supabase
       .from("organization_members")
@@ -990,6 +1120,10 @@ export async function loadAdminOrganizationOverview({
     supabase
       .from("services")
       .select("id, organization_id, name")
+      .eq("organization_id", organizationId),
+    supabase
+      .from("platform_organization_billing_terms")
+      .select("*")
       .eq("organization_id", organizationId)
   ]);
 
@@ -1003,6 +1137,8 @@ export async function loadAdminOrganizationOverview({
   const bookingRequests = rowsOrEmpty(bookingsResult);
   const smsMessages = rowsOrEmpty(smsResult);
   const services = rowsOrEmpty(servicesResult);
+  const billingTermsRows = rowsOrEmpty(billingTermsResult);
+  const billingTerms = mapBillingTerms(billingTermsRows[0]);
   const owner = members.find(
     (member) => member.role === "owner" && member.status === "active"
   );
@@ -1052,9 +1188,16 @@ export async function loadAdminOrganizationOverview({
   const failedSms = outboundSms.filter((message) =>
     ["failed", "undelivered", "error"].includes(message.status)
   );
-  const estimatedSmsCostCents = estimateSmsCostCents({
-    outboundSmsCount: outboundSms.length
-  });
+  const smsCost = aggregateSmsCost(
+    outboundSms.map((message) => ({
+      id: message.id,
+      provider: message.provider,
+      direction: message.direction,
+      status: message.status,
+      segments: null
+    }))
+  );
+  const estimatedSmsCostCents = smsCost.estimatedSmsCostCents;
   const dailyBuckets = buildDailyBuckets({
     from: range.from,
     to: range.to
@@ -1170,9 +1313,34 @@ export async function loadAdminOrganizationOverview({
       .filter((booking) => ["confirmed", "completed"].includes(booking.status))
       .map((booking) => booking.recovered_value_cents)
   );
-  const warnings = [
-    "Estimated SMS cost assumes one segment per outbound SMS because segment counts are not stored yet."
+  const filledSpotBookings = rangeBookings.filter((booking) =>
+    ["confirmed", "completed"].includes(booking.status)
+  );
+  const filledSpotBookingOfferIds = new Set(
+    filledSpotBookings
+      .map((booking) => booking.selected_offer_id)
+      .filter((id): id is string => Boolean(id))
+  );
+  const billingFilledSpots: FilledSpotForBilling[] = [
+    ...filledSpotBookings.map((booking) => ({
+      id: booking.id,
+      recoveredValueCents: booking.recovered_value_cents
+    })),
+    ...rangeOffers
+      .filter(
+        (offer) =>
+          offer.status === "selected" && !filledSpotBookingOfferIds.has(offer.id)
+      )
+      .map((offer) => ({
+        id: offer.id,
+        recoveredValueCents: null
+      }))
   ];
+  const billingFees = aggregateFilledSpotFees({
+    terms: billingTerms,
+    filledSpots: billingFilledSpots
+  });
+  const warnings = [...smsCost.warnings];
   const unknownOrUnlinkedReplies = inboundSms.filter(
     (message) => !message.opening_id && !message.appointment_id
   ).length;
@@ -1252,6 +1420,16 @@ export async function loadAdminOrganizationOverview({
         filledSpots
       }),
       recoveredValueCents
+    },
+    billing: {
+      terms: billingTerms,
+      notes: billingTermsRows[0]?.notes ?? null,
+      filledSpotsInRange: billingFilledSpots.length,
+      filledSpotFeesInRangeCents: billingFees.totalFeeCents,
+      estimatedSmsCostInRangeCents: estimatedSmsCostCents,
+      estimatedContributionInRangeCents:
+        billingFees.totalFeeCents - estimatedSmsCostCents,
+      warnings: billingFees.warnings
     },
     charts: {
       filledSpotsByDay: dailyBuckets.map((date) => ({

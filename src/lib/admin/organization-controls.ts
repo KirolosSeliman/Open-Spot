@@ -16,6 +16,11 @@ export const defaultOrganizationAdminControls = {
   sms_pause_reason: null,
   disabled_at: null,
   disabled_reason: null,
+  archived_at: null,
+  archived_by_platform_admin_id: null,
+  archived_reason: null,
+  unarchived_at: null,
+  unarchived_by_platform_admin_id: null,
   last_health_check_at: null,
   last_health_check_status: null,
   last_health_check_payload: {}
@@ -133,6 +138,21 @@ export async function loadOrganizationAdminControlsPanel({
         adminRole: admin.role,
         accessLevel,
         action: "organization.reactivate"
+      }),
+      canArchive: canPerformPlatformAdminAction({
+        adminRole: admin.role,
+        accessLevel,
+        action: "organization.archive"
+      }),
+      canUnarchive: canPerformPlatformAdminAction({
+        adminRole: admin.role,
+        accessLevel,
+        action: "organization.unarchive"
+      }),
+      canUpdateBillingTerms: canPerformPlatformAdminAction({
+        adminRole: admin.role,
+        accessLevel,
+        action: "organization.update_billing_terms"
       }),
       canEndManagerSessions: canPerformPlatformAdminAction({
         adminRole: admin.role,

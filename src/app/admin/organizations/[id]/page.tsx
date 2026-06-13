@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
 import {
+  archiveOrganizationAction,
   disableOrganizationAction,
   endOrganizationManagerSessionsAction,
   pauseOrganizationSmsAction,
@@ -10,6 +11,8 @@ import {
   resumeOrganizationSmsAction,
   runOrganizationHealthCheckAction,
   toggleOrganizationInternalTestAction,
+  unarchiveOrganizationAction,
+  updateOrganizationBillingTermsAction,
   updateOrganizationAdminNoteAction,
   updateOrganizationSupportStatusAction
 } from "@/lib/admin/actions";
@@ -298,6 +301,61 @@ export default async function AdminOrganizationDetailPage({
         </div>
       </Card>
 
+      <Card>
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <h2 className="text-lg font-black">Admin visibility</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+              Archiving hides this company from the active admin list. It does
+              not disable the merchant dashboard, block SMS, or delete data.
+            </p>
+            <dl className="mt-4 grid gap-2 text-sm">
+              <div>
+                <dt className="font-bold text-[var(--muted)]">Status</dt>
+                <dd>
+                  {controlsPanel.controls.archived_at ? "Archived" : "Active"}
+                </dd>
+              </div>
+              {controlsPanel.controls.archived_at ? (
+                <>
+                  <div>
+                    <dt className="font-bold text-[var(--muted)]">Archived at</dt>
+                    <dd>{formatDate(controlsPanel.controls.archived_at)}</dd>
+                  </div>
+                  <div>
+                    <dt className="font-bold text-[var(--muted)]">Reason</dt>
+                    <dd>{controlsPanel.controls.archived_reason ?? "No reason stored"}</dd>
+                  </div>
+                </>
+              ) : null}
+            </dl>
+          </div>
+          {controlsPanel.controls.archived_at ? (
+            <form action={unarchiveOrganizationAction}>
+              <input name="organizationId" type="hidden" value={overview.organization.id} />
+              <input name="returnTo" type="hidden" value={`/admin/organizations/${overview.organization.id}`} />
+              <button className="min-h-11 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black disabled:opacity-50" disabled={!controlsPanel.permissions.canUnarchive} type="submit">
+                Unarchive company
+              </button>
+            </form>
+          ) : (
+            <form action={archiveOrganizationAction} className="grid min-w-0 gap-2 sm:min-w-80">
+              <input name="organizationId" type="hidden" value={overview.organization.id} />
+              <input name="returnTo" type="hidden" value={`/admin/organizations/${overview.organization.id}`} />
+              <input
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm"
+                name="reason"
+                placeholder="Archive reason"
+                required
+              />
+              <button className="min-h-11 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black disabled:opacity-50" disabled={!controlsPanel.permissions.canArchive} type="submit">
+                Archive company
+              </button>
+            </form>
+          )}
+        </div>
+      </Card>
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Metric
           label="Spots filled"
@@ -334,6 +392,139 @@ export default async function AdminOrganizationDetailPage({
           value={numberFormatter.format(overview.kpis.pendingValidations)}
         />
       </div>
+
+      <Card>
+        <h2 className="text-lg font-black">Billing terms</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)]">
+          These terms are used for internal estimates only. They do not charge
+          the merchant automatically and are not invoices.
+        </p>
+        <form action={updateOrganizationBillingTermsAction} className="mt-5 grid gap-4 lg:grid-cols-2">
+          <input name="organizationId" type="hidden" value={overview.organization.id} />
+          <label className="grid gap-2 text-sm font-bold">
+            Monthly subscription
+            <input
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm"
+              defaultValue={(overview.billing.terms.monthlySubscriptionCents / 100).toFixed(2)}
+              disabled={!controlsPanel.permissions.canUpdateBillingTerms}
+              min="0"
+              name="monthlySubscription"
+              step="0.01"
+              type="number"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-bold">
+            Currency
+            <input
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm uppercase"
+              defaultValue={overview.billing.terms.currency}
+              disabled={!controlsPanel.permissions.canUpdateBillingTerms}
+              maxLength={3}
+              name="currency"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-bold">
+            Filled spot fee model
+            <select
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm font-bold"
+              defaultValue={overview.billing.terms.filledSpotFeeMode}
+              disabled={!controlsPanel.permissions.canUpdateBillingTerms}
+              name="filledSpotFeeMode"
+            >
+              <option value="none">None</option>
+              <option value="fixed">Fixed fee</option>
+              <option value="percentage">Percentage</option>
+              <option value="fixed_plus_percentage">Fixed + percentage</option>
+            </select>
+          </label>
+          <label className="grid gap-2 text-sm font-bold">
+            Fixed fee per filled spot
+            <input
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm"
+              defaultValue={(overview.billing.terms.filledSpotFixedFeeCents / 100).toFixed(2)}
+              disabled={!controlsPanel.permissions.canUpdateBillingTerms}
+              min="0"
+              name="fixedFee"
+              step="0.01"
+              type="number"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-bold">
+            Percentage fee
+            <input
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm"
+              defaultValue={(overview.billing.terms.filledSpotPercentageBps / 100).toString()}
+              disabled={!controlsPanel.permissions.canUpdateBillingTerms}
+              max="100"
+              min="0"
+              name="percentage"
+              step="0.01"
+              type="number"
+            />
+          </label>
+          <label className="grid gap-2 text-sm font-bold lg:col-span-2">
+            Notes
+            <textarea
+              className="min-h-24 rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm"
+              defaultValue={overview.billing.notes ?? ""}
+              disabled={!controlsPanel.permissions.canUpdateBillingTerms}
+              name="notes"
+              placeholder="Internal billing note"
+            />
+          </label>
+          <button className="min-h-11 w-fit rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:opacity-50" disabled={!controlsPanel.permissions.canUpdateBillingTerms} type="submit">
+            Save billing terms
+          </button>
+        </form>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {[
+            {
+              label: "Filled spots in range",
+              value: numberFormatter.format(overview.billing.filledSpotsInRange)
+            },
+            {
+              label: "Filled spot fees",
+              value: formatEstimatedSmsCost(
+                overview.billing.filledSpotFeesInRangeCents,
+                overview.billing.terms.currency
+              )
+            },
+            {
+              label: "Estimated SMS cost",
+              value: formatEstimatedSmsCost(
+                overview.billing.estimatedSmsCostInRangeCents,
+                overview.billing.terms.currency
+              )
+            },
+            {
+              label: "Monthly subscription",
+              value: formatEstimatedSmsCost(
+                overview.billing.terms.monthlySubscriptionCents,
+                overview.billing.terms.currency
+              )
+            },
+            {
+              label: "Estimated contribution",
+              value: formatEstimatedSmsCost(
+                overview.billing.estimatedContributionInRangeCents,
+                overview.billing.terms.currency
+              )
+            }
+          ].map((item) => (
+            <div className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4" key={item.label}>
+              <p className="text-xs font-bold text-[var(--muted)]">{item.label}</p>
+              <p className="mt-2 text-lg font-black">{item.value}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 grid gap-2">
+          {overview.billing.warnings.map((warning) => (
+            <p className="text-sm text-[var(--muted)]" key={warning}>
+              {warning}
+            </p>
+          ))}
+        </div>
+      </Card>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <SimpleBarChart

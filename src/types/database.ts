@@ -889,6 +889,11 @@ export type Database = {
           disabled_reason: string | null;
           reactivated_at: string | null;
           reactivated_by_platform_admin_id: string | null;
+          archived_at: string | null;
+          archived_by_platform_admin_id: string | null;
+          archived_reason: string | null;
+          unarchived_at: string | null;
+          unarchived_by_platform_admin_id: string | null;
           last_health_check_at: string | null;
           last_health_check_status: "healthy" | "warning" | "blocked" | "unknown" | null;
           last_health_check_payload: Json;
@@ -911,6 +916,11 @@ export type Database = {
           disabled_reason?: string | null;
           reactivated_at?: string | null;
           reactivated_by_platform_admin_id?: string | null;
+          archived_at?: string | null;
+          archived_by_platform_admin_id?: string | null;
+          archived_reason?: string | null;
+          unarchived_at?: string | null;
+          unarchived_by_platform_admin_id?: string | null;
           last_health_check_at?: string | null;
           last_health_check_status?: "healthy" | "warning" | "blocked" | "unknown" | null;
           last_health_check_payload?: Json;
@@ -933,9 +943,53 @@ export type Database = {
           disabled_reason?: string | null;
           reactivated_at?: string | null;
           reactivated_by_platform_admin_id?: string | null;
+          archived_at?: string | null;
+          archived_by_platform_admin_id?: string | null;
+          archived_reason?: string | null;
+          unarchived_at?: string | null;
+          unarchived_by_platform_admin_id?: string | null;
           last_health_check_at?: string | null;
           last_health_check_status?: "healthy" | "warning" | "blocked" | "unknown" | null;
           last_health_check_payload?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      platform_organization_billing_terms: {
+        Row: {
+          organization_id: string;
+          currency: string;
+          monthly_subscription_cents: number;
+          filled_spot_fee_mode: "none" | "fixed" | "percentage" | "fixed_plus_percentage";
+          filled_spot_fixed_fee_cents: number;
+          filled_spot_percentage_bps: number;
+          notes: string | null;
+          updated_by_platform_admin_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          currency?: string;
+          monthly_subscription_cents?: number;
+          filled_spot_fee_mode?: "none" | "fixed" | "percentage" | "fixed_plus_percentage";
+          filled_spot_fixed_fee_cents?: number;
+          filled_spot_percentage_bps?: number;
+          notes?: string | null;
+          updated_by_platform_admin_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          organization_id?: string;
+          currency?: string;
+          monthly_subscription_cents?: number;
+          filled_spot_fee_mode?: "none" | "fixed" | "percentage" | "fixed_plus_percentage";
+          filled_spot_fixed_fee_cents?: number;
+          filled_spot_percentage_bps?: number;
+          notes?: string | null;
+          updated_by_platform_admin_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
