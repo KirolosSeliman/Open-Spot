@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { signOutAction } from "@/lib/auth/actions";
 import type { OrganizationWorkspace } from "@/lib/organization/current";
 import { cn } from "@/lib/utils/cn";
 
@@ -97,6 +98,14 @@ export function DashboardShell({
             <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
               {workspaceNote}
             </p>
+            <form action={signOutAction} className="mt-4">
+              <button
+                className="w-full rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-black text-[var(--foreground)] transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                type="submit"
+              >
+                Déconnexion
+              </button>
+            </form>
           </div>
         </aside>
 
@@ -115,6 +124,14 @@ export function DashboardShell({
               >
                 Nouvelle
               </Link>
+              <form action={signOutAction}>
+                <button
+                  className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)]"
+                  type="submit"
+                >
+                  Déconnexion
+                </button>
+              </form>
             </div>
           </header>
           <main className="mx-auto w-full max-w-6xl px-2 py-6 sm:px-4 lg:px-0 lg:py-8">

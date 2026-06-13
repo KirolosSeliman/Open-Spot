@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
@@ -101,8 +102,13 @@ export async function signUpAction(formData: FormData) {
 export async function signOutAction() {
   if (isSupabaseConfigured()) {
     const supabase = await createSupabaseServerClient();
-    await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Supabase sign-out failed:", error.message);
+    }
   }
 
+  revalidatePath("/", "layout");
   redirect("/sign-in");
 }

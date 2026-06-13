@@ -1,8 +1,10 @@
+import { redirect } from "next/navigation";
+
 import { PageShell } from "@/components/layout/page-shell";
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { Card } from "@/components/ui/card";
+import { signOutAction } from "@/lib/auth/actions";
 import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
-import { redirect } from "next/navigation";
 
 const adminCards = [
   {
@@ -56,6 +58,14 @@ export default async function AdminPage() {
               <p className="text-sm leading-6 text-[var(--muted)]">
                 {access.message}
               </p>
+              <form action={signOutAction} className="mt-5">
+                <button
+                  className="rounded-full border border-[var(--line)] bg-white px-5 py-3 text-sm font-black text-[var(--foreground)] transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                  type="submit"
+                >
+                  Déconnexion
+                </button>
+              </form>
             </Card>
           </>
         ) : (
@@ -75,6 +85,14 @@ export default async function AdminPage() {
               >
                 Retour au dashboard commerce
               </a>
+              <form action={signOutAction}>
+                <button
+                  className="min-h-11 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--foreground)] transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                  type="submit"
+                >
+                  Déconnexion
+                </button>
+              </form>
             </div>
             <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {adminCards.map((card) => (
