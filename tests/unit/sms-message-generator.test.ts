@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
+import {
+  generateConsentRequestSmsMessage,
+  generateOpeningSmsMessage
+} from "@/lib/sms/message-generator";
 
 describe("generateOpeningSmsMessage", () => {
   it("generates a French message without an offer", () => {
@@ -110,5 +113,37 @@ describe("generateOpeningSmsMessage", () => {
     expect(message.characterCount).toBe([...message.body].length);
     expect(message.estimatedSegments).toBeGreaterThan(1);
     expect(message.warnings).toContain("message_exceeds_single_segment");
+  });
+});
+
+describe("generateConsentRequestSmsMessage", () => {
+  it("generates a French consent request with compliance copy", () => {
+    const message = generateConsentRequestSmsMessage({
+      businessName: "Salon Demo",
+      customerFirstName: "Maya",
+      language: "fr"
+    });
+
+    expect(message.body).toContain("Bonjour Maya");
+    expect(message.body).toContain("Salon Demo");
+    expect(message.body).toContain("OUI");
+    expect(message.body).toContain("STOP");
+    expect(message.body).toContain("frais de messagerie");
+    expect(message.body).not.toMatch(/Vistaire/i);
+  });
+
+  it("generates an English consent request with compliance copy", () => {
+    const message = generateConsentRequestSmsMessage({
+      businessName: "Demo Salon",
+      customerFirstName: null,
+      language: "en"
+    });
+
+    expect(message.body).toContain("Hi,");
+    expect(message.body).toContain("Demo Salon");
+    expect(message.body).toContain("YES");
+    expect(message.body).toContain("STOP");
+    expect(message.body).toContain("Message and data rates");
+    expect(message.body).not.toMatch(/Vistaire/i);
   });
 });

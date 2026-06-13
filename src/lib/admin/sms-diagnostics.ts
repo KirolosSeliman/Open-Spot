@@ -33,7 +33,7 @@ export type AdminSmsDiagnosticRow = {
   organizationId: string;
   organizationName: string;
   direction: string;
-  context: "opening" | "appointment" | "unlinked";
+  context: "opening" | "appointment" | "consent" | "unlinked";
   customerName: string | null;
   phoneMasked: string;
   provider: string;
@@ -54,7 +54,15 @@ function normalizeDirection(value: string | undefined) {
   return value === "outbound" || value === "inbound" ? value : "all";
 }
 
-function getSmsContext(row: { opening_id: string | null; appointment_id: string | null }) {
+function getSmsContext(row: {
+  opening_id: string | null;
+  appointment_id: string | null;
+  message_type?: string | null;
+}) {
+  if (row.message_type === "consent_request" || row.message_type === "consent_reply") {
+    return "consent" as const;
+  }
+
   if (row.opening_id) {
     return "opening" as const;
   }
@@ -128,7 +136,7 @@ export async function loadAdminSmsDiagnostics({
   let query = supabase
     .from("sms_messages")
     .select(
-      "id, organization_id, customer_id, opening_id, appointment_id, direction, provider, provider_message_id, from_number, to_number, body, status, error_code, error_message, status_callback_received_at, delivered_at, failed_at, created_at"
+      "id, organization_id, customer_id, opening_id, appointment_id, message_type, direction, provider, provider_message_id, from_number, to_number, body, status, error_code, error_message, status_callback_received_at, delivered_at, failed_at, created_at"
     )
     .in("organization_id", visibleOrganizationIds)
     .gte("created_at", filters.range.fromIso)
@@ -259,6 +267,7 @@ export async function loadAdminSmsDiagnostics({
           row.error,
           row.status,
           row.provider,
+          source?.message_type,
           row.bodyPreview
         ],
         filters.q

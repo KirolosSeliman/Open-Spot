@@ -1166,6 +1166,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      sms_consent_requests: {
+        Row: {
+          id: string;
+          organization_id: string;
+          customer_id: string;
+          status: string;
+          phone_e164: string;
+          language: string;
+          outbound_sms_message_id: string | null;
+          inbound_sms_message_id: string | null;
+          provider: string | null;
+          provider_message_id: string | null;
+          message_body: string;
+          sent_at: string | null;
+          responded_at: string | null;
+          accepted_at: string | null;
+          declined_at: string | null;
+          error_message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          customer_id: string;
+          status?: string;
+          phone_e164: string;
+          language?: string;
+          outbound_sms_message_id?: string | null;
+          inbound_sms_message_id?: string | null;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          message_body: string;
+          sent_at?: string | null;
+          responded_at?: string | null;
+          accepted_at?: string | null;
+          declined_at?: string | null;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          customer_id?: string;
+          status?: string;
+          phone_e164?: string;
+          language?: string;
+          outbound_sms_message_id?: string | null;
+          inbound_sms_message_id?: string | null;
+          provider?: string | null;
+          provider_message_id?: string | null;
+          message_body?: string;
+          sent_at?: string | null;
+          responded_at?: string | null;
+          accepted_at?: string | null;
+          declined_at?: string | null;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       sms_messages: {
         Row: {
           id: string;
@@ -1173,6 +1236,7 @@ export type Database = {
           customer_id: string | null;
           opening_id: string | null;
           appointment_id: string | null;
+          message_type: string | null;
           direction: Database["public"]["Enums"]["sms_direction"];
           provider: string;
           provider_message_id: string | null;
@@ -1194,6 +1258,7 @@ export type Database = {
           customer_id?: string | null;
           opening_id?: string | null;
           appointment_id?: string | null;
+          message_type?: string | null;
           direction: Database["public"]["Enums"]["sms_direction"];
           provider: string;
           provider_message_id?: string | null;
@@ -1215,6 +1280,7 @@ export type Database = {
           customer_id?: string | null;
           opening_id?: string | null;
           appointment_id?: string | null;
+          message_type?: string | null;
           direction?: Database["public"]["Enums"]["sms_direction"];
           provider?: string;
           provider_message_id?: string | null;

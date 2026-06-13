@@ -133,6 +133,7 @@ export type OpeningResponsesFilters = {
 
 export type CustomerWithConsent = CustomerRow & {
   consentStatus: ConsentRow["status"] | "missing";
+  latestConsentRequestStatus?: string | null;
 };
 
 export type CustomerEditData = CustomerRow & {
@@ -496,7 +497,7 @@ export async function loadCustomersWithConsent(): Promise<CustomerWithConsent[]>
   }
 
   const supabase = await createSupabaseServerClient();
-  const [customersResult, consentsResult] = await Promise.all([
+  const [customersResult, consentsResult, consentRequestsResult] = await Promise.all([
     supabase
       .from("customers")
       .select("*")
@@ -505,7 +506,12 @@ export async function loadCustomersWithConsent(): Promise<CustomerWithConsent[]>
     supabase
       .from("sms_consents")
       .select("*")
+      .eq("organization_id", organizationId),
+    supabase
+      .from("sms_consent_requests")
+      .select("customer_id, status, created_at")
       .eq("organization_id", organizationId)
+      .order("created_at", { ascending: false })
   ]);
 
   if (customersResult.error) {
@@ -516,13 +522,26 @@ export async function loadCustomersWithConsent(): Promise<CustomerWithConsent[]>
     throw new Error(consentsResult.error.message);
   }
 
+  if (consentRequestsResult.error) {
+    throw new Error(consentRequestsResult.error.message);
+  }
+
   const consentByCustomer = new Map(
     (consentsResult.data ?? []).map((consent) => [consent.customer_id, consent])
   );
+  const latestConsentRequestByCustomer = new Map<string, string>();
+
+  for (const request of consentRequestsResult.data ?? []) {
+    if (!latestConsentRequestByCustomer.has(request.customer_id)) {
+      latestConsentRequestByCustomer.set(request.customer_id, request.status);
+    }
+  }
 
   return (customersResult.data ?? []).map((customer) => ({
     ...customer,
-    consentStatus: consentByCustomer.get(customer.id)?.status ?? "missing"
+    consentStatus: consentByCustomer.get(customer.id)?.status ?? "missing",
+    latestConsentRequestStatus:
+      latestConsentRequestByCustomer.get(customer.id) ?? null
   }));
 }
 

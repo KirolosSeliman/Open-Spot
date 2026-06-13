@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { recordManagerModeDashboardAction } from "@/lib/admin/manager-mode";
-import { requireOrganizationSmsNotPaused } from "@/lib/admin/organization-controls";
+import {
+  isOrganizationSmsPaused,
+  requireOrganizationSmsNotPaused
+} from "@/lib/admin/organization-controls";
 import {
   buildAppointmentCreateInput,
   buildAppointmentUpdateInput,
@@ -24,6 +27,7 @@ import {
 import { calculateCommissionEstimate } from "@/lib/openings/commission";
 import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
+import { sendConsentRequestSms } from "@/lib/sms/consent-request";
 import { createSmsProvider } from "@/lib/sms/factory";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
 import { checkSmsDeliveryPersistenceReadiness } from "@/lib/sms/persistence-readiness";
@@ -51,6 +55,14 @@ async function requireReadyOrganization({
 
 function redirectWithError(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
+}
+
+function redirectWithNotice(path: string, message: string): never {
+  redirect(`${path}?notice=${encodeURIComponent(message)}`);
+}
+
+function redirectWithWarning(path: string, message: string): never {
+  redirect(`${path}?warning=${encodeURIComponent(message)}`);
 }
 
 const genericClientSaveError = "Unable to save client. Please try again.";
@@ -459,9 +471,57 @@ export async function createCustomerAction(formData: FormData) {
     }
   }
 
+  let consentRequestMessage: string | null = null;
+  let consentRequestWarning: string | null = null;
+
+  if (input.value.consentStatus === "needs_consent") {
+    try {
+      if (await isOrganizationSmsPaused(organization.id)) {
+        consentRequestWarning =
+          "Client added, but consent request SMS was not sent because SMS sending is paused for this organization.";
+      } else {
+        const consentRequestResult = await sendConsentRequestSms({
+          supabase,
+          provider: createSmsProvider(),
+          organization: {
+            id: organization.id,
+            name: organization.name,
+            defaultLanguage: organization.defaultLanguage
+          },
+          customer: {
+            id: customer.id,
+            fullName: input.value.fullName,
+            phoneE164: input.value.phoneE164,
+            preferredLanguage: input.value.preferredLanguage,
+            consentStatus: input.value.consentStatus
+          }
+        });
+
+        if (consentRequestResult.status === "failed") {
+          consentRequestWarning = consentRequestResult.message;
+        } else if (consentRequestResult.status === "skipped") {
+          consentRequestWarning = consentRequestResult.message;
+        } else {
+          consentRequestMessage = consentRequestResult.message;
+        }
+      }
+    } catch (error) {
+      consentRequestWarning = `Client added, but consent request SMS failed: ${getSafeProviderErrorMessage(error)}`;
+    }
+  }
+
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/clients");
   revalidatePath("/dashboard/waitlist");
+
+  if (consentRequestWarning) {
+    redirectWithWarning("/dashboard/clients", consentRequestWarning);
+  }
+
+  if (consentRequestMessage) {
+    redirectWithNotice("/dashboard/clients", consentRequestMessage);
+  }
+
   redirect("/dashboard/clients");
 }
 
@@ -1208,6 +1268,7 @@ async function sendOpeningSmsAlerts({
         organization_id: organization.id,
         customer_id: offer.customer_id,
         opening_id: openingId,
+        message_type: "opening_alert",
         direction: "outbound" as const,
         provider: sendResult.provider,
         provider_message_id: sendResult.providerMessageId,

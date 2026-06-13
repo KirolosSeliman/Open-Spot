@@ -124,6 +124,7 @@ export default async function AdminSmsPage({
               <option value="all">All</option>
               <option value="opening">Opening</option>
               <option value="appointment">Appointment</option>
+              <option value="consent">Consent</option>
               <option value="unlinked">Unlinked</option>
             </select>
           </label>

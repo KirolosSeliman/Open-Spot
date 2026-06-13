@@ -20,6 +20,12 @@ export type GeneratedSmsMessage = {
   warnings: string[];
 };
 
+export type ConsentRequestSmsInput = {
+  businessName: string;
+  customerFirstName: string | null;
+  language: SmsLanguage;
+};
+
 const SMS_SEGMENT_LENGTH = 160;
 
 function cleanText(value: string | null | undefined) {
@@ -109,6 +115,48 @@ export function generateOpeningSmsMessage(
     language === "fr"
       ? `${greeting}${businessName}: place disponible pour ${serviceName} le ${dateLabel} a ${timeLabel}. ${offerSentence}Repondez ${replyKeyword} si interesse. Confirmation manuelle.${includeOptOut ? " STOP pour arret." : ""}`
       : `${greeting}${businessName}: spot available for ${serviceName} on ${dateLabel} at ${timeLabel}. ${offerSentence}Reply ${replyKeyword} if interested. Manual confirmation.${includeOptOut ? " Reply STOP to opt out." : ""}`;
+  const characterCount = [...body].length;
+  const estimatedSegments = estimateSmsSegments(characterCount);
+
+  if (estimatedSegments > 1) {
+    warnings.push("message_exceeds_single_segment");
+  }
+
+  return {
+    body,
+    language,
+    characterCount,
+    estimatedSegments,
+    warnings
+  };
+}
+
+export function generateConsentRequestSmsMessage(
+  input: ConsentRequestSmsInput
+): GeneratedSmsMessage {
+  const language = input.language === "fr" ? "fr" : "en";
+  const warnings: string[] = [];
+  const cleanedBusinessName = cleanText(input.businessName);
+  const businessName =
+    cleanedBusinessName || (language === "fr" ? "Votre commerce" : "Your business");
+  const firstName = cleanText(input.customerFirstName);
+  const greeting =
+    language === "fr"
+      ? firstName
+        ? `Bonjour ${firstName}, `
+        : "Bonjour, "
+      : firstName
+        ? `Hi ${firstName}, `
+        : "Hi, ";
+
+  if (!cleanedBusinessName) {
+    warnings.push("missing_business_name");
+  }
+
+  const body =
+    language === "fr"
+      ? `${greeting}${businessName} utilise 2e Chance RDV pour envoyer des alertes de creneaux disponibles par SMS. Repondez OUI pour accepter. STOP pour refuser. Des frais de messagerie peuvent s'appliquer.`
+      : `${greeting}${businessName} uses 2e Chance RDV to send SMS alerts for available appointment spots. Reply YES to opt in. Reply STOP to decline. Message and data rates may apply.`;
   const characterCount = [...body].length;
   const estimatedSegments = estimateSmsSegments(characterCount);
 

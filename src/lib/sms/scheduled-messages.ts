@@ -296,6 +296,11 @@ async function processOneScheduledMessage({
       customer_id: claimed.customer_id,
       opening_id: claimed.opening_id,
       appointment_id: claimed.appointment_id,
+      message_type: claimed.appointment_id
+        ? "appointment_reminder"
+        : claimed.opening_id
+          ? "opening_alert"
+          : "system",
       direction: "outbound",
       provider: sendResult.provider,
       provider_message_id: sendResult.providerMessageId,

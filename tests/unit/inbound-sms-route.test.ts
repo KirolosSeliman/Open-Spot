@@ -88,7 +88,7 @@ describe("inbound SMS persistence route", () => {
     expect(inboundHandler).toContain('.eq("from_number", toNumber)');
     expect(inboundHandler).toContain('.not("customer_id", "is", null)');
     expect(inboundHandler).toContain(
-      '.or("opening_id.not.is.null,appointment_id.not.is.null")'
+      '.or("opening_id.not.is.null,appointment_id.not.is.null,message_type.eq.consent_request")'
     );
   });
 

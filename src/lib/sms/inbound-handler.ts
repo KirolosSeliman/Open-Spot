@@ -15,6 +15,31 @@ import {
 } from "@/lib/sms/simulator";
 import type { SmsProviderClient } from "@/lib/sms/provider";
 
+type InboundContext = {
+  id: string | null;
+  organization_id: string | null;
+  customer_id: string | null;
+  opening_id: string | null;
+  appointment_id: string | null;
+  message_type: string | null;
+};
+
+function getInboundContextType(context: InboundContext | null) {
+  if (context?.message_type === "consent_request") {
+    return "consent" as const;
+  }
+
+  if (context?.appointment_id) {
+    return "appointment" as const;
+  }
+
+  if (context?.opening_id) {
+    return "waitlist" as const;
+  }
+
+  return "unknown" as const;
+}
+
 export async function handleInboundSmsRequest(
   request: Request,
   provider: SmsProviderClient = createSmsProvider()
@@ -91,7 +116,7 @@ export async function handleInboundSmsRequest(
   if (inbound.providerMessageId) {
     const { data: existingInbound, error: existingInboundError } = await supabase
       .from("sms_messages")
-      .select("id, organization_id, customer_id, opening_id, appointment_id, body")
+      .select("id, organization_id, customer_id, opening_id, appointment_id, message_type, body")
       .eq("provider", providerName)
       .eq("direction", "inbound")
       .eq("provider_message_id", inbound.providerMessageId)
@@ -107,18 +132,24 @@ export async function handleInboundSmsRequest(
     if (existingInbound) {
       const existingClassification = classifyInboundSmsBody(
         existingInbound.body,
-        existingInbound.appointment_id
-          ? "appointment"
-          : existingInbound.opening_id
-            ? "waitlist"
-            : "unknown"
+        existingInbound.message_type === "consent_reply"
+          ? "consent"
+          : existingInbound.appointment_id
+            ? "appointment"
+            : existingInbound.opening_id
+              ? "waitlist"
+              : "unknown"
       );
+      const existingLinked =
+        existingInbound.opening_id ||
+        existingInbound.appointment_id ||
+        existingInbound.message_type === "consent_reply";
 
       await recordSmsWebhookEvent({
         provider: providerName,
         event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
         processing_status:
-          existingInbound.opening_id || existingInbound.appointment_id
+          existingLinked
             ? "received_linked"
             : "received_unlinked",
         organization_id: existingInbound.organization_id,
@@ -139,7 +170,7 @@ export async function handleInboundSmsRequest(
       return NextResponse.json({
         classification: existingClassification,
         status:
-          existingInbound.opening_id || existingInbound.appointment_id
+          existingLinked
             ? "received_linked"
             : "received_unlinked",
         idempotent: true,
@@ -154,13 +185,13 @@ export async function handleInboundSmsRequest(
 
   const { data: contextRows, error: contextError } = await supabase
     .from("sms_messages")
-    .select("organization_id, customer_id, opening_id, appointment_id")
+    .select("id, organization_id, customer_id, opening_id, appointment_id, message_type")
     .eq("provider", providerName)
     .eq("direction", "outbound")
     .eq("to_number", fromNumber)
     .eq("from_number", toNumber)
     .not("customer_id", "is", null)
-    .or("opening_id.not.is.null,appointment_id.not.is.null")
+    .or("opening_id.not.is.null,appointment_id.not.is.null,message_type.eq.consent_request")
     .order("created_at", { ascending: false })
     .limit(1);
 
@@ -172,10 +203,8 @@ export async function handleInboundSmsRequest(
   }
 
   const context = contextRows?.[0] ?? null;
-  const classification = classifyInboundSmsBody(
-    inbound.body,
-    context?.appointment_id ? "appointment" : context?.opening_id ? "waitlist" : "unknown"
-  );
+  const contextType = getInboundContextType(context);
+  const classification = classifyInboundSmsBody(inbound.body, contextType);
 
   if (!context?.organization_id || !context.customer_id) {
     await recordSmsWebhookEvent({
@@ -211,6 +240,7 @@ export async function handleInboundSmsRequest(
       customer_id: context.customer_id,
       opening_id: context.opening_id,
       appointment_id: context.appointment_id,
+      message_type: contextType === "consent" ? "consent_reply" : null,
       direction: "inbound",
       provider: providerName,
       provider_message_id: inbound.providerMessageId ?? null,
@@ -259,6 +289,25 @@ export async function handleInboundSmsRequest(
     }
   });
 
+  const activeConsentRequest =
+    contextType === "consent" && context.id
+      ? await supabase
+          .from("sms_consent_requests")
+          .select("id, status")
+          .eq("organization_id", context.organization_id)
+          .eq("customer_id", context.customer_id)
+          .eq("outbound_sms_message_id", context.id)
+          .in("status", ["pending", "sent"])
+          .maybeSingle()
+      : { data: null, error: null };
+
+  if (activeConsentRequest.error) {
+    return NextResponse.json(
+      { error: "Consent request lookup failed." },
+      { status: 500 }
+    );
+  }
+
   await recordSmsWebhookEvent({
     provider: providerName,
     event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
@@ -279,15 +328,34 @@ export async function handleInboundSmsRequest(
   if (classification === "opt_out") {
     const { error: consentError } = await supabase
       .from("sms_consents")
-      .update({
+      .upsert({
+        organization_id: context.organization_id,
+        customer_id: context.customer_id,
+        phone_e164: fromNumber,
         status: "opted_out",
+        source: "sms_opt_out_reply",
+        consent_text: null,
+        consented_at: null,
         unsubscribed_at: now
-      })
-      .eq("organization_id", context.organization_id)
-      .eq("customer_id", context.customer_id);
+      }, {
+        onConflict: "organization_id,customer_id"
+      });
 
     if (consentError) {
       return NextResponse.json({ error: "Consent update failed." }, { status: 500 });
+    }
+
+    if (contextType === "consent" && activeConsentRequest.data) {
+      await supabase
+        .from("sms_consent_requests")
+        .update({
+          status: "declined",
+          inbound_sms_message_id: inboundMessage.id,
+          responded_at: now,
+          declined_at: now
+        })
+        .eq("organization_id", context.organization_id)
+        .eq("id", activeConsentRequest.data.id);
     }
 
     await supabase.from("audit_logs").insert({
@@ -304,11 +372,121 @@ export async function handleInboundSmsRequest(
     return NextResponse.json({
       classification,
       status: "received_linked",
-      action: "opted_out",
+      action: contextType === "consent" ? "consent_opted_out" : "opted_out",
       organizationId: context.organization_id,
       customerId: context.customer_id,
       openingId: context.opening_id,
       appointmentId: context.appointment_id,
+      messageId: inboundMessage.id
+    });
+  }
+
+  if (contextType === "consent" && classification === "consent_opt_in") {
+    const { error: consentError } = await supabase.from("sms_consents").upsert(
+      {
+        organization_id: context.organization_id,
+        customer_id: context.customer_id,
+        phone_e164: fromNumber,
+        status: "opted_in",
+        source: "sms_consent_request_reply",
+        consent_text: inbound.body.trim().slice(0, 240),
+        consented_at: now,
+        unsubscribed_at: null
+      },
+      {
+        onConflict: "organization_id,customer_id"
+      }
+    );
+
+    if (consentError) {
+      return NextResponse.json({ error: "Consent update failed." }, { status: 500 });
+    }
+
+    if (activeConsentRequest.data) {
+      const { error: requestUpdateError } = await supabase
+        .from("sms_consent_requests")
+        .update({
+          status: "accepted",
+          inbound_sms_message_id: inboundMessage.id,
+          responded_at: now,
+          accepted_at: now
+        })
+        .eq("organization_id", context.organization_id)
+        .eq("id", activeConsentRequest.data.id);
+
+      if (requestUpdateError) {
+        return NextResponse.json(
+          { error: "Consent request update failed." },
+          { status: 500 }
+        );
+      }
+    }
+
+    await supabase.from("audit_logs").insert({
+      organization_id: context.organization_id,
+      action: "sms.consent.opted_in_by_reply",
+      entity_type: "customers",
+      entity_id: context.customer_id,
+      metadata: {
+        consent_request_id: activeConsentRequest.data?.id ?? null,
+        sms_message_id: inboundMessage.id,
+        phone_last4: fromNumber.slice(-4)
+      }
+    });
+
+    return NextResponse.json({
+      classification,
+      status: "received_linked",
+      action: "consent_opted_in",
+      organizationId: context.organization_id,
+      customerId: context.customer_id,
+      openingId: null,
+      appointmentId: null,
+      messageId: inboundMessage.id
+    });
+  }
+
+  if (contextType === "consent" && classification === "consent_decline") {
+    if (activeConsentRequest.data) {
+      const { error: requestUpdateError } = await supabase
+        .from("sms_consent_requests")
+        .update({
+          status: "declined",
+          inbound_sms_message_id: inboundMessage.id,
+          responded_at: now,
+          declined_at: now
+        })
+        .eq("organization_id", context.organization_id)
+        .eq("id", activeConsentRequest.data.id);
+
+      if (requestUpdateError) {
+        return NextResponse.json(
+          { error: "Consent request update failed." },
+          { status: 500 }
+        );
+      }
+    }
+
+    await supabase.from("audit_logs").insert({
+      organization_id: context.organization_id,
+      action: "sms.consent.declined_by_reply",
+      entity_type: "customers",
+      entity_id: context.customer_id,
+      metadata: {
+        consent_request_id: activeConsentRequest.data?.id ?? null,
+        sms_message_id: inboundMessage.id,
+        phone_last4: fromNumber.slice(-4)
+      }
+    });
+
+    return NextResponse.json({
+      classification,
+      status: "received_linked",
+      action: "consent_declined",
+      organizationId: context.organization_id,
+      customerId: context.customer_id,
+      openingId: null,
+      appointmentId: null,
       messageId: inboundMessage.id
     });
   }
