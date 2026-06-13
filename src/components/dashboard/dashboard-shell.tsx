@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { exitManagerModeAction } from "@/lib/admin/manager-mode-actions";
 import { signOutAction } from "@/lib/auth/actions";
 import type { OrganizationWorkspace } from "@/lib/organization/current";
 import { cn } from "@/lib/utils/cn";
@@ -52,9 +53,22 @@ export function DashboardShell({
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const desktopNavItems = isPlatformAdmin
-    ? [...desktopNav, { href: "/admin", label: "Admin" }]
+  const isAdminManagerMode =
+    workspace.status === "ready" && Boolean(workspace.adminManagerMode);
+  const scopedDesktopNav = isAdminManagerMode
+    ? desktopNav.filter(
+        (item) =>
+          !["/dashboard/billing", "/dashboard/team", "/dashboard/settings"].includes(
+            item.href
+          )
+      )
     : desktopNav;
+  const desktopNavItems = isPlatformAdmin
+    ? [...scopedDesktopNav, { href: "/admin", label: "Admin" }]
+    : scopedDesktopNav;
+  const mobileNavItems = isAdminManagerMode
+    ? mobileNav.filter((item) => item.href !== "/dashboard/settings")
+    : mobileNav;
   const businessName =
     workspace.status === "ready" ? workspace.organization.name : "Espace aperçu";
   const workspaceNote =
@@ -134,6 +148,34 @@ export function DashboardShell({
               </form>
             </div>
           </header>
+          {workspace.status === "ready" && workspace.adminManagerMode ? (
+            <div className="mb-4 rounded-2xl border border-[#d9b35f] bg-[#fff7df] p-4 text-sm shadow-sm">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <p className="font-bold text-[#5b4310]">
+                  Admin manager mode: viewing{" "}
+                  {workspace.adminManagerMode.organizationName} as manager. Actions
+                  are audited. Session expires at{" "}
+                  {new Date(workspace.adminManagerMode.expiresAt).toLocaleString()}.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <form action={exitManagerModeAction}>
+                    <button
+                      className="rounded-full bg-[#5b4310] px-4 py-2 text-xs font-black text-white"
+                      type="submit"
+                    >
+                      Exit manager mode
+                    </button>
+                  </form>
+                  <Link
+                    className="rounded-full border border-[#d9b35f] bg-white px-4 py-2 text-xs font-black text-[#5b4310]"
+                    href={`/admin/organizations/${workspace.adminManagerMode.organizationId}`}
+                  >
+                    Back to admin company
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ) : null}
           <main className="mx-auto w-full max-w-6xl px-2 py-6 sm:px-4 lg:px-0 lg:py-8">
             {children}
           </main>
@@ -144,7 +186,7 @@ export function DashboardShell({
         aria-label="Navigation mobile dashboard"
         className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-[var(--line)] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.18)] backdrop-blur lg:hidden"
       >
-        {mobileNav.map((item) => (
+        {mobileNavItems.map((item) => (
           <Link
             aria-current={
               isActiveDashboardRoute(pathname, item.href) ? "page" : undefined

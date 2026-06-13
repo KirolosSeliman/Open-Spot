@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { recordManagerModeDashboardAction } from "@/lib/admin/manager-mode";
 import {
   buildAppointmentCreateInput,
   buildAppointmentUpdateInput,
@@ -627,6 +628,15 @@ export async function updateCustomerAction(formData: FormData) {
     });
   }
 
+  await recordManagerModeDashboardAction({
+    action: "admin.manager_mode.customer.updated",
+    entityType: "customers",
+    entityId: input.value.customerId,
+    metadata: {
+      phone_changed: existingCustomer.phone_e164 !== input.value.phoneE164
+    }
+  });
+
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/clients");
   revalidatePath("/dashboard/waitlist");
@@ -930,6 +940,17 @@ export async function updateAppointmentAction(formData: FormData) {
         consentStatus: consent?.status
       });
     }
+
+    await recordManagerModeDashboardAction({
+      action: "admin.manager_mode.appointment.updated",
+      entityType: "appointments",
+      entityId: input.value.appointmentId,
+      metadata: {
+        status: input.value.status,
+        reminder_requested: input.value.sendReminder,
+        confirmation_status: confirmationStatus
+      }
+    });
   } catch (error) {
     redirectWithError(
       "/dashboard/appointments",
@@ -1328,6 +1349,25 @@ export async function createOpeningAction(formData: FormData) {
     }
 
     createdOpeningId = openingId;
+    await recordManagerModeDashboardAction({
+      action: "admin.manager_mode.opening.created",
+      entityType: "openings",
+      entityId: openingId,
+      metadata: {
+        service_id: input.value.serviceId,
+        sms_sent: smsResult.sent,
+        sms_failed: smsResult.failed
+      }
+    });
+    await recordManagerModeDashboardAction({
+      action: "admin.manager_mode.sms_alert.sent",
+      entityType: "openings",
+      entityId: openingId,
+      metadata: {
+        sent_count: smsResult.sent,
+        failed_count: smsResult.failed
+      }
+    });
     revalidatePath("/dashboard");
     revalidatePath("/dashboard/cancellations");
     revalidatePath("/dashboard/responses");
@@ -1365,6 +1405,16 @@ export async function sendOpeningAlertsAction(formData: FormData) {
     if (result.failureMessage) {
       redirectWithError(`/dashboard/cancellations/${openingId}`, result.failureMessage);
     }
+
+    await recordManagerModeDashboardAction({
+      action: "admin.manager_mode.sms_alert.sent",
+      entityType: "openings",
+      entityId: openingId,
+      metadata: {
+        sent_count: result.sent,
+        failed_count: result.failed
+      }
+    });
   } catch (error) {
     redirectWithError(
       `/dashboard/cancellations/${openingId}`,
@@ -1405,6 +1455,17 @@ export async function validateOpeningOfferAction(formData: FormData) {
   if (error) {
     redirectWithError(`/dashboard/cancellations/${openingId}`, error.message);
   }
+
+  await recordManagerModeDashboardAction({
+    action: "admin.manager_mode.opening_offer.validated",
+    entityType: "opening_offers",
+    entityId: offerId,
+    metadata: {
+      opening_id: openingId,
+      recovered_value_cents: recoveredValueCents,
+      commission_cents: commissionCents
+    }
+  });
 
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/cancellations/${openingId}`);

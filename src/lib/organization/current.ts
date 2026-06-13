@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
+import { getActivePlatformAdminManagerMode } from "@/lib/admin/manager-mode";
 import { isSupabaseConfigured } from "@/lib/env/config";
 import { decideWorkspaceRedirect } from "@/lib/organization/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -32,6 +33,15 @@ export type OrganizationWorkspace =
       user: {
         id: string;
         email?: string;
+      };
+      adminManagerMode?: {
+        sessionId: string;
+        adminEmail: string;
+        organizationId: string;
+        organizationName: string;
+        actingRole: "manager";
+        expiresAt: string;
+        reason: string;
       };
       counts: {
         services: number;
@@ -71,6 +81,63 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
   }
 
   const currentUser = user;
+  const managerMode = await getActivePlatformAdminManagerMode();
+
+  if (managerMode) {
+    const { data: organization, error: organizationError } = await supabase
+      .from("organizations")
+      .select("id, name, slug, email, phone, timezone, default_language")
+      .eq("id", managerMode.organizationId)
+      .single();
+
+    if (organizationError || !organization) {
+      throw new Error(
+        organizationError?.message ?? "Manager mode organization not found."
+      );
+    }
+
+    const [servicesResult, customersResult] = await Promise.all([
+      supabase
+        .from("services")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", managerMode.organizationId),
+      supabase
+        .from("customers")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", managerMode.organizationId)
+    ]);
+
+    return {
+      status: "ready",
+      user: {
+        id: currentUser.id,
+        email: currentUser.email
+      },
+      organization: {
+        id: organization.id,
+        name: organization.name,
+        slug: organization.slug,
+        email: organization.email,
+        phone: organization.phone,
+        timezone: organization.timezone,
+        defaultLanguage: organization.default_language,
+        role: "manager"
+      },
+      adminManagerMode: {
+        sessionId: managerMode.sessionId,
+        adminEmail: managerMode.adminEmail,
+        organizationId: managerMode.organizationId,
+        organizationName: managerMode.organizationName,
+        actingRole: "manager",
+        expiresAt: managerMode.expiresAt,
+        reason: managerMode.reason
+      },
+      counts: {
+        services: servicesResult.count ?? 0,
+        customers: customersResult.count ?? 0
+      }
+    };
+  }
 
   const { data: memberships, error: membershipError } = await supabase
     .from("organization_members")

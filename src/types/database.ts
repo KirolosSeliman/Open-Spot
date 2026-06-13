@@ -683,6 +683,51 @@ export type Database = {
         };
         Relationships: [];
       };
+      platform_admin_sessions: {
+        Row: {
+          id: string;
+          platform_admin_id: string;
+          admin_user_id: string;
+          admin_email: string;
+          organization_id: string;
+          acting_role: "manager";
+          reason: string;
+          status: "active" | "ended" | "expired";
+          started_at: string;
+          expires_at: string;
+          ended_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          platform_admin_id: string;
+          admin_user_id: string;
+          admin_email: string;
+          organization_id: string;
+          acting_role?: "manager";
+          reason: string;
+          status?: "active" | "ended" | "expired";
+          started_at?: string;
+          expires_at: string;
+          ended_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          platform_admin_id?: string;
+          admin_user_id?: string;
+          admin_email?: string;
+          organization_id?: string;
+          acting_role?: "manager";
+          reason?: string;
+          status?: "active" | "ended" | "expired";
+          started_at?: string;
+          expires_at?: string;
+          ended_at?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;

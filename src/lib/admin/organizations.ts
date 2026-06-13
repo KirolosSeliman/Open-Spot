@@ -4,6 +4,14 @@ import type {
   PlatformAdminRole
 } from "@/lib/auth/platform-admin";
 import { recordPlatformAdminAuditLog } from "@/lib/admin/audit";
+import type { AdminDateRange } from "@/lib/admin/date-range";
+import {
+  buildDailyBuckets,
+  calculateCostPerFilledSpotCents,
+  dateKey,
+  maskPhoneNumber
+} from "@/lib/admin/metrics";
+import { canOpenPlatformAdminManagerMode } from "@/lib/admin/manager-mode";
 import { estimateSmsCostCents } from "@/lib/admin/sms-cost";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import type { Database } from "@/types/database";
@@ -24,7 +32,7 @@ type ProfileRow = Pick<
 >;
 type CustomerRow = Pick<
   Database["public"]["Tables"]["customers"]["Row"],
-  "id" | "organization_id" | "created_at"
+  "id" | "organization_id" | "full_name" | "phone_e164" | "created_at"
 >;
 type ConsentRow = Pick<
   Database["public"]["Tables"]["sms_consents"]["Row"],
@@ -32,15 +40,41 @@ type ConsentRow = Pick<
 >;
 type OpeningRow = Pick<
   Database["public"]["Tables"]["openings"]["Row"],
-  "id" | "organization_id" | "status" | "created_at" | "updated_at"
+  | "id"
+  | "organization_id"
+  | "service_id"
+  | "title"
+  | "start_time"
+  | "status"
+  | "created_at"
+  | "updated_at"
 >;
 type OpeningOfferRow = Pick<
   Database["public"]["Tables"]["opening_offers"]["Row"],
-  "id" | "organization_id" | "opening_id" | "status" | "created_at" | "updated_at"
+  | "id"
+  | "organization_id"
+  | "opening_id"
+  | "customer_id"
+  | "status"
+  | "responded_at"
+  | "response_rank"
+  | "created_at"
+  | "updated_at"
 >;
 type SmsMessageRow = Pick<
   Database["public"]["Tables"]["sms_messages"]["Row"],
-  "id" | "organization_id" | "direction" | "status" | "created_at"
+  | "id"
+  | "organization_id"
+  | "opening_id"
+  | "appointment_id"
+  | "direction"
+  | "provider"
+  | "provider_message_id"
+  | "to_number"
+  | "status"
+  | "error_code"
+  | "error_message"
+  | "created_at"
 >;
 type AppointmentRow = Pick<
   Database["public"]["Tables"]["appointments"]["Row"],
@@ -91,6 +125,101 @@ export type AdminOverview = {
   outboundSmsCount: number;
   estimatedSmsCostCents: number;
   filledSpotsCount: number;
+};
+
+export type AdminOrganizationOverview = {
+  organization: {
+    id: string;
+    name: string;
+    slug: string | null;
+    status: string | null;
+    createdAt: string;
+    timezone: string | null;
+    defaultLanguage: string | null;
+    ownerEmail: string | null;
+    ownerName: string | null;
+  };
+  access: {
+    adminRole: PlatformAdminRole;
+    accessLevel: PlatformAdminAccessLevel | "super_admin";
+    canOpenManagerMode: boolean;
+  };
+  range: {
+    label: string;
+    fromIso: string;
+    toIso: string;
+    rangeKey: string;
+  };
+  kpis: {
+    customersTotal: number;
+    customersCreatedInRange: number;
+    optedInCustomers: number;
+    optedOutCustomers: number;
+    waitlistEntriesActive: number;
+    openingsCreated: number;
+    positiveReplies: number;
+    pendingValidations: number;
+    filledSpots: number;
+    outboundSms: number;
+    inboundSms: number;
+    deliveredSms: number;
+    failedSms: number;
+    unknownOrUnlinkedReplies: number;
+    estimatedSmsCostCents: number;
+    estimatedCostPerFilledSpotCents: number | null;
+    recoveredValueCents: number | null;
+  };
+  charts: {
+    filledSpotsByDay: Array<{ date: string; count: number }>;
+    smsCostByDay: Array<{
+      date: string;
+      estimatedCostCents: number;
+      outboundSms: number;
+    }>;
+    customerGrowthByDay: Array<{
+      date: string;
+      customersTotal: number;
+      optedInCustomers: number;
+    }>;
+    smsVolumeByDay: Array<{
+      date: string;
+      outbound: number;
+      inbound: number;
+      failed: number;
+    }>;
+  };
+  recent: {
+    openings: Array<{
+      id: string;
+      title: string;
+      serviceName: string | null;
+      startTime: string | null;
+      status: string;
+      positiveReplies: number;
+      pendingValidations: number;
+      filledSpots: number;
+      createdAt: string;
+    }>;
+    failedSms: Array<{
+      id: string;
+      provider: string;
+      providerMessageId: string | null;
+      toNumberMasked: string;
+      status: string;
+      errorCode: string | null;
+      errorMessage: string | null;
+      createdAt: string;
+    }>;
+    pendingValidations: Array<{
+      openingId: string;
+      openingTitle: string;
+      customerName: string;
+      customerPhoneMasked: string;
+      responseRank: number | null;
+      respondedAt: string | null;
+    }>;
+  };
+  warnings: string[];
 };
 
 type FilledSpotOpening = {
@@ -447,7 +576,7 @@ async function loadVisibleOrganizationData({
         .in("organization_id", organizationIds),
       supabase
         .from("customers")
-        .select("id, organization_id, created_at")
+        .select("id, organization_id, full_name, phone_e164, created_at")
         .in("organization_id", organizationIds),
       supabase
         .from("sms_consents")
@@ -455,15 +584,19 @@ async function loadVisibleOrganizationData({
         .in("organization_id", organizationIds),
       supabase
         .from("openings")
-        .select("id, organization_id, status, created_at, updated_at")
+        .select("id, organization_id, service_id, title, start_time, status, created_at, updated_at")
         .in("organization_id", organizationIds),
       supabase
         .from("opening_offers")
-        .select("id, organization_id, opening_id, status, created_at, updated_at")
+        .select(
+          "id, organization_id, opening_id, customer_id, status, responded_at, response_rank, created_at, updated_at"
+        )
         .in("organization_id", organizationIds),
       supabase
         .from("sms_messages")
-        .select("id, organization_id, direction, status, created_at")
+        .select(
+          "id, organization_id, opening_id, appointment_id, direction, provider, provider_message_id, to_number, status, error_code, error_message, created_at"
+        )
         .in("organization_id", organizationIds),
       supabase
         .from("appointments")
@@ -699,5 +832,460 @@ export async function loadAdminOrganizationDetail({
   return {
     organization,
     timeRange: result.timeRange
+  };
+}
+
+async function getAdminOrganizationAccessLevel({
+  admin,
+  organizationId
+}: {
+  admin: AuthorizedPlatformAdmin;
+  organizationId: string;
+}) {
+  const supabase = createSupabaseServiceClient();
+
+  if (!supabase) {
+    throw new Error("Admin service client is not configured.");
+  }
+
+  if (admin.role === "super_admin") {
+    return {
+      accessLevel: "super_admin" as const,
+      revokedAt: null
+    };
+  }
+
+  const { data, error } = await supabase
+    .from("platform_admin_organization_access")
+    .select("access_level, revoked_at")
+    .eq("platform_admin_id", admin.id)
+    .eq("organization_id", organizationId)
+    .is("revoked_at", null)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    accessLevel: data.access_level,
+    revokedAt: data.revoked_at
+  };
+}
+
+function inDateRange(value: string, range: AdminDateRange) {
+  const timestamp = Date.parse(value);
+  return timestamp >= range.from.getTime() && timestamp <= range.to.getTime();
+}
+
+function increment(map: Map<string, number>, key: string, by = 1) {
+  map.set(key, (map.get(key) ?? 0) + by);
+}
+
+function sumNullableValues(values: Array<number | null>) {
+  const numbers = values.filter((value): value is number => value !== null);
+
+  if (numbers.length === 0) {
+    return null;
+  }
+
+  return numbers.reduce((total, value) => total + value, 0);
+}
+
+export async function loadAdminOrganizationOverview({
+  admin,
+  organizationId,
+  range
+}: {
+  admin: AuthorizedPlatformAdmin;
+  organizationId: string;
+  range: AdminDateRange;
+}): Promise<AdminOrganizationOverview | null> {
+  const access = await getAdminOrganizationAccessLevel({
+    admin,
+    organizationId
+  });
+
+  if (!access) {
+    return null;
+  }
+
+  const supabase = createSupabaseServiceClient();
+
+  if (!supabase) {
+    throw new Error("Admin service client is not configured.");
+  }
+
+  const organizationResult = await supabase
+    .from("organizations")
+    .select(
+      "id, name, slug, email, timezone, default_language, created_at, updated_at"
+    )
+    .eq("id", organizationId)
+    .maybeSingle();
+
+  if (organizationResult.error) {
+    throw new Error(organizationResult.error.message);
+  }
+
+  if (!organizationResult.data) {
+    return null;
+  }
+
+  const [
+    membersResult,
+    customersResult,
+    consentsResult,
+    waitlistResult,
+    openingsResult,
+    offersResult,
+    bookingsResult,
+    smsResult,
+    servicesResult
+  ] = await Promise.all([
+    supabase
+      .from("organization_members")
+      .select("organization_id, user_id, role, status, created_at")
+      .eq("organization_id", organizationId),
+    supabase
+      .from("customers")
+      .select("id, organization_id, full_name, phone_e164, created_at")
+      .eq("organization_id", organizationId),
+    supabase
+      .from("sms_consents")
+      .select("organization_id, customer_id, status, created_at")
+      .eq("organization_id", organizationId),
+    supabase
+      .from("waitlist_entries")
+      .select("id, organization_id, customer_id, status, created_at, updated_at")
+      .eq("organization_id", organizationId),
+    supabase
+      .from("openings")
+      .select(
+        "id, organization_id, service_id, title, start_time, status, created_at, updated_at"
+      )
+      .eq("organization_id", organizationId),
+    supabase
+      .from("opening_offers")
+      .select(
+        "id, organization_id, opening_id, customer_id, status, sent_at, responded_at, response_text, response_rank, created_at, updated_at"
+      )
+      .eq("organization_id", organizationId),
+    supabase
+      .from("booking_requests")
+      .select(
+        "id, organization_id, opening_id, selected_offer_id, customer_id, status, recovered_value_cents, created_at, updated_at"
+      )
+      .eq("organization_id", organizationId),
+    supabase
+      .from("sms_messages")
+      .select(
+        "id, organization_id, opening_id, appointment_id, direction, provider, provider_message_id, to_number, status, error_code, error_message, created_at"
+      )
+      .eq("organization_id", organizationId),
+    supabase
+      .from("services")
+      .select("id, organization_id, name")
+      .eq("organization_id", organizationId)
+  ]);
+
+  const organization = organizationResult.data;
+  const members = rowsOrEmpty(membersResult);
+  const customers = rowsOrEmpty(customersResult);
+  const consents = rowsOrEmpty(consentsResult);
+  const waitlistEntries = rowsOrEmpty(waitlistResult);
+  const openings = rowsOrEmpty(openingsResult);
+  const openingOffers = rowsOrEmpty(offersResult);
+  const bookingRequests = rowsOrEmpty(bookingsResult);
+  const smsMessages = rowsOrEmpty(smsResult);
+  const services = rowsOrEmpty(servicesResult);
+  const owner = members.find(
+    (member) => member.role === "owner" && member.status === "active"
+  );
+  const ownerProfile =
+    owner &&
+    rowsOrEmpty(
+      await supabase
+        .from("profiles")
+        .select("auth_user_id, email, full_name")
+        .eq("auth_user_id", owner.user_id)
+    )[0];
+
+  const customerById = new Map(customers.map((customer) => [customer.id, customer]));
+  const serviceById = new Map(services.map((service) => [service.id, service]));
+  const openingById = new Map(openings.map((opening) => [opening.id, opening]));
+  const rangeOpenings = openings.filter((opening) =>
+    inDateRange(opening.created_at, range)
+  );
+  const rangeOffers = openingOffers.filter((offer) =>
+    inDateRange(offer.responded_at ?? offer.updated_at, range)
+  );
+  const rangeBookings = bookingRequests.filter((booking) =>
+    inDateRange(booking.updated_at, range)
+  );
+  const rangeSms = smsMessages.filter((message) =>
+    inDateRange(message.created_at, range)
+  );
+  const activeWaitlistEntries = waitlistEntries.filter(
+    (entry) => entry.status === "active"
+  );
+  const positiveReplies = rangeOffers.filter((offer) =>
+    ["responded", "selected"].includes(offer.status)
+  );
+  const pendingValidationOffers = rangeOffers.filter(
+    (offer) => offer.status === "responded"
+  );
+  const pendingValidationBookings = rangeBookings.filter(
+    (booking) => booking.status === "pending_merchant_validation"
+  );
+  const filledSpotCounts = getFilledSpotCountFromCurrentSchema({
+    openings: rangeOpenings,
+    openingOffers: rangeOffers
+  });
+  const filledSpots = filledSpotCounts.get(organizationId) ?? 0;
+  const outboundSms = rangeSms.filter((message) => message.direction === "outbound");
+  const inboundSms = rangeSms.filter((message) => message.direction === "inbound");
+  const failedSms = outboundSms.filter((message) =>
+    ["failed", "undelivered", "error"].includes(message.status)
+  );
+  const estimatedSmsCostCents = estimateSmsCostCents({
+    outboundSmsCount: outboundSms.length
+  });
+  const dailyBuckets = buildDailyBuckets({
+    from: range.from,
+    to: range.to
+  });
+  const filledByDay = new Map<string, number>();
+  const outboundByDay = new Map<string, number>();
+  const inboundByDay = new Map<string, number>();
+  const failedByDay = new Map<string, number>();
+  const customersCreatedByDay = new Map<string, number>();
+  const optedInByDay = new Map<string, number>();
+
+  for (const opening of rangeOpenings) {
+    if (opening.status === "filled") {
+      increment(filledByDay, dateKey(opening.updated_at));
+    }
+  }
+
+  for (const offer of rangeOffers) {
+    if (offer.status === "selected") {
+      increment(filledByDay, dateKey(offer.updated_at));
+    }
+  }
+
+  for (const message of rangeSms) {
+    const key = dateKey(message.created_at);
+
+    if (message.direction === "outbound") {
+      increment(outboundByDay, key);
+    } else {
+      increment(inboundByDay, key);
+    }
+
+    if (["failed", "undelivered", "error"].includes(message.status)) {
+      increment(failedByDay, key);
+    }
+  }
+
+  for (const customer of customers) {
+    if (inDateRange(customer.created_at, range)) {
+      increment(customersCreatedByDay, dateKey(customer.created_at));
+    }
+  }
+
+  for (const consent of consents) {
+    if (consent.status === "opted_in" && inDateRange(consent.created_at, range)) {
+      increment(optedInByDay, dateKey(consent.created_at));
+    }
+  }
+
+  const recentOpenings = [...rangeOpenings]
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+    .slice(0, 8)
+    .map((opening) => {
+      const offersForOpening = rangeOffers.filter(
+        (offer) => offer.opening_id === opening.id
+      );
+      const bookingsForOpening = rangeBookings.filter(
+        (booking) => booking.opening_id === opening.id
+      );
+
+      return {
+        id: opening.id,
+        title: opening.title,
+        serviceName: opening.service_id
+          ? serviceById.get(opening.service_id)?.name ?? null
+          : null,
+        startTime: opening.start_time,
+        status: opening.status,
+        positiveReplies: offersForOpening.filter((offer) =>
+          ["responded", "selected"].includes(offer.status)
+        ).length,
+        pendingValidations:
+          offersForOpening.filter((offer) => offer.status === "responded").length +
+          bookingsForOpening.filter(
+            (booking) => booking.status === "pending_merchant_validation"
+          ).length,
+        filledSpots:
+          opening.status === "filled" ||
+          offersForOpening.some((offer) => offer.status === "selected")
+            ? 1
+            : 0,
+        createdAt: opening.created_at
+      };
+    });
+  const recentFailedSms = [...failedSms]
+    .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))
+    .slice(0, 8)
+    .map((message) => ({
+      id: message.id,
+      provider: message.provider,
+      providerMessageId: message.provider_message_id,
+      toNumberMasked: maskPhoneNumber(message.to_number),
+      status: message.status,
+      errorCode: message.error_code,
+      errorMessage: message.error_message,
+      createdAt: message.created_at
+    }));
+  const pendingValidations = pendingValidationOffers.slice(0, 8).map((offer) => {
+    const opening = openingById.get(offer.opening_id);
+    const customer = customerById.get(offer.customer_id);
+
+    return {
+      openingId: offer.opening_id,
+      openingTitle: opening?.title ?? "Opening",
+      customerName: customer?.full_name ?? "Customer",
+      customerPhoneMasked: maskPhoneNumber(customer?.phone_e164),
+      responseRank: offer.response_rank,
+      respondedAt: offer.responded_at
+    };
+  });
+  const recoveredValueCents = sumNullableValues(
+    rangeBookings
+      .filter((booking) => ["confirmed", "completed"].includes(booking.status))
+      .map((booking) => booking.recovered_value_cents)
+  );
+  const warnings = [
+    "Estimated SMS cost assumes one segment per outbound SMS because segment counts are not stored yet."
+  ];
+  const unknownOrUnlinkedReplies = inboundSms.filter(
+    (message) => !message.opening_id && !message.appointment_id
+  ).length;
+
+  if (unknownOrUnlinkedReplies > 0) {
+    warnings.push("Some inbound SMS replies are not linked to an opening or appointment.");
+  }
+
+  await recordPlatformAdminAuditLog({
+    admin,
+    organizationId,
+    action: "admin.organization.overview_viewed",
+    entityType: "organizations",
+    entityId: organizationId,
+    metadata: {
+      source: "admin_organization_overview",
+      range: {
+        rangeKey: range.rangeKey,
+        fromIso: range.fromIso,
+        toIso: range.toIso
+      }
+    }
+  });
+
+  return {
+    organization: {
+      id: organization.id,
+      name: organization.name,
+      slug: organization.slug,
+      status: "active",
+      createdAt: organization.created_at,
+      timezone: organization.timezone,
+      defaultLanguage: organization.default_language,
+      ownerEmail: ownerProfile?.email ?? organization.email,
+      ownerName: ownerProfile?.full_name ?? null
+    },
+    access: {
+      adminRole: admin.role,
+      accessLevel: access.accessLevel,
+      canOpenManagerMode: canOpenPlatformAdminManagerMode({
+        adminRole: admin.role,
+        accessLevel: access.accessLevel,
+        revokedAt: access.revokedAt,
+        adminStatus: admin.status
+      })
+    },
+    range: {
+      label: range.label,
+      fromIso: range.fromIso,
+      toIso: range.toIso,
+      rangeKey: range.rangeKey
+    },
+    kpis: {
+      customersTotal: customers.length,
+      customersCreatedInRange: customers.filter((customer) =>
+        inDateRange(customer.created_at, range)
+      ).length,
+      optedInCustomers: consents.filter((consent) => consent.status === "opted_in")
+        .length,
+      optedOutCustomers: consents.filter((consent) => consent.status === "opted_out")
+        .length,
+      waitlistEntriesActive: activeWaitlistEntries.length,
+      openingsCreated: rangeOpenings.length,
+      positiveReplies: positiveReplies.length,
+      pendingValidations:
+        pendingValidationOffers.length + pendingValidationBookings.length,
+      filledSpots,
+      outboundSms: outboundSms.length,
+      inboundSms: inboundSms.length,
+      deliveredSms: outboundSms.filter((message) => message.status === "delivered")
+        .length,
+      failedSms: failedSms.length,
+      unknownOrUnlinkedReplies,
+      estimatedSmsCostCents,
+      estimatedCostPerFilledSpotCents: calculateCostPerFilledSpotCents({
+        estimatedSmsCostCents,
+        filledSpots
+      }),
+      recoveredValueCents
+    },
+    charts: {
+      filledSpotsByDay: dailyBuckets.map((date) => ({
+        date,
+        count: filledByDay.get(date) ?? 0
+      })),
+      smsCostByDay: dailyBuckets.map((date) => {
+        const outboundCount = outboundByDay.get(date) ?? 0;
+
+        return {
+          date,
+          outboundSms: outboundCount,
+          estimatedCostCents: estimateSmsCostCents({
+            outboundSmsCount: outboundCount
+          })
+        };
+      }),
+      customerGrowthByDay: dailyBuckets.map((date) => ({
+        date,
+        customersTotal: customersCreatedByDay.get(date) ?? 0,
+        optedInCustomers: optedInByDay.get(date) ?? 0
+      })),
+      smsVolumeByDay: dailyBuckets.map((date) => ({
+        date,
+        outbound: outboundByDay.get(date) ?? 0,
+        inbound: inboundByDay.get(date) ?? 0,
+        failed: failedByDay.get(date) ?? 0
+      }))
+    },
+    recent: {
+      openings: recentOpenings,
+      failedSms: recentFailedSms,
+      pendingValidations
+    },
+    warnings
   };
 }
