@@ -139,6 +139,126 @@ async function getCurrentOrganizationProfileId({
   return data?.profile_id ?? null;
 }
 
+async function ensureCustomerAlertListEntry({
+  supabase,
+  organizationId,
+  customerId,
+  serviceId
+}: {
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
+  organizationId: string;
+  customerId: string;
+  serviceId: string | null;
+}) {
+  if (serviceId) {
+    const { data: service, error: serviceError } = await supabase
+      .from("services")
+      .select("id")
+      .eq("organization_id", organizationId)
+      .eq("id", serviceId)
+      .eq("active", true)
+      .maybeSingle();
+
+    if (serviceError) {
+      throw new Error(serviceError.message);
+    }
+
+    if (!service) {
+      throw new Error("Selected service is not available.");
+    }
+  }
+
+  const { data: activeEntries, error: activeLookupError } = await supabase
+    .from("waitlist_entries")
+    .select("id")
+    .eq("organization_id", organizationId)
+    .eq("customer_id", customerId)
+    .eq("status", "active")
+    .order("created_at", { ascending: true })
+    .limit(1);
+
+  if (activeLookupError) {
+    throw new Error(activeLookupError.message);
+  }
+
+  const activeEntry = activeEntries?.[0] ?? null;
+
+  if (activeEntry) {
+    const { error: updateError } = await supabase
+      .from("waitlist_entries")
+      .update({ service_id: serviceId })
+      .eq("organization_id", organizationId)
+      .eq("id", activeEntry.id);
+
+    if (updateError) {
+      throw new Error(updateError.message);
+    }
+
+    return {
+      id: activeEntry.id,
+      created: false,
+      reactivated: false
+    };
+  }
+
+  const { data: inactiveEntries, error: inactiveLookupError } = await supabase
+    .from("waitlist_entries")
+    .select("id")
+    .eq("organization_id", organizationId)
+    .eq("customer_id", customerId)
+    .neq("status", "active")
+    .order("updated_at", { ascending: false })
+    .limit(1);
+
+  if (inactiveLookupError) {
+    throw new Error(inactiveLookupError.message);
+  }
+
+  const inactiveEntry = inactiveEntries?.[0] ?? null;
+
+  if (inactiveEntry) {
+    const { error: reactivateError } = await supabase
+      .from("waitlist_entries")
+      .update({
+        service_id: serviceId,
+        status: "active"
+      })
+      .eq("organization_id", organizationId)
+      .eq("id", inactiveEntry.id);
+
+    if (reactivateError) {
+      throw new Error(reactivateError.message);
+    }
+
+    return {
+      id: inactiveEntry.id,
+      created: false,
+      reactivated: true
+    };
+  }
+
+  const { data: newEntry, error: insertError } = await supabase
+    .from("waitlist_entries")
+    .insert({
+      organization_id: organizationId,
+      customer_id: customerId,
+      service_id: serviceId,
+      status: "active"
+    })
+    .select("id")
+    .single();
+
+  if (insertError || !newEntry) {
+    throw new Error(insertError?.message ?? "Automatic alert-list setup failed.");
+  }
+
+  return {
+    id: newEntry.id,
+    created: true,
+    reactivated: false
+  };
+}
+
 async function verifyAppointmentReferences({
   supabase,
   organizationId,
@@ -413,8 +533,7 @@ export async function createCustomerAction(formData: FormData) {
     notes: formData.get("notes"),
     consentStatus: formData.get("consentStatus"),
     hasConsentProof: formData.get("hasConsentProof"),
-    serviceId: formData.get("serviceId"),
-    addToWaitlist: formData.get("addToWaitlist")
+    serviceId: formData.get("serviceId")
   });
 
   if (!input.ok) {
@@ -491,38 +610,46 @@ export async function createCustomerAction(formData: FormData) {
     redirectWithError("/dashboard/clients", consentError.message);
   }
 
-  if (input.value.addToWaitlist) {
-    const waitlistQuery = supabase
-      .from("waitlist_entries")
-      .select("id")
-      .eq("organization_id", organization.id)
-      .eq("customer_id", customer.id);
-    const scopedWaitlistQuery = input.value.serviceId
-      ? waitlistQuery.eq("service_id", input.value.serviceId)
-      : waitlistQuery.is("service_id", null);
-    const { data: existingWaitlist, error: existingWaitlistError } =
-      await scopedWaitlistQuery.maybeSingle();
+  let alertListEntry: Awaited<ReturnType<typeof ensureCustomerAlertListEntry>>;
 
-    if (existingWaitlistError) {
-      redirectWithError("/dashboard/clients", existingWaitlistError.message);
-    }
+  try {
+    alertListEntry = await ensureCustomerAlertListEntry({
+      supabase,
+      organizationId: organization.id,
+      customerId: customer.id,
+      serviceId: input.value.serviceId
+    });
+  } catch (error) {
+    console.warn("Automatic alert-list setup failed", {
+      customerId: customer.id,
+      organizationId: organization.id
+    });
+    const safeAlertListError =
+      error instanceof Error && error.message === "Selected service is not available."
+        ? error.message
+        : "Client saved, but automatic alert-list setup failed. Please retry or contact support.";
 
-    if (!existingWaitlist) {
-      const { error: waitlistError } = await supabase
-        .from("waitlist_entries")
-        .insert({
-          organization_id: organization.id,
-          customer_id: customer.id,
-          service_id: input.value.serviceId,
-          status: "active",
-          source: "manual"
-        });
-
-      if (waitlistError) {
-        redirectWithError("/dashboard/clients", waitlistError.message);
-      }
-    }
+    redirectWithError(
+      "/dashboard/clients",
+      safeAlertListError
+    );
   }
+
+  await supabase.from("audit_logs").insert({
+    organization_id: organization.id,
+    action: "waitlist.auto_added_from_customer_create",
+    entity_type: "waitlist_entries",
+    entity_id: alertListEntry.id,
+    metadata: {
+      customer_id: customer.id,
+      waitlist_entry_id: alertListEntry.id,
+      service_interest: input.value.serviceId ?? "all_services",
+      auto_added: true,
+      created: alertListEntry.created,
+      reactivated: alertListEntry.reactivated,
+      consent_status: input.value.consentStatus
+    }
+  });
 
   let consentRequestMessage: string | null = null;
   let consentRequestWarning: string | null = null;

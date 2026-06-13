@@ -25,10 +25,9 @@ export type CustomerCreateInput = {
   notes: string | null;
   consentStatus: ConsentStatus;
   serviceId: string | null;
-  addToWaitlist: boolean;
 };
 
-export type CustomerUpdateInput = Omit<CustomerCreateInput, "serviceId" | "addToWaitlist"> & {
+export type CustomerUpdateInput = Omit<CustomerCreateInput, "serviceId"> & {
   customerId: string;
 };
 
@@ -214,7 +213,6 @@ export function buildCustomerCreateInput(input: {
   consentStatus?: unknown;
   hasConsentProof?: unknown;
   serviceId?: unknown;
-  addToWaitlist?: unknown;
   organizationId?: unknown;
 }): FormResult<CustomerCreateInput> {
   const errors: string[] = [];
@@ -273,11 +271,7 @@ export function buildCustomerCreateInput(input: {
       preferredLanguage: preferredLanguage as Locale,
       notes: cleanOptionalText(input.notes),
       consentStatus,
-      serviceId: cleanOptionalText(input.serviceId),
-      addToWaitlist:
-        input.addToWaitlist === "on" ||
-        input.addToWaitlist === "true" ||
-        input.addToWaitlist === true
+      serviceId: cleanOptionalText(input.serviceId)
     }
   };
 }
@@ -307,8 +301,7 @@ export function buildCustomerUpdateInput(input: {
       input.hasConsentProof === "true" ||
       input.hasConsentProof === true ||
       (selectedConsentStatus === "opted_in" && hasExistingOptIn),
-    serviceId: null,
-    addToWaitlist: false
+    serviceId: null
   });
 
   if (!customerId) {

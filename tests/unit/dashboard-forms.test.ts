@@ -103,7 +103,6 @@ describe("dashboard operational forms", () => {
         consentStatus: "opted_in",
         hasConsentProof: "on",
         serviceId: "service_1",
-        addToWaitlist: "on",
         organizationId: "browser_org"
       })
     ).toEqual({
@@ -115,8 +114,31 @@ describe("dashboard operational forms", () => {
         preferredLanguage: "fr",
         notes: null,
         consentStatus: "opted_in",
-        serviceId: "service_1",
-        addToWaitlist: true
+        serviceId: "service_1"
+      }
+    });
+  });
+
+  it("does not depend on an add-to-waitlist checkbox for customer creation", () => {
+    expect(
+      buildCustomerCreateInput({
+        fullName: "Maya Tremblay",
+        phoneCountry: "+1",
+        phoneNational: "514-249-4425",
+        preferredLanguage: "fr",
+        consentStatus: "needs_consent",
+        serviceId: "service_1"
+      })
+    ).toEqual({
+      ok: true,
+      value: {
+        fullName: "Maya Tremblay",
+        phoneE164: "+15142494425",
+        email: null,
+        preferredLanguage: "fr",
+        notes: null,
+        consentStatus: "needs_consent",
+        serviceId: "service_1"
       }
     });
   });
@@ -380,5 +402,40 @@ describe("dashboard operational forms", () => {
     expect(source).toContain("A client with this phone number already exists.");
     expect(source).not.toContain(".update({\n          full_name: input.value.fullName");
     expect(source).not.toContain('formData.get("organizationId")');
+  });
+
+  it("auto-adds new clients to the alert list without a checkbox dependency", () => {
+    const actionsSource = readFileSync(
+      join(process.cwd(), "src", "lib", "dashboard", "actions.ts"),
+      "utf8"
+    );
+    const clientsPageSource = readFileSync(
+      join(process.cwd(), "src", "app", "dashboard", "clients", "page.tsx"),
+      "utf8"
+    );
+    const migration = readFileSync(
+      join(
+        process.cwd(),
+        "supabase",
+        "migrations",
+        "20260613235500_backfill_waitlist_entries_for_existing_customers.sql"
+      ),
+      "utf8"
+    );
+    const createSource = actionsSource.slice(
+      actionsSource.indexOf("export async function createCustomerAction"),
+      actionsSource.indexOf("export async function updateCustomerAction")
+    );
+
+    expect(clientsPageSource).not.toContain('name="addToWaitlist"');
+    expect(createSource).not.toContain('formData.get("addToWaitlist")');
+    expect(createSource).toContain("ensureCustomerAlertListEntry");
+    expect(createSource).toContain("waitlist.auto_added_from_customer_create");
+    expect(createSource).toContain("service_interest");
+    expect(migration).toContain("insert into public.waitlist_entries");
+    expect(migration).toContain("c.deleted_at is null");
+    expect(migration).toContain("not exists");
+    expect(migration).not.toMatch(/insert into public\.waitlist_entry_services/i);
+    expect(migration).not.toMatch(/\bdelete\s+from\b|\btruncate\b/i);
   });
 });

@@ -192,7 +192,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
               Proof
             </label>
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
-              Service interest
+              Intérêt de service
               <select
                 className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
                 name="serviceId"
@@ -204,10 +204,10 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                   </option>
                 ))}
               </select>
-            </label>
-            <label className="flex items-end gap-2 text-sm font-bold">
-              <input name="addToWaitlist" type="checkbox" />
-              Ajouter à la liste d&apos;attente
+              <span className="text-xs font-semibold leading-5 text-[var(--muted)]">
+                Ajout automatique aux alertes de créneaux libres. Les clients
+                sans consentement ne recevront pas d&apos;alerte.
+              </span>
             </label>
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Notes
