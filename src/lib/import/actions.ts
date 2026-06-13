@@ -126,6 +126,7 @@ async function importValidatedCustomerRows({
       .select("id")
       .eq("organization_id", organizationId)
       .eq("phone_e164", phoneE164)
+      .is("deleted_at", null)
       .maybeSingle();
 
     if (existingError) {

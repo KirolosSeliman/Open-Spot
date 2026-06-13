@@ -33,6 +33,12 @@ describe("client and template CSV exports", () => {
         preferred_language: "fr",
         notes: null,
         source: "manual",
+        deleted_at: null,
+        deleted_by_profile_id: null,
+        deleted_reason: null,
+        restored_at: null,
+        restored_by_profile_id: null,
+        deletion_metadata: {},
         created_at: "2026-05-29T00:00:00Z",
         updated_at: "2026-05-29T00:00:00Z",
         consentStatus: "opted_in"

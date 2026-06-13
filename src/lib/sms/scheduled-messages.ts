@@ -30,12 +30,18 @@ export function isAuthorizedCronRequest(
 export function getScheduledMessageSkipReason({
   phoneE164,
   consentStatus,
+  deletedAt,
   appointmentStatus
 }: {
   phoneE164: string | null | undefined;
   consentStatus: SmsConsentStatus | "missing";
+  deletedAt?: string | null;
   appointmentStatus?: string | null;
 }) {
+  if (deletedAt) {
+    return "Customer is deleted and cannot receive scheduled SMS.";
+  }
+
   if (consentStatus !== "opted_in") {
     return "Customer is not currently opted in.";
   }
@@ -155,7 +161,7 @@ async function processOneScheduledMessage({
       await Promise.all([
         supabase
           .from("customers")
-          .select("id, full_name, phone_e164, preferred_language")
+          .select("id, full_name, phone_e164, preferred_language, deleted_at")
           .eq("organization_id", claimed.organization_id)
           .eq("id", claimed.customer_id)
           .single(),
@@ -217,6 +223,7 @@ async function processOneScheduledMessage({
     const skipReason = getScheduledMessageSkipReason({
       phoneE164: customer.phone_e164,
       consentStatus: consentResult.data?.status ?? "missing",
+      deletedAt: customer.deleted_at,
       appointmentStatus: appointment?.status ?? null
     });
 

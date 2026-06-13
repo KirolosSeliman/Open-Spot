@@ -50,6 +50,16 @@ describe("filterEligibleOpeningRecipients", () => {
           serviceId: "hair",
           serviceInterestIds: ["hair"],
           alreadyOffered: true
+        },
+        {
+          customerId: "deleted",
+          phoneE164: "+15145550194",
+          consentStatus: "opted_in",
+          waitlistStatus: "active",
+          serviceId: "hair",
+          serviceInterestIds: ["hair"],
+          alreadyOffered: false,
+          deletedAt: "2026-06-13T10:00:00.000Z"
         }
       ],
       "hair"

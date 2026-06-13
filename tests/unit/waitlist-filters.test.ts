@@ -128,6 +128,13 @@ describe("getWaitlistSmsEligibility", () => {
         phone: "555"
       })
     ).toBe("Invalid phone");
+    expect(
+      getWaitlistSmsEligibility({
+        consentStatus: "opted_in",
+        phone: "+15145551001",
+        deletedAt: "2026-06-13T10:00:00.000Z"
+      })
+    ).toBe("Deleted");
   });
 });
 

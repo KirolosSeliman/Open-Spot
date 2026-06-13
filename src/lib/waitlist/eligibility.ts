@@ -7,17 +7,24 @@ type SmsConsentStatus =
 
 export type WaitlistSmsEligibility =
   | "Eligible"
+  | "Deleted"
   | "Needs consent"
   | "Opted out"
   | "Invalid phone";
 
 export function getWaitlistSmsEligibility({
   consentStatus,
-  phone
+  phone,
+  deletedAt
 }: {
   consentStatus: SmsConsentStatus;
   phone: string;
+  deletedAt?: string | null;
 }): WaitlistSmsEligibility {
+  if (deletedAt) {
+    return "Deleted";
+  }
+
   if (!normalizePhoneToE164(phone).ok) {
     return "Invalid phone";
   }

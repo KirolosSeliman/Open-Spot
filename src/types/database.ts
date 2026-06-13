@@ -226,6 +226,12 @@ export type Database = {
           preferred_language: Database["public"]["Enums"]["supported_language"];
           notes: string | null;
           source: string;
+          deleted_at: string | null;
+          deleted_by_profile_id: string | null;
+          deleted_reason: string | null;
+          restored_at: string | null;
+          restored_by_profile_id: string | null;
+          deletion_metadata: Json;
           created_at: string;
           updated_at: string;
         };
@@ -238,6 +244,12 @@ export type Database = {
           preferred_language?: Database["public"]["Enums"]["supported_language"];
           notes?: string | null;
           source?: string;
+          deleted_at?: string | null;
+          deleted_by_profile_id?: string | null;
+          deleted_reason?: string | null;
+          restored_at?: string | null;
+          restored_by_profile_id?: string | null;
+          deletion_metadata?: Json;
           created_at?: string;
           updated_at?: string;
         };
@@ -250,6 +262,12 @@ export type Database = {
           preferred_language?: Database["public"]["Enums"]["supported_language"];
           notes?: string | null;
           source?: string;
+          deleted_at?: string | null;
+          deleted_by_profile_id?: string | null;
+          deleted_reason?: string | null;
+          restored_at?: string | null;
+          restored_by_profile_id?: string | null;
+          deletion_metadata?: Json;
           created_at?: string;
           updated_at?: string;
         };

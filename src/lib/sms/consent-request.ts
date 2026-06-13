@@ -27,6 +27,7 @@ export type ConsentRequestAttempt = {
 export type ConsentRequestEligibilityInput = {
   consentStatus: "opted_in" | "needs_consent" | "opted_out" | string;
   phoneE164: string;
+  deletedAt?: string | null;
   previousRequests: ConsentRequestAttempt[];
   now?: Date;
 };
@@ -45,6 +46,7 @@ export type ConsentRequestSendResult =
         | "opted_in"
         | "opted_out"
         | "invalid_phone"
+        | "deleted"
         | "cooldown"
         | "max_attempts"
         | "sms_paused";
@@ -73,11 +75,20 @@ export function sanitizeSmsProviderError(error: unknown) {
 export function canSendConsentRequest({
   consentStatus,
   phoneE164,
+  deletedAt,
   previousRequests,
   now = new Date()
 }: ConsentRequestEligibilityInput):
   | { ok: true }
   | { ok: false; reason: Exclude<ConsentRequestSendResult, { status: "sent" | "simulated" | "failed" }>["reason"]; message: string } {
+  if (deletedAt) {
+    return {
+      ok: false,
+      reason: "deleted",
+      message: "Client saved, but no consent request was sent because the client is deleted."
+    };
+  }
+
   if (consentStatus === "opted_in") {
     return {
       ok: false,
@@ -157,6 +168,7 @@ export async function sendConsentRequestSms({
     phoneE164: string;
     preferredLanguage: SmsLanguage;
     consentStatus: "opted_in" | "needs_consent" | "opted_out";
+    deletedAt?: string | null;
   };
 }): Promise<ConsentRequestSendResult> {
   const { data: previousRequests, error: previousRequestsError } = await supabase
@@ -177,6 +189,7 @@ export async function sendConsentRequestSms({
   const eligibility = canSendConsentRequest({
     consentStatus: customer.consentStatus,
     phoneE164: customer.phoneE164,
+    deletedAt: customer.deletedAt,
     previousRequests: previousRequests ?? []
   });
 

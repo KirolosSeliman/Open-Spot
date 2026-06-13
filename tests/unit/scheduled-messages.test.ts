@@ -26,6 +26,17 @@ describe("scheduled message processing safety", () => {
     ).toBe("Customer is not currently opted in.");
   });
 
+  it("skips scheduled SMS for deleted customers", () => {
+    expect(
+      getScheduledMessageSkipReason({
+        phoneE164: "+15142494425",
+        consentStatus: "opted_in",
+        deletedAt: "2026-06-13T10:00:00.000Z",
+        appointmentStatus: "scheduled"
+      })
+    ).toBe("Customer is deleted and cannot receive scheduled SMS.");
+  });
+
   it("skips invalid phones and cancelled appointments", () => {
     expect(
       getScheduledMessageSkipReason({

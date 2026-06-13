@@ -308,6 +308,22 @@ export async function handleInboundSmsRequest(
     );
   }
 
+  const { data: linkedCustomer, error: linkedCustomerError } = await supabase
+    .from("customers")
+    .select("deleted_at")
+    .eq("organization_id", context.organization_id)
+    .eq("id", context.customer_id)
+    .maybeSingle();
+
+  if (linkedCustomerError) {
+    return NextResponse.json(
+      { error: "Linked customer lookup failed." },
+      { status: 500 }
+    );
+  }
+
+  const isDeletedCustomer = Boolean(linkedCustomer?.deleted_at);
+
   await recordSmsWebhookEvent({
     provider: providerName,
     event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
@@ -373,6 +389,32 @@ export async function handleInboundSmsRequest(
       classification,
       status: "received_linked",
       action: contextType === "consent" ? "consent_opted_out" : "opted_out",
+      organizationId: context.organization_id,
+      customerId: context.customer_id,
+      openingId: context.opening_id,
+      appointmentId: context.appointment_id,
+      messageId: inboundMessage.id
+    });
+  }
+
+  if (isDeletedCustomer) {
+    await supabase.from("audit_logs").insert({
+      organization_id: context.organization_id,
+      action: "sms.deleted_customer_reply_ignored",
+      entity_type: "sms_messages",
+      entity_id: inboundMessage.id,
+      metadata: {
+        customer_id: context.customer_id,
+        opening_id: context.opening_id,
+        appointment_id: context.appointment_id,
+        classification
+      }
+    });
+
+    return NextResponse.json({
+      classification,
+      status: "received_linked",
+      action: "ignored_deleted_customer",
       organizationId: context.organization_id,
       customerId: context.customer_id,
       openingId: context.opening_id,

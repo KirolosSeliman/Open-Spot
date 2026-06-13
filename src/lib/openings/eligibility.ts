@@ -8,6 +8,7 @@ export type OpeningRecipientCandidate = {
   serviceId: string | null;
   serviceInterestIds?: string[];
   alreadyOffered: boolean;
+  deletedAt?: string | null;
 };
 
 export function filterEligibleOpeningRecipients(
@@ -17,6 +18,10 @@ export function filterEligibleOpeningRecipients(
   const returnedCustomerIds = new Set<string>();
   const eligibleCandidates = candidates.filter((candidate) => {
     if (candidate.consentStatus !== "opted_in") {
+      return false;
+    }
+
+    if (candidate.deletedAt) {
       return false;
     }
 

@@ -489,7 +489,13 @@ export async function loadServices() {
   return data ?? [];
 }
 
-export async function loadCustomersWithConsent(): Promise<CustomerWithConsent[]> {
+export async function loadCustomersWithConsent({
+  includeDeleted = false,
+  onlyDeleted = false
+}: {
+  includeDeleted?: boolean;
+  onlyDeleted?: boolean;
+} = {}): Promise<CustomerWithConsent[]> {
   const organizationId = await requireOrganizationId();
 
   if (!organizationId) {
@@ -497,12 +503,19 @@ export async function loadCustomersWithConsent(): Promise<CustomerWithConsent[]>
   }
 
   const supabase = await createSupabaseServerClient();
+  let customersQuery = supabase
+    .from("customers")
+    .select("*")
+    .eq("organization_id", organizationId);
+
+  if (onlyDeleted) {
+    customersQuery = customersQuery.not("deleted_at", "is", null);
+  } else if (!includeDeleted) {
+    customersQuery = customersQuery.is("deleted_at", null);
+  }
+
   const [customersResult, consentsResult, consentRequestsResult] = await Promise.all([
-    supabase
-      .from("customers")
-      .select("*")
-      .eq("organization_id", organizationId)
-      .order("created_at", { ascending: false }),
+    customersQuery.order("created_at", { ascending: false }),
     supabase
       .from("sms_consents")
       .select("*")
@@ -641,8 +654,13 @@ export async function loadWaitlistView(): Promise<{
   return {
     customers,
     services,
-    entries: (waitlistResult.data ?? []).map((entry) => {
+    entries: (waitlistResult.data ?? []).flatMap((entry) => {
       const customer = customerById.get(entry.customer_id);
+
+      if (!customer) {
+        return [];
+      }
+
       const service = entry.service_id ? serviceById.get(entry.service_id) : null;
       const serviceInterestIds =
         serviceInterestsByEntry
@@ -655,17 +673,18 @@ export async function loadWaitlistView(): Promise<{
 
       return {
         ...entry,
-        customerName: customer?.full_name ?? "Client inconnu",
-        customerPhone: customer?.phone_e164 ?? "",
-        customerLanguage: customer?.preferred_language ?? "fr",
-        customerSource: customer?.source ?? "manual",
-        consentStatus: customer?.consentStatus ?? "missing",
+        customerName: customer.full_name,
+        customerPhone: customer.phone_e164,
+        customerLanguage: customer.preferred_language,
+        customerSource: customer.source,
+        consentStatus: customer.consentStatus,
         serviceName: service?.name ?? null,
         serviceInterestIds,
         serviceInterestNames,
         smsEligibility: getWaitlistSmsEligibility({
-          consentStatus: customer?.consentStatus ?? "missing",
-          phone: customer?.phone_e164 ?? ""
+          consentStatus: customer.consentStatus,
+          phone: customer.phone_e164,
+          deletedAt: customer.deleted_at
         })
       };
     })

@@ -100,6 +100,27 @@ function createConsentContextQuery() {
   return builder;
 }
 
+function createWaitlistContextQuery() {
+  const waitlistContext = {
+    id: "sms-opening-outbound",
+    organization_id: "org-1",
+    customer_id: "customer-deleted",
+    opening_id: "opening-1",
+    appointment_id: null,
+    message_type: "opening_alert"
+  };
+  const builder = {
+    select: vi.fn(() => builder),
+    eq: vi.fn(() => builder),
+    not: vi.fn(() => builder),
+    or: vi.fn(() => builder),
+    order: vi.fn(() => builder),
+    limit: vi.fn(() => Promise.resolve({ data: [waitlistContext], error: null }))
+  };
+
+  return builder;
+}
+
 function createMutationResult(data: unknown = null, error: unknown = null) {
   const builder = {
     select: vi.fn(() => builder),
@@ -311,6 +332,87 @@ describe("inbound SMS context selection", () => {
         message_type: "consent_reply",
         appointment_id: null,
         opening_id: null
+      })
+    );
+  });
+
+  it("persists but ignores positive replies from deleted customers", async () => {
+    let smsMessagesFromCount = 0;
+    const inserts: QueryRecord[] = [];
+    const updatesByTable = new Map<string, QueryRecord[]>();
+    const upsertsByTable = new Map<string, QueryRecord[]>();
+    const fromCalls: string[] = [];
+
+    const supabase = {
+      from: vi.fn((table: string) => {
+        fromCalls.push(table);
+
+        if (table === "sms_messages") {
+          smsMessagesFromCount += 1;
+        }
+
+        if (table === "sms_messages" && smsMessagesFromCount === 1) {
+          return createQueryResult(null);
+        }
+
+        if (table === "sms_messages" && smsMessagesFromCount === 2) {
+          return createWaitlistContextQuery();
+        }
+
+        if (table === "customers") {
+          return createQueryResult({
+            deleted_at: "2026-06-13T10:00:00.000Z"
+          });
+        }
+
+        return {
+          insert: vi.fn((row: QueryRecord) => {
+            inserts.push(row);
+            return createMutationResult({ id: `${table}-inserted` });
+          }),
+          update: vi.fn((row: QueryRecord) => {
+            updatesByTable.set(table, [
+              ...(updatesByTable.get(table) ?? []),
+              row
+            ]);
+            return createMutationResult();
+          }),
+          upsert: vi.fn((row: QueryRecord) => {
+            upsertsByTable.set(table, [
+              ...(upsertsByTable.get(table) ?? []),
+              row
+            ]);
+            return createUpsertResult();
+          }),
+          select: vi.fn(() => createQueryResult(null)),
+          eq: vi.fn(() => createQueryResult(null))
+        };
+      })
+    };
+
+    supabaseState.client = supabase;
+
+    const response = await handleInboundSmsRequest(
+      new Request("https://example.com/webhook", { method: "POST" }),
+      createProvider()
+    );
+
+    const body = await response.json();
+
+    expect(body).toMatchObject({
+      classification: "waitlist_positive",
+      action: "ignored_deleted_customer",
+      customerId: "customer-deleted",
+      openingId: "opening-1",
+      status: "received_linked"
+    });
+    expect(upsertsByTable.has("sms_consents")).toBe(false);
+    expect(updatesByTable.has("opening_offers")).toBe(false);
+    expect(updatesByTable.has("appointments")).toBe(false);
+    expect(fromCalls).not.toContain("booking_requests");
+    expect(inserts).toContainEqual(
+      expect.objectContaining({
+        action: "sms.deleted_customer_reply_ignored"
       })
     );
   });

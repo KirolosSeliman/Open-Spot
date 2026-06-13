@@ -64,6 +64,18 @@ describe("SMS consent request helper", () => {
     ).toMatchObject({ ok: false, reason: "invalid_phone" });
   });
 
+  it("never sends consent requests to deleted customers", () => {
+    expect(
+      canSendConsentRequest({
+        consentStatus: "needs_consent",
+        phoneE164: "+15142494425",
+        deletedAt: "2026-06-13T10:00:00.000Z",
+        previousRequests: [],
+        now
+      })
+    ).toMatchObject({ ok: false, reason: "deleted" });
+  });
+
   it("blocks a request inside the cooldown window", () => {
     const recent = new Date(
       now.getTime() - (CONSENT_REQUEST_COOLDOWN_HOURS - 1) * 60 * 60 * 1000

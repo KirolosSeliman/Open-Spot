@@ -9,6 +9,11 @@ import {
   requireOrganizationSmsNotPaused
 } from "@/lib/admin/organization-controls";
 import {
+  appendCustomerActionMessage,
+  buildSafeCustomerReturnPath,
+  validateCustomerDeleteForm
+} from "@/lib/customers/soft-delete";
+import {
   buildAppointmentCreateInput,
   buildAppointmentUpdateInput,
   buildCustomerCreateInput,
@@ -67,6 +72,14 @@ function redirectWithWarning(path: string, message: string): never {
 
 const genericClientSaveError = "Unable to save client. Please try again.";
 
+function redirectWithCustomerActionMessage(
+  path: string,
+  key: "error" | "message" | "notice" | "warning",
+  message: string
+): never {
+  redirect(appendCustomerActionMessage(path, key, message));
+}
+
 function getSafeProviderErrorMessage(error: unknown) {
   const rawMessage =
     error instanceof Error ? error.message : "Provider rejected one SMS send.";
@@ -91,6 +104,41 @@ function revalidateAppointmentSurfaces() {
   revalidatePath("/dashboard/appointments");
 }
 
+function revalidateCustomerSurfaces() {
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/clients");
+  revalidatePath("/dashboard/waitlist");
+  revalidatePath("/dashboard/new-cancellation");
+  revalidatePath("/dashboard/responses");
+  revalidatePath("/dashboard/appointments");
+}
+
+async function getCurrentOrganizationProfileId({
+  supabase,
+  organizationId
+}: {
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
+  organizationId: string;
+}) {
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data } = await supabase
+    .from("organization_members")
+    .select("profile_id")
+    .eq("organization_id", organizationId)
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle();
+
+  return data?.profile_id ?? null;
+}
+
 async function verifyAppointmentReferences({
   supabase,
   organizationId,
@@ -105,7 +153,7 @@ async function verifyAppointmentReferences({
   const [customerResult, serviceResult, consentResult] = await Promise.all([
     supabase
       .from("customers")
-      .select("id")
+      .select("id, deleted_at")
       .eq("organization_id", organizationId)
       .eq("id", customerId)
       .single(),
@@ -130,6 +178,10 @@ async function verifyAppointmentReferences({
     throw new Error(
       customerResult.error?.message ?? "Client not found for this organization."
     );
+  }
+
+  if (customerResult.data.deleted_at) {
+    throw new Error("Deleted clients cannot be scheduled for appointments.");
   }
 
   if (serviceResult.error) {
@@ -378,6 +430,7 @@ export async function createCustomerAction(formData: FormData) {
     .select("id")
     .eq("organization_id", organization.id)
     .eq("phone_e164", input.value.phoneE164)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (existingCustomerError) {
@@ -493,7 +546,8 @@ export async function createCustomerAction(formData: FormData) {
             fullName: input.value.fullName,
             phoneE164: input.value.phoneE164,
             preferredLanguage: input.value.preferredLanguage,
-            consentStatus: input.value.consentStatus
+            consentStatus: input.value.consentStatus,
+            deletedAt: null
           }
         });
 
@@ -543,7 +597,7 @@ export async function updateCustomerAction(formData: FormData) {
   const [existingCustomerResult, existingConsentResult] = await Promise.all([
     supabase
       .from("customers")
-      .select("id, full_name, phone_e164, email, preferred_language, notes")
+      .select("id, full_name, phone_e164, email, preferred_language, notes, deleted_at")
       .eq("organization_id", organization.id)
       .eq("id", customerId)
       .maybeSingle(),
@@ -564,6 +618,13 @@ export async function updateCustomerAction(formData: FormData) {
 
   if (!existingCustomer) {
     redirectWithError("/dashboard/clients", "Client not found.");
+  }
+
+  if (existingCustomer.deleted_at) {
+    redirectWithError(
+      redirectPath,
+      "Deleted clients must be restored before they can be edited."
+    );
   }
 
   const input = buildCustomerUpdateInput({
@@ -589,6 +650,7 @@ export async function updateCustomerAction(formData: FormData) {
     .select("id")
     .eq("organization_id", organization.id)
     .eq("phone_e164", input.value.phoneE164)
+    .is("deleted_at", null)
     .neq("id", input.value.customerId)
     .maybeSingle();
 
@@ -705,6 +767,281 @@ export async function updateCustomerAction(formData: FormData) {
   redirect("/dashboard/clients");
 }
 
+export async function deleteCustomerAction(formData: FormData) {
+  const input = validateCustomerDeleteForm({
+    customerId: formData.get("customerId"),
+    reason: formData.get("reason"),
+    confirm: formData.get("confirm"),
+    returnTo: formData.get("returnTo")
+  });
+
+  if (!input.ok) {
+    redirectWithCustomerActionMessage(input.returnTo, "error", input.error);
+  }
+
+  const organization = await requireReadyOrganization({
+    canPerform: canManageCustomers
+  });
+  const supabase = await createSupabaseServerClient();
+  const returnTo = input.value.returnTo;
+  const { data: customer, error: customerError } = await supabase
+    .from("customers")
+    .select("id, phone_e164, deleted_at")
+    .eq("organization_id", organization.id)
+    .eq("id", input.value.customerId)
+    .maybeSingle();
+
+  if (customerError) {
+    redirectWithCustomerActionMessage(returnTo, "error", genericClientSaveError);
+  }
+
+  if (!customer) {
+    redirectWithCustomerActionMessage(returnTo, "error", "Client not found.");
+  }
+
+  if (customer.deleted_at) {
+    redirectWithCustomerActionMessage(
+      returnTo,
+      "notice",
+      "Client is already deleted."
+    );
+  }
+
+  const [activeWaitlistResult, pendingOffersResult, futureAppointmentsResult] =
+    await Promise.all([
+      supabase
+        .from("waitlist_entries")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customer.id)
+        .eq("status", "active"),
+      supabase
+        .from("opening_offers")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customer.id)
+        .in("status", ["pending", "sent", "responded"]),
+      supabase
+        .from("appointments")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customer.id)
+        .gt("starts_at", new Date().toISOString())
+        .in("status", ["scheduled", "not_yet_confirmed"])
+    ]);
+
+  if (
+    activeWaitlistResult.error ||
+    pendingOffersResult.error ||
+    futureAppointmentsResult.error
+  ) {
+    redirectWithCustomerActionMessage(returnTo, "error", genericClientSaveError);
+  }
+
+  const now = new Date().toISOString();
+  const actorProfileId = await getCurrentOrganizationProfileId({
+    supabase,
+    organizationId: organization.id
+  });
+  const activeWaitlistCount = activeWaitlistResult.count ?? 0;
+  const pendingOffersCount = pendingOffersResult.count ?? 0;
+  const futureAppointmentsCount = futureAppointmentsResult.count ?? 0;
+
+  const { error: updateError } = await supabase
+    .from("customers")
+    .update({
+      deleted_at: now,
+      deleted_by_profile_id: actorProfileId,
+      deleted_reason: input.value.reason,
+      restored_at: null,
+      restored_by_profile_id: null,
+      deletion_metadata: {
+        had_active_waitlist_entries: activeWaitlistCount > 0,
+        active_waitlist_entries_count: activeWaitlistCount,
+        had_pending_offers: pendingOffersCount > 0,
+        pending_offers_count: pendingOffersCount,
+        had_future_appointments: futureAppointmentsCount > 0,
+        future_appointments_count: futureAppointmentsCount
+      }
+    })
+    .eq("organization_id", organization.id)
+    .eq("id", customer.id)
+    .is("deleted_at", null);
+
+  if (updateError) {
+    redirectWithCustomerActionMessage(returnTo, "error", genericClientSaveError);
+  }
+
+  const [waitlistUpdate, offersUpdate] = await Promise.all([
+    supabase
+      .from("waitlist_entries")
+      .update({ status: "removed" })
+      .eq("organization_id", organization.id)
+      .eq("customer_id", customer.id)
+      .eq("status", "active"),
+    supabase
+      .from("opening_offers")
+      .update({ status: "rejected" })
+      .eq("organization_id", organization.id)
+      .eq("customer_id", customer.id)
+      .in("status", ["pending", "sent", "responded"])
+  ]);
+
+  if (waitlistUpdate.error || offersUpdate.error) {
+    console.warn("Customer operational cleanup failed after soft delete", {
+      customerId: customer.id,
+      organizationId: organization.id
+    });
+  }
+
+  await supabase.from("audit_logs").insert({
+    organization_id: organization.id,
+    action: "customer.deleted",
+    entity_type: "customers",
+    entity_id: customer.id,
+    metadata: {
+      customer_id: customer.id,
+      reason_length: input.value.reason.length,
+      had_active_waitlist_entries: activeWaitlistCount > 0,
+      active_waitlist_entries_count: activeWaitlistCount,
+      pending_offers_count: pendingOffersCount,
+      future_appointments_count: futureAppointmentsCount
+    }
+  });
+
+  await recordManagerModeDashboardAction({
+    action: "admin.manager_mode.customer.deleted",
+    entityType: "customers",
+    entityId: customer.id,
+    metadata: {
+      pending_offers_count: pendingOffersCount,
+      active_waitlist_entries_count: activeWaitlistCount
+    }
+  });
+
+  revalidateCustomerSurfaces();
+  redirectWithCustomerActionMessage(
+    "/dashboard/clients?tab=deleted",
+    "message",
+    "Client deleted."
+  );
+}
+
+export async function restoreCustomerAction(formData: FormData) {
+  const customerId = String(formData.get("customerId") ?? "").trim();
+  const returnTo = buildSafeCustomerReturnPath(
+    String(formData.get("returnTo") ?? ""),
+    "/dashboard/clients?tab=deleted"
+  );
+
+  if (!customerId) {
+    redirectWithCustomerActionMessage(returnTo, "error", "Client not found.");
+  }
+
+  const organization = await requireReadyOrganization({
+    canPerform: canManageCustomers
+  });
+  const supabase = await createSupabaseServerClient();
+  const { data: customer, error: customerError } = await supabase
+    .from("customers")
+    .select("id, phone_e164, deleted_at")
+    .eq("organization_id", organization.id)
+    .eq("id", customerId)
+    .maybeSingle();
+
+  if (customerError) {
+    redirectWithCustomerActionMessage(returnTo, "error", genericClientSaveError);
+  }
+
+  if (!customer) {
+    redirectWithCustomerActionMessage(returnTo, "error", "Client not found.");
+  }
+
+  if (!customer.deleted_at) {
+    redirectWithCustomerActionMessage(
+      "/dashboard/clients?tab=active",
+      "notice",
+      "Client is already active."
+    );
+  }
+
+  const { data: duplicateCustomer, error: duplicateError } = await supabase
+    .from("customers")
+    .select("id")
+    .eq("organization_id", organization.id)
+    .eq("phone_e164", customer.phone_e164)
+    .is("deleted_at", null)
+    .neq("id", customer.id)
+    .maybeSingle();
+
+  if (duplicateError) {
+    redirectWithCustomerActionMessage(returnTo, "error", genericClientSaveError);
+  }
+
+  if (duplicateCustomer) {
+    await supabase.from("audit_logs").insert({
+      organization_id: organization.id,
+      action: "customer.restore_blocked",
+      entity_type: "customers",
+      entity_id: customer.id,
+      metadata: {
+        customer_id: customer.id,
+        reason: "active_phone_conflict",
+        conflicting_customer_id: duplicateCustomer.id
+      }
+    });
+
+    redirectWithCustomerActionMessage(
+      returnTo,
+      "error",
+      "A current active client already uses this phone number. Merge/resolve manually."
+    );
+  }
+
+  const actorProfileId = await getCurrentOrganizationProfileId({
+    supabase,
+    organizationId: organization.id
+  });
+  const { error: restoreError } = await supabase
+    .from("customers")
+    .update({
+      deleted_at: null,
+      deleted_by_profile_id: null,
+      deleted_reason: null,
+      restored_at: new Date().toISOString(),
+      restored_by_profile_id: actorProfileId
+    })
+    .eq("organization_id", organization.id)
+    .eq("id", customer.id);
+
+  if (restoreError) {
+    redirectWithCustomerActionMessage(returnTo, "error", genericClientSaveError);
+  }
+
+  await supabase.from("audit_logs").insert({
+    organization_id: organization.id,
+    action: "customer.restored",
+    entity_type: "customers",
+    entity_id: customer.id,
+    metadata: {
+      customer_id: customer.id
+    }
+  });
+
+  await recordManagerModeDashboardAction({
+    action: "admin.manager_mode.customer.restored",
+    entityType: "customers",
+    entityId: customer.id
+  });
+
+  revalidateCustomerSurfaces();
+  redirectWithCustomerActionMessage(
+    "/dashboard/clients?tab=active",
+    "message",
+    "Client restored."
+  );
+}
+
 export async function createWaitlistEntryAction(formData: FormData) {
   const input = buildWaitlistCreateInput({
     customerId: formData.get("customerId"),
@@ -726,7 +1063,7 @@ export async function createWaitlistEntryAction(formData: FormData) {
   const supabase = await createSupabaseServerClient();
   const { data: customer, error: customerError } = await supabase
     .from("customers")
-    .select("id")
+    .select("id, deleted_at")
     .eq("organization_id", organization.id)
     .eq("id", input.value.customerId)
     .single();
@@ -735,6 +1072,13 @@ export async function createWaitlistEntryAction(formData: FormData) {
     redirectWithError(
       "/dashboard/waitlist",
       customerError?.message ?? "Client not found for this organization."
+    );
+  }
+
+  if (customer.deleted_at) {
+    redirectWithError(
+      "/dashboard/waitlist",
+      "Deleted clients cannot be added to the operational waitlist."
     );
   }
 
@@ -1054,7 +1398,7 @@ async function countEligibleOpeningRecipients({
     await Promise.all([
       supabase
         .from("customers")
-        .select("id, phone_e164")
+        .select("id, phone_e164, deleted_at")
         .eq("organization_id", organizationId)
         .in("id", customerIds),
       supabase
@@ -1113,7 +1457,8 @@ async function countEligibleOpeningRecipients({
         waitlistStatus: entry.status as "active",
         serviceId: entry.service_id,
         serviceInterestIds: serviceInterestsByEntry.get(entry.id) ?? [],
-        alreadyOffered: false
+        alreadyOffered: false,
+        deletedAt: customer?.deleted_at ?? null
       };
     }),
     serviceId
@@ -1181,7 +1526,7 @@ async function sendOpeningSmsAlerts({
       : Promise.resolve({ data: null, error: null }),
     supabase
       .from("customers")
-      .select("id, full_name, phone_e164, preferred_language")
+      .select("id, full_name, phone_e164, preferred_language, deleted_at")
       .eq("organization_id", organization.id)
       .in("id", customerIds),
     supabase
@@ -1217,6 +1562,7 @@ async function sendOpeningSmsAlerts({
 
     return Boolean(
       customer?.phone_e164 &&
+        !customer.deleted_at &&
         /^\+[1-9][0-9]{7,14}$/.test(customer.phone_e164) &&
         consentByCustomer.get(offer.customer_id) === "opted_in"
     );
@@ -1507,10 +1853,54 @@ export async function validateOpeningOfferAction(formData: FormData) {
     );
   }
 
-  await requireReadyOrganization({
+  const organization = await requireReadyOrganization({
     canPerform: canValidateBookings
   });
   const supabase = await createSupabaseServerClient();
+  const { data: offer, error: offerLookupError } = await supabase
+    .from("opening_offers")
+    .select("id, customer_id, status")
+    .eq("organization_id", organization.id)
+    .eq("opening_id", openingId)
+    .eq("id", offerId)
+    .maybeSingle();
+
+  if (offerLookupError || !offer) {
+    redirectWithError(
+      `/dashboard/cancellations/${openingId}`,
+      offerLookupError?.message ?? "Opening offer not found."
+    );
+  }
+
+  const { data: customer, error: customerLookupError } = await supabase
+    .from("customers")
+    .select("id, deleted_at")
+    .eq("organization_id", organization.id)
+    .eq("id", offer.customer_id)
+    .maybeSingle();
+
+  if (customerLookupError) {
+    redirectWithError(`/dashboard/cancellations/${openingId}`, genericClientSaveError);
+  }
+
+  if (customer?.deleted_at) {
+    await supabase.from("audit_logs").insert({
+      organization_id: organization.id,
+      action: "customer.deleted_selection_blocked",
+      entity_type: "opening_offers",
+      entity_id: offer.id,
+      metadata: {
+        customer_id: offer.customer_id,
+        opening_id: openingId
+      }
+    });
+
+    redirectWithError(
+      `/dashboard/cancellations/${openingId}`,
+      "This client was deleted and cannot be selected for a recovered spot."
+    );
+  }
+
   const { error } = await supabase.rpc("validate_opening_offer", {
     target_opening_id: openingId,
     target_offer_id: offerId,
