@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import {
+  getCurrentPlatformAdminAccess,
   getPostSignInRedirectPath,
   getSafeInternalRedirectPath
 } from "@/lib/auth/platform-admin";
@@ -59,6 +60,23 @@ export async function signInAction(formData: FormData) {
 
   if (error) {
     authErrorRedirect("/sign-in", error.message, requestedRedirect);
+  }
+
+  const adminAccess = await getCurrentPlatformAdminAccess();
+
+  if (adminAccess.status === "authorized") {
+    const safeRedirect = getSafeInternalRedirectPath(requestedRedirect);
+
+    if (
+      safeRedirect &&
+      (safeRedirect === "/admin" ||
+        safeRedirect.startsWith("/admin/") ||
+        safeRedirect.startsWith("/admin?"))
+    ) {
+      redirect(safeRedirect);
+    }
+
+    redirect("/admin");
   }
 
   redirect(

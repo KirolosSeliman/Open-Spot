@@ -569,28 +569,117 @@ export type Database = {
       };
       platform_admins: {
         Row: {
-          user_id: string;
-          role: "platform_owner" | "support" | "readonly";
-          active: boolean;
+          id: string;
+          user_id: string | null;
+          email: string;
+          role: "super_admin" | "account_admin" | "support_admin" | "analyst";
+          status: "active" | "inactive" | "suspended";
           created_at: string;
+          updated_at: string;
+          last_seen_at: string | null;
+          active: boolean;
           created_by: string | null;
           notes: string | null;
         };
         Insert: {
-          user_id: string;
-          role: "platform_owner" | "support" | "readonly";
-          active?: boolean;
+          id?: string;
+          user_id?: string | null;
+          email: string;
+          role?: "super_admin" | "account_admin" | "support_admin" | "analyst";
+          status?: "active" | "inactive" | "suspended";
           created_at?: string;
+          updated_at?: string;
+          last_seen_at?: string | null;
+          active?: boolean;
           created_by?: string | null;
           notes?: string | null;
         };
         Update: {
-          user_id?: string;
-          role?: "platform_owner" | "support" | "readonly";
-          active?: boolean;
+          id?: string;
+          user_id?: string | null;
+          email?: string;
+          role?: "super_admin" | "account_admin" | "support_admin" | "analyst";
+          status?: "active" | "inactive" | "suspended";
           created_at?: string;
+          updated_at?: string;
+          last_seen_at?: string | null;
+          active?: boolean;
           created_by?: string | null;
           notes?: string | null;
+        };
+        Relationships: [];
+      };
+      platform_admin_organization_access: {
+        Row: {
+          id: string;
+          platform_admin_id: string;
+          organization_id: string;
+          access_level: "read_only" | "support" | "manager_mode";
+          granted_by: string | null;
+          granted_at: string;
+          revoked_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          platform_admin_id: string;
+          organization_id: string;
+          access_level?: "read_only" | "support" | "manager_mode";
+          granted_by?: string | null;
+          granted_at?: string;
+          revoked_at?: string | null;
+        };
+        Update: {
+          platform_admin_id?: string;
+          organization_id?: string;
+          access_level?: "read_only" | "support" | "manager_mode";
+          granted_by?: string | null;
+          granted_at?: string;
+          revoked_at?: string | null;
+        };
+        Relationships: [];
+      };
+      platform_admin_audit_logs: {
+        Row: {
+          id: string;
+          platform_admin_id: string | null;
+          admin_user_id: string | null;
+          admin_email: string | null;
+          organization_id: string | null;
+          action: string;
+          entity_type: string | null;
+          entity_id: string | null;
+          metadata: Json;
+          ip: string | null;
+          user_agent: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          platform_admin_id?: string | null;
+          admin_user_id?: string | null;
+          admin_email?: string | null;
+          organization_id?: string | null;
+          action: string;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          metadata?: Json;
+          ip?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          platform_admin_id?: string | null;
+          admin_user_id?: string | null;
+          admin_email?: string | null;
+          organization_id?: string | null;
+          action?: string;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          metadata?: Json;
+          ip?: string | null;
+          user_agent?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };

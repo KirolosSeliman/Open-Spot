@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { isPlatformAdminEmail } from "@/lib/auth/platform-admin";
+import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
 import { isSupabaseConfigured } from "@/lib/env/config";
 import { decideWorkspaceRedirect } from "@/lib/organization/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -161,7 +161,9 @@ export async function redirectAuthenticatedUserByWorkspace() {
     return;
   }
 
-  if (isPlatformAdminEmail(user.email)) {
+  const adminAccess = await getCurrentPlatformAdminAccess();
+
+  if (adminAccess.status === "authorized") {
     redirect("/admin");
   }
 
