@@ -20,7 +20,7 @@ export function maskPhoneNumber(phone: string | null | undefined) {
   const value = String(phone ?? "").trim();
 
   if (!value) {
-    return "Unknown";
+    return "—";
   }
 
   const digits = value.replace(/\D/g, "");

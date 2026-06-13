@@ -2,8 +2,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import {
+  disableOrganizationAction,
+  endOrganizationManagerSessionsAction,
+  pauseOrganizationSmsAction,
+  reactivateOrganizationAction,
+  resumeOrganizationSmsAction,
+  runOrganizationHealthCheckAction,
+  toggleOrganizationInternalTestAction,
+  updateOrganizationAdminNoteAction,
+  updateOrganizationSupportStatusAction
+} from "@/lib/admin/actions";
 import { startManagerModeAction } from "@/lib/admin/manager-mode-actions";
 import { parseAdminDateRange, formatAdminDateInput } from "@/lib/admin/date-range";
+import { loadOrganizationAdminControlsPanel } from "@/lib/admin/organization-controls";
 import { loadAdminOrganizationOverview } from "@/lib/admin/organizations";
 import { formatEstimatedSmsCost } from "@/lib/admin/sms-cost";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
@@ -146,6 +158,11 @@ export default async function AdminOrganizationDetailPage({
     notFound();
   }
 
+  const controlsPanel = await loadOrganizationAdminControlsPanel({
+    admin: access.admin,
+    organizationId: id
+  });
+
   return (
     <section className="grid gap-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -171,6 +188,24 @@ export default async function AdminOrganizationDetailPage({
             href={`/admin/organizations/${overview.organization.id}?range=${overview.range.rangeKey}`}
           >
             Refresh
+          </Link>
+          <Link
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black transition hover:bg-[#f2f7f4]"
+            href={`/admin/organizations/${overview.organization.id}/sms`}
+          >
+            SMS
+          </Link>
+          <Link
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black transition hover:bg-[#f2f7f4]"
+            href={`/admin/organizations/${overview.organization.id}/replies`}
+          >
+            Replies
+          </Link>
+          <Link
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black transition hover:bg-[#f2f7f4]"
+            href={`/admin/organizations/${overview.organization.id}/compliance`}
+          >
+            Compliance
           </Link>
         </div>
       </div>
@@ -432,6 +467,165 @@ export default async function AdminOrganizationDetailPage({
               {warning}
             </p>
           ))}
+        </div>
+      </Card>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <h2 className="text-lg font-black">Internal support</h2>
+          <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+            Internal-only controls. These fields are not visible in the merchant
+            dashboard.
+          </p>
+          <div className="mt-4 grid gap-4">
+            <form action={updateOrganizationSupportStatusAction} className="grid gap-3 sm:grid-cols-[1fr_auto]">
+              <input name="organizationId" type="hidden" value={overview.organization.id} />
+              <select
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm font-bold"
+                defaultValue={controlsPanel.controls.support_status}
+                disabled={!controlsPanel.permissions.canUpdateSupportStatus}
+                name="supportStatus"
+              >
+                <option value="healthy">Healthy</option>
+                <option value="needs_setup">Needs setup</option>
+                <option value="watchlist">Watchlist</option>
+                <option value="blocked">Blocked</option>
+                <option value="disabled">Disabled</option>
+              </select>
+              <button className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:opacity-50" disabled={!controlsPanel.permissions.canUpdateSupportStatus} type="submit">
+                Save status
+              </button>
+            </form>
+
+            <form action={updateOrganizationAdminNoteAction} className="grid gap-3">
+              <input name="organizationId" type="hidden" value={overview.organization.id} />
+              <textarea
+                className="min-h-28 rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm"
+                defaultValue={controlsPanel.controls.admin_note ?? ""}
+                disabled={!controlsPanel.permissions.canUpdateAdminNote}
+                name="adminNote"
+                placeholder="Internal support note"
+              />
+              <button className="min-h-11 w-fit rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:opacity-50" disabled={!controlsPanel.permissions.canUpdateAdminNote} type="submit">
+                Save note
+              </button>
+            </form>
+
+            <form action={toggleOrganizationInternalTestAction} className="flex flex-wrap items-center gap-3">
+              <input name="organizationId" type="hidden" value={overview.organization.id} />
+              <input name="isInternalTest" type="hidden" value={controlsPanel.controls.is_internal_test ? "false" : "true"} />
+              <span className="text-sm font-bold text-[var(--muted)]">
+                Internal/test: {controlsPanel.controls.is_internal_test ? "Yes" : "No"}
+              </span>
+              <button className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black disabled:opacity-50" disabled={!controlsPanel.permissions.canMarkInternalTest} type="submit">
+                {controlsPanel.controls.is_internal_test ? "Unmark" : "Mark internal/test"}
+              </button>
+            </form>
+          </div>
+        </Card>
+
+        <Card>
+          <h2 className="text-lg font-black">SMS and organization controls</h2>
+          <div className="mt-4 grid gap-3 text-sm text-[var(--muted)]">
+            <p>
+              SMS paused:{" "}
+              <strong className="text-[var(--foreground)]">
+                {controlsPanel.controls.sms_sending_paused ? "Yes" : "No"}
+              </strong>
+            </p>
+            <p>
+              Disabled:{" "}
+              <strong className="text-[var(--foreground)]">
+                {controlsPanel.controls.disabled_at ? "Yes" : "No"}
+              </strong>
+            </p>
+            {controlsPanel.controls.sms_pause_reason ? (
+              <p>Pause reason: {controlsPanel.controls.sms_pause_reason}</p>
+            ) : null}
+            {controlsPanel.controls.disabled_reason ? (
+              <p>Disabled reason: {controlsPanel.controls.disabled_reason}</p>
+            ) : null}
+            {controlsPanel.controls.last_health_check_at ? (
+              <p>
+                Last health check: {formatDate(controlsPanel.controls.last_health_check_at)} ·{" "}
+                {controlsPanel.controls.last_health_check_status ?? "unknown"}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            {controlsPanel.controls.sms_sending_paused ? (
+              <form action={resumeOrganizationSmsAction}>
+                <input name="organizationId" type="hidden" value={overview.organization.id} />
+                <button className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:opacity-50" disabled={!controlsPanel.permissions.canResumeSms} type="submit">
+                  Resume SMS
+                </button>
+              </form>
+            ) : (
+              <form action={pauseOrganizationSmsAction} className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                <input name="organizationId" type="hidden" value={overview.organization.id} />
+                <input className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm" name="reason" placeholder="Pause reason" required />
+                <button className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:opacity-50" disabled={!controlsPanel.permissions.canPauseSms} type="submit">
+                  Pause SMS
+                </button>
+              </form>
+            )}
+
+            {controlsPanel.controls.disabled_at ? (
+              <form action={reactivateOrganizationAction}>
+                <input name="organizationId" type="hidden" value={overview.organization.id} />
+                <button className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:opacity-50" disabled={!controlsPanel.permissions.canReactivate} type="submit">
+                  Reactivate organization
+                </button>
+              </form>
+            ) : (
+              <form action={disableOrganizationAction} className="grid gap-2 sm:grid-cols-[1fr_auto]">
+                <input name="organizationId" type="hidden" value={overview.organization.id} />
+                <input className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm" name="reason" placeholder="Disable reason" required />
+                <button className="min-h-11 rounded-full border border-red-200 bg-red-50 px-5 text-sm font-black text-red-700 disabled:opacity-50" disabled={!controlsPanel.permissions.canDisable} type="submit">
+                  Disable organization
+                </button>
+              </form>
+            )}
+
+            <form action={runOrganizationHealthCheckAction}>
+              <input name="organizationId" type="hidden" value={overview.organization.id} />
+              <button className="min-h-11 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black disabled:opacity-50" disabled={!controlsPanel.permissions.canRunHealthCheck} type="submit">
+                Run health check
+              </button>
+            </form>
+          </div>
+        </Card>
+      </div>
+
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-black">Active manager sessions</h2>
+            <p className="mt-1 text-sm text-[var(--muted)]">
+              Ending sessions marks them ended; it does not delete audit history.
+            </p>
+          </div>
+          <form action={endOrganizationManagerSessionsAction}>
+            <input name="organizationId" type="hidden" value={overview.organization.id} />
+            <button className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black disabled:opacity-50" disabled={!controlsPanel.permissions.canEndManagerSessions || controlsPanel.activeManagerSessions.length === 0} type="submit">
+              End sessions
+            </button>
+          </form>
+        </div>
+        <div className="mt-4 grid gap-3">
+          {controlsPanel.activeManagerSessions.map((session) => (
+            <div className="rounded-2xl border border-[var(--line)] p-4" key={session.id}>
+              <p className="font-black">{session.admin_email}</p>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                Started {formatDate(session.started_at)} · Expires {formatDate(session.expires_at)}
+              </p>
+              <p className="mt-2 text-sm text-[var(--muted)]">{session.reason}</p>
+            </div>
+          ))}
+          {controlsPanel.activeManagerSessions.length === 0 ? (
+            <p className="text-sm text-[var(--muted)]">No active manager sessions.</p>
+          ) : null}
         </div>
       </Card>
 

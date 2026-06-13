@@ -7,6 +7,7 @@ import {
   parseTwilioStatusRequest,
   validateTwilioWebhookRequest
 } from "@/lib/sms/twilio";
+import { recordSmsWebhookEvent } from "@/lib/sms/webhook-events";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,14 @@ export async function POST(request: Request) {
   const params = Object.fromEntries(new URLSearchParams(body));
 
   if (!validateTwilioWebhookRequest(request, params)) {
+    await recordSmsWebhookEvent({
+      provider: "twilio",
+      event_type: "status_callback",
+      processing_status: "invalid_signature",
+      http_status: 401,
+      error_message: "Invalid Twilio webhook signature."
+    });
+
     return NextResponse.json(
       { error: "Invalid Twilio webhook signature." },
       { status: 401 }
@@ -25,6 +34,19 @@ export async function POST(request: Request) {
   const supabase = createSupabaseServiceClient();
 
   if (!supabase) {
+    await recordSmsWebhookEvent({
+      provider: "twilio",
+      event_type: "status_callback",
+      processing_status: "storage_unavailable",
+      provider_message_id: status.providerMessageId,
+      from_number: status.from,
+      to_number: status.to,
+      http_status: 503,
+      payload_summary: {
+        message_status: status.messageStatus
+      }
+    });
+
     return NextResponse.json(
       {
         status: "storage_unavailable",
@@ -35,6 +57,19 @@ export async function POST(request: Request) {
   }
 
   if (!status.providerMessageId) {
+    await recordSmsWebhookEvent({
+      provider: "twilio",
+      event_type: "status_callback",
+      processing_status: "ignored",
+      from_number: status.from,
+      to_number: status.to,
+      http_status: 202,
+      error_message: "Twilio status callback did not include MessageSid or SmsSid.",
+      payload_summary: {
+        message_status: status.messageStatus
+      }
+    });
+
     return NextResponse.json(
       {
         status: "ignored",
@@ -53,6 +88,20 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   if (lookupError) {
+    await recordSmsWebhookEvent({
+      provider: "twilio",
+      event_type: "status_callback",
+      processing_status: "error",
+      provider_message_id: status.providerMessageId,
+      from_number: status.from,
+      to_number: status.to,
+      http_status: 500,
+      error_message: "Twilio status lookup failed.",
+      payload_summary: {
+        message_status: status.messageStatus
+      }
+    });
+
     return NextResponse.json(
       { error: "Twilio status lookup failed." },
       { status: 500 }
@@ -60,6 +109,21 @@ export async function POST(request: Request) {
   }
 
   if (!message) {
+    await recordSmsWebhookEvent({
+      provider: "twilio",
+      event_type: "status_callback",
+      processing_status: "status_unmatched",
+      provider_message_id: status.providerMessageId,
+      from_number: status.from,
+      to_number: status.to,
+      http_status: 202,
+      error_code: status.errorCode,
+      error_message: status.errorMessage,
+      payload_summary: {
+        message_status: status.messageStatus
+      }
+    });
+
     return NextResponse.json(
       {
         status: "received_unlinked",
@@ -103,6 +167,22 @@ export async function POST(request: Request) {
     .eq("organization_id", message.organization_id);
 
   if (updateError) {
+    await recordSmsWebhookEvent({
+      provider: "twilio",
+      event_type: "status_callback",
+      processing_status: "error",
+      organization_id: message.organization_id,
+      sms_message_id: message.id,
+      provider_message_id: status.providerMessageId,
+      from_number: status.from,
+      to_number: status.to,
+      http_status: 500,
+      error_message: "Twilio status update failed.",
+      payload_summary: {
+        message_status: status.messageStatus
+      }
+    });
+
     return NextResponse.json(
       { error: "Twilio status update failed." },
       { status: 500 }
@@ -119,6 +199,24 @@ export async function POST(request: Request) {
       message_status: status.messageStatus,
       error_code: status.errorCode,
       error_message: status.errorMessage
+    }
+  });
+
+  await recordSmsWebhookEvent({
+    provider: "twilio",
+    event_type: "status_callback",
+    processing_status: "status_updated",
+    organization_id: message.organization_id,
+    sms_message_id: message.id,
+    provider_message_id: status.providerMessageId,
+    from_number: status.from,
+    to_number: status.to,
+    http_status: 200,
+    error_code: status.errorCode,
+    error_message: status.errorMessage,
+    payload_summary: {
+      message_status: status.messageStatus,
+      delivery_status: deliveryStatus
     }
   });
 

@@ -7,6 +7,7 @@ import type {
   PlatformAdminRole
 } from "@/lib/auth/platform-admin";
 import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
+import { requireOrganizationNotDisabled } from "@/lib/admin/organization-controls";
 import { recordPlatformAdminAuditLog } from "@/lib/admin/audit";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
@@ -161,6 +162,8 @@ export async function startPlatformAdminManagerMode({
   if (organizationResult.error || !organizationResult.data) {
     notFound();
   }
+
+  await requireOrganizationNotDisabled(organizationId);
 
   if (accessResult.error) {
     throw new Error(accessResult.error.message);

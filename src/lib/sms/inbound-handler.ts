@@ -6,6 +6,10 @@ import { classifyInboundSmsBody } from "@/lib/sms/inbound";
 import { createSmsProvider } from "@/lib/sms/factory";
 import { getNextResponseRank } from "@/lib/sms/simulation";
 import {
+  buildSmsBodyPreview,
+  recordSmsWebhookEvent
+} from "@/lib/sms/webhook-events";
+import {
   isSimulatorWebhookAllowed,
   SIMULATOR_WEBHOOK_SECRET_HEADER
 } from "@/lib/sms/simulator";
@@ -23,6 +27,14 @@ export async function handleInboundSmsRequest(
       requestSecret: request.headers.get(SIMULATOR_WEBHOOK_SECRET_HEADER)
     })
   ) {
+    await recordSmsWebhookEvent({
+      provider: providerName,
+      event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+      processing_status: "invalid_signature",
+      http_status: 401,
+      error_message: "Simulator webhook is not authorized."
+    });
+
     return NextResponse.json(
       { error: "Simulator webhook is not authorized." },
       { status: 401 }
@@ -32,6 +44,14 @@ export async function handleInboundSmsRequest(
   const verified = await provider.verifyWebhookSignature(request);
 
   if (!verified) {
+    await recordSmsWebhookEvent({
+      provider: providerName,
+      event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+      processing_status: "invalid_signature",
+      http_status: 401,
+      error_message: "Invalid SMS webhook signature."
+    });
+
     return NextResponse.json({ error: "Invalid SMS webhook signature." }, { status: 401 });
   }
 
@@ -40,6 +60,18 @@ export async function handleInboundSmsRequest(
 
   if (!supabase) {
     const classification = classifyInboundSmsBody(inbound.body);
+
+    await recordSmsWebhookEvent({
+      provider: providerName,
+      event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+      processing_status: "storage_unavailable",
+      provider_message_id: inbound.providerMessageId ?? null,
+      from_number: inbound.from,
+      to_number: inbound.to,
+      classification,
+      http_status: 503,
+      body_preview: inbound.body
+    });
 
     return NextResponse.json(
       {
@@ -81,6 +113,28 @@ export async function handleInboundSmsRequest(
             ? "waitlist"
             : "unknown"
       );
+
+      await recordSmsWebhookEvent({
+        provider: providerName,
+        event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+        processing_status:
+          existingInbound.opening_id || existingInbound.appointment_id
+            ? "received_linked"
+            : "received_unlinked",
+        organization_id: existingInbound.organization_id,
+        customer_id: existingInbound.customer_id,
+        opening_id: existingInbound.opening_id,
+        appointment_id: existingInbound.appointment_id,
+        sms_message_id: existingInbound.id,
+        provider_message_id: inbound.providerMessageId,
+        from_number: fromNumber,
+        to_number: toNumber,
+        classification: existingClassification,
+        body_preview: existingInbound.body,
+        payload_summary: {
+          idempotent: true
+        }
+      });
 
       return NextResponse.json({
         classification: existingClassification,
@@ -124,6 +178,21 @@ export async function handleInboundSmsRequest(
   );
 
   if (!context?.organization_id || !context.customer_id) {
+    await recordSmsWebhookEvent({
+      provider: providerName,
+      event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+      processing_status: "received_unlinked",
+      provider_message_id: inbound.providerMessageId ?? null,
+      from_number: fromNumber,
+      to_number: toNumber,
+      classification,
+      http_status: 202,
+      body_preview: buildSmsBodyPreview(inbound.body),
+      payload_summary: {
+        reason: "No prior outbound message context matched this sender."
+      }
+    });
+
     return NextResponse.json(
       {
         classification,
@@ -154,6 +223,23 @@ export async function handleInboundSmsRequest(
     .single();
 
   if (messageError || !inboundMessage) {
+    await recordSmsWebhookEvent({
+      provider: providerName,
+      event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+      processing_status: "persistence_failed",
+      organization_id: context.organization_id,
+      customer_id: context.customer_id,
+      opening_id: context.opening_id,
+      appointment_id: context.appointment_id,
+      provider_message_id: inbound.providerMessageId ?? null,
+      from_number: fromNumber,
+      to_number: toNumber,
+      classification,
+      http_status: 500,
+      error_message: messageError?.message ?? "Inbound message persistence failed.",
+      body_preview: inbound.body
+    });
+
     return NextResponse.json(
       { error: "Inbound message persistence failed." },
       { status: 500 }
@@ -171,6 +257,23 @@ export async function handleInboundSmsRequest(
       appointment_id: context.appointment_id,
       classification
     }
+  });
+
+  await recordSmsWebhookEvent({
+    provider: providerName,
+    event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+    processing_status: "received_linked",
+    organization_id: context.organization_id,
+    customer_id: context.customer_id,
+    opening_id: context.opening_id,
+    appointment_id: context.appointment_id,
+    sms_message_id: inboundMessage.id,
+    provider_message_id: inbound.providerMessageId ?? null,
+    from_number: fromNumber,
+    to_number: toNumber,
+    classification,
+    http_status: 200,
+    body_preview: inbound.body
   });
 
   if (classification === "opt_out") {

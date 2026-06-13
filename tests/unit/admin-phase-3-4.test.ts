@@ -65,7 +65,7 @@ describe("admin phase 3 and 4 helpers", () => {
       })
     ).toBe(12.5);
     expect(maskPhoneNumber("+15142494425")).toBe("+1••••••4425");
-    expect(maskPhoneNumber(null)).toBe("Unknown");
+    expect(maskPhoneNumber(null)).toBe("—");
   });
 
   it("keeps manager mode access restricted and expiring", () => {

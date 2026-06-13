@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { SmsProviderClient } from "@/lib/sms/provider";
+import { isOrganizationSmsPaused } from "@/lib/admin/organization-controls";
 import type { Database } from "@/types/database";
 
 type ScheduledMessageRow =
@@ -199,6 +200,20 @@ async function processOneScheduledMessage({
 
     const customer = customerResult.data;
     const appointment = appointmentResult.data;
+    const organizationSmsPaused = await isOrganizationSmsPaused(
+      claimed.organization_id
+    );
+
+    if (organizationSmsPaused) {
+      await markMessageSkipped({
+        supabase,
+        message: claimed,
+        reason: "SMS sending is paused for this organization by platform admin."
+      });
+      summary.skipped += 1;
+      return;
+    }
+
     const skipReason = getScheduledMessageSkipReason({
       phoneE164: customer.phone_e164,
       consentStatus: consentResult.data?.status ?? "missing",

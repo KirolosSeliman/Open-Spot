@@ -14,7 +14,11 @@ export const metadata = {
 
 const adminNav = [
   { href: "/admin", label: "Overview" },
-  { href: "/admin/organizations", label: "Companies" }
+  { href: "/admin/organizations", label: "Companies" },
+  { href: "/admin/sms", label: "SMS" },
+  { href: "/admin/replies", label: "Replies" },
+  { href: "/admin/compliance", label: "Compliance" },
+  { href: "/admin/audit", label: "Audit" }
 ];
 
 export default async function AdminLayout({
@@ -55,12 +59,6 @@ export default async function AdminLayout({
                 {item.label}
               </Link>
             ))}
-            <span className="rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] opacity-60">
-              SMS diagnostics
-            </span>
-            <span className="rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] opacity-60">
-              Audit
-            </span>
           </nav>
 
           <div className="mt-auto rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4">
@@ -99,6 +97,12 @@ export default async function AdminLayout({
                   href="/admin/organizations"
                 >
                   Companies
+                </Link>
+                <Link
+                  className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black"
+                  href="/admin/sms"
+                >
+                  SMS
                 </Link>
                 <Link
                   className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black"

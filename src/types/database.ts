@@ -728,6 +728,219 @@ export type Database = {
         };
         Relationships: [];
       };
+      platform_sms_webhook_events: {
+        Row: {
+          id: string;
+          provider: string;
+          event_type: "inbound" | "status_callback" | "simulator_inbound";
+          processing_status:
+            | "received_linked"
+            | "received_unlinked"
+            | "invalid_signature"
+            | "status_updated"
+            | "status_unmatched"
+            | "storage_unavailable"
+            | "persistence_failed"
+            | "ignored"
+            | "error";
+          organization_id: string | null;
+          customer_id: string | null;
+          opening_id: string | null;
+          appointment_id: string | null;
+          sms_message_id: string | null;
+          provider_message_id: string | null;
+          from_number: string | null;
+          to_number: string | null;
+          classification: string | null;
+          http_status: number | null;
+          error_code: string | null;
+          error_message: string | null;
+          body_preview: string | null;
+          payload_summary: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider: string;
+          event_type: "inbound" | "status_callback" | "simulator_inbound";
+          processing_status:
+            | "received_linked"
+            | "received_unlinked"
+            | "invalid_signature"
+            | "status_updated"
+            | "status_unmatched"
+            | "storage_unavailable"
+            | "persistence_failed"
+            | "ignored"
+            | "error";
+          organization_id?: string | null;
+          customer_id?: string | null;
+          opening_id?: string | null;
+          appointment_id?: string | null;
+          sms_message_id?: string | null;
+          provider_message_id?: string | null;
+          from_number?: string | null;
+          to_number?: string | null;
+          classification?: string | null;
+          http_status?: number | null;
+          error_code?: string | null;
+          error_message?: string | null;
+          body_preview?: string | null;
+          payload_summary?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          provider?: string;
+          event_type?: "inbound" | "status_callback" | "simulator_inbound";
+          processing_status?:
+            | "received_linked"
+            | "received_unlinked"
+            | "invalid_signature"
+            | "status_updated"
+            | "status_unmatched"
+            | "storage_unavailable"
+            | "persistence_failed"
+            | "ignored"
+            | "error";
+          organization_id?: string | null;
+          customer_id?: string | null;
+          opening_id?: string | null;
+          appointment_id?: string | null;
+          sms_message_id?: string | null;
+          provider_message_id?: string | null;
+          from_number?: string | null;
+          to_number?: string | null;
+          classification?: string | null;
+          http_status?: number | null;
+          error_code?: string | null;
+          error_message?: string | null;
+          body_preview?: string | null;
+          payload_summary?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      platform_compliance_reviews: {
+        Row: {
+          id: string;
+          organization_id: string | null;
+          issue_key: string;
+          issue_type: string;
+          status: "open" | "reviewed" | "resolved" | "dismissed";
+          severity: "low" | "medium" | "high";
+          note: string | null;
+          reviewed_by_platform_admin_id: string | null;
+          reviewed_at: string | null;
+          resolved_at: string | null;
+          dismissed_at: string | null;
+          metadata: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id?: string | null;
+          issue_key: string;
+          issue_type: string;
+          status?: "open" | "reviewed" | "resolved" | "dismissed";
+          severity?: "low" | "medium" | "high";
+          note?: string | null;
+          reviewed_by_platform_admin_id?: string | null;
+          reviewed_at?: string | null;
+          resolved_at?: string | null;
+          dismissed_at?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string | null;
+          issue_key?: string;
+          issue_type?: string;
+          status?: "open" | "reviewed" | "resolved" | "dismissed";
+          severity?: "low" | "medium" | "high";
+          note?: string | null;
+          reviewed_by_platform_admin_id?: string | null;
+          reviewed_at?: string | null;
+          resolved_at?: string | null;
+          dismissed_at?: string | null;
+          metadata?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      platform_organization_admin_controls: {
+        Row: {
+          organization_id: string;
+          support_status: "healthy" | "needs_setup" | "watchlist" | "blocked" | "disabled";
+          admin_note: string | null;
+          is_internal_test: boolean;
+          sms_sending_paused: boolean;
+          sms_paused_at: string | null;
+          sms_paused_by_platform_admin_id: string | null;
+          sms_pause_reason: string | null;
+          sms_resumed_at: string | null;
+          sms_resumed_by_platform_admin_id: string | null;
+          disabled_at: string | null;
+          disabled_by_platform_admin_id: string | null;
+          disabled_reason: string | null;
+          reactivated_at: string | null;
+          reactivated_by_platform_admin_id: string | null;
+          last_health_check_at: string | null;
+          last_health_check_status: "healthy" | "warning" | "blocked" | "unknown" | null;
+          last_health_check_payload: Json;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          organization_id: string;
+          support_status?: "healthy" | "needs_setup" | "watchlist" | "blocked" | "disabled";
+          admin_note?: string | null;
+          is_internal_test?: boolean;
+          sms_sending_paused?: boolean;
+          sms_paused_at?: string | null;
+          sms_paused_by_platform_admin_id?: string | null;
+          sms_pause_reason?: string | null;
+          sms_resumed_at?: string | null;
+          sms_resumed_by_platform_admin_id?: string | null;
+          disabled_at?: string | null;
+          disabled_by_platform_admin_id?: string | null;
+          disabled_reason?: string | null;
+          reactivated_at?: string | null;
+          reactivated_by_platform_admin_id?: string | null;
+          last_health_check_at?: string | null;
+          last_health_check_status?: "healthy" | "warning" | "blocked" | "unknown" | null;
+          last_health_check_payload?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          organization_id?: string;
+          support_status?: "healthy" | "needs_setup" | "watchlist" | "blocked" | "disabled";
+          admin_note?: string | null;
+          is_internal_test?: boolean;
+          sms_sending_paused?: boolean;
+          sms_paused_at?: string | null;
+          sms_paused_by_platform_admin_id?: string | null;
+          sms_pause_reason?: string | null;
+          sms_resumed_at?: string | null;
+          sms_resumed_by_platform_admin_id?: string | null;
+          disabled_at?: string | null;
+          disabled_by_platform_admin_id?: string | null;
+          disabled_reason?: string | null;
+          reactivated_at?: string | null;
+          reactivated_by_platform_admin_id?: string | null;
+          last_health_check_at?: string | null;
+          last_health_check_status?: "healthy" | "warning" | "blocked" | "unknown" | null;
+          last_health_check_payload?: Json;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;

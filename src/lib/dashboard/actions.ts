@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { recordManagerModeDashboardAction } from "@/lib/admin/manager-mode";
+import { requireOrganizationSmsNotPaused } from "@/lib/admin/organization-controls";
 import {
   buildAppointmentCreateInput,
   buildAppointmentUpdateInput,
@@ -1068,6 +1069,8 @@ async function sendOpeningSmsAlerts({
   organization: Awaited<ReturnType<typeof requireReadyOrganization>>;
   openingId: string;
 }) {
+  await requireOrganizationSmsNotPaused(organization.id);
+
   const smsPersistence = await checkSmsDeliveryPersistenceReadiness();
 
   if (!smsPersistence.ready) {
@@ -1299,6 +1302,8 @@ export async function createOpeningAction(formData: FormData) {
   let redirectError: string | null = null;
 
   try {
+    await requireOrganizationSmsNotPaused(organization.id);
+
     const eligibleRecipientCount = await countEligibleOpeningRecipients({
       supabase,
       organizationId: organization.id,

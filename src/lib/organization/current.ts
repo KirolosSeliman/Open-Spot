@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { requireOrganizationNotDisabled } from "@/lib/admin/organization-controls";
 import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
 import { getActivePlatformAdminManagerMode } from "@/lib/admin/manager-mode";
 import { isSupabaseConfigured } from "@/lib/env/config";
@@ -96,6 +97,8 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
       );
     }
 
+    await requireOrganizationNotDisabled(managerMode.organizationId);
+
     const [servicesResult, customersResult] = await Promise.all([
       supabase
         .from("services")
@@ -179,6 +182,8 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
   if (organizationError || !organization) {
     throw new Error(organizationError?.message ?? "Organization not found.");
   }
+
+  await requireOrganizationNotDisabled(activeMembership.organization_id);
 
   const [servicesResult, customersResult] = await Promise.all([
     supabase
