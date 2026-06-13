@@ -10,12 +10,13 @@ import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current
 type SignInPageProps = {
   searchParams: Promise<{
     error?: string;
+    redirect?: string;
   }>;
 };
 
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   await redirectAuthenticatedUserByWorkspace();
-  const { error } = await searchParams;
+  const { error, redirect } = await searchParams;
 
   return (
     <PageShell>
@@ -32,6 +33,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             </p>
           ) : null}
           <form action={signInAction} className="grid gap-4">
+            {redirect ? (
+              <input name="redirect" type="hidden" value={redirect} />
+            ) : null}
             <label className="grid gap-2 text-sm font-semibold" htmlFor="email">
               Email
               <input

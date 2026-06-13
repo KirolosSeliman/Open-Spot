@@ -43,12 +43,17 @@ function isActiveDashboardRoute(pathname: string, href: string) {
 
 export function DashboardShell({
   workspace,
+  isPlatformAdmin = false,
   children
 }: {
   workspace: OrganizationWorkspace;
+  isPlatformAdmin?: boolean;
   children: ReactNode;
 }) {
   const pathname = usePathname();
+  const desktopNavItems = isPlatformAdmin
+    ? [...desktopNav, { href: "/admin", label: "Admin" }]
+    : desktopNav;
   const businessName =
     workspace.status === "ready" ? workspace.organization.name : "Espace aperçu";
   const workspaceNote =
@@ -70,7 +75,7 @@ export function DashboardShell({
             </p>
           </Link>
           <nav aria-label="Navigation dashboard" className="mt-6 grid gap-1">
-            {desktopNav.map((item) => (
+            {desktopNavItems.map((item) => (
               <Link
                 aria-current={
                   isActiveDashboardRoute(pathname, item.href) ? "page" : undefined

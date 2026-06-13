@@ -2,16 +2,39 @@
 
 import { redirect } from "next/navigation";
 
+import {
+  getPostSignInRedirectPath,
+  getSafeInternalRedirectPath
+} from "@/lib/auth/platform-admin";
 import { isSupabaseConfigured } from "@/lib/env/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-function authErrorRedirect(path: string, message: string): never {
-  redirect(`${path}?error=${encodeURIComponent(message)}`);
+function authErrorRedirect(
+  path: string,
+  message: string,
+  requestedRedirect?: string | null
+): never {
+  const params = new URLSearchParams({
+    error: message
+  });
+  const safeRedirect = getSafeInternalRedirectPath(requestedRedirect);
+
+  if (safeRedirect) {
+    params.set("redirect", safeRedirect);
+  }
+
+  redirect(`${path}?${params.toString()}`);
 }
 
 export async function signInAction(formData: FormData) {
+  const requestedRedirect = String(formData.get("redirect") ?? "");
+
   if (!isSupabaseConfigured()) {
-    authErrorRedirect("/sign-in", "Supabase is not configured locally.");
+    authErrorRedirect(
+      "/sign-in",
+      "Supabase is not configured locally.",
+      requestedRedirect
+    );
   }
 
   const email = String(formData.get("email") ?? "")
@@ -20,7 +43,11 @@ export async function signInAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
 
   if (!email || !password) {
-    authErrorRedirect("/sign-in", "Email and password are required.");
+    authErrorRedirect(
+      "/sign-in",
+      "Email and password are required.",
+      requestedRedirect
+    );
   }
 
   const supabase = await createSupabaseServerClient();
@@ -30,10 +57,15 @@ export async function signInAction(formData: FormData) {
   });
 
   if (error) {
-    authErrorRedirect("/sign-in", error.message);
+    authErrorRedirect("/sign-in", error.message, requestedRedirect);
   }
 
-  redirect("/dashboard");
+  redirect(
+    getPostSignInRedirectPath({
+      email,
+      requestedRedirect
+    })
+  );
 }
 
 export async function signUpAction(formData: FormData) {

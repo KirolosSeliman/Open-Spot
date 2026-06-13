@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { isPlatformAdminEmail } from "@/lib/auth/platform-admin";
 import { isSupabaseConfigured } from "@/lib/env/config";
 import { decideWorkspaceRedirect } from "@/lib/organization/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -158,6 +159,10 @@ export async function redirectAuthenticatedUserByWorkspace() {
 
   if (!user) {
     return;
+  }
+
+  if (isPlatformAdminEmail(user.email)) {
+    redirect("/admin");
   }
 
   const { data: membership, error } = await supabase
