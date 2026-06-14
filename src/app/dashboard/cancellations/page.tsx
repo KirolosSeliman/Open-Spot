@@ -10,6 +10,7 @@ import {
   tableHeadClass
 } from "@/components/dashboard/dashboard-ui";
 import { loadOpenings } from "@/lib/dashboard/operations-data";
+import { formatOpeningStatus } from "@/lib/dashboard/status-labels";
 
 function formatCurrency(cents: number | null) {
   if (cents === null) {
@@ -69,10 +70,10 @@ export default async function CancellationsPage() {
                     {new Date(opening.end_time).toLocaleString("fr-CA")}
                   </td>
                   <td className={tableCellClass}>
-                    <StatusBadge>{opening.status}</StatusBadge>
+                    <StatusBadge>{formatOpeningStatus(opening.status, "fr")}</StatusBadge>
                   </td>
                   <td className={tableCellClass}>
-                    {formatCurrency(opening.normal_price_cents)}
+                    {formatCurrency(opening.displayValueCents)}
                   </td>
                 </tr>
               ))}

@@ -12,6 +12,16 @@ export type OpeningSmsInput = {
   includeOptOut?: boolean;
 };
 
+export type OpeningConfirmationSmsInput = {
+  businessName: string;
+  serviceName: string;
+  startsAt: Date | string;
+  endsAt?: Date | string | null;
+  customerFirstName?: string | null;
+  language: SmsLanguage;
+  includeOptOut?: boolean;
+};
+
 export type GeneratedSmsMessage = {
   body: string;
   language: SmsLanguage;
@@ -115,6 +125,65 @@ export function generateOpeningSmsMessage(
     language === "fr"
       ? `${greeting}${businessName}: place disponible pour ${serviceName} le ${dateLabel} a ${timeLabel}. ${offerSentence}Repondez ${replyKeyword} si interesse. Confirmation manuelle.${includeOptOut ? " STOP pour arret." : ""}`
       : `${greeting}${businessName}: spot available for ${serviceName} on ${dateLabel} at ${timeLabel}. ${offerSentence}Reply ${replyKeyword} if interested. Manual confirmation.${includeOptOut ? " Reply STOP to opt out." : ""}`;
+  const characterCount = [...body].length;
+  const estimatedSegments = estimateSmsSegments(characterCount);
+
+  if (estimatedSegments > 1) {
+    warnings.push("message_exceeds_single_segment");
+  }
+
+  return {
+    body,
+    language,
+    characterCount,
+    estimatedSegments,
+    warnings
+  };
+}
+
+export function generateOpeningConfirmationSmsMessage(
+  input: OpeningConfirmationSmsInput
+): GeneratedSmsMessage {
+  const language = input.language === "en" ? "en" : "fr";
+  const warnings: string[] = [];
+  const cleanedBusinessName = cleanText(input.businessName);
+  const cleanedServiceName = cleanText(input.serviceName);
+  const businessName =
+    cleanedBusinessName || (language === "fr" ? "Votre commerce" : "Your business");
+  const serviceName =
+    cleanedServiceName || (language === "fr" ? "ce service" : "this service");
+  const firstName = cleanText(input.customerFirstName);
+  const includeOptOut = input.includeOptOut ?? true;
+  const { dateLabel, timeLabel, invalid } = formatOpeningDateTime(
+    input.startsAt,
+    language
+  );
+
+  if (!cleanedBusinessName) {
+    warnings.push("missing_business_name");
+  }
+
+  if (!cleanedServiceName) {
+    warnings.push("missing_service_name");
+  }
+
+  if (invalid) {
+    warnings.push("invalid_opening_time");
+  }
+
+  const greeting =
+    language === "fr"
+      ? firstName
+        ? `Bonjour ${firstName}, `
+        : "Bonjour, "
+      : firstName
+        ? `Hi ${firstName}, `
+        : "Hi, ";
+
+  const body =
+    language === "fr"
+      ? `${greeting}${businessName} confirme votre place pour ${serviceName} le ${dateLabel} a ${timeLabel}. A bientot.${includeOptOut ? " STOP pour arret." : ""}`
+      : `${greeting}${businessName} confirms your spot for ${serviceName} on ${dateLabel} at ${timeLabel}. See you soon.${includeOptOut ? " Reply STOP to opt out." : ""}`;
   const characterCount = [...body].length;
   const estimatedSegments = estimateSmsSegments(characterCount);
 

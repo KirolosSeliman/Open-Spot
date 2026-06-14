@@ -87,6 +87,17 @@ export default async function NewCancellationPage({
               />
             </label>
             <label className="grid gap-2 text-sm font-bold">
+              Estimated recovered value
+              <input
+                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                min="0"
+                name="estimatedValue"
+                placeholder="55.00"
+                step="0.01"
+                type="number"
+              />
+            </label>
+            <label className="grid gap-2 text-sm font-bold">
               Offer label
               <input
                 className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"

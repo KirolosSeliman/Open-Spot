@@ -1481,6 +1481,7 @@ export type Database = {
           opening_start_time: string;
           opening_end_time: string;
           opening_offer_label: string | null;
+          opening_normal_price_cents: number | null;
         };
         Returns: string;
       };
@@ -1514,6 +1515,16 @@ export type Database = {
           sent_count: number;
           failed_count?: number;
           failure_reasons?: string[];
+        };
+        Returns: undefined;
+      };
+      record_opening_confirmation_audit: {
+        Args: {
+          target_opening_id: string;
+          target_offer_id: string;
+          target_booking_request_id: string;
+          target_sms_message_id: string;
+          provider_name: string;
         };
         Returns: undefined;
       };

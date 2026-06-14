@@ -13,6 +13,7 @@ import {
   buildSafeCustomerReturnPath,
   validateCustomerDeleteForm
 } from "@/lib/customers/soft-delete";
+import { shouldQueueAppointmentReminder } from "@/lib/appointments/reminders";
 import {
   buildAppointmentCreateInput,
   buildAppointmentUpdateInput,
@@ -34,8 +35,12 @@ import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
 import { sendConsentRequestSms } from "@/lib/sms/consent-request";
 import { createSmsProvider } from "@/lib/sms/factory";
-import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
+import {
+  generateOpeningConfirmationSmsMessage,
+  generateOpeningSmsMessage
+} from "@/lib/sms/message-generator";
 import { checkSmsDeliveryPersistenceReadiness } from "@/lib/sms/persistence-readiness";
+import { getSmsRuntimeStatus } from "@/lib/sms/runtime-status";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 async function requireReadyOrganization({
@@ -62,8 +67,34 @@ function redirectWithError(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`);
 }
 
+function redirectWithSendError(path: string, message: string): never {
+  redirect(`${path}?sendError=${encodeURIComponent(message)}`);
+}
+
+function redirectWithValidationError(path: string, message: string): never {
+  redirect(`${path}?validationError=${encodeURIComponent(message)}`);
+}
+
 function redirectWithNotice(path: string, message: string): never {
   redirect(`${path}?notice=${encodeURIComponent(message)}`);
+}
+
+function redirectWithNoticeAndConfirmationSmsWarning({
+  path,
+  notice,
+  confirmationSmsWarning
+}: {
+  path: string;
+  notice: string;
+  confirmationSmsWarning: string | null;
+}): never {
+  const params = new URLSearchParams({ notice });
+
+  if (confirmationSmsWarning) {
+    params.set("confirmationSmsWarning", confirmationSmsWarning);
+  }
+
+  redirect(`${path}?${params.toString()}`);
 }
 
 function redirectWithWarning(path: string, message: string): never {
@@ -111,6 +142,40 @@ function revalidateCustomerSurfaces() {
   revalidatePath("/dashboard/new-cancellation");
   revalidatePath("/dashboard/responses");
   revalidatePath("/dashboard/appointments");
+}
+
+function revalidateManualValidationSurfaces({
+  openingId,
+  organizationId
+}: {
+  openingId: string;
+  organizationId: string;
+}) {
+  revalidatePath("/dashboard");
+  revalidatePath("/dashboard/cancellations");
+  revalidatePath(`/dashboard/cancellations/${openingId}`);
+  revalidatePath("/dashboard/openings");
+  revalidatePath(`/dashboard/openings/${openingId}`);
+  revalidatePath("/dashboard/responses");
+  revalidatePath("/dashboard/clients");
+  revalidatePath("/dashboard/customers");
+  revalidatePath("/dashboard/waitlist");
+  revalidatePath("/dashboard/reports");
+  revalidatePath("/dashboard/analytics");
+  revalidatePath("/dashboard/messages");
+  revalidatePath("/admin");
+  revalidatePath("/admin/organizations");
+  revalidatePath(`/admin/organizations/${organizationId}`);
+  revalidatePath(`/admin/organizations/${organizationId}/replies`);
+  revalidatePath("/admin/replies");
+  revalidatePath("/admin/reports");
+  revalidatePath("/admin/audit");
+  revalidatePath("/admin/sms");
+  revalidatePath("/platform-admin");
+  revalidatePath("/platform-admin/businesses");
+  revalidatePath(`/platform-admin/businesses/${organizationId}`);
+  revalidatePath("/platform-admin/sms");
+  revalidatePath("/platform-admin/billing");
 }
 
 async function getCurrentOrganizationProfileId({
@@ -327,39 +392,23 @@ async function maybeScheduleAppointmentReminder({
   customerId,
   appointmentId,
   startsAt,
-  sendReminder,
-  consentStatus
+  defaultReminderDelayHours,
+  shouldScheduleReminder
 }: {
   supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
   organizationId: string;
   customerId: string;
   appointmentId: string;
   startsAt: string;
-  sendReminder: boolean;
-  consentStatus: string | undefined;
-}) {
-  const { data: settings, error: settingsError } = await supabase
-    .from("organization_settings")
-    .select("appointment_reminders_enabled, default_reminder_delay_hours")
-    .eq("organization_id", organizationId)
-    .maybeSingle();
-
-  if (settingsError) {
-    throw new Error(settingsError.message);
-  }
-
-  if (
-    !sendReminder ||
-    !settings?.appointment_reminders_enabled ||
-    consentStatus !== "opted_in"
-  ) {
-    return;
+  defaultReminderDelayHours: number;
+  shouldScheduleReminder: boolean;
+}): Promise<boolean> {
+  if (!shouldScheduleReminder) {
+    return false;
   }
 
   const scheduledFor = new Date(startsAt);
-  scheduledFor.setHours(
-    scheduledFor.getHours() - settings.default_reminder_delay_hours
-  );
+  scheduledFor.setHours(scheduledFor.getHours() - defaultReminderDelayHours);
 
   if (Number.isNaN(scheduledFor.getTime())) {
     throw new Error("Appointment reminder time could not be calculated.");
@@ -376,6 +425,31 @@ async function maybeScheduleAppointmentReminder({
   if (error) {
     throw new Error(error.message);
   }
+
+  return true;
+}
+
+async function loadAppointmentReminderSettings({
+  supabase,
+  organizationId
+}: {
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
+  organizationId: string;
+}) {
+  const { data: settings, error: settingsError } = await supabase
+    .from("organization_settings")
+    .select("appointment_reminders_enabled, default_reminder_delay_hours")
+    .eq("organization_id", organizationId)
+    .maybeSingle();
+
+  if (settingsError) {
+    throw new Error(settingsError.message);
+  }
+
+  return {
+    defaultReminderDelayHours: settings?.default_reminder_delay_hours ?? 24,
+    organizationRemindersEnabled: Boolean(settings?.appointment_reminders_enabled)
+  };
 }
 
 async function cancelPendingAppointmentReminders({
@@ -1309,6 +1383,17 @@ export async function createAppointmentAction(formData: FormData) {
       customerId: input.value.customerId,
       serviceId: input.value.serviceId
     });
+    const reminderSettings = await loadAppointmentReminderSettings({
+      supabase,
+      organizationId: organization.id
+    });
+    const shouldScheduleReminder = shouldQueueAppointmentReminder({
+      appointmentStatus: "scheduled",
+      consentStatus: consent?.status,
+      organizationRemindersEnabled:
+        reminderSettings.organizationRemindersEnabled,
+      sendReminder: input.value.sendReminder
+    });
 
     const { data: appointment, error } = await supabase
       .from("appointments")
@@ -1320,10 +1405,7 @@ export async function createAppointmentAction(formData: FormData) {
         ends_at: input.value.endsAt,
         timezone: input.value.timezone || organization.timezone,
         status: "scheduled",
-        reminder_status:
-          input.value.sendReminder && consent?.status === "opted_in"
-            ? "scheduled"
-            : "not_scheduled",
+        reminder_status: shouldScheduleReminder ? "scheduled" : "not_scheduled",
         confirmation_status: input.value.requestConfirmation
           ? "pending"
           : "no_response",
@@ -1356,8 +1438,8 @@ export async function createAppointmentAction(formData: FormData) {
       customerId: input.value.customerId,
       appointmentId: appointment.id,
       startsAt: input.value.startsAt,
-      sendReminder: input.value.sendReminder,
-      consentStatus: consent?.status
+      defaultReminderDelayHours: reminderSettings.defaultReminderDelayHours,
+      shouldScheduleReminder
     });
   } catch (error) {
     redirectWithError(
@@ -1401,21 +1483,24 @@ export async function updateAppointmentAction(formData: FormData) {
       customerId: input.value.customerId,
       serviceId: input.value.serviceId
     });
-
-    const reminderStatus =
-      input.value.sendReminder &&
-      input.value.status !== "cancelled" &&
-      input.value.status !== "completed" &&
-      input.value.status !== "no_show" &&
-      consent?.status === "opted_in"
-        ? "scheduled"
-        : "not_scheduled";
+    const reminderSettings = await loadAppointmentReminderSettings({
+      supabase,
+      organizationId: organization.id
+    });
+    const shouldScheduleReminder = shouldQueueAppointmentReminder({
+      appointmentStatus: input.value.status,
+      consentStatus: consent?.status,
+      organizationRemindersEnabled:
+        reminderSettings.organizationRemindersEnabled,
+      sendReminder: input.value.sendReminder
+    });
+    const reminderStatus = shouldScheduleReminder ? "scheduled" : "not_scheduled";
     const confirmationStatus = deriveAppointmentConfirmationStatus({
       status: input.value.status,
       requestConfirmation: input.value.requestConfirmation
     });
 
-    const { error } = await supabase
+    const { data: appointment, error } = await supabase
       .from("appointments")
       .update({
         customer_id: input.value.customerId,
@@ -1431,10 +1516,12 @@ export async function updateAppointmentAction(formData: FormData) {
         notes: input.value.notes
       })
       .eq("organization_id", organization.id)
-      .eq("id", input.value.appointmentId);
+      .eq("id", input.value.appointmentId)
+      .select("id")
+      .single();
 
-    if (error) {
-      throw new Error(error.message);
+    if (error || !appointment) {
+      throw new Error(error?.message ?? "Appointment update failed.");
     }
 
     await supabase.from("appointment_events").insert({
@@ -1449,21 +1536,21 @@ export async function updateAppointmentAction(formData: FormData) {
       }
     });
 
-    if (!input.value.sendReminder || input.value.status === "cancelled") {
+    const reminderQueued = await maybeScheduleAppointmentReminder({
+      supabase,
+      organizationId: organization.id,
+      customerId: input.value.customerId,
+      appointmentId: input.value.appointmentId,
+      startsAt: input.value.startsAt,
+      defaultReminderDelayHours: reminderSettings.defaultReminderDelayHours,
+      shouldScheduleReminder
+    });
+
+    if (!reminderQueued) {
       await cancelPendingAppointmentReminders({
         supabase,
         organizationId: organization.id,
         appointmentId: input.value.appointmentId
-      });
-    } else {
-      await maybeScheduleAppointmentReminder({
-        supabase,
-        organizationId: organization.id,
-        customerId: input.value.customerId,
-        appointmentId: input.value.appointmentId,
-        startsAt: input.value.startsAt,
-        sendReminder: input.value.sendReminder,
-        consentStatus: consent?.status
       });
     }
 
@@ -1596,6 +1683,14 @@ async function sendOpeningSmsAlerts({
   openingId: string;
 }) {
   await requireOrganizationSmsNotPaused(organization.id);
+
+  const smsStatus = getSmsRuntimeStatus();
+
+  if (!smsStatus.canSendOpeningAlerts) {
+    throw new Error(
+      smsStatus.blockingReasons.join(" ") || "SMS provider is not ready."
+    );
+  }
 
   const smsPersistence = await checkSmsDeliveryPersistenceReadiness();
 
@@ -1808,12 +1903,178 @@ async function sendOpeningSmsAlerts({
   };
 }
 
+async function sendOpeningConfirmationSmsAfterValidation({
+  supabase,
+  organization,
+  openingId,
+  offerId,
+  bookingRequestId
+}: {
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
+  organization: Awaited<ReturnType<typeof requireReadyOrganization>>;
+  openingId: string;
+  offerId: string;
+  bookingRequestId: string;
+}) {
+  try {
+    await requireOrganizationSmsNotPaused(organization.id);
+
+    const [openingResult, offerResult] = await Promise.all([
+      supabase
+        .from("openings")
+        .select("id, title, service_id, start_time, end_time, status")
+        .eq("organization_id", organization.id)
+        .eq("id", openingId)
+        .maybeSingle(),
+      supabase
+        .from("opening_offers")
+        .select("id, customer_id, status")
+        .eq("organization_id", organization.id)
+        .eq("opening_id", openingId)
+        .eq("id", offerId)
+        .maybeSingle()
+    ]);
+
+    if (openingResult.error || !openingResult.data) {
+      return openingResult.error?.message ?? "Opening was validated, but confirmation SMS lookup failed.";
+    }
+
+    if (offerResult.error || !offerResult.data) {
+      return offerResult.error?.message ?? "Opening was validated, but selected respondent lookup failed.";
+    }
+
+    const opening = openingResult.data;
+    const offer = offerResult.data;
+
+    if (opening.status !== "filled" || offer.status !== "selected") {
+      return "Opening was validated, but confirmation SMS was skipped because the selected state could not be verified.";
+    }
+
+    const [customerResult, consentResult, serviceResult] = await Promise.all([
+      supabase
+        .from("customers")
+        .select("id, full_name, phone_e164, preferred_language, deleted_at")
+        .eq("organization_id", organization.id)
+        .eq("id", offer.customer_id)
+        .maybeSingle(),
+      supabase
+        .from("sms_consents")
+        .select("customer_id, status")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", offer.customer_id)
+        .maybeSingle(),
+      opening.service_id
+        ? supabase
+            .from("services")
+            .select("id, name")
+            .eq("organization_id", organization.id)
+            .eq("id", opening.service_id)
+            .maybeSingle()
+        : Promise.resolve({ data: null, error: null })
+    ]);
+
+    if (customerResult.error || !customerResult.data) {
+      return customerResult.error?.message ?? "Opening was validated, but selected client was not found for confirmation SMS.";
+    }
+
+    if (consentResult.error) {
+      return consentResult.error.message;
+    }
+
+    if (serviceResult.error) {
+      return serviceResult.error.message;
+    }
+
+    const customer = customerResult.data;
+
+    if (customer.deleted_at) {
+      return "Opening was validated, but confirmation SMS was skipped because the selected client is deleted.";
+    }
+
+    if (consentResult.data?.status !== "opted_in") {
+      return "Opening was validated, but confirmation SMS was skipped because the selected client is not opted in.";
+    }
+
+    if (!/^\+[1-9][0-9]{7,14}$/.test(customer.phone_e164)) {
+      return "Opening was validated, but confirmation SMS was skipped because the selected client phone is invalid.";
+    }
+
+    const provider = createSmsProvider();
+    const message = generateOpeningConfirmationSmsMessage({
+      businessName: organization.name,
+      serviceName: serviceResult.data?.name ?? opening.title,
+      startsAt: opening.start_time,
+      endsAt: opening.end_time,
+      customerFirstName: customer.full_name?.trim().split(/\s+/)[0] ?? null,
+      language: customer.preferred_language ?? organization.defaultLanguage,
+      includeOptOut: true
+    });
+    const sendResult = await provider.sendSms({
+      to: customer.phone_e164,
+      body: message.body,
+      metadata: {
+        openingId,
+        organizationId: organization.id,
+        customerId: offer.customer_id,
+        bookingRequestId
+      }
+    });
+    const { data: smsMessage, error: messageError } = await supabase
+      .from("sms_messages")
+      .insert({
+        organization_id: organization.id,
+        customer_id: offer.customer_id,
+        opening_id: openingId,
+        message_type: "opening_confirmation",
+        direction: "outbound",
+        provider: sendResult.provider,
+        provider_message_id: sendResult.providerMessageId,
+        from_number: sendResult.fromNumber,
+        to_number: customer.phone_e164,
+        body: message.body,
+        status: sendResult.status
+      })
+      .select("id")
+      .single();
+
+    if (messageError || !smsMessage) {
+      return messageError?.message ?? "Opening was validated, but confirmation SMS persistence failed.";
+    }
+
+    const { error: auditError } = await supabase.rpc(
+      "record_opening_confirmation_audit",
+      {
+        target_opening_id: openingId,
+        target_offer_id: offerId,
+        target_booking_request_id: bookingRequestId,
+        target_sms_message_id: smsMessage.id,
+        provider_name: sendResult.provider
+      }
+    );
+
+    if (auditError) {
+      console.warn("Opening confirmation SMS audit failed", {
+        openingId,
+        offerId,
+        bookingRequestId,
+        smsMessageId: smsMessage.id,
+        error: auditError.message
+      });
+    }
+
+    return null;
+  } catch (error) {
+    return getSafeProviderErrorMessage(error);
+  }
+}
+
 export async function createOpeningAction(formData: FormData) {
   const input = buildOpeningCreateInput({
     title: formData.get("title"),
     serviceId: formData.get("serviceId"),
     startTime: formData.get("startTime"),
     endTime: formData.get("endTime"),
+    estimatedValue: formData.get("estimatedValue"),
     offerLabel: formData.get("offerLabel"),
     internalNote: formData.get("internalNote")
   });
@@ -1857,7 +2118,8 @@ export async function createOpeningAction(formData: FormData) {
         opening_title: input.value.title,
         opening_start_time: input.value.startTime,
         opening_end_time: input.value.endTime,
-        opening_offer_label: input.value.offerLabel
+        opening_offer_label: input.value.offerLabel,
+        opening_normal_price_cents: input.value.estimatedValueCents
       }
     );
 
@@ -1888,6 +2150,7 @@ export async function createOpeningAction(formData: FormData) {
       entityId: openingId,
       metadata: {
         service_id: input.value.serviceId,
+        estimated_value_cents: input.value.estimatedValueCents,
         sms_sent: smsResult.sent,
         sms_failed: smsResult.failed
       }
@@ -1913,7 +2176,7 @@ export async function createOpeningAction(formData: FormData) {
 
   redirect(
     redirectError
-      ? `/dashboard/cancellations/${createdOpeningId}?error=${encodeURIComponent(redirectError)}`
+      ? `/dashboard/cancellations/${createdOpeningId}?sendError=${encodeURIComponent(redirectError)}`
       : `/dashboard/cancellations/${createdOpeningId}`
   );
 }
@@ -1936,7 +2199,10 @@ export async function sendOpeningAlertsAction(formData: FormData) {
     }
 
     if (result.failureMessage) {
-      redirectWithError(`/dashboard/cancellations/${openingId}`, result.failureMessage);
+      redirectWithSendError(
+        `/dashboard/cancellations/${openingId}`,
+        result.failureMessage
+      );
     }
 
     await recordManagerModeDashboardAction({
@@ -1949,7 +2215,7 @@ export async function sendOpeningAlertsAction(formData: FormData) {
       }
     });
   } catch (error) {
-    redirectWithError(
+    redirectWithSendError(
       `/dashboard/cancellations/${openingId}`,
       error instanceof Error ? error.message : "Opening SMS send failed."
     );
@@ -1968,7 +2234,7 @@ export async function validateOpeningOfferAction(formData: FormData) {
   const commissionCents = calculateCommissionEstimate({ recoveredValueCents });
 
   if (!openingId || !offerId || !Number.isFinite(recoveredValueCents)) {
-    redirectWithError(
+    redirectWithValidationError(
       `/dashboard/cancellations/${openingId}`,
       "Opening, offer, and recovered value are required."
     );
@@ -1987,7 +2253,7 @@ export async function validateOpeningOfferAction(formData: FormData) {
     .maybeSingle();
 
   if (offerLookupError || !offer) {
-    redirectWithError(
+    redirectWithValidationError(
       `/dashboard/cancellations/${openingId}`,
       offerLookupError?.message ?? "Opening offer not found."
     );
@@ -2001,28 +2267,20 @@ export async function validateOpeningOfferAction(formData: FormData) {
     .maybeSingle();
 
   if (customerLookupError) {
-    redirectWithError(`/dashboard/cancellations/${openingId}`, genericClientSaveError);
+    redirectWithValidationError(
+      `/dashboard/cancellations/${openingId}`,
+      genericClientSaveError
+    );
   }
 
   if (customer?.deleted_at) {
-    await supabase.from("audit_logs").insert({
-      organization_id: organization.id,
-      action: "customer.deleted_selection_blocked",
-      entity_type: "opening_offers",
-      entity_id: offer.id,
-      metadata: {
-        customer_id: offer.customer_id,
-        opening_id: openingId
-      }
-    });
-
-    redirectWithError(
+    redirectWithValidationError(
       `/dashboard/cancellations/${openingId}`,
       "This client was deleted and cannot be selected for a recovered spot."
     );
   }
 
-  const { error } = await supabase.rpc("validate_opening_offer", {
+  const { data: bookingRequestId, error } = await supabase.rpc("validate_opening_offer", {
     target_opening_id: openingId,
     target_offer_id: offerId,
     recovered_value_cents: recoveredValueCents,
@@ -2030,21 +2288,54 @@ export async function validateOpeningOfferAction(formData: FormData) {
   });
 
   if (error) {
-    redirectWithError(`/dashboard/cancellations/${openingId}`, error.message);
+    redirectWithValidationError(`/dashboard/cancellations/${openingId}`, error.message);
   }
 
-  await recordManagerModeDashboardAction({
-    action: "admin.manager_mode.opening_offer.validated",
-    entityType: "opening_offers",
-    entityId: offerId,
-    metadata: {
-      opening_id: openingId,
-      recovered_value_cents: recoveredValueCents,
-      commission_cents: commissionCents
-    }
-  });
+  if (!bookingRequestId) {
+    redirectWithValidationError(
+      `/dashboard/cancellations/${openingId}`,
+      "Opening validation did not return a booking request."
+    );
+  }
 
-  revalidatePath("/dashboard");
-  revalidatePath(`/dashboard/cancellations/${openingId}`);
-  redirect(`/dashboard/cancellations/${openingId}`);
+  const confirmationSmsWarning =
+    await sendOpeningConfirmationSmsAfterValidation({
+      supabase,
+      organization,
+      openingId,
+      offerId,
+      bookingRequestId
+    });
+
+  try {
+    await recordManagerModeDashboardAction({
+      action: "admin.manager_mode.opening_offer.validated",
+      entityType: "opening_offers",
+      entityId: offerId,
+      metadata: {
+        opening_id: openingId,
+        recovered_value_cents: recoveredValueCents,
+        commission_cents: commissionCents
+      }
+    });
+  } catch (managerModeAuditError) {
+    console.warn("Manager mode validation audit failed", {
+      openingId,
+      offerId,
+      error:
+        managerModeAuditError instanceof Error
+          ? managerModeAuditError.message
+          : "Unknown manager mode audit error"
+    });
+  }
+
+  revalidateManualValidationSurfaces({
+    openingId,
+    organizationId: organization.id
+  });
+  redirectWithNoticeAndConfirmationSmsWarning({
+    path: `/dashboard/cancellations/${openingId}`,
+    notice: "Respondent manually confirmed. The opening is marked as recovered.",
+    confirmationSmsWarning
+  });
 }

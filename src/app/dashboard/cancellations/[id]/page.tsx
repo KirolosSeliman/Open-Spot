@@ -10,6 +10,10 @@ import {
   validateOpeningOfferAction
 } from "@/lib/dashboard/actions";
 import { loadOpeningDetail } from "@/lib/dashboard/operations-data";
+import {
+  formatOpeningOfferStatus,
+  formatOpeningStatus
+} from "@/lib/dashboard/status-labels";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
 import {
@@ -24,6 +28,10 @@ type CancellationDetailPageProps = {
   }>;
   searchParams: Promise<{
     error?: string;
+    sendError?: string;
+    validationError?: string;
+    confirmationSmsWarning?: string;
+    notice?: string;
   }>;
 };
 
@@ -96,7 +104,8 @@ export default async function CancellationDetailPage({
   searchParams
 }: CancellationDetailPageProps) {
   const { id } = await params;
-  const { error } = await searchParams;
+  const { error, sendError, validationError, confirmationSmsWarning, notice } =
+    await searchParams;
   const [{ opening, service, offers, deliveryHistoryWarning }, workspace] =
     await Promise.all([
       loadOpeningDetail(id),
@@ -111,7 +120,21 @@ export default async function CancellationDetailPage({
     workspace.status === "ready" ? workspace.organization : null;
   const businessName = organization?.name ?? "Open Spot";
   const previewLanguage = organization?.defaultLanguage ?? "fr";
+  const actionFailedLabel =
+    previewLanguage === "en" ? "Action failed" : "L'action a échoué";
+  const sendFailedLabel =
+    previewLanguage === "en" ? "SMS sending failed" : "L'envoi SMS a échoué";
+  const validationFailedLabel =
+    previewLanguage === "en"
+      ? "Manual validation failed"
+      : "La validation manuelle a échoué";
+  const confirmationSmsWarningLabel =
+    previewLanguage === "en"
+      ? "Confirmation SMS warning"
+      : "Avertissement SMS de confirmation";
   const serviceName = service?.name ?? opening.title;
+  const recoveredValueCents =
+    opening.normal_price_cents ?? service?.normal_price_cents ?? 0;
   const smsStatus = getSmsRuntimeStatus();
   const pendingOffers = offers.filter((offer) => offer.status === "pending");
   const respondedOffers = offers.filter((offer) => offer.status === "responded");
@@ -150,9 +173,29 @@ export default async function CancellationDetailPage({
         description={`Details reels du creneau. ${getOpeningAlertModeCopy(smsStatus)}`}
         title={opening.title}
       />
+      {sendError ? (
+        <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
+          {sendFailedLabel}: {sendError}
+        </p>
+      ) : null}
+      {validationError ? (
+        <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
+          {validationFailedLabel}: {validationError}
+        </p>
+      ) : null}
       {error ? (
         <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
-          SMS sending failed: {error}
+          {actionFailedLabel}: {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p className="rounded-xl border border-[#b8e0c0] bg-[#f1fff4] p-3 text-sm font-bold text-[#245d30]">
+          {notice}
+        </p>
+      ) : null}
+      {confirmationSmsWarning ? (
+        <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+          {confirmationSmsWarningLabel}: {confirmationSmsWarning}
         </p>
       ) : null}
       {smsStatus.deliveryDiagnostics.length > 0 ? (
@@ -185,7 +228,9 @@ export default async function CancellationDetailPage({
             <div>
               <dt className="font-black">Statut</dt>
               <dd className="mt-1">
-                <StatusBadge>{opening.status}</StatusBadge>
+                <StatusBadge>
+                  {formatOpeningStatus(opening.status, previewLanguage)}
+                </StatusBadge>
               </dd>
             </div>
             <div>
@@ -264,8 +309,10 @@ export default async function CancellationDetailPage({
                     </p>
                   </div>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Offer state: {offer.status}. This means the alert was
-                    submitted/sent for this offer, not that the SMS was delivered.
+                    Offer state:{" "}
+                    {formatOpeningOfferStatus(offer.status, previewLanguage)}.
+                    This means the alert was submitted/sent for this offer, not
+                    that the SMS was delivered.
                   </p>
                   <dl className="grid gap-2 rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-bold text-[var(--muted)] sm:grid-cols-2">
                     <div>
@@ -362,14 +409,14 @@ export default async function CancellationDetailPage({
                   <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6 text-[var(--ink)]">
                     {offer.lastOutboundMessageBody ?? offerMessage.body}
                   </p>
-                  {offer.status === "responded" ? (
+                  {offer.status === "responded" && opening.status !== "filled" ? (
                     <form action={validateOpeningOfferAction}>
                       <input name="openingId" type="hidden" value={opening.id} />
                       <input name="offerId" type="hidden" value={offer.id} />
                       <input
                         name="recoveredValueCents"
                         type="hidden"
-                        value={opening.normal_price_cents ?? 0}
+                        value={recoveredValueCents}
                       />
                       <button
                         className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"

@@ -10,6 +10,7 @@ import {
   loadDashboardOverview,
   type DashboardOverview
 } from "@/lib/dashboard/real-data";
+import { calculateAutomationOutcomeMetrics } from "@/lib/reports/metrics";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 
 const setupItems = [
@@ -40,6 +41,8 @@ const setupItems = [
   }
 ];
 
+const numberFormatter = new Intl.NumberFormat("fr-CA");
+
 function formatCurrency(cents: number) {
   return new Intl.NumberFormat("fr-CA", {
     style: "currency",
@@ -58,6 +61,24 @@ function getFallbackOverview(organizationName: string): DashboardOverview {
     recoveredBookingsCount: 0,
     recoveredRevenueCents: 0,
     smsSentCount: 0,
+    openingAlertsSentCount: 0,
+    openingResponsesCount: 0,
+    openingResponseRate: 0,
+    automation: calculateAutomationOutcomeMetrics({
+      now: new Date(),
+      appointments: [],
+      appointmentEvents: [],
+      recoveryOpenings: [],
+      recoveryAlerts: [],
+      recoveryReplies: [],
+      recoveredBookings: []
+    }),
+    actionItems: {
+      appointmentsNeedingFollowUp: 0,
+      failedReminderSends: 0,
+      cancellationsAwaitingAction: 0,
+      waitlistRespondentsAwaitingValidation: 0
+    },
     setup: {
       hasServices: false,
       hasCustomers: false,
@@ -78,6 +99,32 @@ export default async function DashboardPage() {
           organizationName: workspace.organization.name
         })
       : getFallbackOverview(organizationName);
+  const actionItems = [
+    {
+      href: "/dashboard/responses",
+      label: "Rendez-vous sans reponse",
+      value: overview.actionItems.appointmentsNeedingFollowUp,
+      description: "Clients sans reponse apres demande de confirmation."
+    },
+    {
+      href: "/dashboard/appointments",
+      label: "Rappels echoues",
+      value: overview.actionItems.failedReminderSends,
+      description: "Rappels 24 h qui demandent une verification manuelle."
+    },
+    {
+      href: "/dashboard/cancellations",
+      label: "Annulations a valider",
+      value: overview.actionItems.cancellationsAwaitingAction,
+      description: "Ouvertures de recuperation non finalisees."
+    },
+    {
+      href: "/dashboard/responses",
+      label: "Reponses waitlist a valider",
+      value: overview.actionItems.waitlistRespondentsAwaitingValidation,
+      description: "Reponses client qui attendent une decision marchande."
+    }
+  ];
 
   return (
     <div className="grid gap-6">
@@ -144,6 +191,96 @@ export default async function DashboardPage() {
           tone="green"
         />
       </div>
+
+      <Panel
+        description="Rappels 24 h et reponses clients reliees aux rendez-vous existants."
+        title="Rappels et confirmations"
+      >
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard
+            detail="Rendez-vous prevus dans les 7 prochains jours."
+            label="Prochains 7 jours"
+            value={String(overview.automation.appointmentsNext7Days)}
+          />
+          <MetricCard
+            detail="Clients ayant confirme par SMS."
+            label="Confirmes"
+            value={String(overview.automation.appointmentsConfirmed)}
+            tone="green"
+          />
+          <MetricCard
+            detail="Demandes OUI/NON sans reponse client."
+            label="En attente"
+            value={String(overview.automation.appointmentsPendingConfirmation)}
+            tone="amber"
+          />
+          <MetricCard
+            detail="Rappels qui necessitent une verification."
+            label="Rappels echoues"
+            value={String(overview.automation.remindersFailed)}
+            tone="amber"
+          />
+        </div>
+      </Panel>
+
+      <Panel
+        description="Annulations SMS converties en ouvertures recuperables, sans confirmation automatique."
+        title="Recuperation apres annulation SMS"
+      >
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard
+            detail="Annulations de rendez-vous detectees par reponse SMS."
+            label="Annulations SMS"
+            value={String(overview.automation.appointmentsCancelledBySms)}
+          />
+          <MetricCard
+            detail="Ouvertures creees depuis une annulation SMS."
+            label="Ouvertures creees"
+            value={String(overview.automation.recoveryOpeningsCreated)}
+          />
+          <MetricCard
+            detail="Reponses de liste d'attente en attente ou traitees."
+            label="Reponses recovery"
+            value={String(overview.automation.recoveryRepliesReceived)}
+            tone="amber"
+          />
+          <MetricCard
+            detail="Seulement les validations marchandes confirmees."
+            label="Recupere apres SMS"
+            value={formatCurrency(
+              overview.automation.recoveredAfterCancellationRevenueCents
+            )}
+            tone="green"
+          />
+        </div>
+      </Panel>
+
+      <Panel
+        description="Files de travail basees sur les donnees reelles de cette organisation."
+        title="Actions a traiter"
+      >
+        <div className="grid gap-3 md:grid-cols-2">
+          {actionItems.map((item) => (
+            <Link
+              className="flex min-h-24 items-start justify-between gap-4 rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+              href={item.href}
+              key={item.label}
+            >
+              <span>
+                <span className="block font-black text-[var(--foreground)]">
+                  {item.label}
+                </span>
+                <span className="mt-2 block text-sm leading-6 text-[var(--muted)]">
+                  {item.description}
+                </span>
+              </span>
+              <span className="shrink-0 rounded-full border border-[var(--line)] bg-white px-3 py-1 text-sm font-black text-[var(--foreground)]">
+                {numberFormatter.format(item.value)}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </Panel>
 
       <Panel
         description="Commencez par ajouter vos services et vos clients."

@@ -24,6 +24,13 @@ export type WaitlistEntryServiceRow =
 export type OpeningRow = Database["public"]["Tables"]["openings"]["Row"];
 export type OpeningOfferRow =
   Database["public"]["Tables"]["opening_offers"]["Row"];
+export type OpeningValueSource = "booking_request" | "opening" | "service" | "unknown";
+export type OpeningView = OpeningRow & {
+  displayValueCents: number | null;
+  displayValueSource: OpeningValueSource;
+  recoveredValueCents: number | null;
+  serviceNormalPriceCents: number | null;
+};
 export type AppointmentRow = Database["public"]["Tables"]["appointments"]["Row"];
 export type OrganizationSettingsRow =
   Database["public"]["Tables"]["organization_settings"]["Row"];
@@ -48,7 +55,7 @@ export type OpeningDetailOffer = OpeningOfferRow & {
 
 export type OpeningDetailData = {
   opening: OpeningRow | null;
-  service: Pick<ServiceRow, "id" | "name"> | null;
+  service: Pick<ServiceRow, "id" | "name" | "normal_price_cents"> | null;
   offers: OpeningDetailOffer[];
   deliveryHistoryWarning: string | null;
 };
@@ -392,6 +399,45 @@ export function filterOpeningResponseGroups(
       matchesOpeningService(group, filters.serviceId) &&
       openingGroupMatchesQuery(group, filters.q)
   );
+}
+
+export function resolveOpeningDisplayValueCents({
+  bookingRecoveredValueCents,
+  openingNormalPriceCents,
+  serviceNormalPriceCents
+}: {
+  bookingRecoveredValueCents: number | null | undefined;
+  openingNormalPriceCents: number | null | undefined;
+  serviceNormalPriceCents: number | null | undefined;
+}): {
+  valueCents: number | null;
+  source: OpeningValueSource;
+} {
+  if (bookingRecoveredValueCents !== null && bookingRecoveredValueCents !== undefined) {
+    return {
+      valueCents: bookingRecoveredValueCents,
+      source: "booking_request"
+    };
+  }
+
+  if (openingNormalPriceCents !== null && openingNormalPriceCents !== undefined) {
+    return {
+      valueCents: openingNormalPriceCents,
+      source: "opening"
+    };
+  }
+
+  if (serviceNormalPriceCents !== null && serviceNormalPriceCents !== undefined) {
+    return {
+      valueCents: serviceNormalPriceCents,
+      source: "service"
+    };
+  }
+
+  return {
+    valueCents: null,
+    source: "unknown"
+  };
 }
 
 export function groupAppointmentResponseItems(
@@ -817,7 +863,7 @@ export async function loadAppointmentWorkspace(filters?: {
   };
 }
 
-export async function loadOpenings() {
+export async function loadOpenings(): Promise<OpeningView[]> {
   const organizationId = await requireOrganizationId();
 
   if (!organizationId) {
@@ -835,7 +881,82 @@ export async function loadOpenings() {
     throw new Error(error.message);
   }
 
-  return data ?? [];
+  const openings = data ?? [];
+
+  if (openings.length === 0) {
+    return [];
+  }
+
+  const openingIds = openings.map((opening) => opening.id);
+  const serviceIds = [
+    ...new Set(
+      openings
+        .map((opening) => opening.service_id)
+        .filter((serviceId): serviceId is string => Boolean(serviceId))
+    )
+  ];
+  const [bookingsResult, servicesResult] = await Promise.all([
+    supabase
+      .from("booking_requests")
+      .select("opening_id, recovered_value_cents, created_at")
+      .eq("organization_id", organizationId)
+      .in("opening_id", openingIds)
+      .in("status", ["confirmed", "completed"])
+      .order("created_at", { ascending: false }),
+    serviceIds.length > 0
+      ? supabase
+          .from("services")
+          .select("id, normal_price_cents")
+          .eq("organization_id", organizationId)
+          .in("id", serviceIds)
+      : Promise.resolve({ data: [], error: null })
+  ]);
+
+  if (bookingsResult.error) {
+    throw new Error(bookingsResult.error.message);
+  }
+
+  if (servicesResult.error) {
+    throw new Error(servicesResult.error.message);
+  }
+
+  const recoveredValueByOpening = new Map<string, number | null>();
+
+  for (const booking of bookingsResult.data ?? []) {
+    if (!recoveredValueByOpening.has(booking.opening_id)) {
+      recoveredValueByOpening.set(
+        booking.opening_id,
+        booking.recovered_value_cents
+      );
+    }
+  }
+
+  const serviceValueById = new Map(
+    (servicesResult.data ?? []).map((service) => [
+      service.id,
+      service.normal_price_cents
+    ])
+  );
+
+  return openings.map((opening) => {
+    const recoveredValueCents = recoveredValueByOpening.get(opening.id) ?? null;
+    const serviceNormalPriceCents = opening.service_id
+      ? serviceValueById.get(opening.service_id) ?? null
+      : null;
+    const displayValue = resolveOpeningDisplayValueCents({
+      bookingRecoveredValueCents: recoveredValueCents,
+      openingNormalPriceCents: opening.normal_price_cents,
+      serviceNormalPriceCents
+    });
+
+    return {
+      ...opening,
+      displayValueCents: displayValue.valueCents,
+      displayValueSource: displayValue.source,
+      recoveredValueCents,
+      serviceNormalPriceCents
+    };
+  });
 }
 
 export async function loadOpeningDetail(
@@ -893,7 +1014,7 @@ export async function loadOpeningDetail(
     opening.service_id
       ? supabase
           .from("services")
-          .select("id, name")
+          .select("id, name, normal_price_cents")
           .eq("organization_id", organizationId)
           .eq("id", opening.service_id)
           .maybeSingle()
