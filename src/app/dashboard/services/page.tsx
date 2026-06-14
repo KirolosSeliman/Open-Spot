@@ -40,7 +40,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Ajoutez les services reels qui alimentent les annulations, les clients admissibles et les statistiques."
+        description="Ajoutez les services réels qui alimentent les annulations, les clients admissibles et les statistiques."
         title="Services"
       />
       <Panel title="Ajouter un service">
@@ -49,7 +49,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             {error}
           </p>
         ) : null}
-        <form action={createServiceAction} className="grid gap-4 md:grid-cols-5">
+        <form action={createServiceAction} className="grid gap-4 md:grid-cols-4">
           <label className="grid gap-2 text-sm font-bold md:col-span-2">
             Nom
             <input
@@ -59,7 +59,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             />
           </label>
           <label className="grid gap-2 text-sm font-bold">
-            Duree min
+            Durée (min)
             <input
               className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
               min="1"
@@ -78,10 +78,6 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               type="number"
             />
           </label>
-          <label className="flex items-end gap-2 text-sm font-bold">
-            <input defaultChecked name="active" type="checkbox" />
-            Actif
-          </label>
           <label className="grid gap-2 text-sm font-bold md:col-span-4">
             Description
             <input
@@ -93,7 +89,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
             type="submit"
           >
-            Add service
+            Ajouter le service
           </button>
         </form>
       </Panel>
@@ -102,10 +98,10 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <TableShell>
             <thead>
               <tr>
-                <th className={tableHeadClass}>Service name</th>
-                <th className={tableHeadClass}>Duration</th>
-                <th className={tableHeadClass}>Estimated price</th>
-                <th className={tableHeadClass}>Active/inactive</th>
+                <th className={tableHeadClass}>Nom du service</th>
+                <th className={tableHeadClass}>Durée</th>
+                <th className={tableHeadClass}>Prix estimé</th>
+                <th className={tableHeadClass}>Statut</th>
                 <th className={tableHeadClass}>Actions</th>
               </tr>
             </thead>
@@ -125,7 +121,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                         value={service.active ? "true" : "false"}
                       />
                       <label className="grid gap-1 text-xs font-bold">
-                        Name
+                        Nom
                         <input
                           className="min-h-10 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
                           defaultValue={service.name}
@@ -145,7 +141,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                   </td>
                   <td className={tableCellClass}>
                     <label className="grid gap-1 text-xs font-bold">
-                      Minutes
+                      Durée (min)
                       <input
                         className="min-h-10 w-24 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
                         defaultValue={service.duration_minutes}
@@ -188,7 +184,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                         form={`service-update-${service.id}`}
                         type="submit"
                       >
-                        Save
+                        Enregistrer
                       </button>
                       <form action={toggleServiceActiveAction}>
                         <input name="serviceId" type="hidden" value={service.id} />
@@ -201,7 +197,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                           className="min-h-10 rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black"
                           type="submit"
                         >
-                          {service.active ? "Deactivate" : "Reactivate"}
+                          {service.active ? "Désactiver" : "Réactiver"}
                         </button>
                       </form>
                     </div>
@@ -213,7 +209,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
         ) : (
           <EmptyState
             description="Ajoutez les services vendus par le commerce afin de personnaliser les alertes SMS et les analyses."
-            title="Aucun service configure."
+            title="Aucun service configuré."
           />
         )}
       </Panel>

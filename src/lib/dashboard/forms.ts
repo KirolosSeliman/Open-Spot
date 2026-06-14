@@ -112,7 +112,9 @@ export function buildServiceCreateInput(input: {
   active?: unknown;
   organizationId?: unknown;
 }): FormResult<ServiceCreateInput> {
-  const serviceInput = buildValidatedServiceInput(input);
+  const serviceInput = buildValidatedServiceInput(input, {
+    defaultActive: true
+  });
 
   if (!serviceInput.ok) {
     return serviceInput;
@@ -165,7 +167,7 @@ function buildValidatedServiceInput(input: {
   durationMinutes?: unknown;
   normalPrice?: unknown;
   active?: unknown;
-}): FormResult<ServiceCreateInput> {
+}, options: { defaultActive?: boolean } = {}): FormResult<ServiceCreateInput> {
   const errors: string[] = [];
   const name = String(input.name ?? "").trim();
   const durationMinutes = Number(String(input.durationMinutes ?? "").trim());
@@ -197,7 +199,10 @@ function buildValidatedServiceInput(input: {
       description: cleanOptionalText(input.description),
       durationMinutes,
       normalPriceCents,
-      active: input.active === "on" || input.active === "true" || input.active === true
+      active:
+        input.active === undefined || input.active === null
+          ? options.defaultActive === true
+          : input.active === "on" || input.active === "true" || input.active === true
     }
   };
 }

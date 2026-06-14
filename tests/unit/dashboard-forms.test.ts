@@ -37,6 +37,41 @@ describe("dashboard operational forms", () => {
     });
   });
 
+  it("creates services as active by default without a creation checkbox", () => {
+    expect(
+      buildServiceCreateInput({
+        name: "Barbe",
+        durationMinutes: "30",
+        normalPrice: "35"
+      })
+    ).toEqual({
+      ok: true,
+      value: {
+        name: "Barbe",
+        description: null,
+        durationMinutes: 30,
+        normalPriceCents: 3500,
+        active: true
+      }
+    });
+
+    const servicesPageSource = readFileSync(
+      join(process.cwd(), "src", "app", "dashboard", "services", "page.tsx"),
+      "utf8"
+    );
+    const createFormSource = servicesPageSource.slice(
+      servicesPageSource.indexOf("action={createServiceAction}"),
+      servicesPageSource.indexOf("<Panel title=\"Catalogue de services\">")
+    );
+
+    expect(createFormSource).toContain("Ajouter le service");
+    expect(createFormSource).toContain("Durée (min)");
+    expect(createFormSource).toContain("Prix");
+    expect(createFormSource).toContain("Description");
+    expect(createFormSource).not.toContain('name="active"');
+    expect(createFormSource).not.toContain("Actif");
+  });
+
   it("rejects invalid service input", () => {
     expect(
       buildServiceCreateInput({

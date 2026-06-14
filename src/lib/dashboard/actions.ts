@@ -424,8 +424,7 @@ export async function createServiceAction(formData: FormData) {
     name: formData.get("name"),
     description: formData.get("description"),
     durationMinutes: formData.get("durationMinutes"),
-    normalPrice: formData.get("normalPrice"),
-    active: formData.get("active")
+    normalPrice: formData.get("normalPrice")
   });
 
   if (!input.ok) {
