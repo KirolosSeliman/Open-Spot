@@ -53,7 +53,7 @@ export function getScheduledMessageSkipReason({
   if (
     appointmentStatus &&
     appointmentStatus !== "scheduled" &&
-    appointmentStatus !== "not_yet_confirmed"
+    appointmentStatus !== "confirmed"
   ) {
     return "Appointment is not eligible for reminder delivery.";
   }

@@ -934,8 +934,10 @@ describe("phase 2 migration safety", () => {
     expect(statusSql).toContain(
       "add column if not exists confirmation_request_enabled boolean not null default false"
     );
-    expect(statusSql).toContain("status in ('scheduled', 'cancelled', 'not_yet_confirmed')");
-    expect(statusSql).toContain("status = 'not_yet_confirmed'");
+    expect(statusSql).toContain(
+      "status in ('scheduled', 'confirmed', 'cancelled', 'completed', 'no_show')"
+    );
+    expect(statusSql).not.toContain("not" + "_yet_confirmed");
     expect(statusSql).not.toMatch(/\bdrop\s+table\b/i);
     expect(statusSql).not.toMatch(/\btruncate\b/i);
     expect(statusSql).not.toMatch(

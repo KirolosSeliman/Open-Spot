@@ -54,7 +54,7 @@ describe("scheduled message processing safety", () => {
     ).toBe("Appointment is not eligible for reminder delivery.");
   });
 
-  it("allows opted-in scheduled and not-yet-confirmed appointments", () => {
+  it("allows opted-in scheduled and confirmed appointments", () => {
     expect(
       getScheduledMessageSkipReason({
         phoneE164: "+15142494425",
@@ -66,7 +66,7 @@ describe("scheduled message processing safety", () => {
       getScheduledMessageSkipReason({
         phoneE164: "+15142494425",
         consentStatus: "opted_in",
-        appointmentStatus: "not_yet_confirmed"
+        appointmentStatus: "confirmed"
       })
     ).toBeNull();
   });
@@ -90,5 +90,54 @@ describe("scheduled message processing safety", () => {
     expect(routeSource).toContain("isAuthorizedCronRequest");
     expect(routeSource).toContain("CRON_SECRET");
     expect(routeSource).not.toContain("NEXT_PUBLIC_CRON_SECRET");
+  });
+
+  it("routes appointment reminder queue writes through guarded RPCs", () => {
+    const actionsSource = readFileSync(
+      join(process.cwd(), "src", "lib", "dashboard", "actions.ts"),
+      "utf8"
+    );
+    const migrationSource = readFileSync(
+      join(
+        process.cwd(),
+        "supabase",
+        "migrations",
+        "20260614000500_harden_appointment_status_and_scheduled_messages.sql"
+      ),
+      "utf8"
+    );
+
+    expect(actionsSource).toContain(".rpc(\"schedule_appointment_reminder\"");
+    expect(actionsSource).toContain(
+      ".rpc(\"cancel_pending_appointment_reminders\""
+    );
+    expect(actionsSource).not.toMatch(
+      /\.from\("scheduled_messages"\)\s*[\r\n.]+insert/
+    );
+    expect(migrationSource).toContain(
+      "revoke insert, update on public.scheduled_messages from authenticated"
+    );
+    expect(migrationSource).toContain(
+      "drop policy if exists \"staff can create scheduled messages\""
+    );
+    expect(migrationSource).toContain(
+      "drop policy if exists \"staff can update scheduled messages\""
+    );
+    expect(migrationSource).toContain(
+      "create or replace function private.schedule_appointment_reminder"
+    );
+    expect(migrationSource).toContain(
+      "create or replace function private.cancel_pending_appointment_reminders"
+    );
+    expect(migrationSource).toContain("security definer");
+    expect(migrationSource).toContain("set search_path = ''");
+    expect(migrationSource).toContain("private.has_org_role");
+    expect(migrationSource).toContain("c.deleted_at is null");
+    expect(migrationSource).toContain(
+      "grant execute on function public.schedule_appointment_reminder"
+    );
+    expect(migrationSource).toContain(
+      "grant execute on function public.cancel_pending_appointment_reminders"
+    );
   });
 });

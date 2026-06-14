@@ -18,18 +18,9 @@ where confirmation_status in (
   'cancelled_by_client'
 );
 
-update public.appointments
-set status = 'scheduled'
-where status in ('confirmed', 'completed', 'no_show');
-
-update public.appointments
-set status = 'not_yet_confirmed'
-where status = 'scheduled'
-  and confirmation_status = 'pending';
-
 alter table public.appointments
   drop constraint if exists appointments_status_check;
 
 alter table public.appointments
   add constraint appointments_status_check
-  check (status in ('scheduled', 'cancelled', 'not_yet_confirmed'));
+  check (status in ('scheduled', 'confirmed', 'cancelled', 'completed', 'no_show'));

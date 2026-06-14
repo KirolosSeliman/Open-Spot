@@ -327,7 +327,7 @@ describe("dashboard operational forms", () => {
         startsAt: "2026-06-01T14:00",
         endsAt: "2026-06-01T15:00",
         timezone: "America/Toronto",
-        status: "not_yet_confirmed",
+        status: "scheduled",
         confirmationStatus: "pending",
         sendReminder: "on",
         requestConfirmation: "on"
@@ -342,7 +342,7 @@ describe("dashboard operational forms", () => {
         endsAt: "2026-06-01T15:00",
         timezone: "America/Toronto",
         notes: null,
-        status: "not_yet_confirmed",
+        status: "scheduled",
         confirmationStatus: "pending",
         sendReminder: true,
         requestConfirmation: true
@@ -357,9 +357,11 @@ describe("dashboard operational forms", () => {
           startsAt: "2026-06-01T14:00",
           status
         })
-      ).toEqual({
-        ok: false,
-        errors: ["Appointment status is invalid."]
+      ).toMatchObject({
+        ok: true,
+        value: {
+          status
+        }
       });
     }
   });
@@ -397,7 +399,8 @@ describe("dashboard operational forms", () => {
     expect(source).toContain("toggleServiceActiveAction");
     expect(source).toContain("createAppointmentAction");
     expect(source).toContain("updateAppointmentAction");
-    expect(source).toContain(".from(\"scheduled_messages\")");
+    expect(source).toContain(".rpc(\"schedule_appointment_reminder\"");
+    expect(source).toContain(".rpc(\"cancel_pending_appointment_reminders\"");
     expect(source).toContain("consent?.status === \"opted_in\"");
     expect(source).toContain("A client with this phone number already exists.");
     expect(source).not.toContain(".update({\n          full_name: input.value.fullName");

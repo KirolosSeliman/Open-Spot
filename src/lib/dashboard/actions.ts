@@ -365,18 +365,15 @@ async function maybeScheduleAppointmentReminder({
     throw new Error("Appointment reminder time could not be calculated.");
   }
 
-  const { error } = await supabase.from("scheduled_messages").insert({
-    organization_id: organizationId,
-    customer_id: customerId,
-    appointment_id: appointmentId,
-    message_type: "appointment_reminder_24h",
-    channel: "sms",
-    scheduled_for: scheduledFor.toISOString(),
-    status: "pending",
-    template_key: "appointment_reminder_24h"
+  const { error } = await supabase.rpc("schedule_appointment_reminder", {
+    target_organization_id: organizationId,
+    target_appointment_id: appointmentId,
+    target_customer_id: customerId,
+    target_scheduled_for: scheduledFor.toISOString(),
+    target_template_key: "appointment_reminder_24h"
   });
 
-  if (error && !error.message.toLowerCase().includes("duplicate")) {
+  if (error) {
     throw new Error(error.message);
   }
 }
@@ -390,12 +387,10 @@ async function cancelPendingAppointmentReminders({
   organizationId: string;
   appointmentId: string;
 }) {
-  const { error } = await supabase
-    .from("scheduled_messages")
-    .update({ status: "cancelled" })
-    .eq("organization_id", organizationId)
-    .eq("appointment_id", appointmentId)
-    .eq("status", "pending");
+  const { error } = await supabase.rpc("cancel_pending_appointment_reminders", {
+    target_organization_id: organizationId,
+    target_appointment_id: appointmentId
+  });
 
   if (error) {
     throw new Error(error.message);
@@ -406,19 +401,19 @@ function deriveAppointmentConfirmationStatus({
   status,
   requestConfirmation
 }: {
-  status: "scheduled" | "cancelled" | "not_yet_confirmed";
+  status: "scheduled" | "confirmed" | "cancelled" | "completed" | "no_show";
   requestConfirmation: boolean;
 }) {
-  if (!requestConfirmation) {
-    return "no_response" as const;
+  if (status === "cancelled") {
+    return "cancelled_by_client" as const;
   }
 
-  if (status === "not_yet_confirmed") {
+  if (requestConfirmation && status === "scheduled") {
     return "pending" as const;
   }
 
-  if (status === "cancelled") {
-    return "cancelled_by_client" as const;
+  if (!requestConfirmation) {
+    return "no_response" as const;
   }
 
   return "confirmed_by_client" as const;
@@ -954,7 +949,7 @@ export async function deleteCustomerAction(formData: FormData) {
         .eq("organization_id", organization.id)
         .eq("customer_id", customer.id)
         .gt("starts_at", new Date().toISOString())
-        .in("status", ["scheduled", "not_yet_confirmed"])
+        .in("status", ["scheduled", "confirmed"])
     ]);
 
   if (
@@ -1325,9 +1320,7 @@ export async function createAppointmentAction(formData: FormData) {
         starts_at: input.value.startsAt,
         ends_at: input.value.endsAt,
         timezone: input.value.timezone || organization.timezone,
-        status: input.value.requestConfirmation
-          ? "not_yet_confirmed"
-          : "scheduled",
+        status: "scheduled",
         reminder_status:
           input.value.sendReminder && consent?.status === "opted_in"
             ? "scheduled"
@@ -1413,6 +1406,8 @@ export async function updateAppointmentAction(formData: FormData) {
     const reminderStatus =
       input.value.sendReminder &&
       input.value.status !== "cancelled" &&
+      input.value.status !== "completed" &&
+      input.value.status !== "no_show" &&
       consent?.status === "opted_in"
         ? "scheduled"
         : "not_scheduled";

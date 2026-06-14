@@ -155,8 +155,8 @@ export function generateConsentRequestSmsMessage(
 
   const body =
     language === "fr"
-      ? `${greeting}${businessName} utilise 2e Chance RDV pour envoyer des alertes de creneaux disponibles par SMS. Repondez OUI pour accepter. STOP pour refuser. Des frais de messagerie peuvent s'appliquer.`
-      : `${greeting}${businessName} uses 2e Chance RDV to send SMS alerts for available appointment spots. Reply YES to opt in. Reply STOP to decline. Message and data rates may apply.`;
+      ? `${greeting}${businessName} utilise Open Spot pour envoyer des alertes de creneaux disponibles par SMS. Repondez OUI pour accepter. STOP pour refuser. Des frais de messagerie peuvent s'appliquer.`
+      : `${greeting}${businessName} uses Open Spot to send SMS alerts for available appointment spots. Reply YES to opt in. Reply STOP to decline. Message and data rates may apply.`;
   const characterCount = [...body].length;
   const estimatedSegments = estimateSmsSegments(characterCount);
 

@@ -28,6 +28,7 @@ describe("public navigation", () => {
     const homepage = source("src/components/marketing/open-spot-funnel.tsx");
     const rootLayout = source("src/app/layout.tsx");
     const bookingPage = source("src/components/marketing/open-spot-booking-page.tsx");
+    const consentSmsSource = source("src/lib/sms/message-generator.ts");
 
     expect(homepage).toContain("Open Spot");
     expect(homepage).not.toContain("2e Chance RDV");
@@ -36,6 +37,22 @@ describe("public navigation", () => {
     expect(rootLayout).not.toContain("2e Chance RDV");
     expect(bookingPage).toContain("Open Spot");
     expect(bookingPage).not.toContain("2e Chance RDV");
+    expect(consentSmsSource).toContain("Open Spot");
+    expect(consentSmsSource).not.toContain("2e Chance RDV");
+  });
+
+  it("does not publish a fixed beta price", () => {
+    const homepage = source("src/components/marketing/open-spot-funnel.tsx");
+    const pricingPage = source("src/app/pricing/page.tsx");
+    const productRequirements = source("docs/product-requirements.md");
+    const fixedPricePattern = /34[,.]99|\$34|CAD 34\.99/i;
+
+    expect(homepage).not.toMatch(fixedPricePattern);
+    expect(pricingPage).not.toMatch(fixedPricePattern);
+    expect(productRequirements).not.toMatch(fixedPricePattern);
+    expect(homepage).toContain("Pricing adapted to your business");
+    expect(pricingPage).toContain("Pricing adapted to your business.");
+    expect(productRequirements).toContain("Public pricing is not fixed");
   });
 
   it("does not make unsupported AI targeting claims on the public landing page", () => {

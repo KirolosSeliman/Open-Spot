@@ -30,8 +30,8 @@ The MVP must work for Quebec and Canadian businesses without hardcoding a city. 
 
 Starting commercial model:
 
-- CAD 34.99/month base subscription.
-- Additional commission on recovered bookings.
+- Public pricing is not fixed; terms are discussed after understanding the merchant's cancellation volume, services, and workflow.
+- Any recovered-booking commercial model must be agreed with the merchant before paid rollout.
 - Commission is counted only after the merchant manually validates the recovered booking.
 - Commission percentage and cap must be configurable later.
 

@@ -54,7 +54,7 @@ export type AppointmentCreateInput = {
 
 export type AppointmentUpdateInput = AppointmentCreateInput & {
   appointmentId: string;
-  status: "scheduled" | "cancelled" | "not_yet_confirmed";
+  status: "scheduled" | "confirmed" | "cancelled" | "completed" | "no_show";
   confirmationStatus:
     | "pending"
     | "confirmed_by_client"
@@ -479,8 +479,10 @@ export function buildAppointmentUpdateInput(input: {
 
   if (
     status !== "scheduled" &&
+    status !== "confirmed" &&
     status !== "cancelled" &&
-    status !== "not_yet_confirmed"
+    status !== "completed" &&
+    status !== "no_show"
   ) {
     errors.push("Appointment status is invalid.");
   }

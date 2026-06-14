@@ -32,9 +32,11 @@ const rangeFilters = [
 
 const statusFilters = [
   { label: "Tous", value: "all" },
-  { label: "Planifies", value: "scheduled" },
-  { label: "Pas encore confirmes", value: "not_yet_confirmed" },
-  { label: "Annules", value: "cancelled" }
+  { label: "Planifiés", value: "scheduled" },
+  { label: "Confirmés", value: "confirmed" },
+  { label: "Annulés", value: "cancelled" },
+  { label: "Terminés", value: "completed" },
+  { label: "No-show", value: "no_show" }
 ];
 
 function toDateTimeLocal(value: string | null) {
@@ -61,14 +63,22 @@ function formatAppointmentTime(value: string) {
 
 function formatAppointmentStatus(status: string) {
   if (status === "cancelled") {
-    return "Annule";
+    return "Annulé";
   }
 
-  if (status === "not_yet_confirmed") {
-    return "Pas encore confirme";
+  if (status === "confirmed") {
+    return "Confirmé";
   }
 
-  return "Planifie";
+  if (status === "completed") {
+    return "Terminé";
+  }
+
+  if (status === "no_show") {
+    return "No-show";
+  }
+
+  return "Planifié";
 }
 
 function formatReminderState(appointment: {
@@ -357,11 +367,11 @@ export default async function AppointmentsPage({
                           defaultValue={appointment.status}
                           name="status"
                         >
-                          <option value="scheduled">Planifie</option>
-                          <option value="not_yet_confirmed">
-                            Pas encore confirme
-                          </option>
-                          <option value="cancelled">Annule</option>
+                          <option value="scheduled">Planifié</option>
+                          <option value="confirmed">Confirmé</option>
+                          <option value="cancelled">Annulé</option>
+                          <option value="completed">Terminé</option>
+                          <option value="no_show">No-show</option>
                         </select>
                       </label>
                       <label className="grid gap-1 text-xs font-bold">

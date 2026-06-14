@@ -90,8 +90,6 @@ function formatAppointmentStatus(status: string | null) {
   switch (status) {
     case "scheduled":
       return "Planifie";
-    case "not_yet_confirmed":
-      return "Pas encore confirme";
     case "cancelled":
       return "Annule";
     default:

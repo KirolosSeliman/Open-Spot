@@ -1524,6 +1524,23 @@ export type Database = {
         };
         Returns: undefined;
       };
+      schedule_appointment_reminder: {
+        Args: {
+          target_organization_id: string;
+          target_appointment_id: string;
+          target_customer_id: string;
+          target_scheduled_for: string;
+          target_template_key?: string;
+        };
+        Returns: string;
+      };
+      cancel_pending_appointment_reminders: {
+        Args: {
+          target_organization_id: string;
+          target_appointment_id: string;
+        };
+        Returns: number;
+      };
       validate_opening_offer: {
         Args: {
           target_opening_id: string;

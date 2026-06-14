@@ -196,9 +196,9 @@ const copy = {
       ]
     },
     pricing: {
-      badge: "Tarification transparente",
-      title: "Simple, clair et rentable",
-      price: "34,99 $ / mois",
+      badge: "Tarification",
+      title: "Une tarification adaptee a votre commerce",
+      price: "Discutee apres echange",
       commission:
         "+ commission sur rendez-vous récupéré, discutée selon votre fonctionnement",
       text:
@@ -401,9 +401,9 @@ const copy = {
       ]
     },
     pricing: {
-      badge: "Transparent pricing",
-      title: "Simple, clear, and profitable",
-      price: "$34.99 / month",
+      badge: "Pricing",
+      title: "Pricing adapted to your business",
+      price: "Discussed after a conversation",
       commission:
         "+ recovered-booking commission, discussed based on your workflow",
       text:
@@ -1012,7 +1012,7 @@ function PricingSection({ t }: { t: Copy }) {
         <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
           {t.pricing.title}
         </h2>
-        <p className="mt-8 text-5xl font-black tracking-tight text-[#14262e]">
+        <p className="mt-8 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
           {t.pricing.price}
         </p>
         <p className="mx-auto mt-4 max-w-xl text-sm font-bold leading-6 text-[var(--muted)]">
