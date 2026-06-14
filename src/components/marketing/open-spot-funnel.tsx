@@ -197,8 +197,10 @@ const copy = {
     },
     pricing: {
       badge: "Tarification",
-      title: "Une tarification adaptee a votre commerce",
-      price: "Discutee apres echange",
+      title: "Une tarification adaptée à votre commerce",
+      price: "Discutée après échange",
+      details:
+        "Le prix est discuté après avoir compris votre volume d'annulations, vos services et votre façon de travailler.",
       commission:
         "+ commission sur rendez-vous récupéré, discutée selon votre fonctionnement",
       text:
@@ -404,6 +406,8 @@ const copy = {
       badge: "Pricing",
       title: "Pricing adapted to your business",
       price: "Discussed after a conversation",
+      details:
+        "Pricing is discussed after understanding your cancellation volume, services, and workflow.",
       commission:
         "+ recovered-booking commission, discussed based on your workflow",
       text:
@@ -1016,7 +1020,7 @@ function PricingSection({ t }: { t: Copy }) {
           {t.pricing.price}
         </p>
         <p className="mx-auto mt-4 max-w-xl text-sm font-bold leading-6 text-[var(--muted)]">
-          {t.pricing.commission}
+          {t.pricing.details}
         </p>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[var(--muted)]">
           {t.pricing.text}
