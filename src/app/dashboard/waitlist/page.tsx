@@ -68,7 +68,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Client
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="customerId"
                 required
               >
@@ -83,7 +83,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Service interest
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="serviceId"
               >
                 <option value="">Any service</option>
@@ -97,7 +97,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Status
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue="active"
                 name="status"
               >
@@ -150,12 +150,12 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Notes
               <textarea
-                className="min-h-24 rounded-xl border border-[var(--line)] bg-white px-3 py-2"
+                className="min-h-24 rounded-2xl border border-[var(--line)] bg-white px-3 py-2"
                 name="notes"
               />
             </label>
             <button
-              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
               type="submit"
             >
               Add to waitlist
@@ -175,7 +175,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Search name or phone
               <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.search}
                 name="search"
                 placeholder="Maya or 514"
@@ -184,7 +184,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Status
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.status ?? ""}
                 name="status"
               >
@@ -198,7 +198,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Service
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.serviceId ?? ""}
                 name="serviceId"
               >
@@ -213,7 +213,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Consent
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.consent ?? ""}
                 name="consent"
               >
@@ -228,7 +228,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Source
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.source ?? ""}
                 name="source"
               >
@@ -243,7 +243,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             <label className="grid gap-2 text-sm font-bold">
               Language
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.language ?? ""}
                 name="language"
               >
@@ -266,7 +266,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
             </label>
             <div className="flex flex-wrap gap-2 md:col-span-2">
               <button
-                className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+                className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                 type="submit"
               >
                 Apply filters

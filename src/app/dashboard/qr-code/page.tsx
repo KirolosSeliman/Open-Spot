@@ -75,7 +75,7 @@ export default async function DashboardQrCodePage() {
                 {qrLink}
               </p>
               <Link
-                className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                 href={qrLink}
               >
                 Ouvrir le formulaire public
@@ -95,20 +95,20 @@ export default async function DashboardQrCodePage() {
             </p>
             {canRenderPublicLinks ? (
               <>
-                <div className="grid gap-2 rounded-xl border border-[var(--line)] bg-white p-3">
+                <div className="grid gap-2 rounded-2xl border border-[var(--line)] bg-white p-3">
                   <p className="font-bold text-[var(--foreground)]">
                     Lien d&apos;inscription public
                   </p>
                   <p className="break-all">{publicLink}</p>
                   <CopyLinkButton value={publicLink} />
                 </div>
-                <div className="grid gap-2 rounded-xl border border-[var(--line)] bg-white p-3">
+                <div className="grid gap-2 rounded-2xl border border-[var(--line)] bg-white p-3">
                   <p className="font-bold text-[var(--foreground)]">
                     Mode kiosque tablette
                   </p>
                   <p className="break-all">{kioskLink}</p>
                   <Link
-                    className="inline-flex min-h-11 items-center justify-center rounded-md border border-[var(--line)] bg-white px-4 py-2 text-sm font-semibold text-[var(--foreground)] transition hover:bg-[#f1f3ef]"
+                    className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black text-[var(--foreground)] transition hover:bg-slate-50"
                     href={kioskLink}
                   >
                     Ouvrir le kiosque
@@ -120,7 +120,7 @@ export default async function DashboardQrCodePage() {
         </Panel>
       </div>
       <Panel title="Aperçu client">
-        <div className="max-w-md rounded-lg border border-[var(--line)] bg-white p-5 shadow-sm">
+        <div className="max-w-md rounded-[1.5rem] border border-[var(--line)] bg-white p-5 shadow-sm">
           <p className="text-sm font-semibold uppercase tracking-wide text-[var(--primary)]">
             Open Spot
           </p>

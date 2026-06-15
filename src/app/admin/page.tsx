@@ -18,7 +18,7 @@ function StatCard({
   note?: string;
 }) {
   return (
-    <Card>
+    <Card className="shadow-[var(--card-shadow)]">
       <p className="text-sm font-bold text-[var(--muted)]">{label}</p>
       <p className="mt-3 text-3xl font-black text-[var(--foreground)]">{value}</p>
       {note ? <p className="mt-2 text-xs text-[var(--muted)]">{note}</p> : null}
@@ -49,6 +49,7 @@ export default async function AdminPage() {
 
   return (
     <section className="grid gap-6">
+      <div className="rounded-[2rem] border border-[var(--line)] bg-white/90 p-5 shadow-[var(--card-shadow)] sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
@@ -67,6 +68,7 @@ export default async function AdminPage() {
           View companies
         </Link>
       </div>
+      </div>
 
       <Card className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -81,7 +83,7 @@ export default async function AdminPage() {
           </span>
           <form action={signOutAction}>
             <button
-              className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)] transition hover:bg-[#f2f7f4]"
+              className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)] transition hover:bg-slate-50"
               type="submit"
             >
               Déconnexion
@@ -90,7 +92,7 @@ export default async function AdminPage() {
         </div>
       </Card>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <StatCard
           label="Companies visible"
           value={numberFormatter.format(overview.visibleCompaniesCount)}
@@ -109,6 +111,11 @@ export default async function AdminPage() {
           label="Filled spots"
           note="Validated openings only"
           value={numberFormatter.format(overview.filledSpotsCount)}
+        />
+        <StatCard
+          label="Failed reminders"
+          note="Scheduled queue"
+          value={numberFormatter.format(overview.failedScheduledMessagesCount)}
         />
       </div>
     </section>

@@ -29,7 +29,8 @@ export default async function WaitlistPage({
   }
 
   return (
-    <main className="mx-auto grid min-h-screen w-full max-w-3xl content-center gap-6 px-4 py-10 sm:px-6">
+    <main className="grid min-h-screen w-full place-items-center bg-[radial-gradient(circle_at_18%_8%,rgba(79,125,243,0.14),transparent_28rem),#f7f9fd] px-4 py-10 sm:px-6">
+      <div className="w-full max-w-3xl rounded-[2rem] border border-[var(--line)] bg-white/90 p-5 shadow-[var(--card-shadow)] sm:p-8">
       <div>
         <p className="text-sm font-semibold uppercase tracking-wide text-[var(--primary)]">
           Open Spot
@@ -48,6 +49,7 @@ export default async function WaitlistPage({
         signupSource={signupSource}
         slug={profile.slug}
       />
+      </div>
     </main>
   );
 }
