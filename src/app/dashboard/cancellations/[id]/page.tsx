@@ -170,7 +170,7 @@ export default async function CancellationDetailPage({
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description={`Details reels du creneau. ${getOpeningAlertModeCopy(smsStatus)}`}
+        description={`Details reels du creneau. ${getOpeningAlertModeCopy(smsStatus)} Validation manuelle obligatoire.`}
         title={opening.title}
       />
       {sendError ? (
@@ -241,7 +241,7 @@ export default async function CancellationDetailPage({
         </Panel>
         <Panel title="SMS preview">
           <div className="grid gap-3">
-            <p className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 text-sm font-bold leading-6 text-[var(--ink)]">
+            <p className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4 text-sm font-bold leading-6 text-[var(--foreground)]">
               {smsPreview.body}
             </p>
             <div className="flex flex-wrap gap-2 text-xs font-black text-[var(--muted)]">
@@ -266,7 +266,7 @@ export default async function CancellationDetailPage({
               <form action={sendOpeningAlertsAction}>
                 <input name="openingId" type="hidden" value={opening.id} />
                 <button
-                  className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                  className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                   type="submit"
                 >
                   {getOpeningAlertButtonLabel(smsStatus)}
@@ -299,7 +299,7 @@ export default async function CancellationDetailPage({
 
               return (
                 <div
-                  className="grid gap-4 rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
+                  className="grid gap-4 rounded-2xl border border-[var(--line)] bg-slate-50 p-4"
                   key={offer.id}
                 >
                   <div>
@@ -406,7 +406,7 @@ export default async function CancellationDetailPage({
                       Twilio confirmed this SMS was delivered to the client.
                     </p>
                   ) : null}
-                  <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6 text-[var(--ink)]">
+                  <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6 text-[var(--foreground)]">
                     {offer.lastOutboundMessageBody ?? offerMessage.body}
                   </p>
                   {offer.status === "responded" && opening.status !== "filled" ? (
@@ -419,7 +419,7 @@ export default async function CancellationDetailPage({
                         value={recoveredValueCents}
                       />
                       <button
-                        className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white"
+                        className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                         type="submit"
                       >
                         Manually validate this respondent

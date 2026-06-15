@@ -31,13 +31,13 @@ export default async function CancellationsPage() {
       <DashboardPageHeader
         action={
           <Link
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_16px_32px_rgba(79,125,243,0.22)] transition hover:bg-[var(--primary-strong)]"
             href="/dashboard/new-cancellation"
           >
             Nouvelle annulation
           </Link>
         }
-        description="Historique reel des opportunites d'annulation de cette organisation."
+        description="Historique reel des opportunites d'annulation de cette organisation. Les reponses ne confirment jamais automatiquement un client."
         title="Annulations"
       />
       <Panel title="Historique">

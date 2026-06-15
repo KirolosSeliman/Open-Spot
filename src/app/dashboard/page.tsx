@@ -131,7 +131,7 @@ export default async function DashboardPage() {
       <DashboardPageHeader
         action={
           <Link
-            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_16px_32px_rgba(35,117,107,0.2)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_16px_32px_rgba(79,125,243,0.22)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/dashboard/new-cancellation"
           >
             Nouvelle annulation
@@ -256,13 +256,13 @@ export default async function DashboardPage() {
       </Panel>
 
       <Panel
-        description="Files de travail basees sur les donnees reelles de cette organisation."
+        description="Files de travail basees sur les donnees reelles de cette organisation. Les confirmations restent manuelles."
         title="Actions a traiter"
       >
         <div className="grid gap-3 md:grid-cols-2">
           {actionItems.map((item) => (
             <Link
-              className="flex min-h-24 items-start justify-between gap-4 rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+              className="flex min-h-24 items-start justify-between gap-4 rounded-2xl border border-[var(--line)] bg-slate-50 p-4 transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
               href={item.href}
               key={item.label}
             >
@@ -289,7 +289,7 @@ export default async function DashboardPage() {
         <div className="grid gap-3 md:grid-cols-2">
           {setupItems.map((item) => (
             <Link
-              className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+              className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4 transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
               href={item.href}
               key={item.href}
             >
