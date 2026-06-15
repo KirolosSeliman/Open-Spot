@@ -7,7 +7,7 @@ import { getRequestLocale } from "@/lib/i18n/locale";
 const pricingCopy = {
   fr: {
     eyebrow: "Tarifs",
-    title: "Pricing adapted to your business.",
+    title: "Des tarifs adaptes a votre commerce.",
     description:
       "Le modèle commercial est défini après avoir compris votre volume d’annulations, vos services, votre usage SMS et votre façon de confirmer les rendez-vous.",
     cards: [
@@ -24,7 +24,7 @@ const pricingCopy = {
       ["Recovery Pro", "Ouvertures, audiences admissibles, réponses classées et validation manuelle."],
       ["Support opérationnel", "Mise en place adaptée au commerce, sans changer le calendrier actuel."]
     ],
-    trust: ["SMS with consent", "Merchant keeps control", "STOP / ARRET supportés", "Aucune app client", "Validation manuelle"],
+    trust: ["SMS avec consentement", "Le commerce garde le controle", "STOP / ARRET supportes", "Aucune app client", "Validation manuelle"],
     cta: "Discuter des tarifs"
   },
   en: {
