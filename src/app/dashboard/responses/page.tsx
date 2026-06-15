@@ -17,6 +17,10 @@ import {
   type OpeningResponsesFilters,
   type OpeningResponseCustomer
 } from "@/lib/dashboard/operations-data";
+import {
+  formatOpeningOfferStatus,
+  formatOpeningStatus
+} from "@/lib/dashboard/status-labels";
 import type { InboundSmsClassification } from "@/lib/sms/inbound";
 
 type ResponsesPageProps = {
@@ -114,11 +118,11 @@ function formatConfirmationStatus(status: string | null) {
 
 function formatOpeningReplyStatus(customer: OpeningResponseCustomer) {
   if (customer.offerStatus === "selected") {
-    return "Selectionne manuellement";
+    return "Confirmé manuellement";
   }
 
   if (customer.offerStatus === "rejected") {
-    return "Rejete";
+    return "Non retenu";
   }
 
   if (customer.replyClassification === "opt_out") {
@@ -149,8 +153,8 @@ function TabLink({
     <Link
       className={`rounded-full border px-4 py-2 text-sm font-black ${
         active
-          ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-          : "border-[var(--line)] bg-white text-[var(--foreground)]"
+          ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
+          : "border-[var(--line)] bg-white text-[var(--foreground)] hover:bg-slate-50"
       }`}
       href={href}
     >
@@ -189,14 +193,14 @@ function OpeningResponsesFiltersForm({
 }) {
   return (
     <form
-      className="mb-5 grid gap-3 rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4 lg:grid-cols-[1fr_1fr_1.4fr_auto]"
+      className="mb-5 grid gap-3 rounded-[1.5rem] border border-[var(--line)] bg-slate-50 p-4 lg:grid-cols-[1fr_1fr_1.4fr_auto]"
       method="get"
     >
       <input name="tab" type="hidden" value="openings" />
       <label className="grid gap-2 text-sm font-bold">
         Période du créneau
         <select
-          className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
+          className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.range}
           name="range"
         >
@@ -210,7 +214,7 @@ function OpeningResponsesFiltersForm({
       <label className="grid gap-2 text-sm font-bold">
         Service
         <select
-          className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
+          className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.serviceId}
           name="serviceId"
         >
@@ -226,7 +230,7 @@ function OpeningResponsesFiltersForm({
       <label className="grid gap-2 text-sm font-bold">
         Recherche
         <input
-          className="min-h-11 w-full rounded-xl border border-[var(--line)] bg-white px-3"
+          className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.q}
           aria-label="Rechercher dans les alertes de créneaux libres"
           autoComplete="off"
@@ -239,7 +243,7 @@ function OpeningResponsesFiltersForm({
       </label>
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 lg:content-end">
         <button
-          className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+          className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
           type="submit"
         >
           Filtrer
@@ -268,7 +272,7 @@ function AppointmentResponseCard({
   item: AppointmentResponseCalendarItem;
 }) {
   return (
-    <article className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4">
+    <article className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="font-black">{item.customerName}</p>
@@ -412,7 +416,7 @@ export default async function ResponsesPage({
             <div className="grid gap-5">
               {filteredOpeningGroups.map((group) => (
                 <section
-                  className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
+                  className="rounded-[1.5rem] border border-[var(--line)] bg-slate-50 p-4"
                   key={group.openingId}
                 >
                   <div className="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
@@ -421,7 +425,9 @@ export default async function ResponsesPage({
                         <h2 className="text-lg font-black">
                           {group.openingTitle}
                         </h2>
-                        <StatusBadge>{group.openingStatus}</StatusBadge>
+                        <StatusBadge>
+                          {formatOpeningStatus(group.openingStatus, "fr")}
+                        </StatusBadge>
                       </div>
                       <p className="mt-2 text-sm font-bold text-[var(--muted)]">
                         {formatDateTime(group.startTime)}
@@ -481,18 +487,18 @@ export default async function ResponsesPage({
                             </span>
                           ) : null}
                           <span className="rounded-full bg-[#f4faf7] px-2 py-1">
-                            Offre: {customer.offerStatus}
+                            Offre: {formatOpeningOfferStatus(customer.offerStatus, "fr")}
                           </span>
                           {customer.replyClassification ===
                             "waitlist_positive" &&
                           customer.offerStatus !== "selected" ? (
-                            <span className="rounded-full bg-[#fff9eb] px-2 py-1 text-[#74510f]">
+                            <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-amber-800">
                               En attente de validation manuelle
                             </span>
                           ) : null}
                         </div>
                         {customer.lastInboundBody ?? customer.responseText ? (
-                          <p className="mt-3 rounded-xl border border-[var(--line)] bg-[#fbfaf7] p-3 text-sm leading-6">
+                          <p className="mt-3 rounded-xl border border-[var(--line)] bg-slate-50 p-3 text-sm leading-6">
                             {customer.lastInboundBody ?? customer.responseText}
                           </p>
                         ) : null}
