@@ -525,12 +525,11 @@ describe("phase 2 migration safety", () => {
     expect(sourceVariantMigration).not.toMatch(/\bdrop table\b/i);
     expect(sourceVariantMigration).not.toMatch(/\btruncate\b/i);
     expect(sourceVariantMigration).not.toMatch(/\bdelete\s+from\b/i);
-    const functionArguments = sourceVariantMigration.slice(
-      sourceVariantMigration.indexOf(
-        "create or replace function public.register_waitlist_signup"
-      ),
-      sourceVariantMigration.indexOf(")\nreturns uuid")
+    const signatureMatch = sourceVariantMigration.match(
+      /create or replace function public\.register_waitlist_signup\(([\s\S]*?)\)\s+returns uuid/i
     );
+    const functionArguments = signatureMatch?.[1] ?? "";
+
     expect(functionArguments).not.toContain("organization_id");
   });
 

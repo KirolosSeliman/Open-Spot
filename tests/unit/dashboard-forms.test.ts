@@ -436,7 +436,7 @@ describe("dashboard operational forms", () => {
     expect(source).toContain("updateAppointmentAction");
     expect(source).toContain(".rpc(\"schedule_appointment_reminder\"");
     expect(source).toContain(".rpc(\"cancel_pending_appointment_reminders\"");
-    expect(source).toContain("consent?.status === \"opted_in\"");
+    expect(source).toContain("shouldQueueAppointmentReminder");
     expect(source).toContain("A client with this phone number already exists.");
     expect(source).not.toContain(".update({\n          full_name: input.value.fullName");
     expect(source).not.toContain('formData.get("organizationId")');
