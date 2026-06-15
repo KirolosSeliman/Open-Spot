@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { dictionaries } from "@/lib/i18n/dictionaries";
+
 describe("sign out UI", () => {
   it("uses the server sign out action for dashboard and admin logout buttons", () => {
     const authActions = readFileSync(
@@ -23,11 +25,11 @@ describe("sign out UI", () => {
     expect(authActions).toContain('redirect("/sign-in")');
 
     expect(dashboardShell).toContain("signOutAction");
-    expect(dashboardShell).toContain("Déconnexion");
+    expect(dashboardShell).toContain("t.auth.signOut");
     expect(dashboardShell).toContain("<form action={signOutAction}");
+    expect(dictionaries.fr.auth.signOut).toBeTruthy();
 
     expect(adminPage).toContain("signOutAction");
-    expect(adminPage).toContain("Déconnexion");
     expect(adminPage).toContain("<form action={signOutAction}");
   });
 });

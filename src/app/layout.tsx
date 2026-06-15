@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { getRequestLocale } from "@/lib/i18n/locale";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -14,9 +16,11 @@ export const viewport: Viewport = {
   initialScale: 1
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const locale = await getRequestLocale();
+
   return (
-    <html lang="fr">
+    <html lang={locale}>
       <body>{children}</body>
     </html>
   );
