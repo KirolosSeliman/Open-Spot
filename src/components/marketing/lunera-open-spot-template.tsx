@@ -350,7 +350,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
           }
         });
       },
-      { rootMargin: "0px 0px -12% 0px", threshold: 0.12 }
+      { rootMargin: "0px 0px -4% 0px", threshold: 0.01 }
     );
 
     revealItems.forEach((item) => observer.observe(item));
@@ -432,7 +432,7 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
           <Link className="hidden rounded-full px-4 py-2 text-sm font-black text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 md:inline-flex" href="/sign-in">
             {t.nav.login}
           </Link>
-          <Link className="rounded-full bg-black px-4 py-2 text-sm font-black text-white shadow-[0_14px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-slate-900" href="/signup">
+          <Link className="hidden rounded-full bg-black px-4 py-2 text-sm font-black text-white shadow-[0_14px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-slate-900 sm:inline-flex" href="/signup">
             {t.nav.primary}
           </Link>
         </div>
