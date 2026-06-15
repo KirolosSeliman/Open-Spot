@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
 import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils/cn";
 
@@ -134,7 +135,7 @@ const copy = {
       text: "Open Spot garde le contrôle du côté marchand et respecte le consentement SMS.",
       items: [
         ["Est-ce qu’Open Spot remplace mon système de réservation ?", "Non. Vous gardez votre calendrier, votre système de caisse ou votre outil de réservation actuel. Open Spot sert à récupérer les annulations et gérer les réponses SMS."],
-        ["Le premier client qui répond est-il confirmé automatiquement ?", "Non. Les réponses sont classées par heure de réception, mais vous gardez toujours le contrôle final."],
+        ["Le premier client qui répond reçoit-il la place ?", "Non. Les réponses sont classées par heure de réception, mais vous gardez toujours le contrôle final."],
         ["Puis-je envoyer des SMS à tous mes clients importés ?", "Non. Les clients doivent avoir un consentement SMS valide avant de recevoir des messages."],
         ["Que se passe-t-il si un client répond STOP ?", "Il est désinscrit et doit être exclu des prochains envois SMS."],
         ["Mes clients doivent-ils télécharger une application ?", "Non. Les clients interagissent par SMS."],
@@ -387,7 +388,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
     >
       <FloatingNavbar locale={locale} t={t} />
       <main>
-        <Hero t={t} />
+        <Hero locale={locale} t={t} />
         <CategoryMarquee headline={t.categories.headline} items={repeatedCategories} />
         <FeatureGrid t={t} />
         <ToolsOrbit t={t} />
@@ -449,7 +450,7 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
   );
 }
 
-function Hero({ t }: { t: TemplateCopy }) {
+function Hero({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   return (
     <section className="relative min-h-[980px] overflow-hidden px-4 pb-16 pt-32 sm:pt-40">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,#cfeeff_0%,#eaf7ff_26rem,transparent_46rem),linear-gradient(180deg,#dff3ff_0%,#f8fcff_58%,#ffffff_100%)]" />
@@ -474,81 +475,9 @@ function Hero({ t }: { t: TemplateCopy }) {
         </p>
       </div>
       <div className="mx-auto mt-14 max-w-6xl" data-lunera-reveal>
-        <HeroMockup t={t} />
+        <SmsConversationPhone locale={locale} />
       </div>
     </section>
-  );
-}
-
-function HeroMockup({ t }: { t: TemplateCopy }) {
-  return (
-    <div className="relative mx-auto min-h-[520px] max-w-5xl">
-      <FloatingMetric className="-left-2 top-24 hidden md:block" label={t.mockup.eligible} value={t.mockup.cancellation} />
-      <FloatingMetric className="-right-4 top-20 hidden md:block" label={t.mockup.stop} value={t.mockup.revenue} />
-      <FloatingMetric className="bottom-20 left-8 hidden lg:block" label={t.mockup.replies} value={t.mockup.manual} dark />
-      <div className="lunera-phone-shell mx-auto">
-        <div className="mx-auto h-7 w-36 rounded-b-3xl bg-black" />
-        <div className="mt-6 rounded-[2.2rem] bg-[#f7f9fd] p-4 shadow-inner">
-          <div className="rounded-[1.7rem] bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.12)]">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-black uppercase text-[#4f7df3]">{t.mockup.cancellation}</p>
-                <h2 className="mt-2 text-2xl font-black">{t.mockup.appointment}</h2>
-              </div>
-              <span className="rounded-full bg-[#edf4ff] px-3 py-1 text-xs font-black text-[#3566dc]">SMS</span>
-            </div>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <MiniStat label={t.mockup.eligible} value="24" />
-              <MiniStat label={t.mockup.replies} value="3" />
-            </div>
-            <div className="mt-4 rounded-[1.2rem] border border-[#dbe7ff] bg-[#f2f7ff] p-3 text-sm font-black text-[#254caa]">
-              {t.mockup.manual}
-            </div>
-            <div className="mt-4 space-y-3">
-              {t.mockup.rows.map(([name, reply, time], index) => (
-                <div className="lunera-reply-row grid grid-cols-[1fr_auto_auto] items-center gap-2 rounded-2xl bg-slate-50 px-3 py-3" key={name} style={{ animationDelay: `${index * 220}ms` }}>
-                  <span className="text-sm font-black">{name}</span>
-                  <span className="rounded-full bg-black px-3 py-1 text-xs font-black text-white">{reply}</span>
-                  <span className="text-xs font-bold text-slate-400">{time}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[1.35rem] bg-black px-4 py-4 text-sm font-black text-white">{t.mockup.revenue}</div>
-            <div className="rounded-[1.35rem] bg-[#e8fbf5] px-4 py-4 text-sm font-black text-[#08775c]">{t.mockup.stop}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MiniStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-slate-100 bg-white px-3 py-4 shadow-sm">
-      <p className="text-3xl font-black">{value}</p>
-      <p className="mt-1 text-xs font-bold leading-4 text-slate-500">{label}</p>
-    </div>
-  );
-}
-
-function FloatingMetric({
-  className,
-  dark,
-  label,
-  value
-}: {
-  className?: string;
-  dark?: boolean;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className={cn("lunera-floating-card absolute z-10 max-w-[16rem] rounded-[1.4rem] p-4 shadow-[0_22px_55px_rgba(15,23,42,0.14)]", dark ? "bg-black text-white" : "bg-white/92 text-slate-950", className)}>
-      <p className={cn("text-lg font-black leading-6", dark ? "text-white" : "text-slate-950")}>{value}</p>
-      <p className={cn("mt-2 text-xs font-bold leading-5", dark ? "text-white/64" : "text-slate-500")}>{label}</p>
-    </div>
   );
 }
 

@@ -47,7 +47,7 @@ const bookingCopy = {
       prepTitle: "Questions fréquentes",
       prep: [
         "Est-ce que mes clients doivent installer une app ? Non, ils répondent par SMS.",
-        "Est-ce que le premier qui répond est confirmé automatiquement ? Non, vous choisissez toujours qui confirmer.",
+        "Est-ce que le premier qui répond reçoit la place ? Non, vous choisissez toujours qui confirmer.",
         "Est-ce que je dois changer mon logiciel de rendez-vous ? Non, Open Spot s’ajoute à votre système actuel.",
         "Comment fonctionne le consentement SMS ? On le clarifie avant d’envoyer des alertes.",
         "Est-ce adapté à mon commerce ? L’appel sert justement à le vérifier."
