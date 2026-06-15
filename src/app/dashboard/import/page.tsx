@@ -69,7 +69,7 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
         </div>
       ) : null}
       <Panel title="Import / export">
-        <div className="mb-4 rounded-xl border border-[var(--line)] bg-[#fbfaf7] p-3 text-sm text-[var(--muted)]">
+        <div className="mb-4 rounded-2xl border border-[var(--line)] bg-slate-50 p-3 text-sm text-[var(--muted)]">
           No CSV file? Use the{" "}
           <Link
             className="font-black text-[var(--primary)] underline"
@@ -94,7 +94,7 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
               ["Opted out", validation.summary.optedOutRows]
             ].map(([label, value]) => (
               <div
-                className="rounded-xl border border-[var(--line)] bg-[#fbfaf7] p-3"
+                className="rounded-2xl border border-[var(--line)] bg-slate-50 p-3"
                 key={label}
               >
                 <dt className="text-xs font-black uppercase text-[var(--muted)]">
@@ -135,7 +135,7 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
             <input name="csv" type="hidden" value={decodedPreview} />
             <input name="fileName" type="hidden" value="dashboard-import.csv" />
             <button
-              className="rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white"
+              className="rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
               type="submit"
             >
               Confirm import

@@ -116,8 +116,8 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
         <Link
           className={`inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-black ${
             tab === "active"
-              ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-              : "border-[var(--line)] bg-white text-[var(--foreground)]"
+              ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
+              : "border-[var(--line)] bg-white text-[var(--foreground)] hover:bg-slate-50"
           }`}
           href="/dashboard/clients?tab=active"
         >
@@ -126,8 +126,8 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
         <Link
           className={`inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-black ${
             tab === "deleted"
-              ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-              : "border-[var(--line)] bg-white text-[var(--foreground)]"
+              ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
+              : "border-[var(--line)] bg-white text-[var(--foreground)] hover:bg-slate-50"
           }`}
           href="/dashboard/clients?tab=deleted"
         >
@@ -141,7 +141,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Nom complet
               <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="fullName"
                 required
               />
@@ -155,7 +155,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Email
               <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="email"
                 type="email"
               />
@@ -163,7 +163,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold">
               Langue
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue="fr"
                 name="preferredLanguage"
               >
@@ -174,7 +174,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Consentement SMS
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue="needs_consent"
                 name="consentStatus"
               >
@@ -194,7 +194,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Intérêt de service
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="serviceId"
               >
                 <option value="">Tous les services</option>
@@ -212,12 +212,12 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Notes
               <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="notes"
               />
             </label>
             <button
-              className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+              className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
               type="submit"
             >
               Ajouter le client
@@ -389,3 +389,4 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
     </div>
   );
 }
+

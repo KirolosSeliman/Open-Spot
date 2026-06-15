@@ -50,13 +50,13 @@ export default async function PasteImportPage({
       <Panel title="Paste preview">
         <form action={previewPastedCustomerImportAction} className="grid gap-4">
           <textarea
-            className="min-h-48 rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm"
+            className="min-h-48 rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm shadow-sm focus:border-[var(--primary)] focus:ring-4 focus:ring-blue-100"
             defaultValue={decodedPreview}
             name="pastedText"
             placeholder={"Maya 5145551001\nSarah 514-555-1002\nLina Nguyen (514) 555-1003"}
           />
           <button
-            className="w-fit rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white"
+            className="w-fit rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
             type="submit"
           >
             Preview pasted clients
@@ -75,7 +75,7 @@ export default async function PasteImportPage({
               ["Opted in", validation.summary.optedInRows]
             ].map(([label, value]) => (
               <div
-                className="rounded-xl border border-[var(--line)] bg-[#fbfaf7] p-3"
+                className="rounded-2xl border border-[var(--line)] bg-slate-50 p-3"
                 key={label}
               >
                 <dt className="text-xs font-black uppercase text-[var(--muted)]">
@@ -131,7 +131,7 @@ export default async function PasteImportPage({
               business. Leave unchecked to import them as needs_consent.
             </label>
             <button
-              className="w-fit rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white"
+              className="w-fit rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
               type="submit"
             >
               Confirm paste import
