@@ -1,0 +1,6 @@
+<svg width="312" height="72" viewBox="0 0 312 72" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Open Spot">
+  <rect x="4" y="8" width="56" height="56" rx="18" fill="#4F7DF3"/>
+  <path d="M40.5 24.5C37.9 22.6 34.8 21.5 31.3 21.5C22.7 21.5 15.8 28.4 15.8 37C15.8 45.6 22.7 52.5 31.3 52.5C39.9 52.5 46.8 45.6 46.8 37" stroke="white" stroke-width="5.8" stroke-linecap="round"/>
+  <path d="M36.5 35.8H49" stroke="white" stroke-width="5.8" stroke-linecap="round"/>
+  <text x="76" y="45" fill="#0B1020" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="800">Open Spot</text>
+</svg>

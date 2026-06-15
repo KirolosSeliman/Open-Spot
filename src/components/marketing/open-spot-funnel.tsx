@@ -1,854 +1,453 @@
-"use client";
-
 import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
-import { useState } from "react";
 
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { getRequestLocale } from "@/lib/i18n/locale";
+import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils/cn";
 
-type Locale = "fr" | "en";
-
-const copy = {
+const marketingCopy = {
   fr: {
     nav: {
       how: "Comment ça marche",
-      why: "Pourquoi Open Spot",
-      pricing: "Prix",
+      features: "Pourquoi Open Spot",
+      pricing: "Tarifs",
       login: "Connexion",
-      signup: "Créer un compte",
-      call: "Réserver un appel",
-      switchLabel: "English"
+      signup: "Créer un compte"
     },
     hero: {
-      eyebrow: "Alertes SMS pour annulations de dernière minute",
-      title: "Vos annulations ne devraient pas rester des pertes.",
+      eyebrow: "SMS de récupération pour commerces à rendez-vous",
+      title: "Remplissez les annulations sans changer votre système actuel.",
       subtitle:
-        "Quand une place se libère, Open Spot vous aide à lancer une alerte SMS aux bons clients. Ils répondent, vous choisissez qui confirmer, et votre créneau peut redevenir un rendez-vous.",
+        "Open Spot aide les salons, barbiers et commerces à rendez-vous à envoyer une alerte SMS aux clients consentants lorsqu’une place se libère. Les réponses sont classées par heure de réception. Vous choisissez toujours qui confirmer.",
       primary: "Réserver un appel",
-      secondary: "Voir comment ça fonctionne",
-      chips: [
-        "Aucune app client",
-        "Validation manuelle",
-        "SMS avec consentement",
-        "Adapté à votre commerce"
-      ],
-      visual: {
-        cancelled: "Créneau annulé",
-        subtitle: "Un créneau vient de se libérer",
-        service: "Coupe régulière",
-        duration: "45 min",
-        button: "Lancer l’alerte",
-        targetedTitle: "Clients ciblés",
-        targetedCount: "3",
-        sendTitle: "Envoi des alertes",
-        sendStatus: "SMS en cours",
-        repliesTitle: "Réponses des clients",
-        replyOne: "Oui, je peux venir !",
-        replyTwo: "Oui, dispo à 14 h 30",
-        replyThree: "Merci mais pas dispo aujourd’hui",
-        repliesNote: "Les réponses arrivent en temps réel.",
-        targetingTitle: "Ciblage par critères",
-        targetingInsightOne: "Critère : client volontaire sur la liste SMS",
-        targetingInsightTwo: "Critère : intérêt pour ce service",
-        targetingInsightThree:
-          "Vous envoyez l’alerte aux clients admissibles, puis vous choisissez qui confirmer.",
-        manual: "Vous confirmez manuellement",
-        recovered: "Créneau récupéré",
-        confirmed: "Le rendez-vous est confirmé.",
-        controlNote:
-          "Vous gardez le contrôle : la confirmation du rendez-vous se fait toujours manuellement.",
-        clients: [
-          {
-            initials: "MA",
-            name: "Maya",
-            label: "Prioritaire",
-            detail: "Client priorisé : n’a pas réservé depuis 2 semaines",
-            status: "Envoi…"
-          },
-          {
-            initials: "SA",
-            name: "Sarah",
-            label: "Intéressée par ce service",
-            detail: "N’a pas réservé depuis 10 jours",
-            status: "Prêt"
-          },
-          {
-            initials: "LI",
-            name: "Lina",
-            label: "Cliente fidèle",
-            detail: "N’a pas réservé depuis 3 semaines",
-            status: "Prêt"
-          }
-        ]
-      }
+      secondary: "Voir le fonctionnement",
+      proof: ["Validation manuelle", "Clients consentants", "QR liste d’attente", "Aucune app client"],
+      manualRule:
+        "Un client qui répond OUI, YES ou 1 n’est jamais confirmé automatiquement."
     },
-    sectors: {
-      title: "Pensé pour les commerces qui vivent par rendez-vous.",
-      items: [
-        "Salons de coiffure",
-        "Barbiers",
-        "Esthétique",
-        "Ongleries",
-        "Spas",
-        "Autres commerces à rendez-vous"
-      ]
-    },
+    categories: ["Salons", "Barbiers", "Esthétique", "Ongleries", "Spas", "Soins locaux"],
     problem: {
-      title:
-        "Une annulation, ce n’est pas juste une case vide. C’est du temps, de l’énergie et du revenu qui disparaissent.",
+      kicker: "Le problème",
+      title: "Une place vide coûte cher quand l’équipe, le local et le temps sont déjà réservés.",
       text:
-        "Vous avez déjà payé le local, l’équipe est prête, le temps est réservé. Quand le créneau reste vide, la perte est réelle. Open Spot transforme ce moment de stress en action simple : lancer une alerte aux clients qui veulent vraiment une place.",
-      before: "Avant",
-      after: "Après",
-      beforeItems: ["14 h 30 — Annulé", "Revenu perdu", "Texter à la main"],
-      afterItems: [
-        "14 h 30 — Récupéré",
-        "Client confirmé",
-        "Liste alertée en quelques secondes"
+        "La plupart des commerces réagissent avec des messages manuels, des appels rapides ou une publication de dernière minute. Open Spot transforme ce moment en un flux simple, traçable et respectueux du consentement SMS.",
+      before: ["Annulation à 14 h 30", "Messages envoyés à la main", "Réponses mélangées", "Décision difficile à suivre"],
+      after: ["Alerte préparée", "Clients admissibles seulement", "Réponses classées", "Confirmation manuelle"]
+    },
+    features: {
+      kicker: "Produit",
+      title: "Un système léger autour de votre façon de travailler.",
+      items: [
+        ["Alerte SMS ciblée", "Préparez une offre claire pour une ouverture de dernière minute."],
+        ["Consentement visible", "Les clients importés ou inscrits gardent un statut de consentement explicite."],
+        ["Réponses en file", "OUI, YES et 1 remontent dans une liste lisible, classée par heure."],
+        ["Validation manuelle", "Le marchand garde le dernier mot avant toute confirmation."],
+        ["QR liste d’attente", "Les clients peuvent s’inscrire eux-mêmes avec consentement SMS."],
+        ["Rapports sobres", "Suivez les ouvertures remplies et le revenu récupéré estimé sans promesse garantie."]
       ]
     },
     workflow: {
-      title:
-        "De la place vide au client confirmé, sans changer votre système de rendez-vous.",
-      note:
-        "Open Spot ne remplace pas votre calendrier. Il s’ajoute à votre façon de travailler.",
+      kicker: "Comment ça marche",
+      title: "Quatre étapes, sans remplacer votre calendrier.",
       steps: [
-        ["Lancer l’alerte", "Vous partez du créneau annulé, sans changer votre calendrier."],
-        ["Alertes envoyées", "Open Spot prépare une alerte SMS ciblée pour les bons contacts."],
-        ["Réponses reçues", "Les réponses arrivent clairement, dans l’ordre."],
-        ["Confirmation manuelle", "Vous choisissez la personne à confirmer."]
+        ["Créer l’ouverture", "Choisissez le service, l’heure et les détails de la place libérée."],
+        ["Préparer l’audience", "Open Spot aide à repérer les clients admissibles et consentants."],
+        ["Recevoir les réponses", "Les réponses SMS sont regroupées et classées par heure de réception."],
+        ["Confirmer vous-même", "Vous contactez ou confirmez le client choisi, puis le flux reste traçable."]
       ]
     },
-    targeting: {
-      badge: "Ciblage contrôlé",
-      title: "Contactez les bons clients sans spammer toute votre liste",
+    waitlist: {
+      kicker: "Liste d’attente QR",
+      title: "Un QR code simple pour remplir votre bassin de clients consentants.",
       text:
-        "Open Spot s’appuie sur les services, les préférences et le consentement SMS pour vous aider à contacter des clients admissibles, sans promettre de décision automatique.",
-      example:
-        "Exemple : cibler les clients inscrits à la liste d’attente qui ont choisi ce type de service.",
-      aiRoadmap:
-        "Direction produit: l'aide par IA est prevue pour enrichir ce ciblage plus tard. Aujourd'hui, Open Spot reste base sur le consentement, les services et la validation manuelle.",
-      note: "Zéro réservation automatique. Vous restez maître de votre agenda.",
-      benefits: [
-        [
-          "Ciblage pertinent",
-          "Les services choisis par les clients aident à préparer une alerte plus pertinente."
-        ],
-        [
-          "Réponse plus rapide",
-          "Les alertes partent en quelques secondes aux bons contacts."
-        ],
-        [
-          "Vous gardez le contrôle",
-          "Vous confirmez chaque créneau. Rien n’est réservé sans votre accord."
-        ]
-      ],
-      rows: [
-        ["Coupe régulière", "Service compatible"],
-        ["Maya", "Intéressée"],
-        ["Consentement SMS", "Actif"],
-        ["Confirmation", "Manuelle"]
-      ],
-      workflow: [
-        "Lancer l’alerte",
-        "Alertes envoyées",
-        "Réponses reçues",
-        "Confirmation manuelle"
-      ],
-      secondary: "Découvrir comment ça fonctionne"
+        "Placez le QR code à la réception. Les clients s’inscrivent eux-mêmes, choisissent leurs intérêts et acceptent les SMS. Ils peuvent se désinscrire avec les mots-clés pris en charge.",
+      actions: ["Copier le lien", "Ouvrir la page publique", "Imprimer le QR"]
     },
-    personalization: {
-      title: "Chaque commerce fonctionne différemment. Open Spot s’adapte au vôtre.",
-      text:
-        "Votre liste client, vos services, vos horaires, votre façon de confirmer les rendez-vous. L’appel sert à comprendre votre réalité et à brancher Open Spot proprement, sans vous forcer à changer de système.",
-      cards: [
-        "Vos services",
-        "Votre liste client",
-        "Votre langue",
-        "Vos règles de confirmation",
-        "Votre volume d’annulations",
-        "Votre façon de travailler"
-      ]
+    sms: {
+      kicker: "Flux SMS",
+      title: "Les réponses rapides restent sous votre contrôle.",
+      bubbles: ["OUI je peux venir", "YES, 14 h 30 works", "1"],
+      notes: ["Classé par heure reçue", "Aucune confirmation automatique", "STOP / ARRET / CANCEL respectés"]
     },
-    metrics: {
-      title:
-        "Voyez ce qui partait en pertes devenir des rendez-vous récupérés.",
-      disclaimer:
-        "Exemple illustratif. Les résultats dépendent de votre volume d’annulations, de votre liste client et de vos services.",
-      cards: [
-        ["Annulations", "18"],
-        ["Alertes envoyées", "42"],
-        ["Réponses reçues", "16"],
-        ["Créneaux récupérés", "9"]
-      ]
-    },
-    trust: {
-      title: "Simple pour vous. Respectueux pour vos clients.",
-      text:
-        "Open Spot doit être utilisé avec des clients qui ont accepté de recevoir des messages. Le produit est pensé pour protéger la confiance, pas pour brûler votre liste client.",
-      cards: [
-        "Consentement SMS clair",
-        "Désinscription STOP",
-        "Pas d’app à installer",
-        "Validation manuelle",
-        "Pas de spam",
-        "Vous gardez votre système actuel"
+    preview: {
+      title: "Tableau de bord marchand",
+      subtitle: "Vue illustrative, basée sur le flux réel Open Spot.",
+      replyQueue: "Réponses",
+      metrics: [
+        ["Ouvertures", "12"],
+        ["Réponses", "38"],
+        ["À valider", "5"],
+        ["Revenu estimé", "1 240 $"]
+      ],
+      queue: [
+        ["Maya L.", "OUI", "14:03"],
+        ["Sarah P.", "YES", "14:05"],
+        ["Lina R.", "1", "14:07"]
       ]
     },
     pricing: {
-      badge: "Tarification",
-      title: "Une tarification adaptée à votre commerce",
-      price: "Discutée après échange",
-      details:
-        "Le prix est discuté après avoir compris votre volume d'annulations, vos services et votre façon de travailler.",
-      commission:
-        "+ commission sur rendez-vous récupéré, discutée selon votre fonctionnement",
+      kicker: "Tarifs",
+      title: "Une tarification adaptée au volume réel.",
       text:
-        "L’appel permet de vérifier votre volume, vos services et la meilleure façon de connecter Open Spot à votre commerce.",
-      ready: "Je suis prêt à récupérer mes annulations",
-      questions: "Parler à quelqu’un",
-      trust: ["Sans engagement", "Mise en place rapide", "Adapté à votre commerce"]
+        "Pas de faux prix public ni de promesse de revenu garanti. Le bon modèle dépend du volume d’annulations, des services, de l’usage SMS et de la façon dont votre commerce confirme les rendez-vous.",
+      cta: "Discuter des tarifs"
+    },
+    useCases: {
+      kicker: "Cas d’usage",
+      title: "Conçu pour les commerces où une heure vide compte.",
+      items: ["Coupe annulée le jour même", "Soin esthétique libéré", "Place de barbier disponible", "Rappel à une liste d’attente"]
+    },
+    faq: {
+      kicker: "Questions",
+      title: "Clair avant de l’utiliser avec vos clients.",
+      items: [
+        ["Est-ce que le premier client qui répond est confirmé ?", "Non. Les réponses sont classées, mais le marchand valide manuellement."],
+        ["Est-ce que les clients doivent installer une app ?", "Non. Ils répondent par SMS."],
+        ["Est-ce que Open Spot remplace mon calendrier ?", "Non. Il s’ajoute à votre système actuel."],
+        ["Puis-je envoyer à toute ma liste ?", "L’interface doit renforcer l’envoi aux clients admissibles et consentants seulement."]
+      ]
     },
     final: {
-      title: "Prêt à transformer vos annulations en rendez-vous récupérés ?",
+      title: "Prêt à récupérer plus de places sans perdre le contrôle ?",
       text:
-        "Réservez un appel. On regarde votre commerce, vos services, vos annulations et la meilleure façon de connecter Open Spot à votre réalité.",
-      ready: "Je suis prêt à récupérer mes annulations",
-      questions: "Parler à quelqu’un"
+        "Réservez un appel. On regarde votre commerce, vos services, vos annulations et la meilleure façon de brancher Open Spot proprement.",
+      primary: "Réserver un appel",
+      secondary: "Voir les tarifs"
+    },
+    footer: {
+      line: "SMS-first cancellation recovery for appointment-based local businesses.",
+      privacy: "Confidentialité",
+      terms: "Conditions"
     }
   },
   en: {
     nav: {
       how: "How it works",
-      why: "Why Open Spot",
+      features: "Product",
       pricing: "Pricing",
       login: "Sign in",
-      signup: "Create account",
-      call: "Book a call",
-      switchLabel: "Français"
+      signup: "Create account"
     },
     hero: {
-      eyebrow: "SMS alerts for last-minute cancellations",
-      title: "Your cancellations shouldn’t stay lost revenue.",
+      eyebrow: "SMS recovery for appointment-based businesses",
+      title: "Fill cancellations without changing your current system.",
       subtitle:
-        "When a spot opens up, Open Spot helps you send an SMS alert to the right customers. They reply, you choose who to confirm, and an empty slot can become a booked appointment again.",
+        "Open Spot helps salons, barbers, and appointment-based businesses send an SMS alert to opted-in customers when a spot opens up. Replies are ranked by received time. You always choose who to confirm.",
       primary: "Book a call",
       secondary: "See how it works",
-      chips: [
-        "No customer app",
-        "Manual validation",
-        "Consent-based SMS",
-        "Built around your business"
-      ],
-      visual: {
-        cancelled: "Cancelled spot",
-        subtitle: "A spot just opened up",
-        service: "Regular haircut",
-        duration: "45 min",
-        button: "Launch alert",
-        targetedTitle: "Targeted customers",
-        targetedCount: "3",
-        sendTitle: "Alert delivery",
-        sendStatus: "SMS in progress",
-        repliesTitle: "Customer replies",
-        replyOne: "Yes, I can come in!",
-        replyTwo: "Yes, 2:30 works",
-        replyThree: "Thanks, but not today",
-        repliesNote: "Replies arrive in real time.",
-        targetingTitle: "Criteria-based targeting",
-        targetingInsightOne: "Criteria: opted-in waitlist customer",
-        targetingInsightTwo: "Signal: interest in this service",
-        targetingInsightThree:
-          "You send the alert to eligible customers, then choose who to confirm.",
-        manual: "You confirm manually",
-        recovered: "Spot recovered",
-        confirmed: "The appointment is confirmed.",
-        controlNote:
-          "You keep control: the appointment confirmation is always handled manually.",
-        clients: [
-          {
-            initials: "MA",
-            name: "Maya",
-            label: "Priority",
-            detail: "Prioritized customer: has not booked in 2 weeks",
-            status: "Sending..."
-          },
-          {
-            initials: "SA",
-            name: "Sarah",
-            label: "Interested in this service",
-            detail: "Has not booked in 10 days",
-            status: "Ready"
-          },
-          {
-            initials: "LI",
-            name: "Lina",
-            label: "Loyal customer",
-            detail: "Has not booked in 3 weeks",
-            status: "Ready"
-          }
-        ]
-      }
+      proof: ["Manual validation", "Opted-in customers", "QR waitlist", "No customer app"],
+      manualRule:
+        "A customer who replies OUI, YES, or 1 is never automatically confirmed."
     },
-    sectors: {
-      title: "Built for businesses that run on appointments.",
-      items: [
-        "Hair salons",
-        "Barbers",
-        "Beauty studios",
-        "Nail salons",
-        "Spas",
-        "Other appointment-based businesses"
-      ]
-    },
+    categories: ["Salons", "Barbers", "Beauty", "Nails", "Spas", "Local care"],
     problem: {
-      title:
-        "A cancellation is not just an empty box. It is time, energy, and revenue disappearing.",
+      kicker: "The problem",
+      title: "An empty spot is expensive when the team, space, and time are already booked.",
       text:
-        "You already paid for the space, the team is ready, and the time was reserved. When the spot stays empty, the loss is real. Open Spot turns that stressful moment into one simple action: alert customers who truly want a spot.",
-      before: "Before",
-      after: "After",
-      beforeItems: ["2:30 PM — Cancelled", "Lost revenue", "Manual texting"],
-      afterItems: [
-        "2:30 PM — Recovered",
-        "Customer confirmed",
-        "List alerted in seconds"
+        "Most businesses react with manual texts, quick calls, or last-minute posts. Open Spot turns that moment into a simple, traceable flow that respects SMS consent.",
+      before: ["2:30 cancellation", "Manual messages", "Mixed replies", "Hard-to-track decision"],
+      after: ["Alert prepared", "Eligible customers only", "Replies ranked", "Manual confirmation"]
+    },
+    features: {
+      kicker: "Product",
+      title: "A lightweight system around the way you already work.",
+      items: [
+        ["Targeted SMS alert", "Prepare a clear offer for a last-minute opening."],
+        ["Visible consent", "Imported or self-registered customers keep explicit consent states."],
+        ["Reply queue", "OUI, YES, and 1 replies surface in a readable time-ranked list."],
+        ["Manual validation", "The merchant keeps the final say before any confirmation."],
+        ["QR waitlist", "Customers can join the waitlist themselves with SMS consent."],
+        ["Clear reporting", "Track filled openings and estimated recovered revenue without guarantees."]
       ]
     },
     workflow: {
-      title:
-        "From empty spot to confirmed customer, without changing your booking system.",
-      note:
-        "Open Spot does not replace your calendar. It fits into the way you already work.",
+      kicker: "How it works",
+      title: "Four steps without replacing your calendar.",
       steps: [
-        ["Launch the alert", "You start from the cancelled spot without changing your calendar."],
-        ["Alerts sent", "Open Spot prepares a targeted SMS alert for the right contacts."],
-        ["Replies received", "Replies arrive clearly, in order."],
-        ["Manual confirmation", "You choose who to confirm."]
+        ["Create the opening", "Choose the service, time, and details of the open spot."],
+        ["Prepare the audience", "Open Spot helps identify eligible opted-in customers."],
+        ["Receive replies", "SMS replies are grouped and ranked by received time."],
+        ["Confirm manually", "You contact or confirm the chosen customer, and the flow stays traceable."]
       ]
     },
-    targeting: {
-      badge: "Controlled targeting",
-      title: "Contact the right customers without blasting your full list",
+    waitlist: {
+      kicker: "QR waitlist",
+      title: "A simple QR code to grow your opted-in customer pool.",
       text:
-        "Open Spot uses services, preferences, and SMS consent to help you contact eligible customers without promising automated decisions.",
-      example:
-        "Example: target waitlist customers who selected this type of service.",
-      aiRoadmap:
-        "Product direction: AI assistance is planned to improve this targeting later. Today, Open Spot remains based on consent, services, and manual validation.",
-      note: "Zero automatic booking. You stay in control of your calendar.",
-      benefits: [
-        [
-          "Relevant targeting",
-          "Customer-selected services help prepare a more relevant alert."
-        ],
-        [
-          "Faster response",
-          "Alerts go out in seconds to the right contacts."
-        ],
-        [
-          "You keep control",
-          "You confirm every spot. Nothing is booked without your approval."
-        ]
-      ],
-      rows: [
-        ["Regular haircut", "Compatible service"],
-        ["Maya", "Interested"],
-        ["SMS consent", "Active"],
-        ["Confirmation", "Manual"]
-      ],
-      workflow: [
-        "Launch the alert",
-        "Alerts sent",
-        "Replies received",
-        "Manual confirmation"
-      ],
-      secondary: "See how it works"
+        "Place the QR code at the front desk. Customers sign themselves up, choose interests, and accept SMS. They can opt out using supported keywords.",
+      actions: ["Copy link", "Open public page", "Print QR"]
     },
-    personalization: {
-      title: "Every business works differently. Open Spot adapts to yours.",
-      text:
-        "Your customer list, services, schedule, and confirmation rules. The call helps us understand your reality and connect Open Spot cleanly without forcing you to change systems.",
-      cards: [
-        "Your services",
-        "Your customer list",
-        "Your language",
-        "Your confirmation rules",
-        "Your cancellation volume",
-        "Your way of working"
-      ]
+    sms: {
+      kicker: "SMS flow",
+      title: "Fast replies stay under your control.",
+      bubbles: ["OUI I can come", "YES, 2:30 works", "1"],
+      notes: ["Ranked by received time", "No automatic confirmation", "STOP / ARRET / CANCEL respected"]
     },
-    metrics: {
-      title: "See what used to become losses turn into recovered appointments.",
-      disclaimer:
-        "Illustrative example. Results depend on your cancellation volume, customer list, and services.",
-      cards: [
-        ["Cancellations", "18"],
-        ["Alerts sent", "42"],
-        ["Replies received", "16"],
-        ["Spots recovered", "9"]
-      ]
-    },
-    trust: {
-      title: "Simple for you. Respectful for your customers.",
-      text:
-        "Open Spot should be used with customers who agreed to receive messages. The product is designed to protect trust, not burn through your customer list.",
-      cards: [
-        "Clear SMS consent",
-        "STOP unsubscribe",
-        "No app to install",
-        "Manual validation",
-        "No spam",
-        "Keep your current system"
+    preview: {
+      title: "Merchant dashboard",
+      subtitle: "Illustrative view based on the real Open Spot flow.",
+      replyQueue: "Replies",
+      metrics: [
+        ["Openings", "12"],
+        ["Replies", "38"],
+        ["To validate", "5"],
+        ["Estimated revenue", "$1,240"]
+      ],
+      queue: [
+        ["Maya L.", "OUI", "2:03 PM"],
+        ["Sarah P.", "YES", "2:05 PM"],
+        ["Lina R.", "1", "2:07 PM"]
       ]
     },
     pricing: {
-      badge: "Pricing",
-      title: "Pricing adapted to your business",
-      price: "Discussed after a conversation",
-      details:
-        "Pricing is discussed after understanding your cancellation volume, services, and workflow.",
-      commission:
-        "+ recovered-booking commission, discussed based on your workflow",
+      kicker: "Pricing",
+      title: "Pricing adapted to your business.",
       text:
-        "The call helps verify your volume, services, and the best way to connect Open Spot to your business.",
-      ready: "I’m ready to recover cancellations",
-      questions: "Talk to someone",
-      trust: ["No commitment", "Fast setup", "Adapted to your business"]
+        "No fake public fixed price and no guaranteed revenue promise. The right model depends on cancellation volume, services, SMS usage, and how your business confirms appointments.",
+      cta: "Discuss pricing"
+    },
+    useCases: {
+      kicker: "Use cases",
+      title: "Built for businesses where an empty hour matters.",
+      items: ["Same-day haircut cancellation", "Beauty service opening", "Barber chair available", "Waitlist follow-up"]
+    },
+    faq: {
+      kicker: "Questions",
+      title: "Clear before you use it with customers.",
+      items: [
+        ["Is the first customer who replies confirmed?", "No. Replies are ranked, but the merchant validates manually."],
+        ["Do customers need to install an app?", "No. They reply by SMS."],
+        ["Does Open Spot replace my calendar?", "No. It works beside your current system."],
+        ["Can I send to my full list?", "The interface should reinforce sending only to eligible opted-in customers."]
+      ]
     },
     final: {
-      title: "Ready to turn cancellations into recovered appointments?",
+      title: "Ready to recover more spots without losing control?",
       text:
-        "Book a call. We’ll look at your business, services, cancellations, and the best way to connect Open Spot to your reality.",
-      ready: "I’m ready to recover cancellations",
-      questions: "Talk to someone"
+        "Book a call. We will look at your business, services, cancellations, and the best way to connect Open Spot cleanly.",
+      primary: "Book a call",
+      secondary: "See pricing"
+    },
+    footer: {
+      line: "SMS-first cancellation recovery for appointment-based local businesses.",
+      privacy: "Privacy",
+      terms: "Terms"
     }
   }
 } as const;
 
-type Copy = (typeof copy)[Locale];
+type MarketingCopy = (typeof marketingCopy)[Locale];
 
-export function OpenSpotFunnel() {
-  const [locale, setLocale] = useState<Locale>("fr");
-  const t = copy[locale];
-
-  const toggleLocale = () => {
-    setLocale((current) => (current === "fr" ? "en" : "fr"));
-  };
+export async function OpenSpotFunnel() {
+  const locale = await getRequestLocale();
+  const t = marketingCopy[locale];
 
   return (
-    <>
-      <MarketingHeader locale={locale} onToggleLocale={toggleLocale} t={t} />
-      <main className="overflow-hidden">
+    <div className="min-h-screen bg-[#f7f9fd] text-[var(--foreground)]">
+      <MarketingNavbar locale={locale} t={t} />
+      <main>
         <HeroSection t={t} />
-        <SectorSection t={t} />
+        <CategoryStrip t={t} />
         <ProblemSection t={t} />
+        <FeatureSection t={t} />
         <WorkflowSection t={t} />
-        <PersonalizationSection t={t} />
-        <MetricsSection t={t} />
-        <TrustSection t={t} />
+        <WaitlistSection t={t} />
+        <SmsFlowSection t={t} />
+        <DashboardPreviewSection t={t} />
         <PricingSection t={t} />
-        <AiSection t={t} />
+        <UseCaseSection t={t} />
+        <FaqSection t={t} />
         <FinalCtaSection t={t} />
       </main>
-    </>
+      <MarketingFooter t={t} />
+    </div>
   );
 }
-function MarketingHeader({
-  locale,
-  onToggleLocale,
-  t
-}: {
-  locale: Locale;
-  onToggleLocale: () => void;
-  t: Copy;
-}) {
+
+function MarketingNavbar({ locale, t }: { locale: Locale; t: MarketingCopy }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-white/70 bg-[#fbfaf7]/90 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 w-full max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-3 sm:gap-3 sm:px-6 lg:flex-nowrap">
-        <Link
-          className="rounded-md text-base font-black tracking-tight text-[#14262e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
-          href="/"
-        >
-          Open Spot
+    <header className="sticky top-0 z-40 border-b border-white/70 bg-[#f7f9fd]/82 backdrop-blur-xl">
+      <div className="os-container-wide flex min-h-20 flex-wrap items-center justify-between gap-3 py-3">
+        <Link className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]" href="/">
+          <Image
+            alt="Open Spot"
+            className="h-10 w-auto"
+            height={72}
+            priority
+            src="/brand/open-spot-logo-horizontal.svg"
+            width={312}
+          />
         </Link>
         <nav
           aria-label={locale === "fr" ? "Navigation principale" : "Main navigation"}
-          className="hidden items-center gap-1 lg:flex"
+          className="order-3 flex w-full gap-1 overflow-x-auto md:order-2 md:w-auto md:overflow-visible"
         >
           <HeaderLink href="#comment-ca-marche">{t.nav.how}</HeaderLink>
-          <HeaderLink href="#pourquoi-open-spot">{t.nav.why}</HeaderLink>
+          <HeaderLink href="#produit">{t.nav.features}</HeaderLink>
           <HeaderLink href="#prix">{t.nav.pricing}</HeaderLink>
         </nav>
-        <div className="flex w-full shrink-0 items-center gap-2 overflow-x-auto sm:w-auto sm:overflow-visible">
-          <Link
-            className="shrink-0 rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:text-sm"
-            href="/sign-in"
-          >
+        <div className="order-2 flex shrink-0 items-center gap-2 md:order-3">
+          <LanguageSwitcher initialLocale={locale} />
+          <Link className="hidden rounded-full px-4 py-2 text-sm font-black text-[var(--muted)] transition hover:bg-white sm:inline-flex" href="/sign-in">
             {t.nav.login}
           </Link>
-          <Link
-            className="shrink-0 rounded-full bg-[#14262e] px-3 py-2 text-xs font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#254047] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#14262e] sm:text-sm"
-            href="/signup"
-          >
+          <Link className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_14px_30px_rgba(79,125,243,0.22)] transition hover:bg-[var(--primary-strong)]" href="/signup">
             {t.nav.signup}
           </Link>
-          <Link
-            className="hidden shrink-0 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] md:inline-flex"
-            href="/book-call/questions"
-          >
-            {t.nav.call}
-          </Link>
-          <button
-            aria-label={locale === "fr" ? "Afficher la page en anglais" : "Show page in French"}
-            className="shrink-0 rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 hover:border-[#b7cdc6] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-            onClick={onToggleLocale}
-            type="button"
-          >
-            {locale === "fr" ? "FR / EN" : "EN / FR"}
-          </button>
         </div>
       </div>
     </header>
   );
 }
-function HeaderLink({ href, children }: { href: string; children: string }) {
+
+function HeaderLink({ href, children }: { href: string; children: ReactNode }) {
   return (
-    <Link
-      className="rounded-full px-3 py-2 text-sm font-semibold text-[var(--muted)] transition hover:bg-white hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-      href={href}
-    >
+    <Link className="shrink-0 rounded-full px-4 py-2 text-sm font-black text-[var(--muted)] transition hover:bg-white hover:text-[var(--foreground)]" href={href}>
       {children}
     </Link>
   );
 }
 
-function Section({
-  id,
-  className,
-  children
-}: {
-  id?: string;
-  className?: string;
-  children: ReactNode;
-}) {
+function HeroSection({ t }: { t: MarketingCopy }) {
   return (
-    <section
-      className={cn("mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:py-16", className)}
-      id={id}
-    >
-      {children}
+    <section className="relative overflow-hidden py-12 sm:py-16 lg:py-24">
+      <div className="absolute inset-x-0 top-0 -z-10 h-[42rem] bg-[radial-gradient(circle_at_20%_12%,rgba(79,125,243,0.22),transparent_28rem),radial-gradient(circle_at_80%_10%,rgba(24,169,153,0.12),transparent_24rem)]" />
+      <div className="os-container-wide grid gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+        <div>
+          <p className="os-kicker">{t.hero.eyebrow}</p>
+          <h1 className="os-page-title mt-5 max-w-4xl">{t.hero.title}</h1>
+          <p className="os-body-large mt-6 max-w-2xl">{t.hero.subtitle}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link className="os-primary-cta" href="/book-call/ready">
+              {t.hero.primary}
+            </Link>
+            <Link className="os-secondary-cta" href="#comment-ca-marche">
+              {t.hero.secondary}
+            </Link>
+          </div>
+          <div className="mt-8 flex flex-wrap gap-2">
+            {t.hero.proof.map((item) => (
+              <span className="os-chip" key={item}>{item}</span>
+            ))}
+          </div>
+          <p className="mt-6 rounded-3xl border border-blue-200 bg-white/82 px-5 py-4 text-sm font-black leading-6 text-[var(--primary-strong)] shadow-sm">
+            {t.hero.manualRule}
+          </p>
+        </div>
+        <DashboardMockup t={t} />
+      </div>
     </section>
   );
 }
 
-function HeroSection({ t }: { t: Copy }) {
+function DashboardMockup({ t }: { t: MarketingCopy }) {
   return (
-    <Section className="pt-8 pb-10 sm:pt-10 lg:pt-14 lg:pb-14">
-      <div className="os-reveal mx-auto max-w-4xl text-center">
-        <p className="text-sm font-bold uppercase tracking-[0.18em] text-[var(--primary)]">
-          {t.hero.eyebrow}
-        </p>
-        <h1 className="mx-auto mt-5 max-w-4xl text-4xl font-black leading-[1.02] tracking-tight text-[#14262e] sm:text-5xl lg:text-6xl">
-          {t.hero.title}
-        </h1>
-        <p className="mx-auto mt-6 max-w-3xl text-base leading-8 text-[var(--muted)] sm:text-lg">
-          {t.hero.subtitle}
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link className="os-primary-cta" href="/book-call/questions">
-            {t.hero.primary}
-          </Link>
-          <Link className="os-secondary-cta" href="#comment-ca-marche">
-            {t.hero.secondary}
-          </Link>
-        </div>
-        <ul className="mt-7 flex flex-wrap justify-center gap-2" aria-label="Trust indicators">
-          {t.hero.chips.map((chip) => (
-            <li className="os-chip" key={chip}>
-              {chip}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="mt-10 lg:mt-12">
-        <HeroMockup t={t} />
-      </div>
-    </Section>
-  );
-}
-
-function HeroMockup({ t }: { t: Copy }) {
-  return (
-    <div
-      aria-label="Open Spot product preview showing a merchant launching an alert, receiving SMS replies, and manually confirming a recovered spot."
-      className="os-reveal os-hero-mockup mx-auto w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/88 p-3 shadow-[0_28px_90px_rgba(36,54,66,0.14)] backdrop-blur sm:p-5 lg:p-6"
-      role="img"
-    >
-      <div className="rounded-[1.65rem] border border-[#e5ebe7] bg-[#fbfaf7] p-3 shadow-sm sm:p-4 lg:p-5">
-        <div className="flex items-center justify-between gap-3 border-b border-[#e4ebe7] pb-3">
-          <div className="flex items-center gap-2">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#14262e] text-xs font-black text-white">
-              2C
-            </span>
+    <div className="relative">
+      <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-[radial-gradient(circle,rgba(79,125,243,0.22),transparent_62%)] blur-2xl" />
+      <div className="rounded-[2.4rem] border border-white/80 bg-white/88 p-4 shadow-[var(--premium-shadow)] sm:p-5">
+        <div className="rounded-[2rem] bg-[var(--dark)] p-4 text-white sm:p-6">
+          <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm font-black text-[#14262e]">Open Spot</p>
-              <p className="text-[11px] font-bold text-[var(--muted)]">SMS recovery</p>
+              <p className="text-sm font-black text-white">{t.preview.title}</p>
+              <p className="mt-1 text-xs text-[var(--dark-muted)]">{t.preview.subtitle}</p>
             </div>
+            <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-black">Live SMS</span>
           </div>
-          <span
-            aria-hidden="true"
-            className="grid h-9 w-9 place-items-center rounded-full border border-[#dce6e2] bg-white text-sm text-[#254047]"
-          >
-            !
-          </span>
-        </div>
-
-        <div className="mt-5 grid gap-3 lg:grid-cols-[1fr_0.9fr]">
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm sm:p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-2xl font-black text-[#14262e]">
-                  {t.hero.visual.cancelled}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
-                  {t.hero.visual.subtitle}
-                </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-4">
+            {t.preview.metrics.map(([label, value]) => (
+              <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-3" key={label}>
+                <p className="text-[0.68rem] font-bold text-[var(--dark-muted)]">{label}</p>
+                <p className="mt-2 text-2xl font-black">{value}</p>
               </div>
-              <span className="rounded-full bg-[#fdebea] px-3 py-1 text-sm font-black text-[#8a1f17]">
-                14:30
-              </span>
-            </div>
-
-            <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-[#edf1ee] bg-[#fbfaf7] p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <span
-                  aria-hidden="true"
-                  className="grid h-11 w-11 place-items-center rounded-xl bg-[#eaf5f2] text-sm font-black text-[var(--primary-strong)]"
-                >
-                  ✂
-                </span>
-                <div>
-                  <p className="text-base font-black text-[#14262e]">
-                    {t.hero.visual.service}
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-[var(--muted)]">
-                    {t.hero.visual.duration}
-                  </p>
-                </div>
-              </div>
-              <div className="os-launch-button relative rounded-xl bg-[#14262e] px-5 py-3 text-center text-sm font-black text-white shadow-lg">
-                {t.hero.visual.button}
-                <span className="os-cursor" aria-hidden="true" />
-              </div>
-            </div>
+            ))}
           </div>
-
-          <div className="os-recovered-card rounded-2xl border border-[#c8e0d8] bg-[#edf7f4] p-4 shadow-sm sm:p-5">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
-              {t.hero.visual.manual}
-            </p>
-            <p className="mt-3 text-2xl font-black text-[#14262e]">
-              {t.hero.visual.recovered}
-            </p>
-            <p className="mt-2 text-sm font-bold leading-6 text-[var(--muted)]">
-              {t.hero.visual.confirmed}
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-3 grid gap-3 lg:grid-cols-[1.15fr_0.8fr_1fr]">
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-              <p className="text-sm font-black text-[#14262e]">
-                {t.hero.visual.targetedTitle}
-              </p>
-              <span className="rounded-full bg-[#eaf5f2] px-2.5 py-1 text-xs font-black text-[var(--primary-strong)]">
-                {t.hero.visual.targetedCount}
-              </span>
-            </div>
-            <div className="space-y-2.5">
-              {t.hero.visual.clients.map((client, index) => (
-                <div
-                  className={cn(
-                    "os-target-row rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3",
-                    index === 1 && "os-delay-1",
-                    index === 2 && "os-delay-2"
-                  )}
-                  key={client.name}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#dfece8] text-[11px] font-black text-[#15534b]">
-                      {client.initials}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-sm font-black text-[#14262e]">{client.name}</p>
-                        <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.08em] text-[var(--primary-strong)]">
-                          SMS
-                        </span>
-                      </div>
-                      <p className="mt-1 text-xs font-black text-[#254047]">{client.label}</p>
-                      <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-                        {client.detail}
-                      </p>
-                    </div>
-                    {index === 0 ? (
-                      <span className="os-status-pill shrink-0 rounded-full bg-white px-2 py-1 text-[10px] font-black text-[#8a4b11]">
-                        {client.status}
-                      </span>
-                    ) : null}
+          <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.78fr]">
+            <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-black">{t.preview.replyQueue}</p>
+                <span className="rounded-full bg-blue-500/20 px-3 py-1 text-xs font-black text-blue-100">manual</span>
+              </div>
+              <div className="mt-4 space-y-3">
+                {t.preview.queue.map(([name, reply, time]) => (
+                  <div className="grid grid-cols-[1fr_auto_auto] items-center gap-3 rounded-2xl bg-white/[0.08] px-3 py-3" key={`${name}-${time}`}>
+                    <span className="text-sm font-bold">{name}</span>
+                    <span className="rounded-full bg-white px-2.5 py-1 text-xs font-black text-[var(--primary-strong)]">{reply}</span>
+                    <span className="text-xs text-[var(--dark-muted)]">{time}</span>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm font-black text-[#14262e]">
-                  {t.hero.visual.sendTitle}
-                </p>
-                <p className="mt-1 text-xs font-bold text-[var(--muted)]">
-                  {t.hero.visual.sendStatus}
-                </p>
+                ))}
               </div>
-              <span className="os-paper-plane grid h-10 w-10 place-items-center rounded-full bg-[#eef3ff] text-sm font-black text-[#4f61b5]">
-                ➤
-              </span>
             </div>
-            <div className="mt-5 space-y-2" aria-hidden="true">
-              <span className="os-motion-line block h-1.5 rounded-full bg-[#cddbd6]" />
-              <span className="os-motion-line os-delay-1 block h-1.5 rounded-full bg-[#dbe7e3]" />
-              <span className="os-motion-line os-delay-2 block h-1.5 rounded-full bg-[#e8efec]" />
+            <div className="rounded-3xl border border-white/10 bg-white/[0.06] p-4">
+              <p className="text-sm font-black">{t.sms.kicker}</p>
+              <div className="mt-4 space-y-3">
+                {t.sms.notes.map((note) => (
+                  <div className="rounded-2xl bg-white/[0.08] px-3 py-3 text-xs font-bold text-blue-50" key={note}>{note}</div>
+                ))}
+              </div>
             </div>
-            <div className="mt-5 rounded-xl border border-[#edf1ee] bg-[#fbfaf7] p-3">
-              <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--primary-strong)]">
-                {t.hero.visual.targetingTitle}
-              </p>
-              <ul className="mt-3 space-y-2 text-xs font-bold leading-5 text-[#254047]">
-                <li>{t.hero.visual.targetingInsightOne}</li>
-                <li>{t.hero.visual.targetingInsightTwo}</li>
-                <li>{t.hero.visual.targetingInsightThree}</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border border-[#e2e9e5] bg-white p-4 shadow-sm">
-            <p className="text-sm font-black text-[#14262e]">{t.hero.visual.repliesTitle}</p>
-            <div className="mt-3 space-y-2">
-              <SmsBubble>{t.hero.visual.replyOne}</SmsBubble>
-              <SmsBubble delay>{t.hero.visual.replyTwo}</SmsBubble>
-              <SmsBubble>{t.hero.visual.replyThree}</SmsBubble>
-            </div>
-            <p className="mt-3 text-xs font-bold text-[var(--muted)]">
-              {t.hero.visual.repliesNote}
-            </p>
           </div>
         </div>
-
-        <p className="mt-3 rounded-2xl border border-[#e2e9e5] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#254047]">
-          {t.hero.visual.controlNote}
-        </p>
       </div>
     </div>
   );
 }
 
-function SmsBubble({ children, delay = false }: { children: string; delay?: boolean }) {
+function CategoryStrip({ t }: { t: MarketingCopy }) {
   return (
-    <div
-      className={cn(
-        "os-sms-bubble rounded-2xl rounded-bl-md bg-[#fbfaf7] px-3 py-2.5 text-sm font-bold text-[#14262e]",
-        delay && "os-delay-2"
-      )}
-    >
-      &quot;{children}&quot;
-    </div>
-  );
-}
-
-function SectorSection({ t }: { t: Copy }) {
-  return (
-    <Section className="pt-6 lg:pt-8">
-      <div className="os-reveal rounded-[2rem] border border-white/70 bg-white/70 p-5 shadow-sm sm:p-8">
-        <h2 className="max-w-3xl text-2xl font-black tracking-tight text-[#14262e] sm:text-3xl">
-          {t.sectors.title}
-        </h2>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
-          {t.sectors.items.map((item) => (
-            <div className="os-soft-card min-h-24" key={item}>
-              <span className="text-sm font-black text-[#14262e]">{item}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-function ProblemSection({ t }: { t: Copy }) {
-  return (
-    <Section id="pourquoi-open-spot">
-      <div className="grid gap-8 lg:grid-cols-[1fr_0.95fr] lg:items-center">
-        <div className="os-reveal">
-          <h2 className="text-3xl font-black leading-tight tracking-tight text-[#14262e] sm:text-4xl">
-            {t.problem.title}
-          </h2>
-          <p className="mt-5 text-base leading-8 text-[var(--muted)]">
-            {t.problem.text}
-          </p>
-        </div>
-        <div className="os-reveal grid gap-4 sm:grid-cols-2">
-          <BeforeAfterCard label={t.problem.before} items={t.problem.beforeItems} tone="bad" />
-          <BeforeAfterCard label={t.problem.after} items={t.problem.afterItems} tone="good" />
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-function BeforeAfterCard({
-  label,
-  items,
-  tone
-}: {
-  label: string;
-  items: readonly string[];
-  tone: "bad" | "good";
-}) {
-  return (
-    <div className="rounded-[1.5rem] border border-white/70 bg-white p-5 shadow-sm">
-      <span
-        className={cn(
-          "rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.15em]",
-          tone === "good" ? "bg-[#eaf5f2] text-[var(--primary-strong)]" : "bg-[#fff1df] text-[#8a4b11]"
-        )}
-      >
-        {label}
-      </span>
-      <div className="mt-5 space-y-3">
-        {items.map((item) => (
-          <div className="rounded-2xl bg-[#fbfaf7] px-4 py-3 text-sm font-bold text-[#14262e]" key={item}>
-            {item}
-          </div>
+    <section className="os-container-wide pb-16">
+      <div className="grid gap-3 rounded-[2rem] border border-[var(--line)] bg-white/78 p-4 shadow-sm sm:grid-cols-3 lg:grid-cols-6">
+        {t.categories.map((category) => (
+          <div className="rounded-3xl bg-slate-50 px-4 py-4 text-center text-sm font-black text-slate-700" key={category}>{category}</div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 
-function WorkflowSection({ t }: { t: Copy }) {
+function ProblemSection({ t }: { t: MarketingCopy }) {
+  return (
+    <Section id="pourquoi-open-spot">
+      <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div>
+          <p className="os-kicker">{t.problem.kicker}</p>
+          <h2 className="os-section-title mt-4">{t.problem.title}</h2>
+          <p className="os-body-large mt-5">{t.problem.text}</p>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <ListCard title="Before" tone="warning" items={t.problem.before} />
+          <ListCard title="After" tone="success" items={t.problem.after} />
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+function FeatureSection({ t }: { t: MarketingCopy }) {
+  return (
+    <Section id="produit">
+      <SectionIntro kicker={t.features.kicker} title={t.features.title} />
+      <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {t.features.items.map(([title, text], index) => (
+          <article className="os-card p-6" key={title}>
+            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[var(--primary-soft)] text-sm font-black text-[var(--primary-strong)]">{index + 1}</span>
+            <h3 className="mt-5 text-xl font-black">{title}</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+          </article>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+function WorkflowSection({ t }: { t: MarketingCopy }) {
   return (
     <Section id="comment-ca-marche">
-      <div className="os-section-heading">
-        <h2>{t.workflow.title}</h2>
-        <p>{t.workflow.note}</p>
-      </div>
+      <SectionIntro kicker={t.workflow.kicker} title={t.workflow.title} />
       <div className="os-workflow-grid mt-10 grid gap-4 md:grid-cols-4">
         {t.workflow.steps.map(([title, text], index) => (
-          <article className="os-step-card os-reveal" key={title}>
+          <article className="os-step-card" key={title}>
             <span>{index + 1}</span>
             <h3>{title}</h3>
             <p>{text}</p>
@@ -859,91 +458,85 @@ function WorkflowSection({ t }: { t: Copy }) {
   );
 }
 
-function AiSection({ t }: { t: Copy }) {
+function WaitlistSection({ t }: { t: MarketingCopy }) {
   return (
-    <Section className="pt-8 lg:pt-10">
-      <div className="grid gap-8 rounded-[2rem] border border-white/70 bg-[linear-gradient(135deg,rgba(237,247,244,0.92),rgba(255,247,237,0.7))] p-5 shadow-sm sm:p-8 lg:grid-cols-[0.82fr_1.18fr] lg:p-10">
-        <div className="os-reveal">
-          <p className="inline-flex rounded-full border border-[#c4ddd5] bg-white px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
-            {t.targeting.badge}
-          </p>
-          <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
-            {t.targeting.title}
-          </h2>
-          <p className="mt-5 text-base leading-8 text-[var(--muted)]">{t.targeting.text}</p>
-          <p className="mt-5 rounded-2xl border border-[#dbe8e4] bg-white px-4 py-3 text-sm font-bold leading-6 text-[#254047]">
-            {t.targeting.example}
-          </p>
-          <p className="mt-3 rounded-2xl border border-[#ead7f7] bg-[#fbf6ff] px-4 py-3 text-sm font-bold leading-6 text-[#5d3478]">
-            {t.targeting.aiRoadmap}
-          </p>
-          <p className="mt-3 rounded-2xl border border-[#c4ddd5] bg-[#fbfffd] px-4 py-3 text-sm font-black leading-6 text-[var(--primary-strong)]">
-            {t.targeting.note}
-          </p>
-          <Link className="os-secondary-cta mt-6" href="#comment-ca-marche">
-            {t.targeting.secondary}
-          </Link>
-        </div>
-        <div className="os-reveal rounded-[1.5rem] bg-white p-4 shadow-sm sm:p-5">
-          <div className="grid gap-3 sm:grid-cols-3">
-            {t.targeting.benefits.map(([title, text]) => (
-              <div
-                className="rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-3"
-                key={title}
-              >
-                <p className="text-sm font-black text-[#14262e]">{title}</p>
-                <p className="mt-2 text-xs leading-5 text-[var(--muted)]">{text}</p>
-              </div>
+    <Section>
+      <div className="grid gap-8 rounded-[2.2rem] border border-[var(--line)] bg-white p-5 shadow-[var(--card-shadow)] sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div>
+          <p className="os-kicker">{t.waitlist.kicker}</p>
+          <h2 className="os-section-title mt-4">{t.waitlist.title}</h2>
+          <p className="os-body-large mt-5">{t.waitlist.text}</p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {t.waitlist.actions.map((action) => (
+              <span className="os-chip" key={action}>{action}</span>
             ))}
           </div>
-          <div className="mt-5 rounded-2xl border border-[#e5ebe7] bg-[#fbfaf7] p-4">
-            <div className="flex items-center gap-3">
-              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
-                SMS
-              </div>
-              <div>
-                <p className="text-sm font-black text-[#14262e]">Liste d’attente</p>
-                <p className="text-xs text-[var(--muted)]">Aperçu du ciblage</p>
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3">
-              {t.targeting.rows.map(([label, status]) => (
-                <div className="grid gap-2 rounded-2xl border border-[#e5ebe7] bg-white p-3 sm:grid-cols-[1fr_auto] sm:items-center" key={label}>
-                  <p className="text-sm font-bold text-[#14262e]">{label}</p>
-                  <span className="rounded-full bg-[#eaf5f2] px-3 py-1 text-xs font-black text-[var(--primary-strong)]">
-                    {status}
-                  </span>
-                </div>
+        </div>
+        <div className="rounded-[2rem] bg-[var(--dark)] p-5 text-white">
+          <div className="mx-auto grid aspect-square max-w-xs place-items-center rounded-[2rem] bg-white p-6">
+            <div className="grid h-full w-full grid-cols-5 gap-2">
+              {Array.from({ length: 25 }).map((_, index) => (
+                <span className={cn("rounded-md", index % 3 === 0 || index % 7 === 0 ? "bg-[var(--primary)]" : "bg-slate-200")} key={index} />
               ))}
             </div>
           </div>
-          <div className="mt-5 grid gap-3 sm:grid-cols-4">
-            {t.targeting.workflow.map((step, index) => (
-              <div className="rounded-2xl border border-[#e5ebe7] bg-white p-3" key={step}>
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-[#eaf5f2] text-xs font-black text-[var(--primary-strong)]">
-                  {index + 1}
-                </span>
-                <p className="mt-3 text-sm font-black leading-5 text-[#14262e]">{step}</p>
-              </div>
-            ))}
-          </div>
+          <p className="mt-5 text-center text-sm font-bold text-[var(--dark-muted)]">open-spot.ca/b/salon/waitlist</p>
         </div>
       </div>
     </Section>
   );
 }
 
-function PersonalizationSection({ t }: { t: Copy }) {
+function SmsFlowSection({ t }: { t: MarketingCopy }) {
   return (
     <Section>
-      <div className="os-section-heading">
-        <h2>{t.personalization.title}</h2>
-        <p>{t.personalization.text}</p>
+      <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+        <div>
+          <p className="os-kicker">{t.sms.kicker}</p>
+          <h2 className="os-section-title mt-4">{t.sms.title}</h2>
+          <div className="mt-8 space-y-3">
+            {t.sms.bubbles.map((bubble, index) => (
+              <div className={cn("max-w-md rounded-3xl px-5 py-4 text-sm font-black shadow-sm", index === 1 ? "ml-auto bg-[var(--primary)] text-white" : "bg-white text-[var(--foreground)]")} key={bubble}>
+                {bubble}
+              </div>
+            ))}
+          </div>
+        </div>
+        <ListCard title={t.sms.kicker} tone="info" items={t.sms.notes} />
       </div>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {t.personalization.cards.map((card) => (
-          <div className="os-soft-card os-reveal" key={card}>
-            <span className="text-sm font-black text-[#14262e]">{card}</span>
+    </Section>
+  );
+}
+
+function DashboardPreviewSection({ t }: { t: MarketingCopy }) {
+  return (
+    <Section>
+      <DashboardMockup t={t} />
+    </Section>
+  );
+}
+
+function PricingSection({ t }: { t: MarketingCopy }) {
+  return (
+    <Section id="prix">
+      <div className="mx-auto max-w-4xl rounded-[2.4rem] border border-[var(--line)] bg-white p-6 text-center shadow-[var(--premium-shadow)] sm:p-10">
+        <p className="os-kicker">{t.pricing.kicker}</p>
+        <h2 className="os-section-title mx-auto mt-4 max-w-2xl">{t.pricing.title}</h2>
+        <p className="os-body-large mx-auto mt-5 max-w-2xl">{t.pricing.text}</p>
+        <Link className="os-primary-cta mt-8" href="/book-call/questions">{t.pricing.cta}</Link>
+      </div>
+    </Section>
+  );
+}
+
+function UseCaseSection({ t }: { t: MarketingCopy }) {
+  return (
+    <Section>
+      <SectionIntro kicker={t.useCases.kicker} title={t.useCases.title} />
+      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {t.useCases.items.map((item) => (
+          <div className="os-soft-card" key={item}>
+            <span className="text-sm font-black text-[var(--foreground)]">{item}</span>
           </div>
         ))}
       </div>
@@ -951,119 +544,112 @@ function PersonalizationSection({ t }: { t: Copy }) {
   );
 }
 
-function MetricsSection({ t }: { t: Copy }) {
+function FaqSection({ t }: { t: MarketingCopy }) {
   return (
     <Section>
-      <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
-        <div className="os-reveal">
-          <h2 className="text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
-            {t.metrics.title}
-          </h2>
-          <p className="mt-5 rounded-2xl border border-[#eadcc2] bg-[#fff7ed] px-4 py-3 text-sm font-bold leading-6 text-[#8a4b11]">
-            {t.metrics.disclaimer}
-          </p>
-        </div>
-        <div className="os-reveal rounded-[2rem] border border-white/70 bg-white p-5 shadow-sm sm:p-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            {t.metrics.cards.map(([label, value], index) => (
-              <div className="rounded-3xl bg-[#fbfaf7] p-4" key={label}>
-                <p className="text-sm font-bold text-[var(--muted)]">{label}</p>
-                <p className="mt-2 text-3xl font-black text-[#14262e]">{value}</p>
-                <div className="mt-4 h-2 rounded-full bg-[#e5ebe7]">
-                  <div
-                    className={cn(
-                      "os-graph-bar h-2 rounded-full bg-[var(--primary)]",
-                      index === 1 && "os-graph-bar-wide",
-                      index === 2 && "os-graph-bar-mid",
-                      index === 3 && "os-graph-bar-short"
-                    )}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </Section>
-  );
-}
-
-function TrustSection({ t }: { t: Copy }) {
-  return (
-    <Section>
-      <div className="os-section-heading">
-        <h2>{t.trust.title}</h2>
-        <p>{t.trust.text}</p>
-      </div>
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {t.trust.cards.map((card) => (
-          <div className="os-soft-card os-reveal" key={card}>
-            <span className="text-sm font-black text-[#14262e]">{card}</span>
-          </div>
+      <SectionIntro kicker={t.faq.kicker} title={t.faq.title} />
+      <div className="mx-auto mt-10 grid max-w-4xl gap-4">
+        {t.faq.items.map(([question, answer]) => (
+          <article className="rounded-[1.5rem] border border-[var(--line)] bg-white p-5 shadow-sm" key={question}>
+            <h3 className="text-lg font-black">{question}</h3>
+            <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{answer}</p>
+          </article>
         ))}
       </div>
     </Section>
   );
 }
 
-function PricingSection({ t }: { t: Copy }) {
+function FinalCtaSection({ t }: { t: MarketingCopy }) {
   return (
-    <Section id="prix" className="pb-8 lg:pb-10">
-      <div className="mx-auto max-w-3xl rounded-[2rem] border border-white/70 bg-white p-6 text-center shadow-[0_24px_70px_rgba(36,54,66,0.12)] sm:p-10">
-        <p className="mx-auto inline-flex rounded-full border border-[#c4ddd5] bg-[#edf7f4] px-3 py-1 text-xs font-black uppercase tracking-[0.14em] text-[var(--primary-strong)]">
-          {t.pricing.badge}
-        </p>
-        <h2 className="mt-4 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
-          {t.pricing.title}
-        </h2>
-        <p className="mt-8 text-3xl font-black tracking-tight text-[#14262e] sm:text-4xl">
-          {t.pricing.price}
-        </p>
-        <p className="mx-auto mt-4 max-w-xl text-sm font-bold leading-6 text-[var(--muted)]">
-          {t.pricing.details}
-        </p>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[var(--muted)]">
-          {t.pricing.text}
-        </p>
+    <Section className="pb-16">
+      <div className="os-premium-bg rounded-[2.4rem] px-5 py-12 text-center shadow-[0_28px_90px_rgba(8,11,18,0.22)] sm:px-8 lg:py-16">
+        <h2 className="mx-auto max-w-4xl text-3xl font-black leading-tight sm:text-5xl">{t.final.title}</h2>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[var(--dark-muted)]">{t.final.text}</p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link className="os-primary-cta" href="/book-call/ready">
-            {t.pricing.ready}
-          </Link>
-          <Link className="os-secondary-cta" href="/book-call/questions">
-            {t.pricing.questions}
-          </Link>
+          <Link className="os-light-cta" href="/book-call/ready">{t.final.primary}</Link>
+          <Link className="os-dark-secondary-cta" href="/pricing">{t.final.secondary}</Link>
         </div>
-        <ul className="mt-6 flex flex-wrap justify-center gap-2" aria-label="Pricing trust indicators">
-          {t.pricing.trust.map((item) => (
-            <li className="os-chip" key={item}>
-              {item}
-            </li>
-          ))}
-        </ul>
       </div>
     </Section>
   );
 }
 
-function FinalCtaSection({ t }: { t: Copy }) {
+function MarketingFooter({ t }: { t: MarketingCopy }) {
   return (
-    <Section className="pb-20 pt-8 lg:pt-10">
-      <div className="os-reveal rounded-[2rem] bg-[#14262e] px-5 py-10 text-center text-white shadow-[0_30px_90px_rgba(20,38,46,0.22)] sm:px-8 lg:py-16">
-        <h2 className="mx-auto max-w-4xl text-3xl font-black tracking-tight sm:text-5xl">
-          {t.final.title}
-        </h2>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[#d6e3df]">
-          {t.final.text}
-        </p>
-        <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link className="os-light-cta" href="/book-call/ready">
-            {t.final.ready}
-          </Link>
-          <Link className="os-dark-secondary-cta" href="/book-call/questions">
-            {t.final.questions}
-          </Link>
+    <footer className="border-t border-[var(--line)] bg-white">
+      <div className="os-container-wide flex flex-col gap-5 py-8 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <Image
+            alt="Open Spot"
+            className="h-9 w-auto"
+            height={72}
+            src="/brand/open-spot-logo-horizontal.svg"
+            width={312}
+          />
+          <p className="mt-3 text-sm text-[var(--muted)]">{t.footer.line}</p>
+        </div>
+        <div className="flex gap-4 text-sm font-black text-[var(--muted)]">
+          <Link href="/privacy">{t.footer.privacy}</Link>
+          <Link href="/terms">{t.footer.terms}</Link>
         </div>
       </div>
-    </Section>
+    </footer>
+  );
+}
+
+function Section({
+  children,
+  className,
+  id
+}: {
+  children: ReactNode;
+  className?: string;
+  id?: string;
+}) {
+  return (
+    <section className={cn("os-container-wide py-14 sm:py-20 lg:py-24", className)} id={id}>
+      {children}
+    </section>
+  );
+}
+
+function SectionIntro({ kicker, title }: { kicker: string; title: string }) {
+  return (
+    <div className="os-section-heading">
+      <p className="os-kicker">{kicker}</p>
+      <h2 className="mt-4">{title}</h2>
+    </div>
+  );
+}
+
+function ListCard({
+  items,
+  title,
+  tone
+}: {
+  items: readonly string[];
+  title: string;
+  tone: "info" | "success" | "warning";
+}) {
+  const toneClass = {
+    info: "bg-blue-50 text-blue-800",
+    success: "bg-emerald-50 text-emerald-800",
+    warning: "bg-amber-50 text-amber-800"
+  }[tone];
+
+  return (
+    <article className="rounded-[1.7rem] border border-[var(--line)] bg-white p-5 shadow-sm">
+      <span className={cn("rounded-full px-3 py-1 text-xs font-black uppercase", toneClass)}>
+        {title}
+      </span>
+      <div className="mt-5 grid gap-3">
+        {items.map((item) => (
+          <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700" key={item}>
+            {item}
+          </div>
+        ))}
+      </div>
+    </article>
   );
 }
