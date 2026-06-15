@@ -16,6 +16,8 @@ export const viewport: Viewport = {
   initialScale: 1
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await getRequestLocale();
 
