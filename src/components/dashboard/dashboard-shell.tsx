@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
@@ -93,28 +94,43 @@ export function DashboardShell({
       : t.dashboard.workspaceUnavailable;
 
   return (
-    <div className="min-h-screen bg-[#f7f9fd] text-[var(--foreground)]">
-      <div className="mx-auto flex w-full max-w-[1500px] gap-6 px-3 py-3 lg:px-5">
-        <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-[var(--line)] bg-white/90 p-4 shadow-[var(--card-shadow)] lg:flex lg:flex-col">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(79,125,243,0.12),transparent_28rem),#f7f9fd] text-[var(--foreground)]">
+      <div className="mx-auto flex w-full max-w-[1540px] gap-6 px-3 py-3 lg:px-5">
+        <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-white/10 bg-[var(--dark)] p-4 text-white shadow-[0_24px_80px_rgba(8,11,18,0.28)] lg:flex lg:flex-col">
           <Link
-            className="rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="flex items-center gap-3 rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/"
           >
-            <p className="text-lg font-black">Open Spot</p>
-            <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-              {t.dashboard.recoverySms}
-            </p>
+            <Image
+              alt=""
+              className="h-10 w-10 rounded-2xl"
+              height={96}
+              src="/brand/open-spot-icon.svg"
+              width={96}
+            />
+            <div>
+              <p className="text-lg font-black">Open Spot</p>
+              <p className="mt-1 text-xs font-semibold text-[var(--dark-muted)]">
+                {t.dashboard.recoverySms}
+              </p>
+            </div>
           </Link>
-          <nav aria-label="Navigation dashboard" className="mt-6 grid gap-1">
+          <Link
+            className="mt-5 rounded-2xl bg-[var(--primary)] px-4 py-3 text-center text-sm font-black text-white shadow-[0_16px_34px_rgba(79,125,243,0.28)] transition hover:bg-[var(--primary-strong)]"
+            href="/dashboard/new-cancellation"
+          >
+            {t.openings.newCancellation}
+          </Link>
+          <nav aria-label="Navigation dashboard" className="mt-5 grid gap-1 overflow-y-auto pr-1">
             {desktopNavItems.map((item) => (
               <Link
                 aria-current={
                   isActiveDashboardRoute(pathname, item.href) ? "page" : undefined
                 }
                 className={cn(
-                  "rounded-2xl px-4 py-3 text-sm font-bold text-[var(--muted)] transition hover:bg-slate-100 hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
+                  "rounded-2xl px-4 py-3 text-sm font-bold text-white/66 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
                   isActiveDashboardRoute(pathname, item.href) &&
-                    "bg-[var(--primary)] text-white shadow-[0_14px_30px_rgba(79,125,243,0.2)] hover:bg-[var(--primary-strong)] hover:text-white"
+                    "bg-white text-[var(--dark)] shadow-[0_14px_30px_rgba(0,0,0,0.22)] hover:bg-white hover:text-[var(--dark)]"
                 )}
                 href={item.href}
                 key={item.href}
@@ -123,17 +139,17 @@ export function DashboardShell({
               </Link>
             ))}
           </nav>
-          <div className="mt-auto grid gap-3 rounded-2xl border border-[var(--line)] bg-[#f8fafc] p-4">
+          <div className="mt-auto grid gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
             <div>
               <p className="text-sm font-black">{businessName}</p>
-              <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
+              <p className="mt-1 text-xs leading-5 text-[var(--dark-muted)]">
                 {workspaceNote}
               </p>
             </div>
-            <LanguageSwitcher initialLocale={initialLocale} />
+            <LanguageSwitcher initialLocale={initialLocale} tone="dark" />
             <form action={signOutAction}>
               <button
-                className="w-full rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-black text-[var(--foreground)] transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
                 type="submit"
               >
                 {t.auth.signOut}
@@ -146,13 +162,20 @@ export function DashboardShell({
           <header className="sticky top-0 z-20 -mx-3 border-b border-[var(--line)] bg-[#f7f9fd]/92 px-3 py-3 backdrop-blur lg:hidden">
             <div className="flex items-center justify-between gap-3">
               <Link
-                className="rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                className="flex items-center gap-2 rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
                 href="/"
               >
-                Open Spot
+                <Image
+                  alt=""
+                  className="h-8 w-8 rounded-xl"
+                  height={96}
+                  src="/brand/open-spot-icon.svg"
+                  width={96}
+                />
+                <span>Open Spot</span>
               </Link>
               <Link
-                className="rounded-full bg-[var(--primary)] px-3 py-2 text-xs font-black text-white"
+                className="rounded-full bg-[var(--primary)] px-3 py-2 text-xs font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
                 href="/dashboard/new-cancellation"
               >
                 {t.openings.newCancellation}
