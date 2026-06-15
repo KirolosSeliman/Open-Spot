@@ -361,6 +361,305 @@ select {
   animation: os-rise 720ms ease both;
 }
 
+.lunera-template {
+  --lunera-progress: 0;
+}
+
+.lunera-eyebrow,
+.lunera-pill {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(226, 232, 240, 0.88);
+  border-radius: 999px;
+  box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+  color: #4f7df3;
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 950;
+  justify-content: center;
+  letter-spacing: 0;
+  padding: 0.62rem 0.92rem;
+  text-transform: uppercase;
+}
+
+.lunera-cta-primary,
+.lunera-cta-secondary,
+.lunera-cta-light,
+.lunera-cta-dark {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.95rem;
+  font-weight: 950;
+  justify-content: center;
+  min-height: 3.35rem;
+  padding: 0.85rem 1.35rem;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.lunera-cta-primary {
+  background: #4f7df3;
+  box-shadow: 0 18px 42px rgba(79, 125, 243, 0.28);
+  color: #ffffff;
+}
+
+.lunera-cta-secondary {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid #e2e8f0;
+  color: #0b0d12;
+}
+
+.lunera-cta-light {
+  background: #ffffff;
+  color: #050608;
+}
+
+.lunera-cta-dark {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.lunera-cta-primary:hover,
+.lunera-cta-secondary:hover,
+.lunera-cta-light:hover,
+.lunera-cta-dark:hover {
+  transform: translateY(-2px);
+}
+
+.lunera-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.88)),
+    #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 2rem;
+  box-shadow: 0 22px 64px rgba(15, 23, 42, 0.08);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.lunera-card:hover {
+  border-color: rgba(79, 125, 243, 0.35);
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
+  transform: translateY(-6px);
+}
+
+[data-lunera-reveal] {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 720ms ease,
+    transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+[data-lunera-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.lunera-phone-shell {
+  animation: lunera-float 7s ease-in-out infinite;
+  background:
+    linear-gradient(145deg, #050608, #1c2430 52%, #050608),
+    #0b0d12;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 3.2rem;
+  box-shadow:
+    0 38px 95px rgba(15, 23, 42, 0.3),
+    inset 0 0 0 9px rgba(255, 255, 255, 0.08);
+  max-width: 31rem;
+  min-height: 36rem;
+  padding: 0 1.25rem 1.25rem;
+}
+
+.lunera-floating-card {
+  animation: lunera-float 6s ease-in-out infinite;
+}
+
+.lunera-reply-row {
+  animation: lunera-reply-pulse 3.8s ease-in-out infinite;
+}
+
+.lunera-marquee {
+  margin-inline: calc(50% - 50vw);
+  overflow: hidden;
+  width: 100vw;
+}
+
+.lunera-marquee-track {
+  animation: lunera-marquee 30s linear infinite;
+  display: flex;
+  gap: 1rem;
+  min-width: max-content;
+  padding-inline: 1rem;
+  width: max-content;
+}
+
+.lunera-marquee-slow {
+  animation-duration: 42s;
+}
+
+.lunera-orbit {
+  min-height: 34rem;
+  position: relative;
+}
+
+.lunera-orbit::before {
+  background: #eef4ff;
+  border-radius: 50% 50% 0 0;
+  bottom: -12rem;
+  content: "";
+  height: 28rem;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(58rem, 120vw);
+}
+
+.lunera-tool-card {
+  --angle: calc((var(--tool-index) - 3.5) * 18deg);
+  align-items: center;
+  animation: lunera-tool-float 5.5s ease-in-out infinite;
+  animation-delay: calc(var(--tool-index) * 120ms);
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.94);
+  border-radius: 1.35rem;
+  box-shadow: 0 20px 55px rgba(15, 23, 42, 0.11);
+  display: flex;
+  font-size: 0.85rem;
+  font-weight: 950;
+  height: 7rem;
+  justify-content: center;
+  left: 50%;
+  padding: 1rem;
+  position: absolute;
+  text-align: center;
+  top: 56%;
+  transform:
+    translate(-50%, -50%)
+    rotate(var(--angle))
+    translateY(-14rem)
+    rotate(calc(var(--angle) * -1));
+  width: 7rem;
+  z-index: 2;
+}
+
+.lunera-orbit-center {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 2rem;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+  display: flex;
+  height: 8rem;
+  justify-content: center;
+  left: 50%;
+  padding: 1.2rem;
+  position: absolute;
+  top: 54%;
+  transform: translate(-50%, -50%) translateY(calc(var(--lunera-progress) * -34px));
+  width: 16rem;
+  z-index: 3;
+}
+
+.lunera-step-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.94);
+  border-radius: 2rem;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: auto 1fr;
+  min-height: 24rem;
+  padding: clamp(1.5rem, 4vw, 2.4rem);
+  transform: translateY(calc(var(--lunera-progress) * -18px));
+}
+
+.lunera-scroll-progress {
+  transform: scaleX(max(0.08, var(--lunera-progress)));
+  transform-origin: left center;
+  transition: transform 90ms linear;
+}
+
+.lunera-bar {
+  animation: lunera-bar-rise 4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.lunera-faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    grid-template-rows 240ms ease,
+    opacity 240ms ease;
+}
+
+.lunera-faq-answer > p {
+  min-height: 0;
+}
+
+.lunera-faq-answer.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+@keyframes lunera-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes lunera-reply-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(79, 125, 243, 0);
+  }
+  45% {
+    box-shadow: 0 12px 28px rgba(79, 125, 243, 0.12);
+  }
+}
+
+@keyframes lunera-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes lunera-tool-float {
+  0%,
+  100% {
+    margin-top: 0;
+  }
+  50% {
+    margin-top: -0.7rem;
+  }
+}
+
+@keyframes lunera-bar-rise {
+  0%,
+  100% {
+    transform: scaleY(0.72);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
 @keyframes os-rise {
   from {
     opacity: 0;
@@ -541,5 +840,24 @@ select {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+
+  [data-lunera-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .lunera-marquee-track,
+  .lunera-phone-shell,
+  .lunera-floating-card,
+  .lunera-reply-row,
+  .lunera-tool-card,
+  .lunera-bar {
+    animation: none !important;
+  }
+
+  .lunera-orbit-center,
+  .lunera-step-card {
+    transform: none !important;
   }
 }
