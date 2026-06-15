@@ -14,6 +14,9 @@
 - Vercel deployment for that commit: `https://vercel.com/kirolosselimans-projects/open-spot/28MdLfJZ7qZ8o6ykzqJgBvr1B7qH`
 - GitHub status result for that commit: failed
 - Vercel status description: `Deployment has failed - run this Vercel CLI command: npx vercel inspect dpl_28MdLfJZ7qZ8o6ykzqJgBvr1B7qH --logs`
+- Final clean-verified fix commit before documentation update: `75041d2`
+- Vercel deployment for `75041d2`: `https://vercel.com/kirolosselimans-projects/open-spot/Ah99xZMdr9M9wzfd74r71PTDnR7e`
+- GitHub/Vercel status result for `75041d2`: success
 
 ## 3. Vercel log access
 
@@ -106,18 +109,23 @@ The focused admin test verifies that the admin page and admin overview loader bo
 
 ## 10. Final verification
 
-Pending after the final fix commit:
-
-- `Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue`
-- `npm.cmd install`
-- `npm.cmd run lint`
-- `npm.cmd run typecheck`
-- `npm.cmd run test`
-- `npm.cmd run build`
-- Clean-snapshot verification of the pushed commit
-- GitHub/Vercel status check for the pushed commit
+- Local dirty-worktree verification after the admin overview fix:
+  - `Remove-Item -Recurse -Force .next -ErrorAction SilentlyContinue`: passed
+  - `npm.cmd install`: passed
+  - `npm.cmd run lint`: passed
+  - `npm.cmd run typecheck`: passed
+  - `npm.cmd run test`: passed, 64 files and 355 tests
+  - `npm.cmd run build`: passed
+- Clean-snapshot verification of commit `75041d2`:
+  - `npm.cmd install`: passed
+  - `npm.cmd run lint`: passed
+  - `npm.cmd run typecheck`: passed
+  - `npm.cmd run test`: passed, 60 files and 322 tests
+  - `npm.cmd run build`: passed
+- Vercel redeploy for commit `75041d2`: triggered automatically by GitHub push
+- Vercel deployment status for commit `75041d2`: success
 
 ## 11. Remaining risks
 
 - Direct Vercel logs remain unavailable until the Vercel connector is reauthenticated for scope `kirolosselimans-projects` or the user provides the `vercel inspect ... --logs` output.
-- Vercel must be checked again after the final fix commit is pushed.
+- This final documentation update triggers one additional Vercel deployment that must also be checked after push.
