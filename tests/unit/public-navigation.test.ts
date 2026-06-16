@@ -19,11 +19,11 @@ describe("public navigation", () => {
     expect(homepage).toContain('href="/signup"');
     expect(homepage).toContain('href="/book-call/questions"');
     expect(homepage).toContain("Connexion");
-    expect(homepage).toContain("Créer un compte");
+    expect(homepage).toContain("Creer un compte");
     expect(homepage).toContain("Sign in");
-    expect(homepage).toContain("Create account");
+    expect(homepage).toContain("Get early access");
     expect(homepage).toContain('login: "Connexion"');
-    expect(homepage).toContain('primary: "Créer un compte"');
+    expect(homepage).toContain('primary: "Creer un compte"');
   });
 
   it("uses the Open Spot brand in the public landing copy", () => {
@@ -34,8 +34,9 @@ describe("public navigation", () => {
 
     expect(homepage).toContain("Open Spot");
     expect(homepage).not.toContain("2e Chance RDV");
-    expect(homepage).toContain("SMS de récupération pour commerces à rendez-vous");
-    expect(homepage).toContain("Validation manuelle requise");
+    expect(homepage).toContain("Turn last-minute cancellations into booked appointments.");
+    expect(homepage).toContain("Manual confirmation by your team");
+    expect(homepage).toContain("Open Spot never confirms automatically");
     expect(rootLayout).toContain("Open Spot");
     expect(rootLayout).not.toContain("2e Chance RDV");
     expect(bookingPage).toContain("Open Spot");
@@ -88,6 +89,33 @@ describe("public navigation", () => {
 
     expect(siteHeader).toContain('href="/dashboard"');
     expect(siteHeader).not.toContain('className="hidden rounded-full');
+  });
+
+  it("keeps forbidden fintech and automatic booking content out of the public homepage source", () => {
+    const homepage = source(homepagePath);
+    const phone = source("src/components/marketing/sms-conversation-phone.tsx");
+    const combinedVisibleSource = `${homepage}\n${phone}`;
+    const forbiddenTerms = [
+      "Apple Store",
+      "Spotify",
+      "My Cards",
+      "Credit",
+      "Wallet",
+      "Transaction",
+      "Budget",
+      "Spending",
+      "Expense",
+      "Secure payment",
+      "Finance",
+      "Bank",
+      "Automatically confirmed",
+      "auto-confirmation",
+      "first reply wins"
+    ];
+
+    for (const term of forbiddenTerms) {
+      expect(combinedVisibleSource).not.toContain(term);
+    }
   });
 
   it("links sign-in and signup pages to each other", () => {

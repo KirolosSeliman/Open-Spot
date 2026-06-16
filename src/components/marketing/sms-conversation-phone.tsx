@@ -29,59 +29,59 @@ type SmsConversationPhoneCopy = {
 
 export const smsConversationPhoneCopy = {
   fr: {
-    businessInitials: "SE",
-    businessName: "Studio Élise",
-    statusLabel: "Aujourd’hui · SMS",
-    statusTime: "15:31",
-    complianceLine: "Réponds STOP pour te désinscrire.",
-    inputPlaceholder: "Message SMS",
-    messages: [
-      {
-        from: "business",
-        text: "Bonjour Léa, une place vient de se libérer aujourd’hui à 15 h 30 pour coupe + brushing. Réponds OUI si tu es intéressée."
-      },
-      {
-        from: "customer",
-        text: "OUI, je suis disponible."
-      },
-      {
-        from: "business",
-        text: "Merci! Le salon va confirmer manuellement le rendez-vous."
-      }
-    ],
-    floatingBadges: [
-      { label: "Réponse reçue", tone: "green" },
-      { label: "À confirmer par le commerce", tone: "dark" },
-      { label: "85 $ de revenu à récupérer", tone: "blue" },
-      { label: "2 réponses", tone: "white" }
-    ]
-  },
-  en: {
-    businessInitials: "SE",
-    businessName: "Studio Elise",
-    statusLabel: "Today · SMS",
-    statusTime: "3:31",
+    businessInitials: "OS",
+    businessName: "Open Spot Salon",
+    statusLabel: "Today - SMS",
+    statusTime: "4:31",
     complianceLine: "Reply STOP to unsubscribe.",
     inputPlaceholder: "SMS message",
     messages: [
       {
         from: "business",
-        text: "Hi Lea, a spot just opened today at 3:30 PM for a cut + blowout. Reply YES if you are interested."
+        text: "Hi Sarah, a spot opened today at 4:30 PM for a haircut. Reply YES if you want it."
       },
       {
         from: "customer",
-        text: "YES, I am available."
+        text: "YES, I can come."
       },
       {
         from: "business",
-        text: "Thanks! The salon will manually confirm the appointment."
+        text: "Great - your reply was received. The salon will manually confirm shortly."
       }
     ],
     floatingBadges: [
       { label: "Reply received", tone: "green" },
-      { label: "Merchant review needed", tone: "dark" },
-      { label: "$85 revenue to recover", tone: "blue" },
-      { label: "2 replies", tone: "white" }
+      { label: "Manual confirmation", tone: "dark" },
+      { label: "$85 recovered", tone: "blue" },
+      { label: "Waitlist notified", tone: "white" }
+    ]
+  },
+  en: {
+    businessInitials: "OS",
+    businessName: "Open Spot Salon",
+    statusLabel: "Today - SMS",
+    statusTime: "4:31",
+    complianceLine: "Reply STOP to unsubscribe.",
+    inputPlaceholder: "SMS message",
+    messages: [
+      {
+        from: "business",
+        text: "Hi Sarah, a spot opened today at 4:30 PM for a haircut. Reply YES if you want it."
+      },
+      {
+        from: "customer",
+        text: "YES, I can come."
+      },
+      {
+        from: "business",
+        text: "Great - your reply was received. The salon will manually confirm shortly."
+      }
+    ],
+    floatingBadges: [
+      { label: "Reply received", tone: "green" },
+      { label: "Manual confirmation", tone: "dark" },
+      { label: "$85 recovered", tone: "blue" },
+      { label: "Waitlist notified", tone: "white" }
     ]
   }
 } as const satisfies Record<Locale, SmsConversationPhoneCopy>;
@@ -94,8 +94,8 @@ type PhoneMotion = {
 };
 
 const initialMotion: PhoneMotion = {
-  opacity: 0.7,
-  rotate: 5,
+  opacity: 0.72,
+  rotate: 4,
   scale: 0.96,
   translateY: 120
 };
@@ -193,16 +193,28 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
   return (
     <div
       aria-label={`${copy.businessName} SMS conversation preview with manual merchant confirmation`}
-      className="relative mx-auto flex min-h-[560px] w-full max-w-5xl items-center justify-center overflow-visible px-2 sm:min-h-[620px] lg:min-h-[680px]"
+      className="relative mx-auto flex min-h-[30rem] w-full max-w-[69rem] items-center justify-center overflow-visible px-2 sm:min-h-[32rem]"
       ref={rootRef}
       role="img"
     >
+      <HeroMetricCard
+        className="left-0 top-16 hidden md:block"
+        eyebrow="Open spot"
+        title="4:30 PM"
+        value="Haircut"
+      />
+      <HeroMetricCard
+        className="right-0 top-28 hidden md:block"
+        eyebrow="Replies"
+        title="2 clients"
+        value="Ready to review"
+      />
       {copy.floatingBadges.map((badge, index) => (
         <FloatingSmsBadge badge={badge} index={index} key={badge.label} />
       ))}
 
       <div
-        className="relative z-10 mx-auto w-full max-w-[21rem] rounded-[3.1rem] border border-black/80 bg-[#070a12] p-2.5 shadow-[0_34px_90px_rgba(15,23,42,0.32)] sm:max-w-[22.5rem] sm:p-3"
+        className="relative z-10 mx-auto w-full max-w-[22rem] rounded-[3.15rem] border border-black/80 bg-[#070a12] p-2.5 shadow-[0_34px_90px_rgba(15,23,42,0.32)] sm:p-3"
         style={motionStyle}
       >
         <div className="relative overflow-hidden rounded-[2.55rem] bg-[#f5f7fb] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]">
@@ -218,7 +230,7 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
 
           <div className="border-b border-slate-200/80 bg-white/86 px-4 pb-3 pt-5 backdrop-blur-xl">
             <div className="flex items-center gap-3">
-              <span className="text-2xl font-light leading-none text-[#4f7df3]">‹</span>
+              <span className="text-2xl font-light leading-none text-[#4686fe]">{"<"}</span>
               <div className="grid h-10 w-10 place-items-center rounded-full bg-[#e8fbf5] text-xs font-black text-[#08775c]">
                 {copy.businessInitials}
               </div>
@@ -258,12 +270,37 @@ function SmsBubble({ message }: { message: SmsMessage }) {
         className={cn(
           "max-w-[82%] rounded-[1.25rem] px-4 py-3 text-left text-sm font-semibold leading-5 shadow-sm",
           isCustomer
-            ? "rounded-br-md bg-[#4f7df3] text-white"
+            ? "rounded-br-md bg-[#4686fe] text-white"
             : "rounded-bl-md bg-white text-slate-800"
         )}
       >
         {message.text}
       </div>
+    </div>
+  );
+}
+
+function HeroMetricCard({
+  className,
+  eyebrow,
+  title,
+  value
+}: {
+  className: string;
+  eyebrow: string;
+  title: string;
+  value: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "lunera-floating-card absolute z-20 w-[14rem] rounded-2xl border border-slate-100 bg-white p-5 text-left shadow-[0_24px_70px_rgba(15,23,42,0.14)]",
+        className
+      )}
+    >
+      <p className="text-xs font-black text-slate-400">{eyebrow}</p>
+      <p className="mt-2 text-3xl font-medium text-[#050608]">{title}</p>
+      <p className="mt-2 text-sm font-bold text-slate-500">{value}</p>
     </div>
   );
 }
@@ -276,10 +313,10 @@ function FloatingSmsBadge({
   index: number;
 }) {
   const positions = [
-    "left-2 top-16 hidden md:block",
-    "right-0 top-24 hidden md:block",
-    "bottom-24 left-10 hidden lg:block",
-    "bottom-14 right-12 hidden lg:block"
+    "left-[8%] bottom-20 hidden lg:block",
+    "right-[10%] bottom-16 hidden lg:block",
+    "left-[15%] top-2 hidden md:block",
+    "right-[14%] top-5 hidden md:block"
   ];
 
   const toneClass = {
@@ -292,7 +329,7 @@ function FloatingSmsBadge({
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-20 max-w-[13rem] rounded-[1.25rem] border px-4 py-3 text-sm font-black shadow-[0_22px_55px_rgba(15,23,42,0.14)]",
+        "lunera-floating-card absolute z-20 max-w-[13rem] rounded-full border px-4 py-2 text-sm font-black shadow-[0_22px_55px_rgba(15,23,42,0.14)]",
         toneClass,
         positions[index]
       )}

@@ -371,14 +371,14 @@ select {
   border: 1px solid rgba(226, 232, 240, 0.88);
   border-radius: 999px;
   box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
-  color: #4f7df3;
+  color: #4686fe;
   display: inline-flex;
-  font-size: 0.78rem;
-  font-weight: 950;
+  font-size: 0.76rem;
+  font-weight: 800;
   justify-content: center;
   letter-spacing: 0;
-  padding: 0.62rem 0.92rem;
-  text-transform: uppercase;
+  min-height: 2rem;
+  padding: 0.38rem 0.82rem;
 }
 
 .lunera-cta-primary,
@@ -388,11 +388,11 @@ select {
   align-items: center;
   border-radius: 999px;
   display: inline-flex;
-  font-size: 0.95rem;
-  font-weight: 950;
+  font-size: 0.92rem;
+  font-weight: 800;
   justify-content: center;
-  min-height: 3.35rem;
-  padding: 0.85rem 1.35rem;
+  min-height: 2.625rem;
+  padding: 0.65rem 1.28rem;
   transition:
     transform 180ms ease,
     box-shadow 180ms ease,
@@ -401,8 +401,8 @@ select {
 }
 
 .lunera-cta-primary {
-  background: #4f7df3;
-  box-shadow: 0 18px 42px rgba(79, 125, 243, 0.28);
+  background: #4686fe;
+  box-shadow: 0 18px 42px rgba(70, 134, 254, 0.28);
   color: #ffffff;
 }
 
@@ -435,7 +435,7 @@ select {
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.88)),
     #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 2rem;
+  border-radius: 1.25rem;
   box-shadow: 0 22px 64px rgba(15, 23, 42, 0.08);
   transition:
     border-color 180ms ease,
@@ -444,7 +444,7 @@ select {
 }
 
 .lunera-card:hover {
-  border-color: rgba(79, 125, 243, 0.35);
+  border-color: rgba(70, 134, 254, 0.35);
   box-shadow: 0 30px 80px rgba(15, 23, 42, 0.12);
   transform: translateY(-6px);
 }
@@ -504,79 +504,54 @@ select {
   animation-duration: 42s;
 }
 
-.lunera-orbit {
-  min-height: 34rem;
+.lunera-integration-cloud {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   position: relative;
 }
 
-.lunera-orbit::before {
-  background: #eef4ff;
-  border-radius: 50% 50% 0 0;
-  bottom: -12rem;
+.lunera-integration-cloud::before {
+  background: #f4f7fb;
+  border-radius: 999px 999px 0 0;
+  bottom: -4rem;
   content: "";
-  height: 28rem;
+  height: 18rem;
   left: 50%;
   position: absolute;
   transform: translateX(-50%);
-  width: min(58rem, 120vw);
+  width: min(52rem, 120vw);
 }
 
-.lunera-tool-card {
-  --angle: calc((var(--tool-index) - 3.5) * 18deg);
+.lunera-integration-card {
   align-items: center;
   animation: lunera-tool-float 5.5s ease-in-out infinite;
   animation-delay: calc(var(--tool-index) * 120ms);
   background: #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.94);
-  border-radius: 1.35rem;
+  border-radius: 1.1rem;
   box-shadow: 0 20px 55px rgba(15, 23, 42, 0.11);
   display: flex;
   font-size: 0.85rem;
-  font-weight: 950;
-  height: 7rem;
+  font-weight: 800;
+  min-height: 5.5rem;
   justify-content: center;
-  left: 50%;
   padding: 1rem;
-  position: absolute;
+  position: relative;
   text-align: center;
-  top: 56%;
-  transform:
-    translate(-50%, -50%)
-    rotate(var(--angle))
-    translateY(-14rem)
-    rotate(calc(var(--angle) * -1));
-  width: 7rem;
   z-index: 2;
-}
-
-.lunera-orbit-center {
-  align-items: center;
-  background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 2rem;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
-  display: flex;
-  height: 8rem;
-  justify-content: center;
-  left: 50%;
-  padding: 1.2rem;
-  position: absolute;
-  top: 54%;
-  transform: translate(-50%, -50%) translateY(calc(var(--lunera-progress) * -34px));
-  width: 16rem;
-  z-index: 3;
 }
 
 .lunera-step-card {
   background: #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.94);
-  border-radius: 2rem;
+  border-radius: 1.25rem;
   box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
   display: grid;
   gap: 1.5rem;
   grid-template-columns: auto 1fr;
-  min-height: 24rem;
-  padding: clamp(1.5rem, 4vw, 2.4rem);
+  min-height: 20rem;
+  padding: 2.4rem;
   transform: translateY(calc(var(--lunera-progress) * -18px));
 }
 
@@ -850,13 +825,27 @@ select {
   .lunera-phone-shell,
   .lunera-floating-card,
   .lunera-reply-row,
+  .lunera-integration-card,
   .lunera-tool-card,
   .lunera-bar {
     animation: none !important;
   }
 
-  .lunera-orbit-center,
   .lunera-step-card {
     transform: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .lunera-integration-cloud {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .lunera-step-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    padding: 1.5rem;
   }
 }

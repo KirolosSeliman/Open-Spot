@@ -4,37 +4,39 @@ import { smsConversationPhoneCopy } from "@/components/marketing/sms-conversatio
 
 describe("SMS conversation phone marketing preview", () => {
   it("uses appointment cancellation SMS copy with manual merchant confirmation", () => {
-    const fr = smsConversationPhoneCopy.fr;
+    const en = smsConversationPhoneCopy.en;
 
-    expect(fr.businessName).toBe("Studio Élise");
-    expect(fr.messages).toEqual([
+    expect(en.businessName).toBe("Open Spot Salon");
+    expect(en.messages).toEqual([
       {
         from: "business",
-        text: "Bonjour Léa, une place vient de se libérer aujourd’hui à 15 h 30 pour coupe + brushing. Réponds OUI si tu es intéressée."
+        text: "Hi Sarah, a spot opened today at 4:30 PM for a haircut. Reply YES if you want it."
       },
       {
         from: "customer",
-        text: "OUI, je suis disponible."
+        text: "YES, I can come."
       },
       {
         from: "business",
-        text: "Merci! Le salon va confirmer manuellement le rendez-vous."
+        text: "Great - your reply was received. The salon will manually confirm shortly."
       }
     ]);
-    expect(fr.complianceLine).toBe("Réponds STOP pour te désinscrire.");
-    expect(fr.floatingBadges.map((badge) => badge.label)).toEqual([
-      "Réponse reçue",
-      "À confirmer par le commerce",
-      "85 $ de revenu à récupérer",
-      "2 réponses"
+    expect(en.complianceLine).toBe("Reply STOP to unsubscribe.");
+    expect(en.floatingBadges.map((badge) => badge.label)).toEqual([
+      "Reply received",
+      "Manual confirmation",
+      "$85 recovered",
+      "Waitlist notified"
     ]);
   });
 
   it("does not contain forbidden automatic confirmation positioning", () => {
     const forbiddenTerms = [
-      "Confirmé automatiquement",
-      "Premier arrivé confirmé",
-      "Réservation automatique"
+      "Confirmed automatically",
+      "Automatically confirmed",
+      "First reply wins",
+      "Auto-confirmation",
+      "Automatic booking"
     ];
     const serializedCopy = JSON.stringify(smsConversationPhoneCopy);
 

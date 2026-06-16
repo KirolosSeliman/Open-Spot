@@ -15,155 +15,190 @@ const copy = {
     nav: {
       features: "Fonctions",
       tools: "Outils",
-      how: "Comment ça marche",
+      how: "Comment ca marche",
       pricing: "Tarifs",
       resources: "Guides",
       login: "Connexion",
-      primary: "Créer un compte"
+      primary: "Creer un compte"
     },
     hero: {
-      eyebrow: "SMS de récupération pour commerces à rendez-vous",
-      title: "Remplissez vos annulations de dernière minute par SMS.",
+      eyebrow: "Built for appointment-based businesses",
+      title: "Transformez les annulations en rendez-vous remplis.",
       subtitle:
-        "Open Spot contacte vos clients consentants, classe les réponses et vous laisse choisir qui confirmer — sans changer votre système de rendez-vous.",
-      primary: "Créer un compte",
-      secondary: "Voir comment ça marche",
-      microcopy:
-        "Aucune app client. Aucun changement à votre calendrier. Validation toujours manuelle."
-    },
-    mockup: {
-      cancellation: "Annulation aujourd’hui",
-      appointment: "14 h 30 · Coupe homme",
-      eligible: "24 clients admissibles",
-      replies: "3 réponses reçues",
-      manual: "Validation manuelle requise",
-      rows: [
-        ["Maya L.", "OUI", "14:03"],
-        ["Sarah P.", "YES", "14:05"],
-        ["Lina R.", "1", "14:07"]
+        "Open Spot aide les salons, barbiers, cliniques et commerces locaux a texter leur liste d'attente, recevoir les reponses et confirmer manuellement le meilleur client avant que le creneau soit perdu.",
+      primary: "Creer un compte",
+      secondary: "Voir comment ca marche",
+      badges: [
+        "No marketplace. No complex booking flow.",
+        "Manual confirmation by your team"
       ],
-      revenue: "Revenu récupéré estimé : 85 $",
-      stop: "STOP respecté"
+      proof: "Built for salons, barbers, clinics and local appointment-based businesses."
     },
-    categories: {
-      headline: "Pour les commerces qui vivent de leur horaire.",
-      chips: [
-        "Salons",
-        "Barbiers",
-        "Esthétique",
-        "Massothérapie",
-        "Soins",
-        "Cliniques",
-        "Services à rendez-vous",
-        "Studios beauté"
-      ]
-    },
+    logos: [
+      "Salons",
+      "Barbers",
+      "Clinics",
+      "Spas",
+      "Beauty studios",
+      "Care teams"
+    ],
     features: {
-      title: "Tout ce qu’il faut pour récupérer une plage perdue.",
-      cards: [
-        ["SMS aux clients consentants", "Envoyez une ouverture seulement aux clients qui ont accepté de recevoir vos messages."],
-        ["Réponses centralisées", "Les réponses OUI, YES ou 1 apparaissent dans votre tableau de bord, classées par heure de réception."],
-        ["Validation manuelle", "Vous choisissez le client à confirmer. Open Spot ne confirme jamais automatiquement."],
-        ["QR liste d’attente", "Placez un QR code dans votre commerce pour recueillir les inscriptions et le consentement SMS."],
-        ["Import contrôlé", "Importez vos clients existants sans les considérer comme consentants par défaut."],
-        ["Revenu récupéré", "Suivez les rendez-vous sauvés et l’argent récupéré grâce aux ouvertures remplies."]
-      ]
-    },
-    tools: {
-      title: "Gardez vos outils actuels.",
-      text:
-        "Open Spot ne remplace pas votre calendrier, votre caisse ou votre logiciel de réservation. Il ajoute une couche SMS simple pour récupérer les ouvertures de dernière minute.",
-      cards: [
-        "Votre calendrier actuel",
-        "Votre système de réservation",
-        "Votre téléphone",
-        "Votre liste de clients",
-        "SMS",
-        "Tableau de bord Open Spot",
-        "QR code",
-        "Consentement"
-      ]
-    },
-    how: {
-      title: "De l’annulation à la confirmation, en trois étapes.",
-      steps: [
-        ["01", "Un client s’inscrit", "Il rejoint votre liste d’attente via QR code ou import contrôlé avec consentement."],
-        ["02", "Vous créez une ouverture", "Lorsqu’une annulation arrive, vous préparez le SMS et l’envoyez aux clients admissibles."],
-        ["03", "Vous validez manuellement", "Les réponses arrivent dans le dashboard. Vous choisissez qui confirmer."]
-      ]
-    },
-    pricing: {
-      title: "Des forfaits simples avant de parler facturation.",
+      tag: "Features",
+      title: "Everything you need to recover empty appointment slots.",
       cards: [
         [
-          "Pilote",
-          "Pour tester Open Spot avec un commerce à rendez-vous.",
-          ["Liste d’attente SMS", "QR code", "Création d’ouvertures", "Réponses visibles", "Validation manuelle"],
-          "Démarrer un pilote"
+          "Send SMS alerts in seconds",
+          "Create an opening, choose the eligible list, and notify clients before the slot goes cold.",
+          "Waitlist notified"
         ],
         [
-          "Croissance",
-          "Pour les commerces qui veulent récupérer plus d’annulations chaque mois.",
-          [
-            "Tout dans Pilote",
-            "Import clients",
-            "Reporting revenu récupéré",
-            "Support configuration",
-            "Workflows SMS avancés selon disponibilité réelle"
-          ],
-          "Parler à l’équipe"
+          "Collect YES replies",
+          "Clients answer OUI, YES, or 1 by SMS. Replies stay grouped in your dashboard.",
+          "2 clients replied"
         ],
         [
-          "Sur mesure",
-          "Pour réseaux, équipes multi-emplacements ou besoins SMS spécifiques.",
-          ["Plusieurs emplacements si supportés", "Support opérationnel", "Paramètres SMS adaptés", "Analyse de volume"],
-          "Nous contacter"
+          "Choose who to confirm",
+          "Replies are visible and ranked, but your team always makes the final confirmation.",
+          "Manual confirmation"
+        ],
+        [
+          "Keep the waitlist organized",
+          "Separate consent, services, and response history so every opening is easier to fill.",
+          "Consent checked"
+        ],
+        [
+          "Track recovered value",
+          "Show the impact of filled cancellations without adding payment or finance workflows.",
+          "$85 recovered"
         ]
       ]
     },
-    useCases: {
-      title: "Conçu pour les annulations qui arrivent au mauvais moment.",
+    tools: {
+      tag: "Integrations",
+      title: "Works beside the tools you already use.",
+      text:
+        "Open Spot does not replace your calendar, POS, or booking software. It adds the fast SMS recovery layer for last-minute openings.",
       cards: [
-        ["Salon", "Une coloration est annulée le matin même. Open Spot aide à proposer la plage aux clients admissibles."],
-        ["Barbier", "Un créneau de coupe se libère dans l’après-midi. Les réponses arrivent par SMS et le barbier choisit qui confirmer."],
-        ["Esthétique", "Une cliente annule un soin à la dernière minute. La liste d’attente peut être contactée rapidement."],
-        ["Soins", "Une plage devient disponible et peut être offerte aux clients intéressés sans appeler tout le monde un par un."]
+        "Calendar",
+        "Booking app",
+        "Client list",
+        "SMS",
+        "Waitlist",
+        "QR code",
+        "Consent",
+        "Replies",
+        "Dashboard",
+        "Team review",
+        "Open spot",
+        "Follow-up",
+        "Services",
+        "Opt-out",
+        "Reports",
+        "Manual pick"
+      ]
+    },
+    how: {
+      tag: "How it works",
+      title: "From cancellation to confirmed client in minutes.",
+      steps: [
+        [
+          "01",
+          "Client cancels.",
+          "A same-day slot opens and your team creates an Open Spot alert."
+        ],
+        [
+          "02",
+          "You send one SMS.",
+          "Eligible clients receive a clear message and reply by SMS if they want the spot."
+        ],
+        [
+          "03",
+          "Clients reply YES.",
+          "Replies are collected in one queue with the appointment time and service context."
+        ],
+        [
+          "04",
+          "You manually confirm.",
+          "Open Spot never confirms automatically. Your team chooses the best fit."
+        ]
+      ]
+    },
+    pricing: {
+      tag: "Pricing",
+      title: "Simple plans, clear value.",
+      cards: [
+        [
+          "Starter",
+          "For one location testing SMS recovery.",
+          ["SMS waitlist", "Opening alerts", "Reply queue", "Manual confirmation", "Basic recovery view"],
+          "Start a pilot"
+        ],
+        [
+          "Growth",
+          "For teams recovering multiple cancellations each week.",
+          ["Everything in Starter", "Customer import controls", "Consent-aware targeting", "Recovered value reporting", "Setup support"],
+          "Talk to the team"
+        ],
+        [
+          "Scale",
+          "For multi-location operators or custom workflows.",
+          ["Location controls", "Team workflows", "Operational review", "Volume planning", "Priority support"],
+          "Contact us"
+        ]
+      ]
+    },
+    results: {
+      title: "Real recovery workflows for real appointment teams.",
+      text:
+        "Open Spot is built around the moment a local business would otherwise start calling clients one by one.",
+      cards: [
+        ["Salon", "A color appointment cancels in the morning. The waitlist receives one SMS and the team picks who to confirm."],
+        ["Barber", "A 4:30 PM haircut opens. Replies arrive by SMS while the barber keeps serving clients."],
+        ["Clinic", "A treatment slot becomes available. Eligible clients reply and staff manually confirms the right fit."],
+        ["Spa", "A same-day opening is recovered without moving clients into a marketplace or new booking flow."]
+      ],
+      stats: [
+        ["85", "Dollars recovered on one haircut slot"],
+        ["2 min", "To send a focused SMS alert"],
+        ["100%", "Manual final confirmation"]
       ]
     },
     faq: {
-      title: "Questions avant d’envoyer vos premiers SMS.",
-      text: "Open Spot garde le contrôle du côté marchand et respecte le consentement SMS.",
+      tag: "FAQ",
+      title: "Questions before your first SMS sends.",
+      text: "Open Spot keeps merchant control intact and respects SMS consent.",
       items: [
-        ["Est-ce qu’Open Spot remplace mon système de réservation ?", "Non. Vous gardez votre calendrier, votre système de caisse ou votre outil de réservation actuel. Open Spot sert à récupérer les annulations et gérer les réponses SMS."],
-        ["Le premier client qui répond reçoit-il la place ?", "Non. Les réponses sont classées par heure de réception, mais vous gardez toujours le contrôle final."],
-        ["Puis-je envoyer des SMS à tous mes clients importés ?", "Non. Les clients doivent avoir un consentement SMS valide avant de recevoir des messages."],
-        ["Que se passe-t-il si un client répond STOP ?", "Il est désinscrit et doit être exclu des prochains envois SMS."],
-        ["Mes clients doivent-ils télécharger une application ?", "Non. Les clients interagissent par SMS."],
-        ["Est-ce que je dois changer mon calendrier actuel ?", "Non. Open Spot s’ajoute à votre workflow actuel."]
+        ["Does Open Spot replace my booking system?", "No. Your calendar, POS, and booking tools stay in place. Open Spot handles the SMS recovery workflow."],
+        ["Is the first customer who replies automatically confirmed?", "No. Replies are ranked by received time, but the business always chooses who to confirm."],
+        ["Can I message every imported client?", "No. Clients need valid SMS consent before they receive opening alerts."],
+        ["What happens if someone replies STOP?", "They are opted out and must be excluded from future sends."],
+        ["Do clients need an app?", "No. Clients receive and answer a normal SMS."],
+        ["Is there payment automation?", "No. Open Spot is focused on filling the opening and keeping confirmation manual."]
       ]
     },
     resources: {
-      title: "Guides pour récupérer plus de rendez-vous.",
+      tag: "Blog",
+      title: "Guides to recover more appointments.",
       cards: [
-        ["Comment réduire les annulations perdues", "Des pratiques simples pour réagir vite lorsqu’une plage se libère."],
-        ["Bien gérer le consentement SMS", "Pourquoi les clients doivent accepter clairement vos messages."],
-        ["Construire une liste d’attente utile", "Comment transformer votre QR code en source de rendez-vous récupérés."]
+        ["How to reduce lost cancellations", "A practical workflow for reacting fast when a slot opens."],
+        ["Managing SMS consent properly", "Why clean consent keeps your waitlist useful and compliant."],
+        ["Building a useful waitlist", "How QR signups and service interests improve recovery messages."]
       ]
     },
     final: {
-      title: "Récupérez votre prochaine annulation avant qu’elle devienne une perte.",
+      title: "Stop losing revenue to last-minute cancellations.",
       text:
-        "Créez une ouverture, contactez les clients admissibles et gardez le contrôle sur la confirmation.",
-      primary: "Créer un compte",
-      secondary: "Voir le fonctionnement"
+        "Open Spot gives your team a simple SMS workflow to recover open slots before they disappear.",
+      primary: "Start with Open Spot",
+      secondary: "See how it works"
     },
     footer: {
-      line: "Récupération d’annulations par SMS pour commerces à rendez-vous.",
-      product: "Produit",
-      account: "Compte",
-      legal: "Légal",
-      privacy: "Confidentialité",
-      terms: "Conditions"
+      line: "Fill last-minute cancellations with one simple SMS.",
+      product: "Platform",
+      account: "Account",
+      legal: "Legal",
+      privacy: "Privacy",
+      terms: "Terms"
     }
   },
   en: {
@@ -174,145 +209,182 @@ const copy = {
       pricing: "Pricing",
       resources: "Guides",
       login: "Sign in",
-      primary: "Create account"
+      primary: "Get early access"
     },
     hero: {
-      eyebrow: "SMS recovery for appointment-based businesses",
-      title: "Fill last-minute cancellations by SMS.",
+      eyebrow: "Built for appointment-based businesses",
+      title: "Turn last-minute cancellations into booked appointments.",
       subtitle:
-        "Open Spot contacts opted-in customers, ranks replies, and lets you choose who to confirm — without replacing your appointment system.",
-      primary: "Create account",
+        "Open Spot helps salons, barbers, clinics and local appointment-based businesses text their waitlist, collect replies, and manually confirm the best client before the spot is lost.",
+      primary: "Get early access",
       secondary: "See how it works",
-      microcopy: "No customer app. No calendar migration. Always manual validation."
-    },
-    mockup: {
-      cancellation: "Cancellation today",
-      appointment: "2:30 PM · Men’s haircut",
-      eligible: "24 eligible customers",
-      replies: "3 replies received",
-      manual: "Manual validation required",
-      rows: [
-        ["Maya L.", "OUI", "2:03 PM"],
-        ["Sarah P.", "YES", "2:05 PM"],
-        ["Lina R.", "1", "2:07 PM"]
+      badges: [
+        "No marketplace. No complex booking flow.",
+        "Manual confirmation by your team"
       ],
-      revenue: "Estimated recovered revenue: $85",
-      stop: "STOP respected"
+      proof: "Built for salons, barbers, clinics and local appointment-based businesses."
     },
-    categories: {
-      headline: "For businesses that depend on a full schedule.",
-      chips: [
-        "Salons",
-        "Barbers",
-        "Beauty",
-        "Massage therapy",
-        "Care services",
-        "Clinics",
-        "Appointment-based teams",
-        "Beauty studios"
-      ]
-    },
+    logos: [
+      "Salons",
+      "Barbers",
+      "Clinics",
+      "Spas",
+      "Beauty studios",
+      "Care teams"
+    ],
     features: {
-      title: "Everything you need to recover a lost time slot.",
+      tag: "Features",
+      title: "Everything you need to recover empty appointment slots.",
       cards: [
-        ["SMS to opted-in customers", "Send openings only to customers who agreed to receive your messages."],
-        ["Centralized replies", "YES, OUI, or 1 replies appear in your dashboard, ranked by received time."],
-        ["Manual validation", "You choose who to confirm. Open Spot never confirms automatically."],
-        ["QR waitlist", "Place a QR code in your business to collect waitlist signups and SMS consent."],
-        ["Controlled import", "Import existing customers without treating them as opted in by default."],
-        ["Recovered revenue", "Track saved appointments and revenue recovered through filled openings."]
+        [
+          "Send SMS alerts in seconds",
+          "Create an opening, choose the eligible list, and notify clients before the slot goes cold.",
+          "Waitlist notified"
+        ],
+        [
+          "Collect YES replies",
+          "Clients answer OUI, YES, or 1 by SMS. Replies stay grouped in your dashboard.",
+          "2 clients replied"
+        ],
+        [
+          "Choose who to confirm",
+          "Replies are visible and ranked, but your team always makes the final confirmation.",
+          "Manual confirmation"
+        ],
+        [
+          "Keep the waitlist organized",
+          "Separate consent, services, and response history so every opening is easier to fill.",
+          "Consent checked"
+        ],
+        [
+          "Track recovered value",
+          "Show the impact of filled cancellations without adding payment or finance workflows.",
+          "$85 recovered"
+        ]
       ]
     },
     tools: {
-      title: "Keep your current tools.",
+      tag: "Integrations",
+      title: "Works beside the tools you already use.",
       text:
-        "Open Spot does not replace your calendar, POS, or booking software. It adds a simple SMS layer to recover last-minute openings.",
+        "Open Spot does not replace your calendar, POS, or booking software. It adds the fast SMS recovery layer for last-minute openings.",
       cards: [
-        "Your current calendar",
-        "Your booking system",
-        "Your phone",
-        "Your customer list",
+        "Calendar",
+        "Booking app",
+        "Client list",
         "SMS",
-        "Open Spot dashboard",
+        "Waitlist",
         "QR code",
-        "Consent"
+        "Consent",
+        "Replies",
+        "Dashboard",
+        "Team review",
+        "Open spot",
+        "Follow-up",
+        "Services",
+        "Opt-out",
+        "Reports",
+        "Manual pick"
       ]
     },
     how: {
-      title: "From cancellation to confirmation in three steps.",
+      tag: "How it works",
+      title: "From cancellation to confirmed client in minutes.",
       steps: [
-        ["01", "A customer joins", "They join your waitlist through a QR code or controlled import with consent."],
-        ["02", "You create an opening", "When a cancellation happens, you prepare the SMS and send it to eligible customers."],
-        ["03", "You validate manually", "Replies appear in the dashboard. You choose who to confirm."]
+        [
+          "01",
+          "Client cancels.",
+          "A same-day slot opens and your team creates an Open Spot alert."
+        ],
+        [
+          "02",
+          "You send one SMS.",
+          "Eligible clients receive a clear message and reply by SMS if they want the spot."
+        ],
+        [
+          "03",
+          "Clients reply YES.",
+          "Replies are collected in one queue with the appointment time and service context."
+        ],
+        [
+          "04",
+          "You manually confirm.",
+          "Open Spot never confirms automatically. Your team chooses the best fit."
+        ]
       ]
     },
     pricing: {
-      title: "Simple plans before billing tiers.",
+      tag: "Pricing",
+      title: "Simple plans, clear value.",
       cards: [
         [
-          "Pilot",
-          "For testing Open Spot with an appointment-based business.",
-          ["SMS waitlist", "QR code", "Opening creation", "Visible replies", "Manual validation"],
+          "Starter",
+          "For one location testing SMS recovery.",
+          ["SMS waitlist", "Opening alerts", "Reply queue", "Manual confirmation", "Basic recovery view"],
           "Start a pilot"
         ],
         [
           "Growth",
-          "For businesses that want to recover more cancellations every month.",
-          [
-            "Everything in Pilot",
-            "Customer import",
-            "Recovered revenue reporting",
-            "Setup support",
-            "Advanced SMS workflows when available"
-          ],
+          "For teams recovering multiple cancellations each week.",
+          ["Everything in Starter", "Customer import controls", "Consent-aware targeting", "Recovered value reporting", "Setup support"],
           "Talk to the team"
         ],
         [
-          "Custom",
-          "For networks, multi-location teams, or specific SMS needs.",
-          ["Multiple locations if supported", "Operational support", "Adapted SMS settings", "Volume analysis"],
+          "Scale",
+          "For multi-location operators or custom workflows.",
+          ["Location controls", "Team workflows", "Operational review", "Volume planning", "Priority support"],
           "Contact us"
         ]
       ]
     },
-    useCases: {
-      title: "Built for cancellations that happen at the worst time.",
+    results: {
+      title: "Real recovery workflows for real appointment teams.",
+      text:
+        "Open Spot is built around the moment a local business would otherwise start calling clients one by one.",
       cards: [
-        ["Salon", "A color appointment gets cancelled the same morning. Open Spot helps offer the spot to eligible customers."],
-        ["Barber", "A haircut slot opens in the afternoon. Replies arrive by SMS and the barber chooses who to confirm."],
-        ["Beauty", "A customer cancels a treatment at the last minute. The waitlist can be contacted quickly."],
-        ["Care services", "A time slot becomes available and can be offered to interested customers without calling everyone one by one."]
+        ["Salon", "A color appointment cancels in the morning. The waitlist receives one SMS and the team picks who to confirm."],
+        ["Barber", "A 4:30 PM haircut opens. Replies arrive by SMS while the barber keeps serving clients."],
+        ["Clinic", "A treatment slot becomes available. Eligible clients reply and staff manually confirms the right fit."],
+        ["Spa", "A same-day opening is recovered without moving clients into a marketplace or new booking flow."]
+      ],
+      stats: [
+        ["85", "Dollars recovered on one haircut slot"],
+        ["2 min", "To send a focused SMS alert"],
+        ["100%", "Manual final confirmation"]
       ]
     },
     faq: {
+      tag: "FAQ",
       title: "Questions before your first SMS sends.",
       text: "Open Spot keeps merchant control intact and respects SMS consent.",
       items: [
-        ["Does Open Spot replace my booking system?", "No. You keep your current calendar, POS, or booking tool. Open Spot helps recover cancellations and manage SMS replies."],
-        ["Is the first customer who replies automatically confirmed?", "No. Replies are ranked by received time, but you always keep final control."],
-        ["Can I send SMS to all imported customers?", "No. Customers must have valid SMS consent before receiving messages."],
-        ["What happens if a customer replies STOP?", "They are opted out and must be excluded from future SMS sends."],
-        ["Do my customers need to download an app?", "No. Customers interact by SMS."],
-        ["Do I need to change my current calendar?", "No. Open Spot adds to your current workflow."]
+        ["Does Open Spot replace my booking system?", "No. Your calendar, POS, and booking tools stay in place. Open Spot handles the SMS recovery workflow."],
+        ["Is the first customer who replies automatically confirmed?", "No. Replies are ranked by received time, but the business always chooses who to confirm."],
+        ["Can I message every imported client?", "No. Clients need valid SMS consent before they receive opening alerts."],
+        ["What happens if someone replies STOP?", "They are opted out and must be excluded from future sends."],
+        ["Do clients need an app?", "No. Clients receive and answer a normal SMS."],
+        ["Is there payment automation?", "No. Open Spot is focused on filling the opening and keeping confirmation manual."]
       ]
     },
     resources: {
+      tag: "Blog",
       title: "Guides to recover more appointments.",
       cards: [
-        ["How to reduce lost cancellations", "Simple practices to react quickly when a time slot opens."],
-        ["Managing SMS consent properly", "Why customers must clearly agree to receive your messages."],
-        ["Building a useful waitlist", "How to turn your QR code into a source of recovered appointments."]
+        ["How to reduce lost cancellations", "A practical workflow for reacting fast when a slot opens."],
+        ["Managing SMS consent properly", "Why clean consent keeps your waitlist useful and compliant."],
+        ["Building a useful waitlist", "How QR signups and service interests improve recovery messages."]
       ]
     },
     final: {
-      title: "Recover your next cancellation before it becomes lost revenue.",
-      text: "Create an opening, contact eligible customers, and keep control over confirmation.",
-      primary: "Create account",
+      title: "Stop losing revenue to last-minute cancellations.",
+      text:
+        "Open Spot gives your team a simple SMS workflow to recover open slots before they disappear.",
+      primary: "Start with Open Spot",
       secondary: "See how it works"
     },
     footer: {
-      line: "SMS cancellation recovery for appointment-based local businesses.",
-      product: "Product",
+      line: "Fill last-minute cancellations with one simple SMS.",
+      product: "Platform",
       account: "Account",
       legal: "Legal",
       privacy: "Privacy",
@@ -322,23 +394,24 @@ const copy = {
 } as const;
 
 type TemplateCopy = (typeof copy)[Locale];
-type PricingCard = TemplateCopy["pricing"]["cards"][number];
+type PricingCardData = TemplateCopy["pricing"]["cards"][number];
 
 export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const [progress, setProgress] = useState(0);
-  const repeatedCategories = useMemo(
-    () => [...t.categories.chips, ...t.categories.chips],
-    [t.categories.chips]
+  const repeatedLogos = useMemo(() => [...t.logos, ...t.logos], [t.logos]);
+  const repeatedResults = useMemo(
+    () => [...t.results.cards, ...t.results.cards],
+    [t.results.cards]
   );
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const revealItems = Array.from(
       document.querySelectorAll<HTMLElement>("[data-lunera-reveal]")
     );
 
-    if (prefersReduced) {
+    if (media.matches) {
       revealItems.forEach((item) => item.classList.add("is-visible"));
       return;
     }
@@ -351,7 +424,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
           }
         });
       },
-      { rootMargin: "0px 0px -4% 0px", threshold: 0.01 }
+      { rootMargin: "0px 0px -6% 0px", threshold: 0.04 }
     );
 
     revealItems.forEach((item) => observer.observe(item));
@@ -360,15 +433,24 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   }, [locale]);
 
   useEffect(() => {
-    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    if (prefersReduced) {
+    if (media.matches) {
       return;
     }
 
+    let animationFrame = 0;
+
     function updateProgress() {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      setProgress(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
+      if (animationFrame) {
+        return;
+      }
+
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        setProgress(max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
+      });
     }
 
     updateProgress();
@@ -378,23 +460,27 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
     return () => {
       window.removeEventListener("scroll", updateProgress);
       window.removeEventListener("resize", updateProgress);
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
     };
   }, []);
 
   return (
     <div
-      className="lunera-template min-h-screen overflow-hidden bg-[#f6fbff] text-[#0b0d12]"
+      className="lunera-template min-h-screen overflow-hidden bg-white text-[#090b10]"
       style={{ "--lunera-progress": progress } as CSSProperties}
     >
       <FloatingNavbar locale={locale} t={t} />
       <main>
         <Hero locale={locale} t={t} />
-        <CategoryMarquee headline={t.categories.headline} items={repeatedCategories} />
-        <FeatureGrid t={t} />
-        <ToolsOrbit t={t} />
+        <LogoStrip items={repeatedLogos} />
+        <FeatureSection t={t} />
+        <IntegrationsSection t={t} />
         <HowItWorks t={t} />
         <Pricing t={t} />
-        <UseCases t={t} />
+        <Results t={t} repeatedResults={repeatedResults} />
         <Faq t={t} />
         <Resources t={t} />
         <FinalCta t={t} />
@@ -407,8 +493,11 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   return (
     <header className="fixed inset-x-0 top-5 z-50 px-4">
-      <div className="mx-auto flex min-h-16 max-w-5xl items-center justify-between gap-3 rounded-full border border-white/80 bg-white/90 px-4 py-2 shadow-[0_18px_55px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
-        <Link className="flex shrink-0 items-center gap-3 rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4f7df3]" href="/">
+      <div className="mx-auto flex min-h-[4rem] max-w-[64rem] items-center justify-between gap-3 rounded-full border border-white/80 bg-white/92 px-4 py-2 shadow-[0_18px_55px_rgba(15,23,42,0.12)] backdrop-blur-2xl">
+        <Link
+          className="flex shrink-0 items-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4686fe]"
+          href="/"
+        >
           <Image
             alt="Open Spot"
             className="h-9 w-auto"
@@ -430,10 +519,16 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
         </nav>
         <div className="flex shrink-0 items-center gap-2">
           <LanguageSwitcher initialLocale={locale} />
-          <Link className="hidden rounded-full px-4 py-2 text-sm font-black text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 md:inline-flex" href="/sign-in">
+          <Link
+            className="hidden rounded-full px-4 py-2 text-sm font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-950 md:inline-flex"
+            href="/sign-in"
+          >
             {t.nav.login}
           </Link>
-          <Link className="hidden rounded-full bg-black px-4 py-2 text-sm font-black text-white shadow-[0_14px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 hover:bg-slate-900 sm:inline-flex" href="/signup">
+          <Link
+            className="hidden min-h-[2.625rem] items-center rounded-full bg-black px-4 text-sm font-bold text-white shadow-[0_14px_28px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:inline-flex"
+            href="/signup"
+          >
             {t.nav.primary}
           </Link>
         </div>
@@ -444,7 +539,10 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
 
 function NavLink({ children, href }: { children: ReactNode; href: string }) {
   return (
-    <Link className="rounded-full px-4 py-2 text-sm font-black text-slate-600 transition hover:bg-slate-100 hover:text-slate-950" href={href}>
+    <Link
+      className="rounded-full px-4 py-2 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950"
+      href={href}
+    >
       {children}
     </Link>
   );
@@ -452,45 +550,79 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
 
 function Hero({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   return (
-    <section className="relative min-h-[980px] overflow-hidden px-4 pb-16 pt-32 sm:pt-40">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,#cfeeff_0%,#eaf7ff_26rem,transparent_46rem),linear-gradient(180deg,#dff3ff_0%,#f8fcff_58%,#ffffff_100%)]" />
-      <div className="absolute left-[-8rem] top-[30rem] -z-10 h-72 w-72 rounded-full bg-white blur-2xl" />
-      <div className="absolute right-[-8rem] top-[28rem] -z-10 h-72 w-72 rounded-full bg-white blur-2xl" />
-      <div className="mx-auto max-w-6xl text-center">
+    <section className="relative min-h-[68rem] overflow-hidden px-4 pb-10 pt-36 sm:pt-44">
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,#d7f1ff_0%,#eef9ff_24rem,transparent_45rem),linear-gradient(180deg,#f7fcff_0%,#ffffff_74%)]" />
+      <div className="mx-auto max-w-[69rem] text-center">
         <p className="lunera-eyebrow mx-auto" data-lunera-reveal>
           {t.hero.eyebrow}
         </p>
-        <h1 className="mx-auto mt-7 max-w-5xl text-[clamp(3.2rem,8vw,6.7rem)] font-black leading-[0.92] tracking-[-0.02em]" data-lunera-reveal>
+        <h1
+          className="mx-auto mt-7 max-w-[44rem] text-5xl font-medium leading-[1.1] text-[#050608] md:text-[3.75rem]"
+          data-lunera-reveal
+        >
           {t.hero.title}
         </h1>
-        <p className="mx-auto mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600" data-lunera-reveal>
+        <p
+          className="mx-auto mt-6 max-w-[38rem] text-base font-medium leading-7 text-slate-600 md:text-lg"
+          data-lunera-reveal
+        >
           {t.hero.subtitle}
         </p>
-        <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row" data-lunera-reveal>
-          <Link className="lunera-cta-primary" href="/signup">{t.hero.primary}</Link>
-          <Link className="lunera-cta-secondary" href="#how">{t.hero.secondary}</Link>
+        <div
+          className="mt-7 flex flex-wrap items-center justify-center gap-2"
+          data-lunera-reveal
+        >
+          {t.hero.badges.map((badge) => (
+            <span
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 shadow-sm"
+              key={badge}
+            >
+              {badge}
+            </span>
+          ))}
         </div>
-        <p className="mx-auto mt-5 max-w-2xl text-sm font-black text-slate-500" data-lunera-reveal>
-          {t.hero.microcopy}
-        </p>
+        <div
+          className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
+          data-lunera-reveal
+        >
+          <Link className="lunera-cta-primary" href="/signup">
+            {t.hero.primary}
+          </Link>
+          <Link className="lunera-cta-secondary" href="#how">
+            {t.hero.secondary}
+          </Link>
+        </div>
       </div>
-      <div className="mx-auto mt-14 max-w-6xl" data-lunera-reveal>
+      <div className="mx-auto mt-12 max-w-[69rem]" data-lunera-reveal>
         <SmsConversationPhone locale={locale} />
+      </div>
+      <div className="mx-auto mt-3 max-w-[19rem] text-center" data-lunera-reveal>
+        <div className="mx-auto mb-2 flex w-fit -space-x-2">
+          {["S", "B", "C"].map((label) => (
+            <span
+              className="grid h-10 w-10 place-items-center rounded-full border-2 border-white bg-[#edf4ff] text-xs font-black text-[#3565d9] shadow-sm"
+              key={label}
+            >
+              {label}
+            </span>
+          ))}
+        </div>
+        <p className="text-sm font-bold leading-6 text-slate-500">{t.hero.proof}</p>
       </div>
     </section>
   );
 }
 
-function CategoryMarquee({ headline, items }: { headline: string; items: readonly string[] }) {
+function LogoStrip({ items }: { items: readonly string[] }) {
   return (
     <section className="bg-white px-4 py-16">
-      <p className="mx-auto max-w-3xl text-center text-2xl font-black tracking-[-0.01em] text-slate-950" data-lunera-reveal>
-        {headline}
-      </p>
-      <div className="lunera-marquee mt-10" data-lunera-reveal>
+      <div className="lunera-marquee" data-lunera-reveal>
         <div className="lunera-marquee-track">
           {items.map((item, index) => (
-            <span className="rounded-full border border-slate-200 bg-white px-6 py-4 text-sm font-black text-slate-500 shadow-sm" key={`${item}-${index}`}>
+            <span
+              className="grid h-8 min-w-[7.75rem] place-items-center rounded-full border border-slate-200 bg-white px-5 text-xs font-black text-slate-400 shadow-sm"
+              key={`${item}-${index}`}
+            >
               {item}
             </span>
           ))}
@@ -500,51 +632,105 @@ function CategoryMarquee({ headline, items }: { headline: string; items: readonl
   );
 }
 
-function FeatureGrid({ t }: { t: TemplateCopy }) {
+function FeatureSection({ t }: { t: TemplateCopy }) {
+  const [topCards, bottomCards] = [t.features.cards.slice(0, 3), t.features.cards.slice(3)];
+
   return (
     <TemplateSection id="features">
-      <SectionHeading title={t.features.title} />
-      <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {t.features.cards.map(([title, text], index) => (
-          <article className="lunera-card min-h-[20rem] p-7" data-lunera-reveal key={title}>
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#eef4ff] text-lg font-black text-[#4f7df3]">
-              {String(index + 1).padStart(2, "0")}
-            </div>
-            <h3 className="mt-8 text-2xl font-black tracking-[-0.01em]">{title}</h3>
-            <p className="mt-4 text-base font-medium leading-8 text-slate-500">{text}</p>
-            <div className="mt-8 h-24 rounded-[1.4rem] bg-[linear-gradient(135deg,#f7fbff,#edf4ff)] p-4">
-              <div className="h-3 w-3/4 rounded-full bg-[#4f7df3]/70" />
-              <div className="mt-4 h-3 w-1/2 rounded-full bg-slate-200" />
-              <div className="mt-4 h-3 w-5/6 rounded-full bg-slate-200" />
-            </div>
-          </article>
+      <SectionHeading tag={t.features.tag} title={t.features.title} />
+      <div className="mx-auto mt-16 grid max-w-[69rem] gap-5 lg:grid-cols-3">
+        {topCards.map(([title, text, label], index) => (
+          <FeatureCard index={index} key={title} label={label} text={text} title={title} />
+        ))}
+      </div>
+      <div className="mx-auto mt-5 grid max-w-[69rem] gap-5 lg:grid-cols-2">
+        {bottomCards.map(([title, text, label], index) => (
+          <FeatureCard
+            compact
+            index={index + topCards.length}
+            key={title}
+            label={label}
+            text={text}
+            title={title}
+          />
         ))}
       </div>
     </TemplateSection>
   );
 }
 
-function ToolsOrbit({ t }: { t: TemplateCopy }) {
+function FeatureCard({
+  compact,
+  index,
+  label,
+  text,
+  title
+}: {
+  compact?: boolean;
+  index: number;
+  label: string;
+  text: string;
+  title: string;
+}) {
   return (
-    <section className="relative overflow-hidden bg-white px-4 py-24 sm:py-32" id="tools">
-      <div className="mx-auto max-w-4xl text-center">
-        <span className="lunera-pill" data-lunera-reveal>Tools</span>
-        <h2 className="mt-7 text-[clamp(2.6rem,6vw,5rem)] font-black leading-[0.95] tracking-[-0.02em]" data-lunera-reveal>
-          {t.tools.title}
-        </h2>
-        <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-500" data-lunera-reveal>
-          {t.tools.text}
-        </p>
+    <article
+      className={cn(
+        "lunera-card overflow-hidden p-7",
+        compact ? "min-h-[13.5rem] lg:grid lg:grid-cols-[1fr_13rem] lg:items-center" : "min-h-[20.25rem]"
+      )}
+      data-lunera-reveal
+    >
+      <div>
+        <span className="text-sm font-black text-[#4686fe]">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <h3 className="mt-5 text-2xl font-medium leading-tight text-[#050608]">{title}</h3>
+        <p className="mt-4 text-sm font-medium leading-7 text-slate-500">{text}</p>
       </div>
-      <div className="lunera-orbit mx-auto mt-16 max-w-5xl" data-lunera-reveal>
+      <div
+        className={cn(
+          "mt-7 rounded-[1.25rem] bg-[#f6f8fb] p-4",
+          compact ? "lg:mt-0" : "min-h-[9rem]"
+        )}
+      >
+        <div className="rounded-2xl bg-white p-4 shadow-sm">
+          <div className="flex items-center justify-between gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-[#edf4ff] text-xs font-black text-[#4686fe]">
+              OS
+            </span>
+            <span className="rounded-full bg-black px-3 py-1 text-[0.68rem] font-black text-white">
+              {label}
+            </span>
+          </div>
+          <div className="mt-4 h-2.5 w-4/5 rounded-full bg-[#4686fe]/65" />
+          <div className="mt-3 h-2.5 w-3/5 rounded-full bg-slate-200" />
+          <div className="mt-3 h-2.5 w-11/12 rounded-full bg-slate-200" />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function IntegrationsSection({ t }: { t: TemplateCopy }) {
+  return (
+    <section className="relative overflow-hidden bg-white px-4 py-24 sm:py-28" id="tools">
+      <SectionHeading tag={t.tools.tag} title={t.tools.title} />
+      <p
+        className="mx-auto mt-5 max-w-[38rem] text-center text-base font-medium leading-7 text-slate-500"
+        data-lunera-reveal
+      >
+        {t.tools.text}
+      </p>
+      <div className="lunera-integration-cloud mx-auto mt-16 max-w-[69rem]" data-lunera-reveal>
         {t.tools.cards.map((item, index) => (
-          <div className="lunera-tool-card" key={item} style={{ "--tool-index": index } as CSSProperties}>
+          <div
+            className="lunera-integration-card"
+            key={item}
+            style={{ "--tool-index": index } as CSSProperties}
+          >
             <span>{item}</span>
           </div>
         ))}
-        <div className="lunera-orbit-center">
-          <Image alt="Open Spot" className="h-10 w-auto" height={72} src="/brand/open-spot-logo-horizontal.svg" width={312} />
-        </div>
       </div>
     </section>
   );
@@ -553,25 +739,30 @@ function ToolsOrbit({ t }: { t: TemplateCopy }) {
 function HowItWorks({ t }: { t: TemplateCopy }) {
   return (
     <section className="bg-white px-4 py-20 sm:py-28" id="how">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.78fr_1.22fr]">
+      <div className="mx-auto grid max-w-[69rem] gap-10 lg:grid-cols-[0.78fr_1.22fr]">
         <div className="lg:sticky lg:top-32 lg:h-fit">
-          <span className="lunera-pill" data-lunera-reveal>How it works</span>
-          <h2 className="mt-8 text-[clamp(2.5rem,5vw,5rem)] font-black leading-[0.96] tracking-[-0.02em]" data-lunera-reveal>
+          <span className="lunera-pill" data-lunera-reveal>
+            {t.how.tag}
+          </span>
+          <h2
+            className="mt-8 text-4xl font-medium leading-tight text-[#050608] md:text-5xl"
+            data-lunera-reveal
+          >
             {t.how.title}
           </h2>
           <div className="mt-8 h-2 overflow-hidden rounded-full bg-slate-100" data-lunera-reveal>
-            <div className="lunera-scroll-progress h-full rounded-full bg-[#4f7df3]" />
+            <div className="lunera-scroll-progress h-full rounded-full bg-[#4686fe]" />
           </div>
         </div>
         <div className="space-y-5">
           {t.how.steps.map(([number, title, text], index) => (
             <article className="lunera-step-card" data-lunera-reveal key={number}>
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#edf4ff] text-sm font-black text-[#4686fe]">
+                {number}
+              </span>
               <div>
-                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#eef4ff] text-sm font-black text-[#4f7df3]">{number}</span>
-              </div>
-              <div>
-                <h3 className="text-3xl font-black tracking-[-0.01em]">{title}</h3>
-                <p className="mt-3 text-base font-medium leading-8 text-slate-500">{text}</p>
+                <h3 className="text-3xl font-medium leading-tight text-[#050608]">{title}</h3>
+                <p className="mt-3 text-sm font-medium leading-7 text-slate-500">{text}</p>
                 <StepVisual index={index} />
               </div>
             </article>
@@ -584,13 +775,16 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
 
 function StepVisual({ index }: { index: number }) {
   return (
-    <div className="mt-8 rounded-[1.6rem] bg-[#f8fbff] p-5">
-      <div className="flex items-end gap-3">
+    <div className="mt-8 rounded-[1.25rem] bg-[#f8fbff] p-5">
+      <div className="grid grid-cols-5 items-end gap-3">
         {[0, 1, 2, 3, 4].map((bar) => (
           <span
-            className="lunera-bar block w-full rounded-t-2xl bg-[#4f7df3]"
+            className="lunera-bar block rounded-t-2xl bg-[#4686fe]"
             key={bar}
-            style={{ height: `${42 + ((bar + index) % 4) * 24}px`, opacity: 0.38 + bar * 0.12 }}
+            style={{
+              height: `${42 + ((bar + index) % 4) * 22}px`,
+              opacity: 0.38 + bar * 0.12
+            }}
           />
         ))}
       </div>
@@ -601,8 +795,8 @@ function StepVisual({ index }: { index: number }) {
 function Pricing({ t }: { t: TemplateCopy }) {
   return (
     <TemplateSection id="pricing">
-      <SectionHeading title={t.pricing.title} />
-      <div className="mt-14 grid gap-5 lg:grid-cols-3">
+      <SectionHeading tag={t.pricing.tag} title={t.pricing.title} />
+      <div className="mx-auto mt-16 grid max-w-[69rem] gap-5 lg:grid-cols-3">
         {t.pricing.cards.map((card, index) => (
           <PricingCard card={card} featured={index === 1} key={card[0]} />
         ))}
@@ -611,25 +805,43 @@ function Pricing({ t }: { t: TemplateCopy }) {
   );
 }
 
-function PricingCard({ card, featured }: { card: PricingCard; featured?: boolean }) {
+function PricingCard({ card, featured }: { card: PricingCardData; featured?: boolean }) {
   const [title, text, features, cta] = card;
 
   return (
-    <article className={cn("lunera-card flex min-h-[33rem] flex-col p-7", featured && "border-[#4f7df3] shadow-[0_28px_80px_rgba(79,125,243,0.2)]")} data-lunera-reveal>
-      {featured ? <span className="mb-5 w-fit rounded-full bg-[#4f7df3] px-3 py-1 text-xs font-black text-white">Best fit</span> : null}
-      <h3 className="text-3xl font-black">{title}</h3>
-      <p className="mt-4 min-h-20 text-base font-medium leading-8 text-slate-500">{text}</p>
+    <article
+      className={cn(
+        "lunera-card flex min-h-[31.5rem] flex-col p-7",
+        featured && "border-[#4686fe] shadow-[0_28px_80px_rgba(70,134,254,0.2)]"
+      )}
+      data-lunera-reveal
+    >
+      {featured ? (
+        <span className="mb-5 w-fit rounded-full bg-[#4686fe] px-3 py-1 text-xs font-black text-white">
+          Best fit
+        </span>
+      ) : null}
+      <h3 className="text-3xl font-medium text-[#050608]">{title}</h3>
+      <p className="mt-4 min-h-20 text-sm font-medium leading-7 text-slate-500">{text}</p>
       <div className="mt-6 border-t border-slate-100 pt-6">
-        <p className="text-4xl font-black">{featured ? "Open Spot" : "Flexible"}</p>
+        <p className="text-4xl font-medium text-[#050608]">
+          {featured ? "Open Spot" : "Flexible"}
+        </p>
         <p className="mt-2 text-sm font-bold text-slate-400">No fixed public price</p>
       </div>
-      <Link className={cn("mt-6 inline-flex min-h-12 items-center justify-center rounded-full px-5 text-sm font-black transition hover:-translate-y-0.5", featured ? "bg-[#4f7df3] text-white" : "bg-black text-white")} href="/book-call/questions">
+      <Link
+        className={cn(
+          "mt-6 inline-flex min-h-[2.625rem] items-center justify-center rounded-full px-5 text-sm font-black transition hover:-translate-y-0.5",
+          featured ? "bg-[#4686fe] text-white" : "bg-black text-white"
+        )}
+        href="/book-call/questions"
+      >
         {cta}
       </Link>
       <ul className="mt-7 space-y-4">
         {features.map((feature) => (
           <li className="flex gap-3 text-sm font-bold leading-6 text-slate-600" key={feature}>
-            <span className="mt-0.5 text-[#4f7df3]">✓</span>
+            <span className="mt-0.5 text-[#4686fe]">+</span>
             <span>{feature}</span>
           </li>
         ))}
@@ -638,28 +850,43 @@ function PricingCard({ card, featured }: { card: PricingCard; featured?: boolean
   );
 }
 
-function UseCases({ t }: { t: TemplateCopy }) {
-  const repeated = [...t.useCases.cards, ...t.useCases.cards];
-
+function Results({
+  repeatedResults,
+  t
+}: {
+  repeatedResults: readonly (readonly [string, string])[];
+  t: TemplateCopy;
+}) {
   return (
     <section className="overflow-hidden bg-white px-4 py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl">
-        <div className="max-w-3xl">
-          <span className="lunera-pill" data-lunera-reveal>Use cases</span>
-          <h2 className="mt-7 text-[clamp(2.3rem,5vw,4.6rem)] font-black leading-[0.98] tracking-[-0.02em]" data-lunera-reveal>
-            {t.useCases.title}
-          </h2>
-        </div>
+      <div className="mx-auto max-w-[69rem] text-center">
+        <h2 className="mx-auto max-w-[41rem] text-4xl font-medium leading-tight text-[#050608] md:text-5xl" data-lunera-reveal>
+          {t.results.title}
+        </h2>
+        <p className="mx-auto mt-5 max-w-[36rem] text-base font-medium leading-7 text-slate-500" data-lunera-reveal>
+          {t.results.text}
+        </p>
       </div>
       <div className="lunera-marquee mt-12" data-lunera-reveal>
         <div className="lunera-marquee-track lunera-marquee-slow">
-          {repeated.map(([title, text], index) => (
-            <article className="w-[21rem] shrink-0 rounded-[2rem] border border-slate-100 bg-white p-6 shadow-[0_22px_55px_rgba(15,23,42,0.08)]" key={`${title}-${index}`}>
-              <h3 className="text-2xl font-black">{title}</h3>
+          {repeatedResults.map(([title, text], index) => (
+            <article
+              className="w-[22.4rem] shrink-0 rounded-[1.25rem] border border-slate-100 bg-white p-6 shadow-[0_22px_55px_rgba(15,23,42,0.08)]"
+              key={`${title}-${index}`}
+            >
+              <h3 className="text-xl font-medium text-[#050608]">{title}</h3>
               <p className="mt-4 text-sm font-medium leading-7 text-slate-500">{text}</p>
             </article>
           ))}
         </div>
+      </div>
+      <div className="mx-auto mt-16 grid max-w-[48rem] gap-8 text-center sm:grid-cols-3" data-lunera-reveal>
+        {t.results.stats.map(([value, label]) => (
+          <div key={label}>
+            <p className="text-4xl font-medium text-[#050608]">{value}</p>
+            <p className="mt-2 text-sm font-bold leading-6 text-slate-500">{label}</p>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -670,15 +897,25 @@ function Faq({ t }: { t: TemplateCopy }) {
 
   return (
     <section className="bg-white px-4 py-20 sm:py-28" id="faq">
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+      <div className="mx-auto grid max-w-[69rem] gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
         <div>
-          <span className="lunera-pill" data-lunera-reveal>FAQ</span>
-          <h2 className="mt-7 text-[clamp(2.3rem,5vw,4.6rem)] font-black leading-[0.98] tracking-[-0.02em]" data-lunera-reveal>
+          <span className="lunera-pill" data-lunera-reveal>
+            {t.faq.tag}
+          </span>
+          <h2
+            className="mt-7 text-4xl font-medium leading-tight text-[#050608] md:text-5xl"
+            data-lunera-reveal
+          >
             {t.faq.title}
           </h2>
-          <p className="mt-6 max-w-md text-lg font-medium leading-8 text-slate-500" data-lunera-reveal>{t.faq.text}</p>
+          <p className="mt-6 max-w-md text-base font-medium leading-7 text-slate-500" data-lunera-reveal>
+            {t.faq.text}
+          </p>
+          <Link className="lunera-cta-secondary mt-8" href="/book-call/questions" data-lunera-reveal>
+            Ask a question
+          </Link>
         </div>
-        <div className="rounded-[2rem] bg-[#f8fafc] p-3" data-lunera-reveal>
+        <div className="rounded-[1.5rem] bg-[#f8fafc] p-3" data-lunera-reveal>
           {t.faq.items.map(([question, answer], index) => {
             const isOpen = index === openIndex;
 
@@ -686,7 +923,7 @@ function Faq({ t }: { t: TemplateCopy }) {
               <div className="border-b border-white last:border-b-0" key={question}>
                 <button
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-5 rounded-[1.4rem] bg-white px-5 py-5 text-left text-base font-black text-slate-950 transition hover:bg-[#f7fbff]"
+                  className="flex w-full items-center justify-between gap-5 rounded-[1rem] bg-white px-5 py-5 text-left text-base font-bold text-[#050608] transition hover:bg-[#f7fbff]"
                   onClick={() => setOpenIndex(isOpen ? -1 : index)}
                   type="button"
                 >
@@ -708,13 +945,28 @@ function Faq({ t }: { t: TemplateCopy }) {
 function Resources({ t }: { t: TemplateCopy }) {
   return (
     <TemplateSection id="resources">
-      <SectionHeading title={t.resources.title} />
-      <div className="mt-14 grid gap-5 lg:grid-cols-3">
-        {t.resources.cards.map(([title, text]) => (
-          <article className="lunera-card min-h-[18rem] p-7" data-lunera-reveal key={title}>
-            <div className="h-28 rounded-[1.4rem] bg-[linear-gradient(135deg,#dff3ff,#ffffff)]" />
-            <h3 className="mt-7 text-2xl font-black tracking-[-0.01em]">{title}</h3>
-            <p className="mt-4 text-sm font-medium leading-7 text-slate-500">{text}</p>
+      <SectionHeading tag={t.resources.tag} title={t.resources.title} />
+      <div className="mx-auto mt-16 grid max-w-[69rem] gap-5 lg:grid-cols-3">
+        {t.resources.cards.map(([title, text], index) => (
+          <article className="lunera-card min-h-[24rem] overflow-hidden p-0" data-lunera-reveal key={title}>
+            <div className="h-44 bg-[linear-gradient(135deg,#dff3ff,#ffffff)] p-6">
+              <div className="h-full rounded-[1.25rem] border border-white/80 bg-white/70 p-4 shadow-sm">
+                <div className="h-3 w-4/5 rounded-full bg-[#4686fe]/50" />
+                <div className="mt-4 h-3 w-1/2 rounded-full bg-white" />
+                <div className="mt-10 grid grid-cols-3 gap-2">
+                  {[0, 1, 2].map((item) => (
+                    <span
+                      className="h-12 rounded-2xl bg-white/85 shadow-sm"
+                      key={`${index}-${item}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="p-7">
+              <h3 className="text-2xl font-medium leading-tight text-[#050608]">{title}</h3>
+              <p className="mt-4 text-sm font-medium leading-7 text-slate-500">{text}</p>
+            </div>
           </article>
         ))}
       </div>
@@ -725,12 +977,23 @@ function Resources({ t }: { t: TemplateCopy }) {
 function FinalCta({ t }: { t: TemplateCopy }) {
   return (
     <section className="bg-white px-4 pb-20 pt-6">
-      <div className="mx-auto max-w-7xl rounded-[2.5rem] bg-black px-6 py-16 text-center text-white shadow-[0_28px_90px_rgba(0,0,0,0.22)] sm:px-10 sm:py-20" data-lunera-reveal>
-        <h2 className="mx-auto max-w-5xl text-[clamp(2.4rem,6vw,5.8rem)] font-black leading-[0.95] tracking-[-0.02em]">{t.final.title}</h2>
-        <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-white/64">{t.final.text}</p>
+      <div
+        className="mx-auto max-w-[69rem] rounded-[2rem] bg-black px-6 py-16 text-center text-white shadow-[0_28px_90px_rgba(0,0,0,0.22)] sm:px-10 sm:py-20"
+        data-lunera-reveal
+      >
+        <h2 className="mx-auto max-w-[53rem] text-4xl font-medium leading-tight md:text-6xl">
+          {t.final.title}
+        </h2>
+        <p className="mx-auto mt-6 max-w-[38rem] text-base font-medium leading-7 text-white/65">
+          {t.final.text}
+        </p>
         <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link className="lunera-cta-light" href="/signup">{t.final.primary}</Link>
-          <Link className="lunera-cta-dark" href="#how">{t.final.secondary}</Link>
+          <Link className="lunera-cta-light" href="/signup">
+            {t.final.primary}
+          </Link>
+          <Link className="lunera-cta-dark" href="#how">
+            {t.final.secondary}
+          </Link>
         </div>
       </div>
     </section>
@@ -740,14 +1003,43 @@ function FinalCta({ t }: { t: TemplateCopy }) {
 function Footer({ t }: { t: TemplateCopy }) {
   return (
     <footer className="border-t border-slate-100 bg-white px-4 py-10">
-      <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-[69rem] gap-8 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
         <div>
-          <Image alt="Open Spot" className="h-10 w-auto" height={72} src="/brand/open-spot-logo-horizontal.svg" width={312} />
-          <p className="mt-5 max-w-sm text-sm font-medium leading-7 text-slate-500">{t.footer.line}</p>
+          <Image
+            alt="Open Spot"
+            className="h-10 w-auto"
+            height={72}
+            src="/brand/open-spot-logo-horizontal.svg"
+            width={312}
+          />
+          <p className="mt-5 max-w-sm text-sm font-medium leading-7 text-slate-500">
+            {t.footer.line}
+          </p>
         </div>
-        <FooterColumn title={t.footer.product} links={[["Features", "#features"], ["Tools", "#tools"], ["Pricing", "#pricing"], ["FAQ", "#faq"]]} />
-        <FooterColumn title={t.footer.account} links={[[t.nav.login, "/sign-in"], [t.nav.primary, "/signup"], [t.nav.resources, "#resources"]]} />
-        <FooterColumn title={t.footer.legal} links={[[t.footer.privacy, "/privacy"], [t.footer.terms, "/terms"]]} />
+        <FooterColumn
+          links={[
+            ["Features", "#features"],
+            ["Pricing", "#pricing"],
+            ["Integrations", "#tools"],
+            ["FAQ", "#faq"]
+          ]}
+          title={t.footer.product}
+        />
+        <FooterColumn
+          links={[
+            [t.nav.login, "/sign-in"],
+            [t.nav.primary, "/signup"],
+            [t.nav.resources, "#resources"]
+          ]}
+          title={t.footer.account}
+        />
+        <FooterColumn
+          links={[
+            [t.footer.privacy, "/privacy"],
+            [t.footer.terms, "/terms"]
+          ]}
+          title={t.footer.legal}
+        />
       </div>
     </footer>
   );
@@ -756,10 +1048,14 @@ function Footer({ t }: { t: TemplateCopy }) {
 function FooterColumn({ links, title }: { links: Array<[string, string]>; title: string }) {
   return (
     <div>
-      <h3 className="text-sm font-black text-slate-950">{title}</h3>
+      <h3 className="text-sm font-black text-[#050608]">{title}</h3>
       <div className="mt-4 grid gap-3">
         {links.map(([label, href]) => (
-          <Link className="text-sm font-bold text-slate-500 transition hover:text-slate-950" href={href} key={`${label}-${href}`}>
+          <Link
+            className="text-sm font-bold text-slate-500 transition hover:text-slate-950"
+            href={href}
+            key={`${label}-${href}`}
+          >
             {label}
           </Link>
         ))}
@@ -777,16 +1073,21 @@ function TemplateSection({
 }) {
   return (
     <section className="bg-white px-4 py-20 sm:py-28" id={id}>
-      <div className="mx-auto max-w-7xl">{children}</div>
+      {children}
     </section>
   );
 }
 
-function SectionHeading({ title }: { title: string }) {
+function SectionHeading({ tag, title }: { tag: string; title: string }) {
   return (
-    <div className="mx-auto max-w-4xl text-center">
-      <span className="lunera-pill" data-lunera-reveal>Open Spot</span>
-      <h2 className="mt-7 text-[clamp(2.4rem,6vw,5.4rem)] font-black leading-[0.95] tracking-[-0.02em]" data-lunera-reveal>
+    <div className="mx-auto max-w-[38rem] text-center">
+      <span className="lunera-pill" data-lunera-reveal>
+        {tag}
+      </span>
+      <h2
+        className="mt-7 text-4xl font-medium leading-tight text-[#050608] md:text-5xl"
+        data-lunera-reveal
+      >
         {title}
       </h2>
     </div>
