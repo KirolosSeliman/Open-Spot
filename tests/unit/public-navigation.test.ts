@@ -122,6 +122,38 @@ describe("public navigation", () => {
     }
   });
 
+  it("keeps the Lunera hero flow clipped, scaled, reviewed, and perspective-based", () => {
+    const homepage = source(homepagePath);
+    const phone = source("src/components/marketing/sms-conversation-phone.tsx");
+    const styles = source("src/app/globals.css");
+    const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
+    const heroFunction = homepage.slice(
+      homepage.indexOf("function Hero("),
+      homepage.indexOf("function LogoStrip(")
+    );
+    const phoneViewportIndex = heroFunction.indexOf('className="lunera-hero-phone-viewport"');
+    const socialProofIndex = heroFunction.indexOf("<HeroSocialProof");
+    const ctaRowIndex = heroFunction.indexOf("<HeroCtaRow");
+
+    expect(mainMarkup.indexOf("<Hero")).toBeLessThan(mainMarkup.indexOf("<LogoStrip"));
+    expect(phoneViewportIndex).toBeGreaterThan(-1);
+    expect(socialProofIndex).toBeGreaterThan(phoneViewportIndex);
+    expect(ctaRowIndex).toBeGreaterThan(socialProofIndex);
+    expect(homepage).toContain("Designed for salons, clinics and barbers");
+    expect(homepage).not.toContain("t.hero.badges.map");
+    expect(homepage).not.toContain("40K+ users");
+
+    expect(styles).toMatch(/\.lunera-hero-phone-viewport\s*{[\s\S]*overflow:\s*hidden/);
+    expect(styles).toContain(".lunera-hero-phone-fade");
+    expect(styles).toContain("perspective: 1200px");
+    expect(styles).toContain("rotateY(-7deg)");
+
+    expect(phone).toContain("lunera-phone-motion");
+    expect(phone).toContain("Consent checked");
+    expect(phone).toContain("Fill the spot");
+    expect(phone).not.toContain("rotate: number");
+  });
+
   it("links sign-in and signup pages to each other", () => {
     expect(source("src/app/sign-in/page.tsx")).toContain('href="/signup"');
     expect(source("src/app/signup/page.tsx")).toContain('href="/sign-in"');

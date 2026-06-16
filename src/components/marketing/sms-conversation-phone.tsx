@@ -50,9 +50,9 @@ const phoneCopy = {
     }
   ],
   floatingBadges: [
+    { label: "Consent checked", tone: "dark" },
+    { label: "Fill the spot", tone: "dark" },
     { label: "Reply received", tone: "green" },
-    { label: "Manual confirmation", tone: "dark" },
-    { label: "$85 recovered", tone: "blue" },
     { label: "Waitlist notified", tone: "white" }
   ]
 } as const satisfies SmsConversationPhoneCopy;
@@ -64,23 +64,20 @@ export const smsConversationPhoneCopy = {
 
 type PhoneMotion = {
   opacity: number;
-  rotate: number;
   scale: number;
   translateY: number;
 };
 
 const initialMotion: PhoneMotion = {
-  opacity: 0.72,
-  rotate: -3.5,
-  scale: 0.93,
-  translateY: 85
+  opacity: 0.92,
+  scale: 0.94,
+  translateY: 124
 };
 
 const settledMotion: PhoneMotion = {
   opacity: 1,
-  rotate: 0,
-  scale: 1,
-  translateY: 0
+  scale: 0.985,
+  translateY: -62
 };
 
 const responses = [
@@ -119,17 +116,16 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
         return;
       }
 
-      const rect = node.getBoundingClientRect();
+      const hero = node.closest<HTMLElement>("[data-lunera-hero]");
+      const rect = hero?.getBoundingClientRect() ?? node.getBoundingClientRect();
       const viewportHeight = window.innerHeight || 1;
-      const start = viewportHeight * 0.94;
-      const end = viewportHeight * 0.24;
-      const rawProgress = (start - rect.top) / (start - end);
+      const revealDistance = viewportHeight * 0.52;
+      const rawProgress = Math.abs(Math.min(0, rect.top)) / revealDistance;
       const progress = Math.min(1, Math.max(0, rawProgress));
       const eased = 1 - Math.pow(1 - progress, 3);
 
       setMotion({
         opacity: initialMotion.opacity + (settledMotion.opacity - initialMotion.opacity) * eased,
-        rotate: initialMotion.rotate + (settledMotion.rotate - initialMotion.rotate) * eased,
         scale: initialMotion.scale + (settledMotion.scale - initialMotion.scale) * eased,
         translateY:
           initialMotion.translateY +
@@ -168,7 +164,7 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
 
   const motionStyle = {
     opacity: motion.opacity,
-    transform: `translateY(${motion.translateY}px) rotate(${motion.rotate}deg) scale(${motion.scale})`,
+    transform: `translate3d(0, ${motion.translateY}px, 0) scale(${motion.scale})`,
     willChange: reducedMotion ? "auto" : "transform, opacity"
   } satisfies CSSProperties;
 
@@ -180,32 +176,35 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
       role="img"
     >
       <HeroMetricCard
-        className="left-[2%] top-[18%] hidden md:block"
+        className="left-[7%] top-[22%] hidden md:block lg:top-[43%]"
         eyebrow="Open slot created"
         title="4:30 PM"
         value="Haircut + brushing"
       />
       <HeroMetricCard
-        className="right-[1%] top-[27%] hidden md:block"
+        className="right-[7%] top-[34%] hidden md:block lg:top-[55%]"
         eyebrow="2 replies"
-        title="Ready"
-        value="Manual review"
+        title="Ready to review"
+        value="Manual confirmation"
       />
       {copy.floatingBadges.map((badge, index) => (
         <FloatingSmsBadge badge={badge} index={index} key={badge.label} />
       ))}
 
-      <div className="lunera-phone-stage" style={motionStyle}>
-        <Image
-          alt=""
-          aria-hidden="true"
-          className="lunera-phone-frame-asset"
-          height={2100}
-          priority
-          src="/lunera-style/phone-frame-reference.png"
-          width={973}
-        />
-        <div className="lunera-phone-screen-replacement">
+      <div className="lunera-phone-motion" style={motionStyle}>
+        <div className="lunera-phone-perspective">
+          <div className="lunera-phone-stage">
+            <span aria-hidden="true" className="lunera-phone-side" />
+            <Image
+              alt=""
+              aria-hidden="true"
+              className="lunera-phone-frame-asset"
+              height={2100}
+              priority
+              src="/lunera-style/phone-frame-reference.png"
+              width={973}
+            />
+            <div className="lunera-phone-screen-replacement">
           <div className="lunera-phone-dynamic-island" />
           <div className="flex items-center justify-between px-5 pb-3 pt-5 text-[0.72rem] font-black text-slate-950">
             <span>{copy.statusTime}</span>
@@ -313,6 +312,8 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
               </span>
             ))}
           </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -333,13 +334,13 @@ function HeroMetricCard({
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-30 w-[14.5rem] rounded-[1.35rem] border border-white/80 bg-white p-5 text-left shadow-[0_24px_70px_rgba(15,23,42,0.14)]",
+        "lunera-floating-card absolute z-30 w-[12.25rem] rounded-[1.18rem] border border-white/80 bg-white p-4 text-left shadow-[0_20px_52px_rgba(15,23,42,0.13)]",
         className
       )}
     >
       <p className="text-xs font-black text-slate-400">{eyebrow}</p>
-      <p className="mt-2 text-3xl font-semibold text-[#06080d]">{title}</p>
-      <p className="mt-2 text-sm font-bold text-slate-500">{value}</p>
+      <p className="mt-2 text-2xl font-semibold leading-tight text-[#06080d]">{title}</p>
+      <p className="mt-2 text-xs font-bold leading-5 text-slate-500">{value}</p>
     </div>
   );
 }
@@ -352,10 +353,10 @@ function FloatingSmsBadge({
   index: number;
 }) {
   const positions = [
-    "left-[11%] bottom-[22%] hidden lg:block",
-    "right-[10%] bottom-[20%] hidden lg:block",
-    "left-[17%] top-[6%] hidden md:block",
-    "right-[15%] top-[9%] hidden md:block"
+    "left-[16%] top-[8%] hidden md:block lg:top-[29%]",
+    "right-[15%] bottom-[28%] hidden lg:block lg:bottom-[7%]",
+    "right-[18%] top-[12%] hidden md:block lg:top-[33%]",
+    "left-[13%] bottom-[32%] hidden lg:block lg:bottom-[11%]"
   ];
 
   const toneClass = {
@@ -368,7 +369,7 @@ function FloatingSmsBadge({
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-30 max-w-[13rem] rounded-full border px-4 py-2 text-sm font-black shadow-[0_22px_55px_rgba(15,23,42,0.14)]",
+        "lunera-floating-card absolute z-30 max-w-[11.5rem] rounded-full border px-3.5 py-1.5 text-xs font-black shadow-[0_18px_46px_rgba(15,23,42,0.13)]",
         toneClass,
         positions[index]
       )}

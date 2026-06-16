@@ -23,7 +23,7 @@ const openSpotCopy = {
       "Simple SMS tools designed to help salons, clinics and barbers refill last-minute cancellations before the spot is gone.",
     primary: "Get Early Access",
     secondary: "Contact Sales",
-    proof: "For salons, clinics and barbers",
+    proof: "Designed for salons, clinics and barbers",
     badges: ["Manual confirmation by your team", "SMS consent stays clear"]
   },
   logos: ["Salons", "Barbers", "Clinics", "Spas", "Studios", "Waitlists"],
@@ -347,9 +347,9 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 function FloatingNavbar({ t }: { t: TemplateCopy }) {
   return (
     <header className="fixed inset-x-0 top-5 z-50 px-4">
-      <div className="mx-auto flex min-h-[4rem] max-w-[61rem] items-center justify-between gap-4 rounded-full border border-white/90 bg-white/94 px-4 py-2 shadow-[0_18px_55px_rgba(15,23,42,0.12)] backdrop-blur-2xl sm:px-5">
+      <div className="mx-auto flex min-h-[3.75rem] max-w-[52.5rem] items-center justify-between gap-3 rounded-full border border-white/90 bg-white/94 px-3.5 py-2 shadow-[0_16px_44px_rgba(15,23,42,0.11)] backdrop-blur-2xl sm:px-4">
         <Link
-          className="flex shrink-0 items-center gap-2.5 rounded-full text-[1.05rem] font-semibold tracking-[-0.01em] text-[#07090f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4388ff]"
+          className="flex shrink-0 items-center gap-2 rounded-full text-[0.98rem] font-semibold tracking-normal text-[#07090f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4388ff]"
           href="/"
         >
           <OpenSpotMark />
@@ -362,7 +362,7 @@ function FloatingNavbar({ t }: { t: TemplateCopy }) {
           <NavLink href="/contact">{t.nav.contact}</NavLink>
         </nav>
         <Link
-          className="inline-flex min-h-[2.75rem] shrink-0 items-center justify-center rounded-full bg-black px-4 text-sm font-bold text-white shadow-[0_14px_30px_rgba(0,0,0,0.2)] transition hover:-translate-y-0.5 sm:px-5"
+          className="inline-flex min-h-[2.5rem] shrink-0 items-center justify-center rounded-full bg-black px-3.5 text-[0.82rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:px-4"
           href="/signup"
         >
           {t.nav.primary}
@@ -384,7 +384,7 @@ function OpenSpotMark() {
 function NavLink({ children, href }: { children: ReactNode; href: string }) {
   return (
     <Link
-      className="rounded-full px-4 py-2 text-sm font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-950"
+      className="rounded-full px-3 py-2 text-[0.82rem] font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-950"
       href={href}
     >
       {children}
@@ -394,72 +394,71 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
 
 function Hero({ t }: { t: TemplateCopy }) {
   return (
-    <section className="relative isolate min-h-[70rem] overflow-hidden px-4 pb-0 pt-32 sm:min-h-[76rem] sm:pt-40">
+    <section
+      className="relative isolate overflow-hidden px-4 pb-10 pt-28 sm:pt-32"
+      data-lunera-hero
+    >
       <div className="lunera-hero-sky absolute inset-0 -z-20" />
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(191,235,255,0.72)_0%,rgba(218,246,255,0.48)_34%,rgba(255,255,255,0)_70%)]" />
-      <div className="mx-auto max-w-[70rem] text-center">
+      <div className="mx-auto max-w-[56rem] text-center">
         <span className="lunera-eyebrow" data-lunera-reveal>
           {t.hero.eyebrow}
         </span>
         <h1
-          className="mx-auto mt-7 max-w-[76rem] text-[3.2rem] font-semibold leading-[0.96] tracking-normal text-[#06080d] sm:text-[4.25rem] lg:text-[5.15rem] xl:text-[6.1rem]"
+          className="mx-auto mt-6 max-w-[54rem] text-[3.05rem] font-semibold leading-[0.98] tracking-normal text-[#06080d] sm:text-[3.7rem] lg:text-[4.05rem] xl:text-[4.25rem]"
           data-lunera-reveal
         >
           {t.hero.title.map((line) => (
-            <span className="block xl:whitespace-nowrap" key={line}>
+            <span className="block" key={line}>
               {line}
             </span>
           ))}
         </h1>
         <p
-          className="mx-auto mt-6 max-w-[41rem] text-base font-medium leading-7 text-slate-600 sm:text-lg"
+          className="mx-auto mt-5 max-w-[36rem] text-[0.98rem] font-medium leading-7 text-slate-600 sm:text-[1.08rem]"
           data-lunera-reveal
         >
           {t.hero.subtitle}
         </p>
-        <div
-          className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
-          data-lunera-reveal
-        >
-          <Link className="lunera-cta-primary bg-black shadow-[0_20px_48px_rgba(0,0,0,0.22)]" href="/signup">
-            {t.hero.primary}
-          </Link>
-          <Link className="lunera-cta-secondary" href="/contact">
-            {t.hero.secondary}
-          </Link>
-        </div>
-        <div
-          className="mt-6 flex flex-wrap items-center justify-center gap-2"
-          data-lunera-reveal
-        >
-          {t.hero.badges.map((badge) => (
-            <span
-              className="rounded-full border border-white/75 bg-white/80 px-4 py-2 text-xs font-bold text-slate-600 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur"
-              key={badge}
-            >
-              {badge}
-            </span>
-          ))}
-        </div>
       </div>
-      <div className="lunera-hero-phone-wrap mx-auto mt-7 max-w-[72rem]" data-lunera-reveal>
+      <div className="lunera-hero-phone-viewport" data-lunera-reveal>
         <SmsConversationPhone locale="en" />
+        <div className="lunera-hero-phone-fade" />
       </div>
-      <div className="absolute inset-x-0 bottom-16 z-20 mx-auto max-w-[19rem] text-center" data-lunera-reveal>
-        <div className="mx-auto mb-2 flex w-fit -space-x-2">
-          {["S", "B", "C"].map((label) => (
-            <span
-              className="grid h-10 w-10 place-items-center rounded-full border-2 border-white bg-[#edf5ff] text-xs font-black text-[#326ee7] shadow-sm"
-              key={label}
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-        <p className="text-sm font-bold leading-6 text-slate-500">{t.hero.proof}</p>
-      </div>
-      <div className="lunera-cloud-fade pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[24rem]" />
+      <HeroSocialProof text={t.hero.proof} />
+      <HeroCtaRow t={t} />
     </section>
+  );
+}
+
+function HeroSocialProof({ text }: { text: string }) {
+  return (
+    <div className="lunera-hero-social-proof" data-lunera-reveal>
+      <div className="lunera-avatar-stack" aria-hidden="true">
+        {["SE", "BN", "CL"].map((label) => (
+          <span key={label}>{label}</span>
+        ))}
+      </div>
+      <div className="text-center sm:text-left">
+        <div className="lunera-stars" aria-label="Five star rating">
+          {"*****"}
+        </div>
+        <p>{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function HeroCtaRow({ t }: { t: TemplateCopy }) {
+  return (
+    <div className="lunera-hero-cta-row" data-lunera-reveal>
+      <Link className="lunera-cta-primary bg-black shadow-[0_18px_42px_rgba(0,0,0,0.2)]" href="/signup">
+        {t.hero.primary}
+      </Link>
+      <Link className="lunera-cta-secondary" href="/contact">
+        {t.hero.secondary}
+      </Link>
+    </div>
   );
 }
 
