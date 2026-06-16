@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
 import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
@@ -23,10 +23,30 @@ const openSpotCopy = {
       "Simple SMS tools designed to help salons, clinics and barbers refill last-minute cancellations before the spot is gone.",
     primary: "Get Early Access",
     secondary: "Contact Sales",
-    proof: "Designed for salons, clinics and barbers",
-    badges: ["Manual confirmation by your team", "SMS consent stays clear"]
+    proof: "Designed for salons, clinics and barbers"
   },
-  logos: ["Salons", "Barbers", "Clinics", "Spas", "Studios", "Waitlists"],
+  businessTypes: [
+    "Salons",
+    "Barbers",
+    "Beauty Clinics",
+    "Spas",
+    "Nail Studios",
+    "Hair Stylists",
+    "Massage Clinics",
+    "Med Spas",
+    "Tattoo Studios",
+    "Physio Clinics",
+    "Chiropractors",
+    "Dental Clinics",
+    "Estheticians",
+    "Lash Studios",
+    "Brow Studios",
+    "Wellness Studios",
+    "Pet Groomers",
+    "Personal Trainers",
+    "Therapy Clinics",
+    "Appointment Teams"
+  ],
   features: {
     tag: "Features",
     title: ["Refill cancellations", "with simple SMS."],
@@ -251,8 +271,11 @@ type FeatureVisualType = TemplateCopy["features"]["cards"][number]["visual"];
 
 export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   const t = copy[locale];
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const logoStripItems = useMemo(() => [...t.logos, ...t.logos], [t.logos]);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const logoStripItems = useMemo(
+    () => [...t.businessTypes, ...t.businessTypes, ...t.businessTypes],
+    [t.businessTypes]
+  );
   const resultCards = useMemo(
     () => [...t.results.cards, ...t.results.cards],
     [t.results.cards]
@@ -280,7 +303,15 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
       { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
     );
 
-    revealItems.forEach((item) => observer.observe(item));
+    revealItems.forEach((item) => {
+      const rect = item.getBoundingClientRect();
+
+      if (rect.top < window.innerHeight * 0.94 && rect.bottom > 0) {
+        item.classList.add("is-visible");
+      }
+
+      observer.observe(item);
+    });
 
     return () => observer.disconnect();
   }, [locale]);
@@ -303,7 +334,10 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
         animationFrame = 0;
         const max = document.documentElement.scrollHeight - window.innerHeight;
         const progress = max > 0 ? window.scrollY / max : 0;
-        setScrollProgress(Math.min(1, Math.max(0, progress)));
+        rootRef.current?.style.setProperty(
+          "--lunera-progress",
+          Math.min(1, Math.max(0, progress)).toFixed(4)
+        );
       });
     }
 
@@ -324,7 +358,8 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   return (
     <div
       className="lunera-template min-h-screen overflow-hidden bg-white text-[#07090f]"
-      style={{ "--lunera-progress": scrollProgress } as CSSProperties}
+      ref={rootRef}
+      style={{ "--lunera-progress": 0 } as CSSProperties}
     >
       <FloatingNavbar t={t} />
       <main>
@@ -365,7 +400,8 @@ function FloatingNavbar({ t }: { t: TemplateCopy }) {
           className="inline-flex min-h-[2.5rem] shrink-0 items-center justify-center rounded-full bg-black px-3.5 text-[0.82rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:px-4"
           href="/signup"
         >
-          {t.nav.primary}
+          <span className="hidden sm:inline">{t.nav.primary}</span>
+          <span className="sm:hidden">Access</span>
         </Link>
       </div>
     </header>
@@ -405,7 +441,7 @@ function Hero({ t }: { t: TemplateCopy }) {
           {t.hero.eyebrow}
         </span>
         <h1
-          className="mx-auto mt-6 max-w-[54rem] text-[3.05rem] font-semibold leading-[0.98] tracking-normal text-[#06080d] sm:text-[3.7rem] lg:text-[4.05rem] xl:text-[4.25rem]"
+          className="lunera-hero-title mx-auto mt-6 max-w-[54rem] text-balance text-[2.35rem] font-semibold leading-[1.02] tracking-normal text-[#06080d] sm:text-[3.7rem] sm:leading-[0.98] lg:text-[4.05rem] xl:text-[4.25rem]"
           data-lunera-reveal
         >
           {t.hero.title.map((line) => (
@@ -415,7 +451,7 @@ function Hero({ t }: { t: TemplateCopy }) {
           ))}
         </h1>
         <p
-          className="mx-auto mt-5 max-w-[36rem] text-[0.98rem] font-medium leading-7 text-slate-600 sm:text-[1.08rem]"
+          className="lunera-hero-subtitle mx-auto mt-5 max-w-[36rem] text-[0.98rem] font-medium leading-7 text-slate-600 sm:text-[1.08rem]"
           data-lunera-reveal
         >
           {t.hero.subtitle}
@@ -423,25 +459,35 @@ function Hero({ t }: { t: TemplateCopy }) {
       </div>
       <div className="lunera-hero-phone-viewport" data-lunera-reveal>
         <SmsConversationPhone locale="en" />
-        <div className="lunera-hero-phone-fade" />
       </div>
+      <HeroCloudBlend />
       <HeroSocialProof text={t.hero.proof} />
       <HeroCtaRow t={t} />
     </section>
   );
 }
 
+function HeroCloudBlend() {
+  return (
+    <div aria-hidden="true" className="lunera-hero-cloud-blend">
+      <div className="lunera-cloud-layer lunera-cloud-layer-back" />
+      <div className="lunera-cloud-layer lunera-cloud-layer-front" />
+      <div className="lunera-cloud-fade" />
+    </div>
+  );
+}
+
 function HeroSocialProof({ text }: { text: string }) {
   return (
-    <div className="lunera-hero-social-proof" data-lunera-reveal>
+    <div className="lunera-hero-social-proof" data-lunera-reveal id="reviews">
       <div className="lunera-avatar-stack" aria-hidden="true">
-        {["SE", "BN", "CL"].map((label) => (
+        {["SE", "BN", "CL", "JR"].map((label) => (
           <span key={label}>{label}</span>
         ))}
       </div>
       <div className="text-center sm:text-left">
-        <div className="lunera-stars" aria-label="Five star rating">
-          {"*****"}
+        <div className="lunera-stars" aria-label="Five star rating from appointment teams">
+          {"★★★★★"}
         </div>
         <p>{text}</p>
       </div>
@@ -465,11 +511,11 @@ function HeroCtaRow({ t }: { t: TemplateCopy }) {
 function LogoStrip({ items }: { items: readonly string[] }) {
   return (
     <section className="bg-white px-4 pb-16 pt-8">
-      <div className="lunera-marquee" data-lunera-reveal>
-        <div className="lunera-marquee-track">
+      <div className="lunera-business-marquee" data-lunera-reveal>
+        <div className="lunera-business-marquee-track">
           {items.map((item, index) => (
             <span
-              className="grid h-9 min-w-[8rem] place-items-center rounded-full px-5 text-sm font-black text-slate-300"
+              className="grid h-9 min-w-[10rem] place-items-center whitespace-nowrap rounded-full px-5 text-sm font-black text-slate-300"
               key={`${item}-${index}`}
             >
               {item}

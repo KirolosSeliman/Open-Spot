@@ -24,7 +24,7 @@ describe("SMS conversation phone marketing preview", () => {
     expect(en.complianceLine).toBe("Reply STOP to unsubscribe.");
     expect(en.floatingBadges.map((badge) => badge.label)).toEqual([
       "Consent checked",
-      "Fill the spot",
+      "Manual confirmation",
       "Reply received",
       "Waitlist notified"
     ]);

@@ -361,6 +361,8 @@ select {
 }
 
 .lunera-template {
+  max-width: 100vw;
+  overflow-x: hidden;
   --lunera-progress: 0;
 }
 
@@ -415,16 +417,9 @@ select {
     #bfeaff;
 }
 
-.lunera-cloud-fade {
-  background:
-    radial-gradient(ellipse at 18% 92%, rgba(255, 255, 255, 0.98), transparent 45%),
-    radial-gradient(ellipse at 80% 94%, rgba(255, 255, 255, 0.98), transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0), #ffffff 64%, #ffffff 100%);
-}
-
 .lunera-hero-phone-viewport {
-  height: 32rem;
-  margin: 2rem auto 0;
+  height: 31.25rem;
+  margin: 1.9rem auto 0;
   max-width: 72rem;
   overflow: hidden;
   position: relative;
@@ -432,18 +427,74 @@ select {
   z-index: 12;
 }
 
-.lunera-hero-phone-fade {
-  background:
-    radial-gradient(ellipse at 18% 92%, rgba(255, 255, 255, 0.98), transparent 45%),
-    radial-gradient(ellipse at 80% 94%, rgba(255, 255, 255, 0.98), transparent 42%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0), #ffffff 68%, #ffffff 100%);
-  bottom: 0;
-  height: 14.5rem;
-  left: 0;
+.lunera-hero-cloud-blend {
+  bottom: 4.75rem;
+  height: clamp(15rem, 22vw, 20.5rem);
+  left: 50%;
+  -webkit-mask-composite: source-in;
+  -webkit-mask-image:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #000000 6%,
+      #000000 94%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, transparent 0%, #000000 18%, #000000 100%);
+  mask-composite: intersect;
+  mask-image:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #000000 6%,
+      #000000 94%,
+      transparent 100%
+    ),
+    linear-gradient(180deg, transparent 0%, #000000 18%, #000000 100%);
+  overflow: hidden;
   pointer-events: none;
   position: absolute;
-  right: 0;
-  z-index: 40;
+  transform: translateX(-50%);
+  width: 100vw;
+  z-index: 36;
+}
+
+.lunera-cloud-layer,
+.lunera-cloud-fade {
+  inset: 0;
+  position: absolute;
+}
+
+.lunera-cloud-layer-back {
+  background:
+    radial-gradient(ellipse at 10% 74%, rgba(255, 255, 255, 0.82), transparent 37%),
+    radial-gradient(ellipse at 33% 68%, rgba(255, 255, 255, 0.88), transparent 36%),
+    radial-gradient(ellipse at 64% 73%, rgba(255, 255, 255, 0.88), transparent 39%),
+    radial-gradient(ellipse at 90% 77%, rgba(255, 255, 255, 0.84), transparent 36%);
+  filter: blur(8px);
+  opacity: 0.82;
+  transform: translate3d(0, 1.55rem, 0) scaleX(1.12);
+}
+
+.lunera-cloud-layer-front {
+  background:
+    radial-gradient(ellipse at 18% 87%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 34%, transparent 59%),
+    radial-gradient(ellipse at 48% 84%, #ffffff 0%, rgba(255, 255, 255, 0.96) 38%, transparent 63%),
+    radial-gradient(ellipse at 79% 88%, rgba(255, 255, 255, 0.97) 0%, rgba(255, 255, 255, 0.9) 33%, transparent 60%);
+  transform: translate3d(0, 3.1rem, 0) scaleX(1.08);
+}
+
+.lunera-cloud-fade {
+  background:
+    radial-gradient(ellipse at 18% 95%, rgba(255, 255, 255, 0.96), transparent 47%),
+    radial-gradient(ellipse at 80% 96%, rgba(255, 255, 255, 0.96), transparent 44%),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.62) 36%,
+      rgba(255, 255, 255, 0.98) 62%,
+      #ffffff 100%
+    );
 }
 
 .lunera-hero-social-proof {
@@ -451,7 +502,7 @@ select {
   display: flex;
   gap: 0.9rem;
   justify-content: center;
-  margin: 0.5rem auto 0;
+  margin: -5.35rem auto 0;
   position: relative;
   z-index: 45;
 }
@@ -580,6 +631,11 @@ select {
   padding-inline: 1.18rem;
 }
 
+.lunera-hero-title {
+  overflow-wrap: normal;
+  text-wrap: balance;
+}
+
 .lunera-card {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.88)),
@@ -612,23 +668,10 @@ select {
   transform: translateY(0);
 }
 
-.lunera-phone-shell {
-  animation: lunera-float 7s ease-in-out infinite;
-  background:
-    linear-gradient(145deg, #050608, #1c2430 52%, #050608),
-    #0b0d12;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 3.2rem;
-  box-shadow:
-    0 38px 95px rgba(15, 23, 42, 0.3),
-    inset 0 0 0 9px rgba(255, 255, 255, 0.08);
-  max-width: 31rem;
-  min-height: 36rem;
-  padding: 0 1.25rem 1.25rem;
-}
-
 .lunera-floating-card {
-  animation: lunera-float 6s ease-in-out infinite;
+  backface-visibility: hidden;
+  transform: translate3d(0, calc(var(--lunera-phone-progress, 0) * -18px), 0);
+  will-change: transform;
 }
 
 .lunera-reply-row {
@@ -645,12 +688,20 @@ select {
   padding-inline: 1rem;
   position: relative;
   width: 100%;
+  --lunera-phone-opacity: 0.92;
+  --lunera-phone-progress: 0;
+  --lunera-phone-scale: 0.94;
+  --lunera-phone-y: 124px;
 }
 
 .lunera-phone-motion {
+  backface-visibility: hidden;
   max-width: min(24rem, 74vw);
   position: relative;
+  opacity: var(--lunera-phone-opacity);
+  transform: translate3d(0, var(--lunera-phone-y), 0) scale(var(--lunera-phone-scale));
   width: 100%;
+  will-change: transform, opacity;
   z-index: 20;
 }
 
@@ -659,8 +710,9 @@ select {
   transform-style: preserve-3d;
 }
 
-.lunera-phone-stage {
+.lunera-phone-object {
   aspect-ratio: 973 / 2100;
+  backface-visibility: hidden;
   position: relative;
   transform: rotateZ(1.5deg) rotateY(-7deg);
   transform-origin: center 18%;
@@ -672,39 +724,45 @@ select {
 .lunera-phone-side {
   background: linear-gradient(90deg, #18191d, #6a6d76 50%, #101116);
   border-radius: 0 3.1rem 3.1rem 0;
-  bottom: 5.8%;
+  bottom: 4.2%;
   box-shadow: inset -12px 0 20px rgba(255, 255, 255, 0.08);
   position: absolute;
-  right: -3.8%;
-  top: 5.2%;
+  right: -4.2%;
+  top: 3.8%;
   transform: translateZ(-22px);
   width: 8.5%;
   z-index: 0;
 }
 
-.lunera-phone-frame-asset {
-  display: block;
-  filter: drop-shadow(0 44px 95px rgba(15, 23, 42, 0.34));
-  height: auto;
+.lunera-phone-front {
+  background:
+    linear-gradient(145deg, #0a0b0f 0%, #323743 5%, #ffffff 8%, #ffffff 91%, #1a1d25 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 3.35rem;
+  box-shadow:
+    0 44px 95px rgba(15, 23, 42, 0.34),
+    inset 0 0 0 0.58rem rgba(15, 23, 42, 0.08),
+    inset 0 0 0 0.92rem rgba(255, 255, 255, 0.72);
+  height: 100%;
+  overflow: hidden;
   position: relative;
-  transform: translateZ(4px);
   width: 100%;
-  z-index: 2;
+  z-index: 3;
 }
 
-.lunera-phone-screen-replacement {
+.lunera-phone-screen {
   background:
     linear-gradient(180deg, #ffffff 0%, #ffffff 74%, #f5f6f8 100%);
-  border-radius: 2.65rem;
+  border-radius: 2.58rem;
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
-  height: 92.9%;
-  left: 6.55%;
+  height: 92.4%;
+  left: 6.15%;
   overflow: hidden;
   position: absolute;
-  top: 3.45%;
-  transform: translateZ(7px);
-  width: 80.6%;
-  z-index: 3;
+  top: 3.75%;
+  transform: translateZ(5px);
+  width: 87.7%;
+  z-index: 4;
 }
 
 .lunera-phone-dynamic-island {
@@ -821,6 +879,19 @@ select {
   width: 100vw;
 }
 
+.lunera-business-marquee {
+  margin-inline: calc(50% - 50vw);
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000000 10%,
+    #000000 90%,
+    transparent 100%
+  );
+  overflow: hidden;
+  width: 100vw;
+}
+
 .lunera-marquee-track {
   animation: lunera-marquee 30s linear infinite;
   display: flex;
@@ -828,6 +899,16 @@ select {
   min-width: max-content;
   padding-inline: 1rem;
   width: max-content;
+}
+
+.lunera-business-marquee-track {
+  animation: lunera-business-marquee 36s linear infinite;
+  display: flex;
+  gap: clamp(3.5rem, 6vw, 7rem);
+  min-width: max-content;
+  padding-inline: clamp(1rem, 4vw, 4rem);
+  width: max-content;
+  will-change: transform;
 }
 
 .lunera-marquee-slow {
@@ -1016,7 +1097,6 @@ select {
 .lunera-scroll-progress {
   transform: scaleX(max(0.08, var(--lunera-progress)));
   transform-origin: left center;
-  transition: transform 90ms linear;
 }
 
 .lunera-bar {
@@ -1069,6 +1149,15 @@ select {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes lunera-business-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-33.333%, 0, 0);
   }
 }
 
@@ -1273,14 +1362,14 @@ select {
 
 @media (min-width: 1024px) {
   .lunera-hero-phone-viewport {
-    height: 35.2rem;
-    margin-top: -5.5rem;
+    height: 33.9rem;
+    margin-top: -5.35rem;
   }
 }
 
 @media (min-width: 1440px) {
   .lunera-hero-phone-viewport {
-    height: 36.5rem;
+    height: 35rem;
   }
 }
 
@@ -1300,8 +1389,8 @@ select {
   }
 
   .lunera-marquee-track,
-  .lunera-phone-shell,
-  .lunera-phone-stage,
+  .lunera-business-marquee-track,
+  .lunera-phone-object,
   .lunera-floating-card,
   .lunera-reply-row,
   .lunera-integration-card,
@@ -1324,8 +1413,8 @@ select {
 
 @media (max-width: 767px) {
   .lunera-hero-phone-viewport {
-    height: 25rem;
-    margin-top: 1.45rem;
+    height: 24rem;
+    margin-top: 1.25rem;
     max-width: 32rem;
   }
 
@@ -1334,11 +1423,11 @@ select {
   }
 
   .lunera-phone-motion {
-    max-width: min(19.5rem, 82vw);
+    max-width: min(17.4rem, 76vw);
   }
 
-  .lunera-phone-stage {
-    transform: rotateZ(1.15deg) rotateY(-5deg);
+  .lunera-phone-object {
+    transform: translate3d(-0.15rem, 0, 0) rotateZ(1deg) rotateY(-4deg);
   }
 
   .lunera-phone-side {
@@ -1346,7 +1435,7 @@ select {
     width: 7.5%;
   }
 
-  .lunera-phone-screen-replacement {
+  .lunera-phone-screen {
     border-radius: 1.85rem;
     font-size: 0.82rem;
   }
@@ -1357,15 +1446,16 @@ select {
     width: 5.5rem;
   }
 
-  .lunera-hero-phone-fade {
-    height: 12rem;
+  .lunera-hero-cloud-blend {
+    bottom: 4.4rem;
+    height: 12.8rem;
   }
 
   .lunera-hero-social-proof {
     align-items: center;
     flex-direction: column;
     gap: 0.55rem;
-    margin-top: 0.25rem;
+    margin-top: 0;
   }
 
   .lunera-arc-stage {
@@ -1396,9 +1486,58 @@ select {
 }
 
 @media (max-width: 520px) {
-  .lunera-phone-screen-replacement {
-    left: 6.3%;
-    top: 3.2%;
-    width: 81%;
+  .lunera-hero-title {
+    font-size: 2.02rem;
+    line-height: 1.06;
+    max-width: min(100%, 21rem);
+    overflow-wrap: break-word;
+  }
+
+  .lunera-hero-title span {
+    white-space: normal;
+  }
+
+  .lunera-hero-subtitle {
+    font-size: 0.94rem;
+    line-height: 1.62;
+    max-width: min(100%, 21rem);
+  }
+
+  .lunera-template header {
+    max-width: 100vw;
+    overflow: hidden;
+    padding-inline: 0.65rem;
+  }
+
+  .lunera-template header > div {
+    gap: 0.45rem;
+    max-width: calc(100vw - 1.3rem);
+    min-height: 3.45rem;
+    padding-inline: 0.72rem;
+    width: calc(100vw - 1.3rem);
+  }
+
+  .lunera-template header a[href="/"] {
+    gap: 0.45rem;
+    min-width: 0;
+  }
+
+  .lunera-template header a[href="/"] > span:last-child {
+    font-size: 0.92rem;
+    white-space: nowrap;
+  }
+
+  .lunera-template header a[href="/signup"] {
+    font-size: 0.72rem;
+    max-width: 5.65rem;
+    min-height: 2.32rem;
+    padding-inline: 0.9rem;
+    white-space: nowrap;
+  }
+
+  .lunera-phone-screen {
+    left: 6%;
+    top: 3.45%;
+    width: 88%;
   }
 }
