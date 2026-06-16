@@ -364,6 +364,69 @@ select {
   --lunera-progress: 0;
 }
 
+.lunera-brand-mark {
+  align-items: center;
+  background: linear-gradient(145deg, #5bb8ff, #357cff);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+    0 10px 24px rgba(53, 124, 255, 0.22);
+  display: inline-flex;
+  height: 2.35rem;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 2.35rem;
+}
+
+.lunera-brand-mark::before {
+  background: rgba(255, 255, 255, 0.32);
+  border-radius: 999px;
+  content: "";
+  height: 1.3rem;
+  left: -0.22rem;
+  position: absolute;
+  top: -0.08rem;
+  width: 1.3rem;
+}
+
+.lunera-brand-stroke {
+  background: white;
+  border-radius: 999px;
+  display: block;
+  height: 0.24rem;
+  position: absolute;
+  transform: rotate(-34deg);
+  width: 1.25rem;
+}
+
+.lunera-brand-stroke-top {
+  top: 0.78rem;
+}
+
+.lunera-brand-stroke-bottom {
+  bottom: 0.78rem;
+}
+
+.lunera-hero-sky {
+  background:
+    linear-gradient(180deg, rgba(119, 202, 246, 0.16), rgba(255, 255, 255, 0.12)),
+    url("/lunera-style/sky-clouds.png") center bottom / cover no-repeat,
+    #bfeaff;
+}
+
+.lunera-cloud-fade {
+  background:
+    radial-gradient(ellipse at 18% 92%, rgba(255, 255, 255, 0.98), transparent 45%),
+    radial-gradient(ellipse at 80% 94%, rgba(255, 255, 255, 0.98), transparent 42%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0), #ffffff 64%, #ffffff 100%);
+}
+
+.lunera-hero-phone-wrap {
+  position: relative;
+  z-index: 12;
+}
+
 .lunera-eyebrow,
 .lunera-pill {
   align-items: center;
@@ -435,7 +498,7 @@ select {
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.88)),
     #ffffff;
   border: 1px solid rgba(226, 232, 240, 0.9);
-  border-radius: 1.25rem;
+  border-radius: 1.5rem;
   box-shadow: 0 22px 64px rgba(15, 23, 42, 0.08);
   transition:
     border-color 180ms ease,
@@ -485,6 +548,157 @@ select {
   animation: lunera-reply-pulse 3.8s ease-in-out infinite;
 }
 
+.lunera-phone-scene {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 43rem;
+  overflow: visible;
+  padding-inline: 1rem;
+  position: relative;
+  width: 100%;
+}
+
+.lunera-phone-stage {
+  aspect-ratio: 973 / 2100;
+  max-width: min(32rem, 86vw);
+  position: relative;
+  transform-origin: center 20%;
+  width: 100%;
+  z-index: 20;
+}
+
+.lunera-phone-frame-asset {
+  display: block;
+  filter: drop-shadow(0 44px 95px rgba(15, 23, 42, 0.34));
+  height: auto;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.lunera-phone-screen-replacement {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #ffffff 74%, #f5f6f8 100%);
+  border-radius: 2.65rem;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.04);
+  height: 92.9%;
+  left: 6.55%;
+  overflow: hidden;
+  position: absolute;
+  top: 3.45%;
+  width: 80.6%;
+  z-index: 2;
+}
+
+.lunera-phone-dynamic-island {
+  background: #000000;
+  border-radius: 999px;
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.3);
+  height: 2.15rem;
+  left: 50%;
+  position: absolute;
+  top: 1.55rem;
+  transform: translateX(-50%);
+  width: 7.25rem;
+  z-index: 4;
+}
+
+.lunera-feature-visual {
+  background:
+    radial-gradient(circle at 72% 22%, rgba(67, 136, 255, 0.18), transparent 38%),
+    #f7faff;
+  border: 1px solid rgba(226, 232, 240, 0.72);
+  border-radius: 1.35rem;
+  min-height: 10.8rem;
+  overflow: hidden;
+  padding: 1rem;
+  position: relative;
+}
+
+.lunera-feature-orb {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 999px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.1);
+  color: #4388ff;
+  display: flex;
+  font-size: 0.8rem;
+  font-weight: 900;
+  height: 7.6rem;
+  justify-content: center;
+  left: 50%;
+  padding: 1rem;
+  position: absolute;
+  text-align: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 7.6rem;
+  z-index: 2;
+}
+
+.lunera-feature-orb-replies,
+.lunera-feature-orb-recovery {
+  background: linear-gradient(145deg, #4388ff, #77c7ff);
+  color: white;
+}
+
+.lunera-feature-orb-review {
+  background: #080b12;
+  color: white;
+}
+
+.lunera-feature-lines {
+  inset: auto 1rem 1rem;
+  position: absolute;
+}
+
+.lunera-feature-lines span {
+  background: rgba(67, 136, 255, 0.18);
+  border-radius: 999px;
+  display: block;
+  height: 0.55rem;
+  margin-top: 0.55rem;
+}
+
+.lunera-feature-lines span:nth-child(1) {
+  width: 82%;
+}
+
+.lunera-feature-lines span:nth-child(2) {
+  width: 62%;
+}
+
+.lunera-feature-lines span:nth-child(3) {
+  width: 92%;
+}
+
+.lunera-feature-mini-card {
+  background: white;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 1rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  z-index: 3;
+}
+
+.lunera-feature-mini-card span {
+  color: #94a3b8;
+  font-size: 0.68rem;
+  font-weight: 900;
+}
+
+.lunera-feature-mini-card strong {
+  color: #0f172a;
+  font-size: 0.78rem;
+}
+
 .lunera-marquee {
   margin-inline: calc(50% - 50vw);
   overflow: hidden;
@@ -509,6 +723,134 @@ select {
   gap: 1rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   position: relative;
+}
+
+.lunera-arc-stage {
+  height: 30rem;
+  max-width: 70rem;
+  position: relative;
+}
+
+.lunera-arc-stage::before {
+  border: 2.2rem solid #f2f7ff;
+  border-bottom: 0;
+  border-radius: 40rem 40rem 0 0;
+  bottom: 1rem;
+  content: "";
+  height: 22rem;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(56rem, 94vw);
+}
+
+.lunera-arc-card {
+  align-items: center;
+  animation: lunera-tool-float 5.5s ease-in-out infinite;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.92);
+  border-radius: 1.2rem;
+  box-shadow: 0 20px 55px rgba(15, 23, 42, 0.11);
+  display: grid;
+  gap: 0.55rem;
+  justify-items: center;
+  min-height: 5.75rem;
+  padding: 0.95rem;
+  position: absolute;
+  text-align: center;
+  width: 6.8rem;
+  z-index: 2;
+}
+
+.lunera-arc-card span {
+  align-items: center;
+  background: #edf5ff;
+  border-radius: 999px;
+  color: #4388ff;
+  display: flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  height: 2.35rem;
+  justify-content: center;
+  text-transform: uppercase;
+  width: 2.35rem;
+}
+
+.lunera-arc-card strong {
+  color: #0f172a;
+  font-size: 0.78rem;
+}
+
+.lunera-arc-card:nth-child(1) {
+  left: 4%;
+  top: 58%;
+  transform: rotate(-8deg);
+}
+
+.lunera-arc-card:nth-child(2) {
+  left: 12%;
+  top: 32%;
+  transform: rotate(5deg);
+}
+
+.lunera-arc-card:nth-child(3) {
+  left: 24%;
+  top: 15%;
+  transform: rotate(-4deg);
+}
+
+.lunera-arc-card:nth-child(4) {
+  left: 38%;
+  top: 7%;
+  transform: rotate(6deg);
+}
+
+.lunera-arc-card:nth-child(5) {
+  left: 52%;
+  top: 7%;
+  transform: rotate(-5deg);
+}
+
+.lunera-arc-card:nth-child(6) {
+  left: 66%;
+  top: 15%;
+  transform: rotate(7deg);
+}
+
+.lunera-arc-card:nth-child(7) {
+  left: 78%;
+  top: 32%;
+  transform: rotate(-5deg);
+}
+
+.lunera-arc-card:nth-child(8) {
+  left: 86%;
+  top: 58%;
+  transform: rotate(7deg);
+}
+
+.lunera-arc-card:nth-child(9) {
+  left: 20%;
+  top: 67%;
+  transform: rotate(4deg);
+}
+
+.lunera-arc-card:nth-child(10) {
+  left: 36%;
+  top: 76%;
+  transform: rotate(-4deg);
+}
+
+.lunera-arc-card:nth-child(11) {
+  left: 52%;
+  top: 76%;
+  transform: rotate(3deg);
+}
+
+.lunera-arc-card:nth-child(12) {
+  left: 68%;
+  top: 67%;
+  transform: rotate(-6deg);
 }
 
 .lunera-integration-cloud::before {
@@ -823,9 +1165,11 @@ select {
 
   .lunera-marquee-track,
   .lunera-phone-shell,
+  .lunera-phone-stage,
   .lunera-floating-card,
   .lunera-reply-row,
   .lunera-integration-card,
+  .lunera-arc-card,
   .lunera-tool-card,
   .lunera-bar {
     animation: none !important;
@@ -843,9 +1187,66 @@ select {
 }
 
 @media (max-width: 767px) {
+  .lunera-hero-phone-wrap {
+    margin-top: -1.25rem;
+  }
+
+  .lunera-phone-scene {
+    min-height: 30rem;
+    padding-inline: 0;
+    transform: translateY(-2.75rem);
+  }
+
+  .lunera-phone-stage {
+    max-width: min(21.5rem, 92vw);
+  }
+
+  .lunera-phone-screen-replacement {
+    border-radius: 1.85rem;
+    font-size: 0.82rem;
+  }
+
+  .lunera-phone-dynamic-island {
+    height: 1.45rem;
+    top: 1.05rem;
+    width: 5.5rem;
+  }
+
+  .lunera-arc-stage {
+    display: grid;
+    gap: 0.9rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    height: auto;
+    max-width: 32rem;
+  }
+
+  .lunera-arc-stage::before {
+    display: none;
+  }
+
+  .lunera-arc-card {
+    inset: auto !important;
+    min-height: 5rem;
+    position: relative;
+    transform: none !important;
+    width: auto;
+  }
+
   .lunera-step-card {
     grid-template-columns: 1fr;
     min-height: auto;
     padding: 1.5rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .lunera-cloud-fade {
+    height: 18rem;
+  }
+
+  .lunera-phone-screen-replacement {
+    left: 6.3%;
+    top: 3.2%;
+    width: 81%;
   }
 }

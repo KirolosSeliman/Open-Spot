@@ -12,18 +12,21 @@ function source(path: string) {
 describe("public navigation", () => {
   const homepagePath = "src/components/marketing/lunera-open-spot-template.tsx";
 
-  it("exposes auth and sales actions from the homepage marketing header", () => {
+  it("keeps the homepage header minimal for Lunera-style parity", () => {
     const homepage = source(homepagePath);
 
-    expect(homepage).toContain('href="/sign-in"');
     expect(homepage).toContain('href="/signup"');
-    expect(homepage).toContain('href="/book-call/questions"');
-    expect(homepage).toContain("Connexion");
-    expect(homepage).toContain("Creer un compte");
-    expect(homepage).toContain("Sign in");
-    expect(homepage).toContain("Get early access");
-    expect(homepage).toContain('login: "Connexion"');
-    expect(homepage).toContain('primary: "Creer un compte"');
+    expect(homepage).toContain('features: "Features"');
+    expect(homepage).toContain('how: "How it works"');
+    expect(homepage).toContain('pricing: "Pricing"');
+    expect(homepage).toContain('contact: "Contact"');
+    expect(homepage).toContain("Get Early Access");
+    expect(homepage).not.toContain('href="/sign-in"');
+    expect(homepage).not.toContain("LanguageSwitcher");
+    expect(homepage).not.toContain('login: "Connexion"');
+    expect(homepage).not.toContain('login: "Sign in"');
+    expect(homepage).not.toContain('resources: "Guides"');
+    expect(homepage).not.toContain('tools: "Tools"');
   });
 
   it("uses the Open Spot brand in the public landing copy", () => {
@@ -34,7 +37,8 @@ describe("public navigation", () => {
 
     expect(homepage).toContain("Open Spot");
     expect(homepage).not.toContain("2e Chance RDV");
-    expect(homepage).toContain("Turn last-minute cancellations into booked appointments.");
+    expect(homepage).toContain("Fill every opening,");
+    expect(homepage).toContain("recover every booking.");
     expect(homepage).toContain("Manual confirmation by your team");
     expect(homepage).toContain("Open Spot never confirms automatically");
     expect(rootLayout).toContain("Open Spot");
