@@ -439,8 +439,8 @@ select {
 }
 
 .lunera-hero-cloud-blend {
-  bottom: -12rem;
-  height: clamp(24rem, 34vw, 36rem);
+  bottom: clamp(-9rem, -10vw, -4.5rem);
+  height: clamp(28rem, 42vw, 45rem);
   left: 50%;
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -726,9 +726,49 @@ select {
   position: relative;
   transform: translate3d(0, calc(var(--lunera-phone-y) + var(--lunera-phone-lift)), 0) scale(var(--lunera-phone-scale));
   transform-style: preserve-3d;
-  width: min(27.4rem, 38vw);
+  width: min(25.2rem, 38vw);
   will-change: transform, opacity;
   z-index: 20;
+}
+
+.lunera-phone-frame-shell {
+  aspect-ratio: 973 / 2100;
+  backface-visibility: hidden;
+  position: relative;
+  transform: rotateZ(-1.15deg) translateZ(0);
+  transform-origin: center top;
+  transform-style: preserve-3d;
+  width: 100%;
+  will-change: transform;
+  z-index: 20;
+}
+
+.lunera-phone-frame-asset {
+  display: block;
+  height: auto;
+  pointer-events: none;
+  position: relative;
+  user-select: none;
+  width: 100%;
+  z-index: 1;
+}
+
+.lunera-phone-screen-overlay {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #ffffff 74%, #f5f6f8 100%);
+  border-radius: clamp(2rem, 4.2vw, 3rem);
+  bottom: 3.8%;
+  box-shadow:
+    inset 0 0 0 1px rgba(15, 23, 42, 0.04),
+    inset 0 18px 38px rgba(255, 255, 255, 0.68);
+  left: 5.9%;
+  overflow: hidden;
+  position: absolute;
+  right: 13.1%;
+  top: 3.1%;
+  transform: translateZ(16px) skewY(0.65deg) rotateZ(-0.1deg);
+  transform-origin: center top;
+  z-index: 2;
 }
 
 .lunera-phone-object {
@@ -858,13 +898,18 @@ select {
   background: #000000;
   border-radius: 999px;
   box-shadow: 0 7px 18px rgba(0, 0, 0, 0.3);
-  height: clamp(2rem, 3.1vw, 2.7rem);
+  height: clamp(1.45rem, 2.4vw, 2.1rem);
   left: 50%;
   position: absolute;
-  top: clamp(1.05rem, 2.2vw, 1.65rem);
+  top: clamp(1rem, 1.75vw, 1.45rem);
   transform: translateX(-50%) translateZ(8px);
-  width: clamp(6.85rem, 10.6vw, 9.35rem);
+  width: clamp(5.6rem, 7.8vw, 7.3rem);
   z-index: 4;
+}
+
+.lunera-phone-app-title span,
+.lunera-phone-time span {
+  display: inline;
 }
 
 .lunera-feature-visual {
@@ -1509,9 +1554,9 @@ select {
 
 @media (max-width: 767px) {
   .lunera-hero-visual-scene {
-    margin-top: 1.65rem;
+    margin-top: -0.2rem;
     max-width: 34rem;
-    min-height: 43.75rem;
+    min-height: 45.75rem;
   }
 
   .lunera-hero-visual-scene::before {
@@ -1536,18 +1581,22 @@ select {
 
   .lunera-phone-scene {
     padding-inline: 0;
-    --lunera-phone-lift: -6rem;
+    --lunera-phone-lift: -12.2rem;
   }
 
   .lunera-phone-motion {
-    width: min(28.45rem, 118vw);
+    width: min(27.2rem, 104vw);
+  }
+
+  .lunera-phone-frame-shell {
+    transform: rotateZ(-2.55deg) translateZ(0);
   }
 
   .lunera-phone-object {
     transform:
-      rotateZ(2.85deg)
-      rotateY(-11.5deg)
-      rotateX(1.45deg)
+      rotateZ(-3.35deg)
+      rotateY(-12.5deg)
+      rotateX(1.55deg)
       scale(0.98)
       translateZ(0);
   }
@@ -1556,18 +1605,20 @@ select {
     -webkit-mask-image: linear-gradient(
       to bottom,
       transparent 0%,
-      #000000 4%,
-      #000000 64%,
-      rgba(0, 0, 0, 0.72) 76%,
-      transparent 94%
+      rgba(0, 0, 0, 0.45) 2.2%,
+      #000000 5.5%,
+      #000000 70%,
+      rgba(0, 0, 0, 0.68) 81%,
+      transparent 96%
     );
     mask-image: linear-gradient(
       to bottom,
       transparent 0%,
-      #000000 4%,
-      #000000 64%,
-      rgba(0, 0, 0, 0.72) 76%,
-      transparent 94%
+      rgba(0, 0, 0, 0.45) 2.2%,
+      #000000 5.5%,
+      #000000 70%,
+      rgba(0, 0, 0, 0.68) 81%,
+      transparent 96%
     );
   }
 
@@ -1593,49 +1644,138 @@ select {
   }
 
   .lunera-phone-dynamic-island {
-    height: 2.28rem;
-    top: 1.25rem;
-    width: 7.65rem;
+    height: 1.62rem;
+    top: 1.28rem;
+    width: 6.15rem;
   }
 
   .lunera-hero-cloud-blend {
-    bottom: -5rem;
-    height: 26.9rem;
+    bottom: -2.55rem;
+    height: 26.25rem;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.78) 3%,
+      #000000 10%,
+      #000000 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.78) 3%,
+      #000000 10%,
+      #000000 100%
+    );
   }
 
   .lunera-cloud-blob-left {
     height: 13.1rem;
     left: -34vw;
-    top: 8.1rem;
+    top: 8.8rem;
     width: 90vw;
   }
 
   .lunera-cloud-blob-right {
     height: 13.75rem;
     right: -36vw;
-    top: 8.1rem;
+    top: 8.7rem;
     width: 90vw;
   }
 
   .lunera-cloud-blob-center {
-    height: 17.5rem;
-    top: 10.3rem;
+    height: 17.9rem;
+    top: 10.65rem;
     width: 140vw;
   }
 
   .lunera-cloud-gradient-whiteout {
     background:
-      radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 68%),
-      radial-gradient(circle at 18% 48%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.64) 28%, transparent 64%),
-      radial-gradient(circle at 82% 48%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.64) 30%, transparent 66%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.62) 46%, #ffffff 88%);
+      radial-gradient(circle at 50% 14%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.96) 32%, rgba(255, 255, 255, 0.68) 56%, transparent 78%),
+      radial-gradient(circle at 18% 40%, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.72) 30%, transparent 66%),
+      radial-gradient(circle at 82% 40%, rgba(255, 255, 255, 0.94) 0%, rgba(255, 255, 255, 0.72) 32%, transparent 68%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.86) 6%, rgba(255, 255, 255, 0.97) 36%, #ffffff 84%);
   }
 
   .lunera-hero-social-proof {
     align-items: center;
     flex-direction: column;
     gap: 0.55rem;
-    margin-top: -6.8rem;
+    margin-top: -22.25rem;
+  }
+
+  .lunera-phone-app-header {
+    align-items: flex-start;
+    padding-inline: 2.1rem;
+    padding-top: 2.75rem;
+  }
+
+  .lunera-phone-app-header button {
+    height: 3.05rem;
+    width: 3.05rem;
+  }
+
+  .lunera-phone-app-title {
+    display: grid;
+    font-size: 1.68rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-top: -0.12rem;
+    text-align: center;
+  }
+
+  .lunera-phone-app-title span {
+    display: block;
+  }
+
+  .lunera-open-slot-card {
+    border-radius: 1.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-left: 4.95rem;
+    margin-right: auto;
+    margin-top: 1.25rem;
+    min-height: 16.9rem;
+    padding: 1.42rem;
+    width: min(16.35rem, 62%);
+  }
+
+  .lunera-phone-time {
+    display: grid;
+    font-size: 3.02rem;
+    line-height: 0.98;
+    margin-top: 0.82rem;
+  }
+
+  .lunera-phone-time span {
+    display: block;
+  }
+
+  .lunera-phone-service {
+    font-size: 1.28rem;
+    line-height: 1.32;
+    margin-top: 1.1rem;
+    max-width: 9.5rem;
+  }
+
+  .lunera-phone-card-meta {
+    align-items: start;
+    gap: 1rem;
+    margin-top: 1.1rem;
+  }
+
+  .lunera-phone-card-meta p:first-child {
+    font-size: 0.92rem;
+  }
+
+  .lunera-phone-card-meta p:last-child {
+    font-size: 0.96rem;
+    line-height: 1.28;
+  }
+
+  .lunera-phone-replies {
+    padding-inline: 3.15rem;
+    padding-top: 1.9rem;
   }
 
   .lunera-arc-stage {
@@ -1685,7 +1825,7 @@ select {
 
   .lunera-template header {
     max-width: 100vw;
-    overflow: hidden;
+    overflow: visible;
     padding-inline: 0.65rem;
   }
 
@@ -1707,15 +1847,16 @@ select {
     white-space: nowrap;
   }
 
-  .lunera-template header a[href="/login"] {
+  .lunera-template header a[href="/sign-in"] {
     font-size: 0.72rem;
-    max-width: 7.15rem;
+    max-width: 7.35rem;
     min-height: 2.32rem;
     padding-inline: 0.86rem;
     white-space: nowrap;
+    width: 7.35rem;
   }
 
   .lunera-phone-motion {
-    width: min(28.45rem, 118vw);
+    width: min(27.2rem, 104vw);
   }
 }

@@ -270,12 +270,12 @@ const copy = {
 type TemplateCopy = (typeof copy)[Locale];
 type FeatureVisualType = TemplateCopy["features"]["cards"][number]["visual"];
 
-const loginHref = "/login";
+const loginHref = "/sign-in";
 
 const reviewAvatars = [
-  "/lunera-style/avatars/review-1.jpg",
-  "/lunera-style/avatars/review-2.jpg",
-  "/lunera-style/avatars/review-3.jpg"
+  "/lunera-style/avatars/review-1.webp",
+  "/lunera-style/avatars/review-2.webp",
+  "/lunera-style/avatars/review-3.webp"
 ] as const;
 
 export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {

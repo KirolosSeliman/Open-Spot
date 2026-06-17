@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 
@@ -236,15 +237,19 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
       ))}
 
       <div className="lunera-phone-motion">
-        <div className="lunera-phone-object lunera-phone-natural-mask">
-          <div aria-hidden="true" className="lunera-phone-side-rail" />
-          <div className="lunera-phone-body">
-            <div className="lunera-phone-glass">
-              <div className="lunera-phone-screen">
-                <OpenSpotPhoneScreen copy={copy} />
-              </div>
-              <div aria-hidden="true" className="lunera-phone-glare" />
-            </div>
+        <div className="lunera-phone-frame-shell lunera-phone-natural-mask">
+          <Image
+            alt=""
+            aria-hidden="true"
+            className="lunera-phone-frame-asset"
+            height={2100}
+            priority
+            sizes="(max-width: 767px) 104vw, 26rem"
+            src="/lunera-style/phone-frame-reference.png"
+            width={973}
+          />
+          <div className="lunera-phone-screen-overlay">
+            <OpenSpotPhoneScreen copy={copy} />
           </div>
         </div>
       </div>
@@ -264,7 +269,7 @@ function OpenSpotPhoneScreen({ copy }: { copy: SmsConversationPhoneCopy }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between px-5 pt-9">
+      <div className="lunera-phone-app-header flex items-center justify-between px-5 pt-9">
         <button
           aria-label="Back"
           className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-2xl font-light text-slate-800"
@@ -272,7 +277,10 @@ function OpenSpotPhoneScreen({ copy }: { copy: SmsConversationPhoneCopy }) {
         >
           {"<"}
         </button>
-        <p className="text-xl font-semibold text-[#11131a]">Open Spots</p>
+        <p className="lunera-phone-app-title text-xl font-semibold text-[#11131a]">
+          <span>Open </span>
+          <span>Spots</span>
+        </p>
         <button
           aria-label="Create opening"
           className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-3xl font-light text-slate-800"
@@ -282,18 +290,21 @@ function OpenSpotPhoneScreen({ copy }: { copy: SmsConversationPhoneCopy }) {
         </button>
       </div>
 
-      <div className="mx-5 mt-7 rounded-[1.6rem] bg-[#555c72] p-5 text-white shadow-[0_18px_40px_rgba(42,51,74,0.24)]">
+      <div className="lunera-open-slot-card mx-5 mt-7 rounded-[1.6rem] bg-[#555c72] p-5 text-white shadow-[0_18px_40px_rgba(42,51,74,0.24)]">
         <div className="flex items-start justify-between">
           <div>
             <p className="text-sm font-semibold text-white/65">Open slot</p>
-            <p className="mt-3 text-4xl font-light tracking-normal">4:30 PM</p>
+            <p className="lunera-phone-time mt-3 text-4xl font-light tracking-normal">
+              <span>4:30 </span>
+              <span>PM</span>
+            </p>
           </div>
           <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-black">
             Open
           </span>
         </div>
-        <p className="mt-5 text-lg font-semibold">Haircut + brushing</p>
-        <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
+        <p className="lunera-phone-service mt-5 text-lg font-semibold">Haircut + brushing</p>
+        <div className="lunera-phone-card-meta mt-5 grid grid-cols-2 gap-3 text-sm">
           <div>
             <p className="text-white/45">Replies</p>
             <p className="mt-1 font-semibold">2 replies</p>
@@ -305,7 +316,7 @@ function OpenSpotPhoneScreen({ copy }: { copy: SmsConversationPhoneCopy }) {
         </div>
       </div>
 
-      <div className="px-5 pt-6">
+      <div className="lunera-phone-replies px-5 pt-6">
         <p className="text-lg font-semibold text-[#11131a]">Client replies</p>
         <div className="mt-3 space-y-2">
           {responses.map(([name, answer, time]) => (
