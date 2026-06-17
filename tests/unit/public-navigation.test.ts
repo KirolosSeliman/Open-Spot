@@ -123,7 +123,7 @@ describe("public navigation", () => {
     }
   });
 
-  it("keeps the Lunera hero flow cloud-blended, reviewed, and asset-based", () => {
+  it("keeps the Lunera hero flow cloud-blended, reviewed, and phone-object based", () => {
     const homepage = source(homepagePath);
     const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
@@ -161,15 +161,23 @@ describe("public navigation", () => {
     expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*bottom:\s*-12rem/);
     expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*height:\s*clamp\(24rem,\s*34vw,\s*36rem\)/);
     expect(styles).toContain("mask-image");
-    expect(styles).toContain(".lunera-phone-asset-shell");
-    expect(styles).toContain(".lunera-phone-tilt");
+    expect(styles).toContain(".lunera-phone-object");
+    expect(styles).toContain(".lunera-phone-natural-mask");
+    expect(styles).toContain(".lunera-phone-side-rail");
+    expect(styles).toContain(".lunera-phone-body");
+    expect(styles).toContain(".lunera-phone-glass");
+    expect(styles).toContain(".lunera-phone-screen");
     expect(styles).not.toContain(".lunera-hero-phone-viewport::before");
 
     expect(phone).toContain("lunera-phone-motion");
-    expect(phone).toContain("lunera-phone-asset-shell lunera-phone-tilt");
-    expect(phone).toContain("phone-frame-reference.png");
-    expect(phone).toContain("lunera-phone-frame-image");
-    expect(phone).toContain("lunera-phone-screen-overlay");
+    expect(phone).toContain("lunera-phone-object lunera-phone-natural-mask");
+    expect(phone).toContain("lunera-phone-side-rail");
+    expect(phone).toContain("lunera-phone-body");
+    expect(phone).toContain("lunera-phone-glass");
+    expect(phone).toContain("lunera-phone-screen");
+    expect(phone).not.toContain("phone-frame-reference.png");
+    expect(phone).not.toContain("lunera-phone-frame-image");
+    expect(phone).not.toContain("lunera-phone-screen-overlay");
     expect(phone).toContain("Consent checked");
     expect(phone).toContain("Manual confirmation");
     expect(phone).not.toContain("useState<PhoneMotion>");

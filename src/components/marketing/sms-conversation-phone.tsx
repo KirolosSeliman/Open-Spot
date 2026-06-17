@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 
@@ -237,17 +236,15 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
       ))}
 
       <div className="lunera-phone-motion">
-        <div className="lunera-phone-asset-shell lunera-phone-tilt">
-          <Image
-            alt=""
-            className="lunera-phone-frame-image"
-            height={2100}
-            priority
-            src="/lunera-style/phone-frame-reference.png"
-            width={973}
-          />
-          <div className="lunera-phone-screen-overlay">
-            <OpenSpotPhoneScreen copy={copy} />
+        <div className="lunera-phone-object lunera-phone-natural-mask">
+          <div aria-hidden="true" className="lunera-phone-side-rail" />
+          <div className="lunera-phone-body">
+            <div className="lunera-phone-glass">
+              <div className="lunera-phone-screen">
+                <OpenSpotPhoneScreen copy={copy} />
+              </div>
+              <div aria-hidden="true" className="lunera-phone-glare" />
+            </div>
           </div>
         </div>
       </div>

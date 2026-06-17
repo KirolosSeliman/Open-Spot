@@ -427,6 +427,10 @@ select {
   z-index: 12;
 }
 
+.lunera-hero-visual-scene::before {
+  content: none;
+}
+
 .lunera-phone-depth-layer {
   inset: 0;
   pointer-events: none;
@@ -717,88 +721,149 @@ select {
 
 .lunera-phone-motion {
   backface-visibility: hidden;
-  max-width: min(24.35rem, 74vw);
-  position: relative;
+  flex: 0 0 auto;
   opacity: var(--lunera-phone-opacity);
+  position: relative;
   transform: translate3d(0, calc(var(--lunera-phone-y) + var(--lunera-phone-lift)), 0) scale(var(--lunera-phone-scale));
   transform-style: preserve-3d;
-  width: 100%;
+  width: min(27.4rem, 38vw);
   will-change: transform, opacity;
   z-index: 20;
 }
 
-.lunera-phone-asset-shell {
-  aspect-ratio: 973 / 2100;
+.lunera-phone-object {
   backface-visibility: hidden;
   position: relative;
+  transform:
+    rotateZ(2.45deg)
+    rotateY(-11.5deg)
+    rotateX(1.45deg)
+    translateZ(0);
+  transform-origin: center top;
+  transform-style: preserve-3d;
   width: 100%;
+  will-change: transform;
   z-index: 20;
 }
 
-.lunera-phone-tilt {
+.lunera-phone-natural-mask {
   -webkit-mask-image: linear-gradient(
-    180deg,
-    #000000 0%,
-    #000000 66%,
-    rgba(0, 0, 0, 0.78) 77%,
-    rgba(0, 0, 0, 0) 96%
+    to bottom,
+    transparent 0%,
+    #000000 2.5%,
+    #000000 67%,
+    rgba(0, 0, 0, 0.72) 78%,
+    transparent 96%
   );
-  backface-visibility: hidden;
   mask-image: linear-gradient(
-    180deg,
-    #000000 0%,
-    #000000 66%,
-    rgba(0, 0, 0, 0.78) 77%,
-    rgba(0, 0, 0, 0) 96%
+    to bottom,
+    transparent 0%,
+    #000000 2.5%,
+    #000000 67%,
+    rgba(0, 0, 0, 0.72) 78%,
+    transparent 96%
   );
-  transform:
-    rotateZ(1.15deg)
-    rotateY(-11deg)
-    rotateX(1.35deg)
-    translateZ(0);
-  transform-origin: 50% 38%;
-  transform-style: preserve-3d;
-  will-change: transform;
 }
 
-.lunera-phone-frame-image {
-  backface-visibility: hidden;
-  display: block;
-  height: auto;
-  pointer-events: none;
+.lunera-phone-body {
+  aspect-ratio: 430 / 860;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.2), transparent 20%),
+    linear-gradient(90deg, #07090e 0%, #1d2027 52%, #07090e 100%);
+  border-radius: clamp(2.75rem, 5.4vw, 4rem);
+  box-shadow:
+    0 42px 95px rgba(15, 23, 42, 0.24),
+    0 14px 36px rgba(15, 23, 42, 0.18),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.82),
+    inset 0 0 0 8px rgba(7, 9, 14, 0.94);
+  overflow: hidden;
   position: relative;
-  transform: translateZ(18px);
-  user-select: none;
+  transform: translateZ(28px);
   width: 100%;
   z-index: 2;
 }
 
-.lunera-phone-screen-overlay {
+.lunera-phone-side-rail {
   background:
-    linear-gradient(180deg, #ffffff 0%, #ffffff 74%, #f5f6f8 100%);
-  border-radius: 3.2rem 3rem 2.8rem 3.05rem / 2.5rem 2.45rem 2.35rem 2.45rem;
-  clip-path: polygon(6.2% 0%, 99% 0%, 91.6% 100%, 0% 96.1%);
-  height: 91.8%;
-  left: 7.35%;
+    linear-gradient(90deg, #101318 0%, #5d626a 42%, #15181d 100%);
+  border-radius: 0 clamp(2.7rem, 5vw, 3.7rem) clamp(2.7rem, 5vw, 3.7rem) 0;
+  bottom: 2rem;
+  box-shadow:
+    inset 8px 0 14px rgba(255, 255, 255, 0.16),
+    inset -8px 0 18px rgba(0, 0, 0, 0.58),
+    16px 22px 46px rgba(0, 0, 0, 0.28);
+  position: absolute;
+  right: -1.55rem;
+  top: 2rem;
+  transform: translateZ(-20px);
+  width: 2.75rem;
+  z-index: -1;
+}
+
+.lunera-phone-side-rail::before,
+.lunera-phone-side-rail::after {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(0, 0, 0, 0.36));
+  border-radius: 999px;
+  content: "";
+  height: 5.2rem;
+  position: absolute;
+  right: 0.72rem;
+  width: 0.42rem;
+}
+
+.lunera-phone-side-rail::before {
+  top: 11.2rem;
+}
+
+.lunera-phone-side-rail::after {
+  top: 20.4rem;
+}
+
+.lunera-phone-glass {
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.92), transparent 28%),
+    linear-gradient(120deg, rgba(255, 255, 255, 0.92), #ffffff 55%, rgba(240, 245, 251, 0.96));
+  border-radius: clamp(2.3rem, 5vw, 3.45rem);
+  inset: clamp(0.42rem, 1vw, 0.68rem);
   overflow: hidden;
   position: absolute;
-  top: 3.95%;
-  transform: translateZ(24px);
-  transform-origin: center top;
-  width: 79.6%;
-  z-index: 4;
+}
+
+.lunera-phone-screen {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #ffffff 74%, #f5f6f8 100%);
+  border-radius: clamp(2.12rem, 4.4vw, 3rem);
+  box-shadow:
+    inset 0 0 0 1px rgba(15, 23, 42, 0.04),
+    inset 0 18px 38px rgba(255, 255, 255, 0.68);
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  transform: translateZ(5px);
+  transform-style: preserve-3d;
+}
+
+.lunera-phone-glare {
+  background:
+    linear-gradient(112deg, rgba(255, 255, 255, 0.38) 0%, transparent 24%),
+    radial-gradient(circle at 18% 5%, rgba(255, 255, 255, 0.35), transparent 22%);
+  inset: 0;
+  opacity: 0.62;
+  pointer-events: none;
+  position: absolute;
+  z-index: 5;
 }
 
 .lunera-phone-dynamic-island {
   background: #000000;
   border-radius: 999px;
   box-shadow: 0 7px 18px rgba(0, 0, 0, 0.3);
-  height: 2.15rem;
+  height: clamp(2rem, 3.1vw, 2.7rem);
   left: 50%;
   position: absolute;
-  top: 1.55rem;
-  transform: translateX(-50%);
-  width: 7.25rem;
+  top: clamp(1.05rem, 2.2vw, 1.65rem);
+  transform: translateX(-50%) translateZ(8px);
+  width: clamp(6.85rem, 10.6vw, 9.35rem);
   z-index: 4;
 }
 
@@ -1414,7 +1479,7 @@ select {
 
   .lunera-marquee-track,
   .lunera-business-marquee-track,
-  .lunera-phone-asset-shell,
+  .lunera-phone-object,
   .lunera-floating-card,
   .lunera-reply-row,
   .lunera-integration-card,
@@ -1445,93 +1510,132 @@ select {
 @media (max-width: 767px) {
   .lunera-hero-visual-scene {
     margin-top: 1.65rem;
-    max-width: 32rem;
-    min-height: 30.5rem;
+    max-width: 34rem;
+    min-height: 43.75rem;
+  }
+
+  .lunera-hero-visual-scene::before {
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(191, 234, 255, 0) 0%,
+        rgba(191, 234, 255, 0.52) 34%,
+        rgba(208, 241, 255, 0.34) 62%,
+        rgba(208, 241, 255, 0) 100%
+      );
+    content: "";
+    height: 14rem;
+    left: 50%;
+    pointer-events: none;
+    position: absolute;
+    top: -6rem;
+    transform: translateX(-50%);
+    width: 100vw;
+    z-index: 22;
   }
 
   .lunera-phone-scene {
     padding-inline: 0;
-    --lunera-phone-lift: -6.25rem;
+    --lunera-phone-lift: -6rem;
   }
 
   .lunera-phone-motion {
-    max-width: min(18.4rem, 82vw);
+    width: min(28.45rem, 118vw);
   }
 
-  .lunera-phone-tilt {
-    -webkit-mask-image: linear-gradient(
-      180deg,
-      #000000 0%,
-      #000000 62%,
-      rgba(0, 0, 0, 0.72) 73%,
-      rgba(0, 0, 0, 0) 93%
-    );
-    mask-image: linear-gradient(
-      180deg,
-      #000000 0%,
-      #000000 62%,
-      rgba(0, 0, 0, 0.72) 73%,
-      rgba(0, 0, 0, 0) 93%
-    );
+  .lunera-phone-object {
     transform:
-      rotateZ(1.15deg)
-      rotateY(-12deg)
-      rotateX(1.25deg)
+      rotateZ(2.85deg)
+      rotateY(-11.5deg)
+      rotateX(1.45deg)
+      scale(0.98)
       translateZ(0);
   }
 
-  .lunera-phone-screen-overlay {
-    border-radius: 2.2rem 2.1rem 2rem 2.15rem / 1.8rem 1.8rem 1.6rem 1.7rem;
-    font-size: 0.78rem;
-    left: 7.5%;
-    top: 3.95%;
-    width: 79.8%;
+  .lunera-phone-natural-mask {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000000 4%,
+      #000000 64%,
+      rgba(0, 0, 0, 0.72) 76%,
+      transparent 94%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000000 4%,
+      #000000 64%,
+      rgba(0, 0, 0, 0.72) 76%,
+      transparent 94%
+    );
+  }
+
+  .lunera-phone-body {
+    border-radius: clamp(2.9rem, 11vw, 4.05rem);
+  }
+
+  .lunera-phone-glass {
+    border-radius: clamp(2.44rem, 9.4vw, 3.45rem);
+    inset: clamp(0.45rem, 2.2vw, 0.68rem);
+  }
+
+  .lunera-phone-screen {
+    border-radius: clamp(2.12rem, 9vw, 3rem);
+    inset: 0;
+  }
+
+  .lunera-phone-side-rail {
+    bottom: 2rem;
+    right: -1.38rem;
+    top: 2rem;
+    width: 2.45rem;
   }
 
   .lunera-phone-dynamic-island {
-    height: 1.45rem;
-    top: 1.05rem;
-    width: 5.5rem;
+    height: 2.28rem;
+    top: 1.25rem;
+    width: 7.65rem;
   }
 
   .lunera-hero-cloud-blend {
-    bottom: -15rem;
-    height: 31rem;
+    bottom: -5rem;
+    height: 26.9rem;
   }
 
   .lunera-cloud-blob-left {
-    height: 10rem;
-    left: -24vw;
-    top: 7.6rem;
-    width: 78vw;
+    height: 13.1rem;
+    left: -34vw;
+    top: 8.1rem;
+    width: 90vw;
   }
 
   .lunera-cloud-blob-right {
-    height: 11rem;
-    right: -26vw;
-    top: 6.7rem;
-    width: 86vw;
+    height: 13.75rem;
+    right: -36vw;
+    top: 8.1rem;
+    width: 90vw;
   }
 
   .lunera-cloud-blob-center {
-    height: 16.25rem;
-    top: 8.6rem;
-    width: 132vw;
+    height: 17.5rem;
+    top: 10.3rem;
+    width: 140vw;
   }
 
   .lunera-cloud-gradient-whiteout {
     background:
-      radial-gradient(circle at 50% 62%, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.76) 36%, transparent 72%),
-      radial-gradient(circle at 22% 66%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.66) 28%, transparent 64%),
-      radial-gradient(circle at 82% 64%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.64) 30%, transparent 66%),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 44%, rgba(255, 255, 255, 0.52) 66%, #ffffff 92%);
+      radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.8) 40%, transparent 68%),
+      radial-gradient(circle at 18% 48%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.64) 28%, transparent 64%),
+      radial-gradient(circle at 82% 48%, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.64) 30%, transparent 66%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.62) 46%, #ffffff 88%);
   }
 
   .lunera-hero-social-proof {
     align-items: center;
     flex-direction: column;
     gap: 0.55rem;
-    margin-top: 0;
+    margin-top: -6.8rem;
   }
 
   .lunera-arc-stage {
@@ -1611,9 +1715,7 @@ select {
     white-space: nowrap;
   }
 
-  .lunera-phone-screen-overlay {
-    left: 7.6%;
-    top: 3.95%;
-    width: 80%;
+  .lunera-phone-motion {
+    width: min(28.45rem, 118vw);
   }
 }
