@@ -15,13 +15,14 @@ describe("public navigation", () => {
   it("keeps the homepage header minimal for Lunera-style parity", () => {
     const homepage = source(homepagePath);
 
-    expect(homepage).toContain('href="/signup"');
+    expect(homepage).toContain('const loginHref = "/login"');
     expect(homepage).toContain('features: "Features"');
     expect(homepage).toContain('how: "How it works"');
     expect(homepage).toContain('pricing: "Pricing"');
     expect(homepage).toContain('contact: "Contact"');
-    expect(homepage).toContain("Get Early Access");
-    expect(homepage).not.toContain('href="/sign-in"');
+    expect(homepage).toContain("Se connecter");
+    expect(homepage).not.toContain("Get Early Access");
+    expect(homepage).not.toContain('href="/signup"');
     expect(homepage).not.toContain("LanguageSwitcher");
     expect(homepage).not.toContain('login: "Connexion"');
     expect(homepage).not.toContain('login: "Sign in"');
@@ -122,7 +123,7 @@ describe("public navigation", () => {
     }
   });
 
-  it("keeps the Lunera hero flow clipped, cloud-blended, reviewed, and perspective-based", () => {
+  it("keeps the Lunera hero flow clipped, cloud-blended, reviewed, and asset-based", () => {
     const homepage = source(homepagePath);
     const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
@@ -142,7 +143,7 @@ describe("public navigation", () => {
     expect(socialProofIndex).toBeGreaterThan(cloudBlendIndex);
     expect(ctaRowIndex).toBeGreaterThan(socialProofIndex);
     expect(homepage).toContain("Designed for salons, clinics and barbers");
-    expect(homepage).toContain("★★★★★");
+    expect(homepage).toContain("\\u2605\\u2605\\u2605\\u2605\\u2605");
     expect(homepage).not.toContain("â˜");
     expect(homepage).not.toContain("t.hero.badges.map");
     expect(homepage).not.toContain("lunera-hero-phone-fade");
@@ -153,18 +154,17 @@ describe("public navigation", () => {
     expect(styles).toContain(".lunera-cloud-layer");
     expect(styles).toContain(".lunera-cloud-fade");
     expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*width:\s*100vw/);
+    expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*bottom:\s*-8\.75rem/);
+    expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*height:\s*clamp\(31rem,\s*42vw,\s*45rem\)/);
     expect(styles).toContain("mask-image");
-    expect(styles).toContain("perspective: 1200px");
-    expect(styles).toContain("rotateY(-7deg)");
+    expect(styles).toContain(".lunera-phone-asset-shell");
 
     expect(phone).toContain("lunera-phone-motion");
-    expect(phone).toContain("lunera-phone-object");
-    expect(phone).toContain("lunera-phone-front");
-    expect(phone).toContain("lunera-phone-screen");
+    expect(phone).toContain("phone-frame-reference.png");
+    expect(phone).toContain("lunera-phone-frame-image");
+    expect(phone).toContain("lunera-phone-screen-overlay");
     expect(phone).toContain("Consent checked");
     expect(phone).toContain("Manual confirmation");
-    expect(phone).not.toContain("phone-frame-reference.png");
-    expect(phone).not.toContain("lunera-phone-frame-asset");
     expect(phone).not.toContain("useState<PhoneMotion>");
     expect(phone).not.toContain("setMotion(");
     expect(phone).not.toContain("rotate: number");
@@ -175,6 +175,18 @@ describe("public navigation", () => {
     const floatingCardRule = styles.match(/\.lunera-floating-card\s*{([\s\S]*?)}/)?.[1] ?? "";
     expect(floatingCardRule).toContain("transform: translate3d");
     expect(floatingCardRule).not.toContain("transition:");
+  });
+
+  it("uses Lunera-style photo avatars in the hero reviews instead of initials", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+
+    expect(homepage).toContain("reviewAvatars");
+    expect(homepage).toContain("/lunera-style/avatars/review-1");
+    expect(homepage).toContain("Image alt=\"\"");
+    expect(homepage).not.toContain('["SE", "BN", "CL", "JR"]');
+    expect(styles).toContain(".lunera-avatar-stack img");
+    expect(styles).toContain("object-fit: cover");
   });
 
   it("uses a long seamless business marquee instead of a short logo loop", () => {

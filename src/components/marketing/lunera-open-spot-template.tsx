@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
@@ -14,14 +15,14 @@ const openSpotCopy = {
     how: "How it works",
     pricing: "Pricing",
     contact: "Contact",
-    primary: "Get Early Access"
+    primary: "Se connecter"
   },
   hero: {
     eyebrow: "Built for appointment-based teams",
     title: ["Fill every opening,", "recover every booking."],
     subtitle:
       "Simple SMS tools designed to help salons, clinics and barbers refill last-minute cancellations before the spot is gone.",
-    primary: "Get Early Access",
+    primary: "Se connecter",
     secondary: "Contact Sales",
     proof: "Designed for salons, clinics and barbers"
   },
@@ -248,7 +249,7 @@ const openSpotCopy = {
     title: "Stop losing revenue to last-minute cancellations.",
     text:
       "Open Spot gives your team a simple SMS workflow to refill empty appointment slots before they disappear.",
-    primary: "Get Early Access",
+    primary: "Se connecter",
     secondary: "Contact Sales"
   },
   footer: {
@@ -268,6 +269,14 @@ const copy = {
 
 type TemplateCopy = (typeof copy)[Locale];
 type FeatureVisualType = TemplateCopy["features"]["cards"][number]["visual"];
+
+const loginHref = "/login";
+
+const reviewAvatars = [
+  "/lunera-style/avatars/review-1.jpg",
+  "/lunera-style/avatars/review-2.jpg",
+  "/lunera-style/avatars/review-3.jpg"
+] as const;
 
 export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   const t = copy[locale];
@@ -398,10 +407,9 @@ function FloatingNavbar({ t }: { t: TemplateCopy }) {
         </nav>
         <Link
           className="inline-flex min-h-[2.5rem] shrink-0 items-center justify-center rounded-full bg-black px-3.5 text-[0.82rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:px-4"
-          href="/signup"
+          href={loginHref}
         >
-          <span className="hidden sm:inline">{t.nav.primary}</span>
-          <span className="sm:hidden">Access</span>
+          <span>{t.nav.primary}</span>
         </Link>
       </div>
     </header>
@@ -481,13 +489,15 @@ function HeroSocialProof({ text }: { text: string }) {
   return (
     <div className="lunera-hero-social-proof" data-lunera-reveal id="reviews">
       <div className="lunera-avatar-stack" aria-hidden="true">
-        {["SE", "BN", "CL", "JR"].map((label) => (
-          <span key={label}>{label}</span>
+        {reviewAvatars.map((src) => (
+          <span key={src}>
+            <Image alt="" height={44} src={src} width={44} />
+          </span>
         ))}
       </div>
       <div className="text-center sm:text-left">
         <div className="lunera-stars" aria-label="Five star rating from appointment teams">
-          {"★★★★★"}
+          {"\u2605\u2605\u2605\u2605\u2605"}
         </div>
         <p>{text}</p>
       </div>
@@ -498,7 +508,7 @@ function HeroSocialProof({ text }: { text: string }) {
 function HeroCtaRow({ t }: { t: TemplateCopy }) {
   return (
     <div className="lunera-hero-cta-row" data-lunera-reveal>
-      <Link className="lunera-cta-primary bg-black shadow-[0_18px_42px_rgba(0,0,0,0.2)]" href="/signup">
+      <Link className="lunera-cta-primary bg-black shadow-[0_18px_42px_rgba(0,0,0,0.2)]" href={loginHref}>
         {t.hero.primary}
       </Link>
       <Link className="lunera-cta-secondary" href="/contact">
@@ -902,7 +912,7 @@ function FinalCta({ t }: { t: TemplateCopy }) {
           {t.final.text}
         </p>
         <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link className="lunera-cta-light" href="/signup">
+          <Link className="lunera-cta-light" href={loginHref}>
             {t.final.primary}
           </Link>
           <Link className="lunera-cta-dark" href="/contact">
@@ -943,7 +953,7 @@ function Footer({ t }: { t: TemplateCopy }) {
           links={[
             ["Contact", "/contact"],
             ["Blog", "#resources"],
-            [t.nav.primary, "/signup"]
+            [t.nav.primary, loginHref]
           ]}
           title={t.footer.resource}
         />

@@ -104,7 +104,7 @@ const bookingCopy = {
       prepTitle: "Frequently asked questions",
       prep: [
         "Do my customers need to install an app? No, they reply by SMS.",
-        "Is the first person who replies automatically confirmed? No, you always choose who to confirm.",
+        "Does Open Spot choose the client for me? No, you always choose who to confirm.",
         "Do I need to change my booking software? No, Open Spot fits beside your current system.",
         "How does SMS consent work? We clarify it before sending alerts.",
         "Is this right for my business? The call is meant to verify that."
