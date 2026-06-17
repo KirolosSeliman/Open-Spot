@@ -237,7 +237,7 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
       ))}
 
       <div className="lunera-phone-motion">
-        <div className="lunera-phone-asset-shell">
+        <div className="lunera-phone-asset-shell lunera-phone-tilt">
           <Image
             alt=""
             className="lunera-phone-frame-image"
@@ -381,7 +381,7 @@ function HeroMetricCard({
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-30 w-[12.25rem] rounded-[1.18rem] border border-white/80 bg-white p-4 text-left shadow-[0_20px_52px_rgba(15,23,42,0.13)]",
+        "lunera-floating-card absolute z-[14] w-[12.25rem] rounded-[1.18rem] border border-white/80 bg-white p-4 text-left shadow-[0_20px_52px_rgba(15,23,42,0.13)]",
         className
       )}
     >
@@ -416,7 +416,7 @@ function FloatingSmsBadge({
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-30 max-w-[11.5rem] rounded-full border px-3.5 py-1.5 text-xs font-black shadow-[0_18px_46px_rgba(15,23,42,0.13)]",
+        "lunera-floating-card absolute z-[14] max-w-[11.5rem] rounded-full border px-3.5 py-1.5 text-xs font-black shadow-[0_18px_46px_rgba(15,23,42,0.13)]",
         toneClass,
         positions[index]
       )}

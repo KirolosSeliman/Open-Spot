@@ -413,89 +413,101 @@ select {
 .lunera-hero-sky {
   background:
     linear-gradient(180deg, rgba(119, 202, 246, 0.16), rgba(255, 255, 255, 0.12)),
-    url("/lunera-style/sky-clouds.png") center bottom / cover no-repeat,
+    url("/lunera-style/sky-clouds.png") center calc(100% + 8rem) / cover no-repeat,
     #bfeaff;
 }
 
-.lunera-hero-phone-viewport {
-  height: 31.25rem;
-  margin: 1.9rem auto 0;
+.lunera-hero-visual-scene {
+  min-height: clamp(35rem, 44vw, 43rem);
+  margin: -0.35rem auto 0;
   max-width: 72rem;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
   width: 100%;
   z-index: 12;
 }
 
+.lunera-phone-depth-layer {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 10;
+}
+
 .lunera-hero-cloud-blend {
-  bottom: -8.75rem;
-  height: clamp(31rem, 42vw, 45rem);
+  bottom: -12rem;
+  height: clamp(24rem, 34vw, 36rem);
   left: 50%;
-  -webkit-mask-composite: source-in;
-  -webkit-mask-image:
-    linear-gradient(
-      90deg,
-      transparent 0%,
-      #000000 6%,
-      #000000 94%,
-      transparent 100%
-    ),
-    linear-gradient(180deg, transparent 0%, #000000 24%, #000000 100%);
-  mask-composite: intersect;
-  mask-image:
-    linear-gradient(
-      90deg,
-      transparent 0%,
-      #000000 6%,
-      #000000 94%,
-      transparent 100%
-    ),
-    linear-gradient(180deg, transparent 0%, #000000 24%, #000000 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.18) 16%,
+    #000000 36%,
+    #000000 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.18) 16%,
+    #000000 36%,
+    #000000 100%
+  );
   overflow: hidden;
   pointer-events: none;
   position: absolute;
   transform: translateX(-50%);
   width: 100vw;
-  z-index: 36;
+  z-index: 28;
 }
 
-.lunera-cloud-layer,
-.lunera-cloud-fade {
-  inset: 0;
+.lunera-cloud-occlusion-system {
+  isolation: isolate;
+}
+
+.lunera-cloud-blob {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 999px;
+  filter: blur(18px);
+  opacity: 0.95;
   position: absolute;
 }
 
-.lunera-cloud-layer-back {
-  background:
-    radial-gradient(ellipse at 8% 62%, rgba(255, 255, 255, 0.68), transparent 34%),
-    radial-gradient(ellipse at 31% 58%, rgba(255, 255, 255, 0.76), transparent 37%),
-    radial-gradient(ellipse at 62% 62%, rgba(255, 255, 255, 0.74), transparent 39%),
-    radial-gradient(ellipse at 92% 60%, rgba(255, 255, 255, 0.7), transparent 36%);
-  filter: blur(12px);
-  opacity: 0.78;
-  transform: translate3d(0, 4.4rem, 0) scaleX(1.18);
+.lunera-cloud-blob-left {
+  height: 15.6rem;
+  left: -10vw;
+  top: 8.8rem;
+  width: 52vw;
 }
 
-.lunera-cloud-layer-front {
-  background:
-    radial-gradient(ellipse at 16% 75%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.9) 32%, transparent 58%),
-    radial-gradient(ellipse at 47% 78%, #ffffff 0%, rgba(255, 255, 255, 0.94) 36%, transparent 64%),
-    radial-gradient(ellipse at 82% 76%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.9) 33%, transparent 60%);
-  transform: translate3d(0, 7rem, 0) scaleX(1.12);
+.lunera-cloud-blob-center {
+  height: 20.6rem;
+  left: 50%;
+  top: 12rem;
+  transform: translateX(-50%);
+  width: 78vw;
 }
 
-.lunera-cloud-fade {
+.lunera-cloud-blob-right {
+  height: 16.9rem;
+  right: -12vw;
+  top: 7.8rem;
+  width: 56vw;
+}
+
+.lunera-cloud-gradient-whiteout {
   background:
-    radial-gradient(ellipse at 17% 86%, rgba(255, 255, 255, 0.94), transparent 44%),
-    radial-gradient(ellipse at 81% 88%, rgba(255, 255, 255, 0.94), transparent 43%),
-    radial-gradient(ellipse at 50% 96%, #ffffff 0%, rgba(255, 255, 255, 0.88) 34%, transparent 62%),
+    radial-gradient(circle at 18% 56%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.78) 28%, transparent 58%),
+    radial-gradient(circle at 78% 54%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.76) 30%, transparent 60%),
+    radial-gradient(circle at 50% 80%, #ffffff 0%, rgba(255, 255, 255, 0.9) 34%, rgba(255, 255, 255, 0.18) 62%, transparent 76%),
     linear-gradient(
-      180deg,
+      to bottom,
       rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.16) 34%,
-      rgba(255, 255, 255, 0.68) 68%,
+      rgba(255, 255, 255, 0) 44%,
+      rgba(255, 255, 255, 0.46) 68%,
       #ffffff 96%
     );
+  inset: 0;
+  position: absolute;
 }
 
 .lunera-hero-social-proof {
@@ -692,10 +704,13 @@ select {
   min-height: 0;
   overflow: visible;
   padding-inline: 1rem;
+  perspective: 1400px;
   position: relative;
+  transform-style: preserve-3d;
   width: 100%;
   --lunera-phone-opacity: 0.92;
   --lunera-phone-progress: 0;
+  --lunera-phone-lift: 0px;
   --lunera-phone-scale: 0.94;
   --lunera-phone-y: 124px;
 }
@@ -705,7 +720,8 @@ select {
   max-width: min(24.35rem, 74vw);
   position: relative;
   opacity: var(--lunera-phone-opacity);
-  transform: translate3d(0, var(--lunera-phone-y), 0) scale(var(--lunera-phone-scale));
+  transform: translate3d(0, calc(var(--lunera-phone-y) + var(--lunera-phone-lift)), 0) scale(var(--lunera-phone-scale));
+  transform-style: preserve-3d;
   width: 100%;
   will-change: transform, opacity;
   z-index: 20;
@@ -719,11 +735,39 @@ select {
   z-index: 20;
 }
 
+.lunera-phone-tilt {
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    #000000 0%,
+    #000000 66%,
+    rgba(0, 0, 0, 0.78) 77%,
+    rgba(0, 0, 0, 0) 96%
+  );
+  backface-visibility: hidden;
+  mask-image: linear-gradient(
+    180deg,
+    #000000 0%,
+    #000000 66%,
+    rgba(0, 0, 0, 0.78) 77%,
+    rgba(0, 0, 0, 0) 96%
+  );
+  transform:
+    rotateZ(1.15deg)
+    rotateY(-11deg)
+    rotateX(1.35deg)
+    translateZ(0);
+  transform-origin: 50% 38%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
 .lunera-phone-frame-image {
+  backface-visibility: hidden;
   display: block;
   height: auto;
   pointer-events: none;
   position: relative;
+  transform: translateZ(18px);
   user-select: none;
   width: 100%;
   z-index: 2;
@@ -739,7 +783,7 @@ select {
   overflow: hidden;
   position: absolute;
   top: 3.95%;
-  transform: rotate(-0.2deg) skewY(1.42deg);
+  transform: translateZ(24px);
   transform-origin: center top;
   width: 79.6%;
   z-index: 4;
@@ -1341,15 +1385,15 @@ select {
 }
 
 @media (min-width: 1024px) {
-  .lunera-hero-phone-viewport {
-    height: 33.9rem;
+  .lunera-hero-visual-scene {
+    min-height: 43.5rem;
     margin-top: -5.35rem;
   }
 }
 
 @media (min-width: 1440px) {
-  .lunera-hero-phone-viewport {
-    height: 35rem;
+  .lunera-hero-visual-scene {
+    min-height: 45rem;
   }
 }
 
@@ -1391,19 +1435,49 @@ select {
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .lunera-hero-visual-scene {
+    margin-top: -1rem;
+    min-height: 42rem;
+  }
+}
+
 @media (max-width: 767px) {
-  .lunera-hero-phone-viewport {
-    height: 24rem;
-    margin-top: 1.25rem;
+  .lunera-hero-visual-scene {
+    margin-top: 1.65rem;
     max-width: 32rem;
+    min-height: 30.5rem;
   }
 
   .lunera-phone-scene {
     padding-inline: 0;
+    --lunera-phone-lift: -6.25rem;
   }
 
   .lunera-phone-motion {
     max-width: min(18.4rem, 82vw);
+  }
+
+  .lunera-phone-tilt {
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000000 0%,
+      #000000 62%,
+      rgba(0, 0, 0, 0.72) 73%,
+      rgba(0, 0, 0, 0) 93%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000000 0%,
+      #000000 62%,
+      rgba(0, 0, 0, 0.72) 73%,
+      rgba(0, 0, 0, 0) 93%
+    );
+    transform:
+      rotateZ(1.15deg)
+      rotateY(-12deg)
+      rotateX(1.25deg)
+      translateZ(0);
   }
 
   .lunera-phone-screen-overlay {
@@ -1421,8 +1495,36 @@ select {
   }
 
   .lunera-hero-cloud-blend {
-    bottom: -4.8rem;
-    height: 18rem;
+    bottom: -15rem;
+    height: 31rem;
+  }
+
+  .lunera-cloud-blob-left {
+    height: 10rem;
+    left: -24vw;
+    top: 7.6rem;
+    width: 78vw;
+  }
+
+  .lunera-cloud-blob-right {
+    height: 11rem;
+    right: -26vw;
+    top: 6.7rem;
+    width: 86vw;
+  }
+
+  .lunera-cloud-blob-center {
+    height: 16.25rem;
+    top: 8.6rem;
+    width: 132vw;
+  }
+
+  .lunera-cloud-gradient-whiteout {
+    background:
+      radial-gradient(circle at 50% 62%, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.76) 36%, transparent 72%),
+      radial-gradient(circle at 22% 66%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.66) 28%, transparent 64%),
+      radial-gradient(circle at 82% 64%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.64) 30%, transparent 66%),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 44%, rgba(255, 255, 255, 0.52) 66%, #ffffff 92%);
   }
 
   .lunera-hero-social-proof {

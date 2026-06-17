@@ -123,7 +123,7 @@ describe("public navigation", () => {
     }
   });
 
-  it("keeps the Lunera hero flow clipped, cloud-blended, reviewed, and asset-based", () => {
+  it("keeps the Lunera hero flow cloud-blended, reviewed, and asset-based", () => {
     const homepage = source(homepagePath);
     const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
@@ -132,14 +132,16 @@ describe("public navigation", () => {
       homepage.indexOf("function Hero("),
       homepage.indexOf("function LogoStrip(")
     );
-    const phoneViewportIndex = heroFunction.indexOf('className="lunera-hero-phone-viewport"');
+    const visualSceneIndex = heroFunction.indexOf('className="lunera-hero-visual-scene"');
+    const phoneDepthIndex = heroFunction.indexOf('className="lunera-phone-depth-layer"');
     const cloudBlendIndex = heroFunction.indexOf("<HeroCloudBlend");
     const socialProofIndex = heroFunction.indexOf("<HeroSocialProof");
     const ctaRowIndex = heroFunction.indexOf("<HeroCtaRow");
 
     expect(mainMarkup.indexOf("<Hero")).toBeLessThan(mainMarkup.indexOf("<LogoStrip"));
-    expect(phoneViewportIndex).toBeGreaterThan(-1);
-    expect(cloudBlendIndex).toBeGreaterThan(phoneViewportIndex);
+    expect(visualSceneIndex).toBeGreaterThan(-1);
+    expect(phoneDepthIndex).toBeGreaterThan(visualSceneIndex);
+    expect(cloudBlendIndex).toBeGreaterThan(phoneDepthIndex);
     expect(socialProofIndex).toBeGreaterThan(cloudBlendIndex);
     expect(ctaRowIndex).toBeGreaterThan(socialProofIndex);
     expect(homepage).toContain("Designed for salons, clinics and barbers");
@@ -149,17 +151,22 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("lunera-hero-phone-fade");
     expect(homepage).not.toContain("40K+ users");
 
-    expect(styles).toMatch(/\.lunera-hero-phone-viewport\s*{[\s\S]*overflow:\s*hidden/);
+    expect(styles).toMatch(/\.lunera-hero-visual-scene\s*{[\s\S]*overflow:\s*visible/);
+    expect(styles).toContain(".lunera-phone-depth-layer");
     expect(styles).toContain(".lunera-hero-cloud-blend");
-    expect(styles).toContain(".lunera-cloud-layer");
-    expect(styles).toContain(".lunera-cloud-fade");
+    expect(styles).toContain(".lunera-cloud-occlusion-system");
+    expect(styles).toContain(".lunera-cloud-blob");
+    expect(styles).toContain(".lunera-cloud-gradient-whiteout");
     expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*width:\s*100vw/);
-    expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*bottom:\s*-8\.75rem/);
-    expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*height:\s*clamp\(31rem,\s*42vw,\s*45rem\)/);
+    expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*bottom:\s*-12rem/);
+    expect(styles).toMatch(/\.lunera-hero-cloud-blend\s*{[\s\S]*height:\s*clamp\(24rem,\s*34vw,\s*36rem\)/);
     expect(styles).toContain("mask-image");
     expect(styles).toContain(".lunera-phone-asset-shell");
+    expect(styles).toContain(".lunera-phone-tilt");
+    expect(styles).not.toContain(".lunera-hero-phone-viewport::before");
 
     expect(phone).toContain("lunera-phone-motion");
+    expect(phone).toContain("lunera-phone-asset-shell lunera-phone-tilt");
     expect(phone).toContain("phone-frame-reference.png");
     expect(phone).toContain("lunera-phone-frame-image");
     expect(phone).toContain("lunera-phone-screen-overlay");

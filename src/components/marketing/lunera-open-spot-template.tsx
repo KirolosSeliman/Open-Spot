@@ -439,7 +439,7 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
 function Hero({ t }: { t: TemplateCopy }) {
   return (
     <section
-      className="relative isolate overflow-hidden px-4 pb-10 pt-28 sm:pt-32"
+      className="relative isolate overflow-visible px-4 pb-10 pt-28 sm:pt-32"
       data-lunera-hero
     >
       <div className="lunera-hero-sky absolute inset-0 -z-20" />
@@ -465,10 +465,12 @@ function Hero({ t }: { t: TemplateCopy }) {
           {t.hero.subtitle}
         </p>
       </div>
-      <div className="lunera-hero-phone-viewport" data-lunera-reveal>
-        <SmsConversationPhone locale="en" />
+      <div className="lunera-hero-visual-scene" data-lunera-reveal>
+        <div className="lunera-phone-depth-layer">
+          <SmsConversationPhone locale="en" />
+        </div>
+        <HeroCloudBlend />
       </div>
-      <HeroCloudBlend />
       <HeroSocialProof text={t.hero.proof} />
       <HeroCtaRow t={t} />
     </section>
@@ -477,10 +479,11 @@ function Hero({ t }: { t: TemplateCopy }) {
 
 function HeroCloudBlend() {
   return (
-    <div aria-hidden="true" className="lunera-hero-cloud-blend">
-      <div className="lunera-cloud-layer lunera-cloud-layer-back" />
-      <div className="lunera-cloud-layer lunera-cloud-layer-front" />
-      <div className="lunera-cloud-fade" />
+    <div aria-hidden="true" className="lunera-hero-cloud-blend lunera-cloud-occlusion-system">
+      <div className="lunera-cloud-blob lunera-cloud-blob-left" />
+      <div className="lunera-cloud-blob lunera-cloud-blob-center" />
+      <div className="lunera-cloud-blob lunera-cloud-blob-right" />
+      <div className="lunera-cloud-gradient-whiteout" />
     </div>
   );
 }
