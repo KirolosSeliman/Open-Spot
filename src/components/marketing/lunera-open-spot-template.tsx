@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
+import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
 import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils/cn";
 
@@ -13,14 +14,12 @@ const openSpotCopy = {
     how: "How it works",
     pricing: "Pricing",
     contact: "Contact",
-    primary: "Get Early Access"
+    primary: "Se connecter"
   },
   hero: {
-    title: ["Fill your schedule", "with simple SMS."],
-    subtitle: [
-      "Open Spot helps you capture interest, notify at the right time,",
-      "and recover more revenue\u2014with less work."
-    ]
+    title: "recover every booking.",
+    subtitle:
+      "Simple SMS tools that help salons fill open spots and turns refill last-minute cancellations into new appointments."
   },
   businessTypes: [
     "Salons",
@@ -245,7 +244,7 @@ const openSpotCopy = {
     title: "Stop losing revenue to last-minute cancellations.",
     text:
       "Open Spot gives your team a simple SMS workflow to refill empty appointment slots before they disappear.",
-    primary: "Get Early Access",
+    primary: "Se connecter",
     secondary: "Contact Sales"
   },
   footer: {
@@ -265,7 +264,7 @@ const copy = {
 
 type TemplateCopy = (typeof copy)[Locale];
 
-const earlyAccessHref = "/book-call/questions";
+const loginHref = "/sign-in";
 
 export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   const t = copy[locale];
@@ -361,7 +360,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
     >
       <FloatingNavbar t={t} />
       <main>
-        <MetricsHeroSection t={t} />
+        <Hero t={t} />
         <LogoStrip items={logoStripItems} />
         <IntegrationsSection t={t} />
         <HowItWorks t={t} />
@@ -395,7 +394,7 @@ function FloatingNavbar({ t }: { t: TemplateCopy }) {
         </nav>
         <Link
           className="inline-flex min-h-[2.5rem] shrink-0 items-center justify-center rounded-full bg-black px-3.5 text-[0.82rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:px-4"
-          href={earlyAccessHref}
+          href={loginHref}
         >
           <span>{t.nav.primary}</span>
         </Link>
@@ -424,241 +423,46 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
   );
 }
 
-function MetricsHeroSection({ t }: { t: TemplateCopy }) {
+function Hero({ t }: { t: TemplateCopy }) {
   return (
-    <section className="open-spot-metrics-hero bg-white px-4 pb-10 pt-28 sm:pt-32" id="features">
-      <div className="mx-auto max-w-[70rem]">
-        <div className="mx-auto max-w-[44rem] text-center">
-          <h1
-            className="mx-auto text-balance text-[2.65rem] font-semibold leading-[0.98] tracking-normal text-[#05070b] sm:text-[4rem] lg:text-[4.45rem]"
-            data-lunera-reveal
-          >
-            {t.hero.title.map((line) => (
-              <span className="block" key={line}>
-                {line}
-              </span>
-            ))}
-          </h1>
-          <p
-            className="mx-auto mt-5 max-w-[34rem] text-[1rem] font-medium leading-7 text-[#63708b] sm:text-[1.08rem]"
-            data-lunera-reveal
-          >
-            {t.hero.subtitle[0]}
-            <br className="hidden sm:block" />
-            {t.hero.subtitle[1]}
-          </p>
+    <section
+      className="relative isolate overflow-hidden px-4 pb-0 pt-24"
+      data-lunera-hero
+      id="features"
+    >
+      <div className="lunera-hero-sky absolute inset-0 -z-20" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(163,223,250,0.92)_0%,rgba(188,235,255,0.78)_42%,rgba(255,255,255,0)_88%)]" />
+      <div className="mx-auto max-w-[68rem] text-center">
+        <h1
+          className="lunera-hero-title mx-auto max-w-[62rem] text-balance text-[3.3rem] font-semibold leading-[0.96] tracking-normal text-[#040507] sm:text-[4.85rem] lg:text-[5.45rem]"
+          data-lunera-reveal
+        >
+          {t.hero.title}
+        </h1>
+        <p
+          className="lunera-hero-subtitle mx-auto mt-4 max-w-[39rem] text-balance text-[1.02rem] font-medium leading-8 text-[#334155] sm:text-[1.2rem]"
+          data-lunera-reveal
+        >
+          {t.hero.subtitle}
+        </p>
+      </div>
+      <div className="lunera-hero-visual-scene" data-lunera-reveal>
+        <div className="lunera-phone-depth-layer">
+          <SmsConversationPhone locale="en" />
         </div>
-
-        <div className="mx-auto mt-8 grid max-w-[65rem] gap-5 lg:grid-cols-3">
-          <MetricCard
-            body="See who replied YES as soon as your waitlist responds."
-            title="Real-Time Replies"
-            visual={<RealTimeRepliesVisual />}
-          />
-          <MetricCard
-            body="Track how much revenue is recovered from filled last-minute openings."
-            title="Revenue Saved"
-            visual={<RevenueSavedChart />}
-          />
-          <MetricCard
-            body="Your team chooses who gets the appointment. No one is confirmed without review."
-            title="Manual Confirmation"
-            visual={<ManualConfirmationVisual />}
-          />
-        </div>
-        <div className="mx-auto mt-5 grid max-w-[65rem] gap-5 lg:grid-cols-2">
-          <MetricCard
-            body="See how quickly last-minute openings are filled after your SMS goes out."
-            title="Average Fill Time"
-            variant="wide"
-            visual={<AverageFillTimeVisual />}
-          />
-          <MetricCard
-            body="Track the number of cancelled appointments you've successfully filled."
-            title="Successfully Filled Spots"
-            variant="wide"
-            visual={<SuccessfullyFilledSpotsGauge />}
-          />
-        </div>
+        <HeroCloudBlend />
       </div>
     </section>
   );
 }
 
-function MetricCard({
-  body,
-  title,
-  variant,
-  visual
-}: {
-  body: string;
-  title: string;
-  variant?: "wide";
-  visual: ReactNode;
-}) {
+function HeroCloudBlend() {
   return (
-    <article
-      className={cn(
-        "open-spot-metric-card rounded-[1.25rem] border border-slate-200/80 bg-white p-6 shadow-[0_22px_70px_rgba(15,23,42,0.06)]",
-        variant === "wide"
-          ? "min-h-[14.75rem] sm:p-7 lg:grid lg:grid-cols-[1fr_1.18fr] lg:items-center"
-          : "min-h-[17.5rem]"
-      )}
-      data-lunera-reveal
-    >
-      <div className="relative z-10">
-        <h2 className="text-[1.18rem] font-semibold leading-tight text-[#07090f]">{title}</h2>
-        <p className="mt-2.5 max-w-[16rem] text-[0.88rem] font-medium leading-6 text-[#4e5a70]">
-          {body}
-        </p>
-      </div>
-      {visual}
-    </article>
-  );
-}
-
-function RealTimeRepliesVisual() {
-  return (
-    <div className="mt-8 flex min-h-[7.2rem] items-center gap-6 rounded-[1rem] border border-slate-100 bg-white px-5 shadow-[0_18px_46px_rgba(15,23,42,0.08)]">
-      <div className="relative grid h-20 w-20 shrink-0 place-items-center rounded-full bg-[conic-gradient(#3485ff_0_78%,#edf3fb_78%_100%)] shadow-[inset_0_0_0_7px_#f8fbff]">
-        <div className="grid h-12 w-12 place-items-center rounded-full bg-[#3485ff] text-white shadow-[0_12px_28px_rgba(52,133,255,0.3)]">
-          <span className="flex gap-1" aria-hidden="true">
-            <span className="h-1.5 w-1.5 rounded-full bg-white" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white" />
-          </span>
-        </div>
-      </div>
-      <div>
-        <p className="text-2xl font-semibold leading-none text-[#05070b]">128</p>
-        <p className="mt-3 text-sm font-medium text-[#4e5a70]">YES replies</p>
-        <p className="mt-2 text-xs font-semibold text-[#17b35f]">{"\u2191"} 24% vs yesterday</p>
-      </div>
-    </div>
-  );
-}
-
-function RevenueSavedChart() {
-  return (
-    <div className="relative mt-6 min-h-[9rem] overflow-hidden rounded-[1rem]">
-      <svg
-        aria-hidden="true"
-        className="h-[9rem] w-full"
-        fill="none"
-        preserveAspectRatio="none"
-        viewBox="0 0 320 150"
-      >
-        <defs>
-          <linearGradient id="open-spot-revenue-fill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#3485ff" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#3485ff" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path d="M0 123 C26 111 37 127 62 108 C92 86 102 77 128 78 C156 79 163 69 190 70 C222 71 232 53 256 35 C276 20 291 25 320 10 L320 150 L0 150 Z" fill="url(#open-spot-revenue-fill)" />
-        <path className="open-spot-revenue-line" d="M0 123 C26 111 37 127 62 108 C92 86 102 77 128 78 C156 79 163 69 190 70 C222 71 232 53 256 35 C276 20 291 25 320 10" />
-        <path d="M0 78 H320" stroke="#edf2f7" strokeDasharray="3 5" />
-        <path d="M198 50 V142" stroke="#d8e4f3" />
-        <circle cx="198" cy="66" fill="#3485ff" r="7" stroke="white" strokeWidth="3" />
-      </svg>
-      <div className="absolute left-[43%] top-0 rounded-[0.85rem] border border-slate-100 bg-white/95 px-3 py-2 shadow-[0_16px_38px_rgba(15,23,42,0.1)]">
-        <p className="text-[0.68rem] font-semibold text-[#3485ff]">Revenue saved</p>
-        <p className="mt-1 text-lg font-semibold leading-none text-[#05070b]">$8.3K</p>
-        <p className="mt-1.5 text-[0.68rem] font-medium text-[#64748b]">This month</p>
-      </div>
-    </div>
-  );
-}
-
-function ManualConfirmationVisual() {
-  return (
-    <div className="relative mt-8 flex min-h-[8rem] items-center justify-center">
-      <MiniDonutCard label="Reviewed" percent={100} rotation="-6deg" />
-      <MiniDonutCard label="Confirmation" offset percent={72} rotation="8deg" />
-    </div>
-  );
-}
-
-function MiniDonutCard({
-  label,
-  offset,
-  percent,
-  rotation
-}: {
-  label: string;
-  offset?: boolean;
-  percent: number;
-  rotation: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "w-[7.4rem] rounded-[0.85rem] bg-white p-3 shadow-[0_18px_48px_rgba(15,23,42,0.11)]",
-        offset && "-ml-3 mt-3"
-      )}
-      style={{ transform: `rotate(${rotation})` }}
-    >
-      <p className="text-[0.7rem] font-semibold text-[#2768df]">{label}</p>
-      <div
-        className="mx-auto mt-3 grid h-[4.6rem] w-[4.6rem] place-items-center rounded-full shadow-[inset_0_0_0_10px_#f1f5f9]"
-        style={{ background: `conic-gradient(#3485ff 0 ${percent}%, #eef2f7 ${percent}% 100%)` }}
-      >
-        <div className="grid h-[2.6rem] w-[2.6rem] place-items-center rounded-full bg-white text-sm font-semibold text-[#164db8]">
-          {percent}%
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AverageFillTimeVisual() {
-  return (
-    <div className="mt-7 lg:mt-0">
-      <div className="flex items-end gap-2">
-        <p className="text-[2.55rem] font-semibold leading-none text-[#05070b]">18</p>
-        <p className="pb-1 text-xl font-medium text-[#05070b]">min</p>
-      </div>
-      <p className="mt-3 text-sm font-semibold text-[#17b35f]">{"\u2193"} 22% faster this week</p>
-      <div className="relative mt-9">
-        <div className="h-2.5 rounded-full bg-[#e8eef8]">
-          <div className="h-2.5 w-[58%] rounded-full bg-[#3485ff]" />
-        </div>
-        <span className="absolute left-[56%] top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-[3px] border-white bg-[#3485ff] shadow-[0_6px_18px_rgba(52,133,255,0.32)]" />
-        <span className="absolute left-[89%] top-[-1.2rem] h-10 border-l border-dashed border-[#aab8cc]" />
-        <div className="mt-4 flex justify-between text-xs font-medium text-[#68758e]">
-          <span>0 min</span>
-          <span>15 min</span>
-          <span>30 min</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function SuccessfullyFilledSpotsGauge() {
-  return (
-    <div className="relative mt-8 flex min-h-[10.5rem] items-center justify-center lg:mt-0">
-      <div className="relative h-[10.5rem] w-[13rem]">
-        {Array.from({ length: 54 }).map((_, index) => {
-          const active = index < 36;
-          const angle = -130 + index * (260 / 53);
-
-          return (
-            <span
-              aria-hidden="true"
-              className={cn("open-spot-gauge-tick", active && "is-active")}
-              key={index}
-              style={{ transform: `rotate(${angle}deg) translateY(-4.45rem)` }}
-            />
-          );
-        })}
-        <div className="absolute inset-0 grid place-items-center pt-4 text-center">
-          <div>
-            <p className="text-[2.8rem] font-semibold leading-none text-[#05070b]">84</p>
-            <p className="mt-2 text-sm font-medium text-[#4e5a70]">filled spots</p>
-            <p className="mt-2 text-xs font-semibold text-[#17b35f]">{"\u2191"} 18% this week</p>
-          </div>
-        </div>
-      </div>
+    <div aria-hidden="true" className="lunera-hero-cloud-blend lunera-cloud-occlusion-system">
+      <div className="lunera-cloud-blob lunera-cloud-blob-left" />
+      <div className="lunera-cloud-blob lunera-cloud-blob-center" />
+      <div className="lunera-cloud-blob lunera-cloud-blob-right" />
+      <div className="lunera-cloud-gradient-whiteout" />
     </div>
   );
 }
@@ -985,7 +789,7 @@ function FinalCta({ t }: { t: TemplateCopy }) {
           {t.final.text}
         </p>
         <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link className="lunera-cta-light" href={earlyAccessHref}>
+          <Link className="lunera-cta-light" href={loginHref}>
             {t.final.primary}
           </Link>
           <Link className="lunera-cta-dark" href="/contact">
@@ -1026,7 +830,7 @@ function Footer({ t }: { t: TemplateCopy }) {
           links={[
             ["Contact", "/contact"],
             ["Blog", "#resources"],
-            [t.nav.primary, earlyAccessHref]
+            [t.nav.primary, loginHref]
           ]}
           title={t.footer.resource}
         />

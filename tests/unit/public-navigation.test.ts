@@ -15,13 +15,13 @@ describe("public navigation", () => {
   it("keeps the homepage header minimal for Lunera-style parity", () => {
     const homepage = source(homepagePath);
 
-    expect(homepage).toContain('const earlyAccessHref = "/book-call/questions"');
+    expect(homepage).toContain('const loginHref = "/sign-in"');
     expect(homepage).toContain('features: "Features"');
     expect(homepage).toContain('how: "How it works"');
     expect(homepage).toContain('pricing: "Pricing"');
     expect(homepage).toContain('contact: "Contact"');
-    expect(homepage).toContain("Get Early Access");
-    expect(homepage).not.toContain("Se connecter");
+    expect(homepage).toContain("Se connecter");
+    expect(homepage).not.toContain("Get Early Access");
     expect(homepage).not.toContain('href="/signup"');
     expect(homepage).not.toContain("LanguageSwitcher");
     expect(homepage).not.toContain('login: "Connexion"');
@@ -38,10 +38,10 @@ describe("public navigation", () => {
 
     expect(homepage).toContain("Open Spot");
     expect(homepage).not.toContain("2e Chance RDV");
-    expect(homepage).toContain("Fill your schedule");
-    expect(homepage).toContain("with simple SMS.");
-    expect(homepage).toContain("Open Spot helps you capture interest");
-    expect(homepage).toContain("recover more revenue");
+    expect(homepage).toContain("recover every booking.");
+    expect(homepage).toContain(
+      "Simple SMS tools that help salons fill open spots and turns refill last-minute cancellations into new appointments."
+    );
     expect(homepage).toContain("Manual Confirmation");
     expect(homepage).toContain("Open Spot never confirms automatically");
     expect(rootLayout).toContain("Open Spot");
@@ -125,49 +125,59 @@ describe("public navigation", () => {
     }
   });
 
-  it("renders the metrics hero before the rest of the public funnel", () => {
+  it("renders the angled phone hero before the rest of the public funnel", () => {
     const homepage = source(homepagePath);
+    const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
-    const metricsSection = homepage.slice(
-      homepage.indexOf("function MetricsHeroSection("),
-      homepage.indexOf("function IntegrationsSection(")
+    const heroFunction = homepage.slice(
+      homepage.indexOf("function Hero("),
+      homepage.indexOf("function LogoStrip(")
     );
 
-    expect(mainMarkup.indexOf("<MetricsHeroSection")).toBeLessThan(
+    expect(mainMarkup.indexOf("<Hero")).toBeLessThan(
       mainMarkup.indexOf("<LogoStrip")
     );
-    expect(mainMarkup.indexOf("<MetricsHeroSection")).toBeLessThan(
+    expect(mainMarkup.indexOf("<Hero")).toBeLessThan(
       mainMarkup.indexOf("<IntegrationsSection")
     );
-    expect(homepage).toContain("RealTimeRepliesVisual");
-    expect(homepage).toContain("RevenueSavedChart");
-    expect(homepage).toContain("ManualConfirmationVisual");
-    expect(homepage).toContain("AverageFillTimeVisual");
-    expect(homepage).toContain("SuccessfullyFilledSpotsGauge");
-    expect(metricsSection).toContain("lg:grid-cols-3");
-    expect(metricsSection).toContain("lg:grid-cols-2");
-    expect(styles).toContain(".open-spot-metrics-hero");
-    expect(styles).toContain(".open-spot-metric-card");
+    expect(heroFunction).toContain("lunera-hero-sky");
+    expect(heroFunction).toContain("lunera-hero-visual-scene");
+    expect(heroFunction).toContain("<SmsConversationPhone");
+    expect(heroFunction).toContain("<HeroCloudBlend");
+    expect(styles).toContain(".lunera-phone-depth-layer");
+    expect(styles).toContain(".lunera-hero-cloud-blend");
+    expect(styles).toContain("width: clamp(300px, 24vw, 390px)");
+    expect(styles).toContain("rotateY(-8deg)");
+    expect(styles).toContain("rotateZ(2.5deg)");
+    expect(phone).toContain("Consent checked");
+    expect(phone).toContain("Reply received");
+    expect(phone).toContain("Open slot created");
+    expect(phone).toContain("Ready to");
+    expect(phone).toContain("fill.");
     expect(homepage).not.toContain("setScrollProgress");
     expect(homepage).toContain(".style.setProperty(");
     expect(homepage).toContain('"--lunera-progress"');
   });
 
-  it("uses coded metric visuals including a thin radial tick gauge", () => {
-    const homepage = source(homepagePath);
+  it("uses an Open Spot appointment workflow inside the phone", () => {
+    const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
 
-    expect(homepage).toContain("Array.from({ length: 54 })");
-    expect(homepage).toContain("open-spot-gauge-tick");
-    expect(homepage).toContain("open-spot-revenue-line");
-    expect(homepage).toContain("128");
-    expect(homepage).toContain("$8.3K");
-    expect(homepage).toContain("84");
-    expect(styles).toContain(".open-spot-gauge-tick");
-    expect(styles).toContain("transform-origin: center");
-    expect(styles).toContain(".open-spot-revenue-line");
-    expect(styles).toContain("stroke-linecap: round");
+    expect(phone).toContain("4:31");
+    expect(phone).toContain("Open Spots");
+    expect(phone).toContain("Open slot");
+    expect(phone).toContain("4:30 PM");
+    expect(phone).toContain("Haircut + brushing");
+    expect(phone).toContain("2 replies");
+    expect(phone).toContain("Manual review");
+    expect(phone).toContain("Client replies");
+    expect(phone).toContain("Maria C.");
+    expect(phone).toContain("I can do that!");
+    expect(phone).toContain("James L.");
+    expect(phone).toContain("Yes, I");
+    expect(styles).toContain(".lunera-phone-screen-overlay");
+    expect(styles).toContain("transform-origin: center center");
   });
 
   it("uses a long seamless business marquee instead of a short logo loop", () => {

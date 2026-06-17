@@ -1,30 +1,19 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 import type { CSSProperties } from "react";
 
 import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils/cn";
 
-type SmsMessage = {
-  from: "business" | "customer";
-  text: string;
-};
-
 type FloatingBadge = {
   label: string;
-  tone: "blue" | "dark" | "green" | "white";
+  tone: "dark" | "green";
 };
 
 type SmsConversationPhoneCopy = {
-  businessInitials: string;
   businessName: string;
-  statusLabel: string;
   statusTime: string;
-  complianceLine: string;
-  inputPlaceholder: string;
-  messages: SmsMessage[];
   floatingBadges: FloatingBadge[];
 };
 
@@ -35,31 +24,11 @@ type PhoneMotion = {
 };
 
 const phoneCopy = {
-  businessInitials: "OS",
-  businessName: "Open Spot Salon",
-  statusLabel: "Today - SMS",
+  businessName: "Open Spot",
   statusTime: "4:31",
-  complianceLine: "Reply STOP to unsubscribe.",
-  inputPlaceholder: "SMS message",
-  messages: [
-    {
-      from: "business",
-      text: "Hi Sarah, a spot opened today at 4:30 PM for a haircut. Reply YES if you want it."
-    },
-    {
-      from: "customer",
-      text: "YES, I can come."
-    },
-    {
-      from: "business",
-      text: "Great - your reply was received. The salon will manually confirm shortly."
-    }
-  ],
   floatingBadges: [
     { label: "Consent checked", tone: "dark" },
-    { label: "Manual confirmation", tone: "dark" },
-    { label: "Reply received", tone: "green" },
-    { label: "Waitlist notified", tone: "white" }
+    { label: "Reply received", tone: "green" }
   ]
 } as const satisfies SmsConversationPhoneCopy;
 
@@ -69,21 +38,20 @@ export const smsConversationPhoneCopy = {
 } as const satisfies Record<Locale, SmsConversationPhoneCopy>;
 
 const initialMotion: PhoneMotion = {
-  opacity: 0.92,
+  opacity: 0.98,
   scale: 0.94,
-  translateY: 124
+  translateY: 58
 };
 
 const settledMotion: PhoneMotion = {
   opacity: 1,
-  scale: 0.985,
-  translateY: -62
+  scale: 1,
+  translateY: 48
 };
 
 const responses = [
-  ["Sarah M.", "YES", "4:12 PM"],
-  ["Mia R.", "YES", "4:14 PM"],
-  ["Lea P.", "WAIT", "4:16 PM"]
+  ["MC", "Maria C.", "I can do that!", "4:32 PM"],
+  ["JL", "James L.", "Yes, I'm available.", "4:35 PM"]
 ] as const;
 
 function clamp(value: number, min: number, max: number) {
@@ -221,35 +189,30 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
       style={phoneSceneStyle}
     >
       <HeroMetricCard
-        className="left-[7%] top-[22%] hidden md:block lg:top-[43%]"
+        className="left-[6%] top-[44%] hidden md:block"
         eyebrow="Open slot created"
         title="4:30 PM"
         value="Haircut + brushing"
       />
       <HeroMetricCard
-        className="right-[7%] top-[34%] hidden md:block lg:top-[55%]"
+        className="right-[8%] top-[50%] hidden md:block"
         eyebrow="2 replies"
-        title="Ready to review"
-        value="Manual confirmation"
+        title="Ready to fill."
+        value="Manual review"
       />
       {copy.floatingBadges.map((badge, index) => (
         <FloatingSmsBadge badge={badge} index={index} key={badge.label} />
       ))}
 
       <div className="lunera-phone-motion">
-        <div className="lunera-phone-frame-shell lunera-phone-natural-mask">
-          <Image
-            alt=""
-            aria-hidden="true"
-            className="lunera-phone-frame-asset"
-            height={2100}
-            priority
-            sizes="(max-width: 767px) 104vw, 26rem"
-            src="/lunera-style/phone-frame-reference.png"
-            width={973}
-          />
-          <div className="lunera-phone-screen-overlay">
-            <OpenSpotPhoneScreen copy={copy} />
+        <div className="lunera-phone-object lunera-phone-natural-mask">
+          <div className="lunera-phone-side-rail" />
+          <div className="lunera-phone-body">
+            <div className="lunera-phone-glass">
+              <div className="lunera-phone-screen lunera-phone-screen-overlay">
+                <OpenSpotPhoneScreen copy={copy} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -261,50 +224,45 @@ function OpenSpotPhoneScreen({ copy }: { copy: SmsConversationPhoneCopy }) {
   return (
     <>
       <div className="lunera-phone-dynamic-island" />
-      <div className="flex items-center justify-between px-5 pb-3 pt-5 text-[0.72rem] font-black text-slate-950">
+      <div className="flex items-center justify-between px-5 pb-3 pt-5 text-[0.68rem] font-black text-slate-950">
         <span>{copy.statusTime}</span>
         <div className="flex items-center gap-1.5" aria-hidden="true">
+          <span className="h-2 w-3 rounded-sm border-t-2 border-r-2 border-slate-950/75" />
           <span className="h-2.5 w-4 rounded-sm border border-slate-950/70" />
           <span className="h-2.5 w-1 rounded-sm bg-slate-950/80" />
         </div>
       </div>
 
-      <div className="lunera-phone-app-header flex items-center justify-between px-5 pt-9">
+      <div className="lunera-phone-app-header flex items-center justify-between px-5 pt-7">
         <button
           aria-label="Back"
-          className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-2xl font-light text-slate-800"
+          className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-xl font-light text-slate-800"
           type="button"
         >
           {"<"}
         </button>
-        <p className="lunera-phone-app-title text-xl font-semibold text-[#11131a]">
-          <span>Open </span>
-          <span>Spots</span>
-        </p>
+        <p className="lunera-phone-app-title text-xl font-semibold text-[#11131a]">Open Spots</p>
         <button
           aria-label="Create opening"
-          className="grid h-11 w-11 place-items-center rounded-full bg-slate-100 text-3xl font-light text-slate-800"
+          className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-2xl font-light text-slate-800"
           type="button"
         >
           +
         </button>
       </div>
 
-      <div className="lunera-open-slot-card mx-5 mt-7 rounded-[1.6rem] bg-[#555c72] p-5 text-white shadow-[0_18px_40px_rgba(42,51,74,0.24)]">
+      <div className="lunera-open-slot-card mx-5 mt-6 rounded-[1.45rem] bg-[#555c72] p-5 text-white shadow-[0_18px_40px_rgba(42,51,74,0.24)]">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-sm font-semibold text-white/65">Open slot</p>
-            <p className="lunera-phone-time mt-3 text-4xl font-light tracking-normal">
-              <span>4:30 </span>
-              <span>PM</span>
-            </p>
+            <p className="text-xs font-semibold text-white/65">Open slot</p>
+            <p className="lunera-phone-time mt-3 text-3xl font-light tracking-normal">4:30 PM</p>
           </div>
-          <span className="rounded-full bg-white/14 px-3 py-1 text-xs font-black">
+          <span className="rounded-full bg-white/18 px-3 py-1 text-xs font-black">
             Open
           </span>
         </div>
-        <p className="lunera-phone-service mt-5 text-lg font-semibold">Haircut + brushing</p>
-        <div className="lunera-phone-card-meta mt-5 grid grid-cols-2 gap-3 text-sm">
+        <p className="lunera-phone-service mt-5 text-base font-semibold">Haircut + brushing</p>
+        <div className="lunera-phone-card-meta mt-5 grid grid-cols-2 gap-3 text-xs">
           <div>
             <p className="text-white/45">Replies</p>
             <p className="mt-1 font-semibold">2 replies</p>
@@ -317,59 +275,27 @@ function OpenSpotPhoneScreen({ copy }: { copy: SmsConversationPhoneCopy }) {
       </div>
 
       <div className="lunera-phone-replies px-5 pt-6">
-        <p className="text-lg font-semibold text-[#11131a]">Client replies</p>
-        <div className="mt-3 space-y-2">
-          {responses.map(([name, answer, time]) => (
+        <p className="text-base font-semibold text-[#11131a]">Client replies</p>
+        <div className="mt-3 divide-y divide-slate-100">
+          {responses.map(([initials, name, message, time], index) => (
             <div
-              className="lunera-reply-row flex items-center justify-between rounded-2xl bg-white p-3 shadow-[0_8px_24px_rgba(15,23,42,0.08)]"
+              className={cn(
+                "lunera-reply-row flex items-center gap-3 py-3",
+                index === 1 && "opacity-35"
+              )}
               key={name}
             >
-              <div>
-                <p className="text-sm font-black text-slate-950">{name}</p>
-                <p className="mt-0.5 text-xs font-bold text-slate-400">{time}</p>
-              </div>
-              <span
-                className={cn(
-                  "rounded-full px-3 py-1 text-xs font-black",
-                  answer === "YES"
-                    ? "bg-[#e9fbf4] text-[#0f8a68]"
-                    : "bg-[#f2f4f7] text-slate-500"
-                )}
-              >
-                {answer}
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#687083] text-[0.66rem] font-semibold text-white">
+                {initials}
               </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-slate-950">{name}</p>
+                <p className="mt-0.5 text-[0.68rem] font-medium text-slate-500">{message}</p>
+              </div>
+              <span className="text-[0.65rem] font-medium text-slate-400">{time}</span>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="mx-5 mt-6 rounded-[1.45rem] bg-[#f3f4f7] p-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-semibold text-[#11131a]">Manual confirmation queue</p>
-            <p className="mt-1 text-xs font-bold text-slate-400">
-              Nothing is confirmed automatically
-            </p>
-          </div>
-          <span className="rounded-full bg-[#4388ff] px-3 py-1 text-xs font-black text-white">
-            Review
-          </span>
-        </div>
-        <div className="mt-4 h-2.5 overflow-hidden rounded-full bg-white">
-          <div className="h-full w-[62%] rounded-full bg-[#4388ff]" />
-        </div>
-      </div>
-
-      <p className="px-5 pt-4 text-center text-[0.68rem] font-bold text-slate-400">
-        {copy.complianceLine}
-      </p>
-
-      <div className="absolute inset-x-0 bottom-0 grid grid-cols-4 gap-1 border-t border-slate-100 bg-white/88 px-4 pb-4 pt-3 text-center text-[0.68rem] font-bold text-slate-400 backdrop-blur">
-        {["Home", "Spots", "Replies", "Settings"].map((item) => (
-          <span className={cn(item === "Replies" && "text-[#4388ff]")} key={item}>
-            {item}
-          </span>
-        ))}
       </div>
     </>
   );
@@ -389,7 +315,7 @@ function HeroMetricCard({
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-[14] w-[12.25rem] rounded-[1.18rem] border border-white/80 bg-white p-4 text-left shadow-[0_20px_52px_rgba(15,23,42,0.13)]",
+        "lunera-floating-card absolute z-[32] w-[12.25rem] rounded-[1.18rem] border border-white/80 bg-white p-4 text-left shadow-[0_20px_52px_rgba(15,23,42,0.13)]",
         className
       )}
     >
@@ -408,23 +334,19 @@ function FloatingSmsBadge({
   index: number;
 }) {
   const positions = [
-    "left-[16%] top-[8%] hidden md:block lg:top-[29%]",
-    "right-[15%] bottom-[28%] hidden lg:block lg:bottom-[7%]",
-    "right-[18%] top-[12%] hidden md:block lg:top-[33%]",
-    "left-[13%] bottom-[32%] hidden lg:block lg:bottom-[11%]"
+    "left-[16%] top-[28%] hidden md:block",
+    "right-[13%] top-[33%] hidden md:block"
   ];
 
   const toneClass = {
-    blue: "border-[#dbe7ff] bg-[#edf5ff] text-[#254caa]",
     dark: "border-black bg-black text-white",
-    green: "border-[#ccefe6] bg-[#e8fbf5] text-[#08775c]",
-    white: "border-white bg-white text-slate-950"
+    green: "border-[#ccefe6] bg-[#e8fbf5] text-[#08775c]"
   }[badge.tone];
 
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-[14] max-w-[11.5rem] rounded-full border px-3.5 py-1.5 text-xs font-black shadow-[0_18px_46px_rgba(15,23,42,0.13)]",
+        "lunera-floating-card absolute z-[32] max-w-[11.5rem] rounded-full border px-3.5 py-1.5 text-xs font-black shadow-[0_18px_46px_rgba(15,23,42,0.13)]",
         toneClass,
         positions[index]
       )}

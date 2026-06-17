@@ -3,30 +3,14 @@ import { describe, expect, it } from "vitest";
 import { smsConversationPhoneCopy } from "@/components/marketing/sms-conversation-phone";
 
 describe("SMS conversation phone marketing preview", () => {
-  it("uses appointment cancellation SMS copy with manual merchant confirmation", () => {
+  it("uses Open Spot appointment workflow copy for the hero phone", () => {
     const en = smsConversationPhoneCopy.en;
 
-    expect(en.businessName).toBe("Open Spot Salon");
-    expect(en.messages).toEqual([
-      {
-        from: "business",
-        text: "Hi Sarah, a spot opened today at 4:30 PM for a haircut. Reply YES if you want it."
-      },
-      {
-        from: "customer",
-        text: "YES, I can come."
-      },
-      {
-        from: "business",
-        text: "Great - your reply was received. The salon will manually confirm shortly."
-      }
-    ]);
-    expect(en.complianceLine).toBe("Reply STOP to unsubscribe.");
+    expect(en.businessName).toBe("Open Spot");
+    expect(en.statusTime).toBe("4:31");
     expect(en.floatingBadges.map((badge) => badge.label)).toEqual([
       "Consent checked",
-      "Manual confirmation",
-      "Reply received",
-      "Waitlist notified"
+      "Reply received"
     ]);
   });
 
