@@ -677,6 +677,49 @@ select {
   transform: translateY(-6px);
 }
 
+.open-spot-metrics-hero {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 44%, #ffffff 100%);
+}
+
+.open-spot-metric-card {
+  overflow: hidden;
+  position: relative;
+}
+
+.open-spot-metric-card::before {
+  background: linear-gradient(180deg, rgba(52, 133, 255, 0.08), rgba(255, 255, 255, 0));
+  content: "";
+  inset: 0;
+  opacity: 0.72;
+  pointer-events: none;
+  position: absolute;
+}
+
+.open-spot-revenue-line {
+  stroke: #3485ff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.open-spot-gauge-tick {
+  background: #edf2f7;
+  border-radius: 999px;
+  display: block;
+  height: 1.52rem;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform-origin: center;
+  width: 0.18rem;
+}
+
+.open-spot-gauge-tick.is-active {
+  background: #3485ff;
+  box-shadow: 0 0 0 1px rgba(52, 133, 255, 0.04);
+}
+
 [data-lunera-reveal] {
   opacity: 0;
   transform: translateY(28px);
