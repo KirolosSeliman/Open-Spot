@@ -10,3 +10,11 @@ pnpm-debug.log*
 dist/
 *.tsbuildinfo
 .next-dev*.log
+.worktrees/
+worktrees/
+
+# Local visual QA/browser automation artifacts.
+docs/visual-qa/chrome-*/
+docs/visual-qa/*.log
+docs/visual-qa/*.pid
+docs/visual-qa/*job.txt
