@@ -1994,13 +1994,15 @@ select {
   }
 
   .lunera-template > header a[href="/sign-in"] {
-    font-size: 0.68rem;
-    max-width: 6.65rem;
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    max-width: none;
     min-height: 2.28rem;
-    padding-inline: 0.7rem;
-    position: fixed;
-    right: 0.95rem;
-    top: 1.08rem;
+    padding-inline: 0.74rem;
+    position: static;
+    right: auto;
+    top: auto;
+    white-space: nowrap;
     width: auto;
   }
 

@@ -296,7 +296,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 function FloatingNavbar({ t }: { t: TemplateCopy }) {
   return (
     <header className="fixed inset-x-0 top-4 z-50 px-3 sm:top-5">
-      <div className="mx-auto flex min-h-[3.45rem] max-w-[54rem] items-center justify-between gap-2 rounded-full border border-white/90 bg-white/94 px-3 py-2 shadow-[0_16px_44px_rgba(15,23,42,0.11)] backdrop-blur-2xl sm:min-h-[3.75rem] sm:px-4">
+      <div className="mx-auto flex min-h-[3.45rem] w-[calc(100vw-1.5rem)] max-w-[54rem] items-center justify-between gap-2 rounded-full border border-white/90 bg-white/94 px-3 py-2 shadow-[0_16px_44px_rgba(15,23,42,0.11)] backdrop-blur-2xl sm:min-h-[3.75rem] sm:w-[calc(100vw-2rem)] sm:px-4">
         <Link
           className="flex min-w-0 shrink-0 items-center gap-2 rounded-full text-[0.94rem] font-bold text-[#07090f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#3478ff]"
           href="/"

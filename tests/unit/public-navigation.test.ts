@@ -221,6 +221,18 @@ describe("public navigation", () => {
     expect(styles).toContain("transform-origin: center center");
   });
 
+  it("keeps the mobile sign-in CTA inside the floating navbar", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const compactHeaderStyles = styles.slice(styles.indexOf("@media (max-width: 520px)"));
+
+    expect(homepage).toContain("w-[calc(100vw-1.5rem)]");
+    expect(compactHeaderStyles).toContain('.lunera-template > header a[href="/sign-in"]');
+    expect(compactHeaderStyles).toContain("position: static");
+    expect(compactHeaderStyles).not.toContain("position: fixed");
+    expect(styles).toContain("overflow-x: hidden");
+  });
+
   it("uses the requested category strip instead of fake brand logos", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
