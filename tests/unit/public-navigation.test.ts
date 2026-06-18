@@ -40,7 +40,7 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("2e Chance RDV");
     expect(homepage).toContain("recover every booking.");
     expect(homepage).toContain(
-      "Simple SMS tools that help salons fill open spots and turns refill last-minute cancellations into new appointments."
+      "Open Spot helps appointment-based teams send SMS alerts, receive client replies and manually confirm the right appointment."
     );
     expect(homepage).toContain("Manual Confirmation");
     expect(homepage).toContain("Open Spot never confirms automatically");
@@ -125,7 +125,7 @@ describe("public navigation", () => {
     }
   });
 
-  it("renders the angled phone hero before the rest of the public funnel", () => {
+  it("renders the angled phone hero above the metrics grid", () => {
     const homepage = source(homepagePath);
     const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
@@ -134,6 +134,8 @@ describe("public navigation", () => {
       homepage.indexOf("function Hero("),
       homepage.indexOf("function LogoStrip(")
     );
+    const phoneIndex = heroFunction.indexOf("<HeroPhoneMockup");
+    const metricsIndex = heroFunction.indexOf("<HeroMetricsGrid");
 
     expect(mainMarkup.indexOf("<Hero")).toBeLessThan(
       mainMarkup.indexOf("<LogoStrip")
@@ -143,10 +145,22 @@ describe("public navigation", () => {
     );
     expect(heroFunction).toContain("lunera-hero-sky");
     expect(heroFunction).toContain("lunera-hero-visual-scene");
+    expect(phoneIndex).toBeGreaterThan(-1);
+    expect(metricsIndex).toBeGreaterThan(-1);
+    expect(phoneIndex).toBeLessThan(metricsIndex);
     expect(heroFunction).toContain("<SmsConversationPhone");
     expect(heroFunction).toContain("<HeroCloudBlend");
+    expect(heroFunction).toContain("Clients reply. You review. You confirm manually.");
+    expect(heroFunction).toContain("Example dashboard preview. Results vary by business.");
+    expect(heroFunction).toContain("Real-Time Replies");
+    expect(heroFunction).toContain("Revenue Saved");
+    expect(heroFunction).toContain("Manual Confirmation");
+    expect(heroFunction).toContain("Average Fill Time");
+    expect(heroFunction).toContain("Successfully Filled");
     expect(styles).toContain(".lunera-phone-depth-layer");
     expect(styles).toContain(".lunera-hero-cloud-blend");
+    expect(styles).toContain(".open-spot-metrics-grid");
+    expect(styles).toContain(".open-spot-metric-card");
     expect(styles).toContain("width: clamp(300px, 24vw, 390px)");
     expect(styles).toContain("rotateY(-8deg)");
     expect(styles).toContain("rotateZ(2.5deg)");

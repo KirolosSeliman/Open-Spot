@@ -438,6 +438,33 @@ select {
   z-index: 10;
 }
 
+.open-spot-metrics-grid {
+  margin-top: clamp(-7rem, -8vw, -3.5rem);
+  position: relative;
+  z-index: 24;
+}
+
+.open-spot-metric-card {
+  overflow: hidden;
+  position: relative;
+}
+
+.open-spot-metric-card::before {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(67, 136, 255, 0.14), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0));
+  content: "";
+  inset: 0;
+  opacity: 0.9;
+  pointer-events: none;
+  position: absolute;
+}
+
+.open-spot-metric-card > * {
+  position: relative;
+  z-index: 1;
+}
+
 .lunera-hero-cloud-blend {
   bottom: clamp(-8rem, -8vw, -4.25rem);
   height: clamp(18rem, 24vh, 20rem);
@@ -1559,6 +1586,15 @@ select {
     margin-top: 0.7rem;
     max-width: 34rem;
     min-height: 34rem;
+  }
+
+  .open-spot-metrics-grid {
+    margin-top: -4.75rem;
+    padding-bottom: 5.5rem;
+  }
+
+  .open-spot-metric-card {
+    min-height: auto;
   }
 
   .lunera-hero-visual-scene::before {

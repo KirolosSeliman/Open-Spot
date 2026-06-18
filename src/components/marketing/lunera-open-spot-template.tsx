@@ -17,9 +17,11 @@ const openSpotCopy = {
     primary: "Se connecter"
   },
   hero: {
-    title: "recover every booking.",
+    title: ["Fill every opening,", "recover every booking."],
     subtitle:
-      "Simple SMS tools that help salons fill open spots and turns refill last-minute cancellations into new appointments."
+      "Open Spot helps appointment-based teams send SMS alerts, receive client replies and manually confirm the right appointment.",
+    primary: "Se connecter",
+    secondary: "Réserver un appel"
   },
   businessTypes: [
     "Salons",
@@ -437,7 +439,11 @@ function Hero({ t }: { t: TemplateCopy }) {
           className="lunera-hero-title mx-auto max-w-[62rem] text-balance text-[3.3rem] font-semibold leading-[0.96] tracking-normal text-[#040507] sm:text-[4.85rem] lg:text-[5.45rem]"
           data-lunera-reveal
         >
-          {t.hero.title}
+          {t.hero.title.map((line) => (
+            <span className="block" key={line}>
+              {line}
+            </span>
+          ))}
         </h1>
         <p
           className="lunera-hero-subtitle mx-auto mt-4 max-w-[39rem] text-balance text-[1.02rem] font-medium leading-8 text-[#334155] sm:text-[1.2rem]"
@@ -445,14 +451,35 @@ function Hero({ t }: { t: TemplateCopy }) {
         >
           {t.hero.subtitle}
         </p>
+        <HeroCtaRow t={t} />
       </div>
-      <div className="lunera-hero-visual-scene" data-lunera-reveal>
-        <div className="lunera-phone-depth-layer">
-          <SmsConversationPhone locale="en" />
-        </div>
-        <HeroCloudBlend />
-      </div>
+      <HeroPhoneMockup />
+      <HeroMetricsGrid />
+      <HeroCloudBlend />
     </section>
+  );
+}
+
+function HeroCtaRow({ t }: { t: TemplateCopy }) {
+  return (
+    <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row" data-lunera-reveal>
+      <Link className="lunera-cta-primary bg-black shadow-[0_18px_42px_rgba(0,0,0,0.2)]" href={loginHref}>
+        {t.hero.primary}
+      </Link>
+      <Link className="lunera-cta-secondary" href="/book-call/questions">
+        {t.hero.secondary}
+      </Link>
+    </div>
+  );
+}
+
+function HeroPhoneMockup() {
+  return (
+    <div className="lunera-hero-visual-scene" data-lunera-reveal>
+      <div className="lunera-phone-depth-layer">
+        <SmsConversationPhone locale="en" />
+      </div>
+    </div>
   );
 }
 
@@ -463,6 +490,167 @@ function HeroCloudBlend() {
       <div className="lunera-cloud-blob lunera-cloud-blob-center" />
       <div className="lunera-cloud-blob lunera-cloud-blob-right" />
       <div className="lunera-cloud-gradient-whiteout" />
+    </div>
+  );
+}
+
+function HeroMetricsGrid() {
+  return (
+    <div className="open-spot-metrics-grid mx-auto grid max-w-[68rem] gap-4 px-1 pb-20 sm:gap-5 lg:grid-cols-5">
+      <MetricCard
+        body="YES replies"
+        eyebrow="+24% vs yesterday"
+        title="Real-Time Replies"
+        value="128"
+        visual={<ReplyDots />}
+      />
+      <MetricCard
+        body="Revenue saved"
+        className="lg:col-span-2"
+        eyebrow="Example month"
+        title="Revenue Saved"
+        value="$8.3K"
+        visual={<RevenueLine />}
+      />
+      <MetricCard
+        body="100% manual review"
+        eyebrow="Merchant review only"
+        title="Manual Confirmation"
+        value="Reviewed"
+        visual={<ManualCheck />}
+      />
+      <MetricCard
+        body="Average fill time"
+        eyebrow="Example dashboard preview. Results vary by business."
+        title="Average Fill Time"
+        value="18 min"
+        visual={<FillTimeBar />}
+      />
+      <MetricCard
+        body="Successfully filled"
+        className="lg:col-span-2"
+        eyebrow="9 filled spots"
+        title="Successfully Filled"
+        value="72%"
+        visual={<FilledGauge />}
+      />
+      <div className="rounded-[1.25rem] border border-white/80 bg-white/80 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur lg:col-span-3">
+        <p className="text-sm font-semibold leading-6 text-[#334155]">
+          Clients reply. You review. You confirm manually.
+        </p>
+        <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-[#4388ff]">
+          Example dashboard preview. Results vary by business.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function MetricCard({
+  body,
+  className,
+  eyebrow,
+  title,
+  value,
+  visual
+}: {
+  body: string;
+  className?: string;
+  eyebrow: string;
+  title: string;
+  value: string;
+  visual: ReactNode;
+}) {
+  return (
+    <article
+      className={cn(
+        "open-spot-metric-card min-h-[13.5rem] rounded-[1.25rem] border border-white/80 bg-white/92 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.09)] backdrop-blur",
+        className
+      )}
+      data-lunera-reveal
+    >
+      <div className="relative z-10">
+        <p className="text-xs font-black uppercase tracking-[0.12em] text-[#4388ff]">{title}</p>
+        <p className="mt-4 text-4xl font-semibold leading-none text-[#05070b]">{value}</p>
+        <p className="mt-3 text-sm font-semibold leading-6 text-[#334155]">{body}</p>
+        <p className="mt-2 text-xs font-bold leading-5 text-slate-400">{eyebrow}</p>
+      </div>
+      {visual}
+    </article>
+  );
+}
+
+function ReplyDots() {
+  return (
+    <div aria-hidden="true" className="mt-5 flex items-center gap-2">
+      {[0, 1, 2].map((dot) => (
+        <span className="h-2.5 w-2.5 rounded-full bg-[#4388ff]" key={dot} />
+      ))}
+      <span className="ml-2 rounded-full bg-[#eaf7ff] px-3 py-1 text-xs font-black text-[#1764d8]">
+        live
+      </span>
+    </div>
+  );
+}
+
+function RevenueLine() {
+  return (
+    <svg aria-hidden="true" className="mt-5 h-24 w-full" fill="none" viewBox="0 0 320 96">
+      <path d="M0 78 C42 68 45 84 82 58 C116 34 134 54 164 42 C203 26 218 44 248 22 C278 0 292 18 320 8" stroke="#4388ff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" />
+      <path d="M0 78 C42 68 45 84 82 58 C116 34 134 54 164 42 C203 26 218 44 248 22 C278 0 292 18 320 8 L320 96 L0 96 Z" fill="url(#revenueFill)" />
+      <defs>
+        <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
+          <stop stopColor="#4388ff" stopOpacity="0.2" />
+          <stop offset="1" stopColor="#4388ff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
+function ManualCheck() {
+  return (
+    <div aria-hidden="true" className="mt-6 rounded-[1rem] border border-[#d9eaff] bg-[#f7fbff] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-black text-[#0f172a]">Manual review</span>
+        <span className="rounded-full bg-[#dcfce7] px-3 py-1 text-xs font-black text-[#08775c]">
+          reviewed
+        </span>
+      </div>
+      <div className="mt-4 h-2 rounded-full bg-[#e2e8f0]">
+        <div className="h-2 w-full rounded-full bg-[#4388ff]" />
+      </div>
+    </div>
+  );
+}
+
+function FillTimeBar() {
+  return (
+    <div aria-hidden="true" className="mt-7">
+      <div className="h-2.5 rounded-full bg-[#e2e8f0]">
+        <div className="h-2.5 w-[62%] rounded-full bg-[#4388ff]" />
+      </div>
+      <div className="mt-3 flex justify-between text-xs font-bold text-slate-400">
+        <span>0</span>
+        <span>30 min</span>
+      </div>
+    </div>
+  );
+}
+
+function FilledGauge() {
+  return (
+    <div aria-hidden="true" className="mt-5 flex items-center gap-5">
+      <div className="grid h-24 w-24 place-items-center rounded-full bg-[conic-gradient(#4388ff_0_72%,#e8eef8_72%_100%)] shadow-[inset_0_0_0_10px_#f8fbff]">
+        <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-sm font-black text-[#1764d8]">
+          72%
+        </div>
+      </div>
+      <div className="grid gap-2">
+        <span className="h-2 w-24 rounded-full bg-[#4388ff]" />
+        <span className="h-2 w-16 rounded-full bg-[#bddbff]" />
+        <span className="h-2 w-20 rounded-full bg-[#e0efff]" />
+      </div>
     </div>
   );
 }
