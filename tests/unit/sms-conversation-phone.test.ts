@@ -7,10 +7,10 @@ describe("SMS conversation phone marketing preview", () => {
     const en = smsConversationPhoneCopy.en;
 
     expect(en.businessName).toBe("Open Spot");
-    expect(en.statusTime).toBe("4:31");
+    expect(en.statusTime).toBe("9:41");
     expect(en.floatingBadges.map((badge) => badge.label)).toEqual([
-      "Consent checked",
-      "Reply received"
+      "Secure & compliant",
+      "Fill more. No-shows down."
     ]);
   });
 

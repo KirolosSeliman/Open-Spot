@@ -38,12 +38,13 @@ describe("public navigation", () => {
 
     expect(homepage).toContain("Open Spot");
     expect(homepage).not.toContain("2e Chance RDV");
-    expect(homepage).toContain("recover every booking.");
+    expect(homepage).toContain("Fill last-minute");
+    expect(homepage).toContain("cancellations by SMS.");
     expect(homepage).toContain(
-      "Open Spot helps appointment-based teams send SMS alerts, receive client replies and manually confirm the right appointment."
+      "Open Spot contacts opted-in customers, ranks replies, and lets you choose who to confirm"
     );
     expect(homepage).toContain("Manual Confirmation");
-    expect(homepage).toContain("Open Spot never confirms automatically");
+    expect(homepage).toContain("No one is confirmed without review");
     expect(rootLayout).toContain("Open Spot");
     expect(rootLayout).not.toContain("2e Chance RDV");
     expect(bookingPage).toContain("Open Spot");
@@ -52,7 +53,7 @@ describe("public navigation", () => {
     expect(consentSmsSource).not.toContain("2e Chance RDV");
   });
 
-  it("does not publish a fixed beta price", () => {
+  it("publishes the requested Open Spot pricing cards without wiring checkout", () => {
     const homepage = source(homepagePath);
     const pricingPage = source("src/app/pricing/page.tsx");
     const productRequirements = source("docs/product-requirements.md");
@@ -61,9 +62,11 @@ describe("public navigation", () => {
     expect(homepage).not.toMatch(fixedPricePattern);
     expect(pricingPage).not.toMatch(fixedPricePattern);
     expect(productRequirements).not.toMatch(fixedPricePattern);
-    expect(homepage).toContain("No fixed public price");
-    expect(pricingPage).toContain("Pricing adapted to your business.");
-    expect(productRequirements).toContain("Public pricing is not fixed");
+    expect(homepage).toContain("$0 / mo");
+    expect(homepage).toContain("$49 / mo");
+    expect(homepage).toContain("Custom");
+    expect(homepage).toContain("Best Deal");
+    expect(homepage).not.toContain("stripe");
   });
 
   it("does not make unsupported AI targeting claims on the public landing page", () => {
@@ -125,50 +128,69 @@ describe("public navigation", () => {
     }
   });
 
-  it("renders the angled phone hero above the metrics grid", () => {
+  it("renders the requested Lunera-style landing sections in order", () => {
     const homepage = source(homepagePath);
     const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
     const heroFunction = homepage.slice(
       homepage.indexOf("function Hero("),
-      homepage.indexOf("function LogoStrip(")
+      homepage.indexOf("function MetricsSection(")
     );
     const phoneIndex = heroFunction.indexOf("<HeroPhoneMockup");
-    const metricsIndex = heroFunction.indexOf("<HeroMetricsGrid");
+    const requiredOrder = [
+      "<Hero",
+      "<MetricsSection",
+      "<SetupSection",
+      "<HowItWorks",
+      "<WorkflowPreview",
+      "<Pricing",
+      "<Testimonials",
+      "<Faq",
+      "<FinalCta"
+    ];
 
-    expect(mainMarkup.indexOf("<Hero")).toBeLessThan(
-      mainMarkup.indexOf("<LogoStrip")
-    );
-    expect(mainMarkup.indexOf("<Hero")).toBeLessThan(
-      mainMarkup.indexOf("<IntegrationsSection")
-    );
+    for (let index = 0; index < requiredOrder.length - 1; index += 1) {
+      expect(mainMarkup.indexOf(requiredOrder[index])).toBeGreaterThan(-1);
+      expect(mainMarkup.indexOf(requiredOrder[index])).toBeLessThan(
+        mainMarkup.indexOf(requiredOrder[index + 1])
+      );
+    }
+
+    expect(homepage).not.toContain("<Resources");
+    expect(homepage).not.toContain("<IntegrationsSection");
     expect(heroFunction).toContain("lunera-hero-sky");
     expect(heroFunction).toContain("lunera-hero-visual-scene");
     expect(phoneIndex).toBeGreaterThan(-1);
-    expect(metricsIndex).toBeGreaterThan(-1);
-    expect(phoneIndex).toBeLessThan(metricsIndex);
     expect(heroFunction).toContain("<SmsConversationPhone");
     expect(heroFunction).toContain("<HeroCloudBlend");
-    expect(heroFunction).toContain("Clients reply. You review. You confirm manually.");
-    expect(heroFunction).toContain("Example dashboard preview. Results vary by business.");
-    expect(heroFunction).toContain("Real-Time Replies");
-    expect(heroFunction).toContain("Revenue Saved");
-    expect(heroFunction).toContain("Manual Confirmation");
-    expect(heroFunction).toContain("Average Fill Time");
-    expect(heroFunction).toContain("Successfully Filled");
+    expect(homepage).toContain("Built for appointment-based teams");
+    expect(homepage).toContain("Barbers");
+    expect(homepage).toContain("Beauty Clinics");
+    expect(homepage).toContain("Hair Salons");
+    expect(homepage).toContain("Spas");
+    expect(homepage).toContain("Nail Studios");
+    expect(homepage).toContain("Keep your booking system.");
+    expect(homepage).toContain("Fill the empty spots.");
+    expect(homepage).toContain("From cancellation");
+    expect(homepage).toContain("to confirmation");
+    expect(homepage).toContain("Non-disruptive cancellation recovery");
+    expect(homepage).toContain("Real results from local teams.");
+    expect(homepage).toContain("Ready to recover your next cancellation?");
+    expect(homepage).toContain("SMS consent");
+    expect(homepage).toContain("bg-[#050505]");
     expect(styles).toContain(".lunera-phone-depth-layer");
     expect(styles).toContain(".lunera-hero-cloud-blend");
-    expect(styles).toContain(".open-spot-metrics-grid");
-    expect(styles).toContain(".open-spot-metric-card");
+    expect(styles).toContain(".open-spot-dashboard-card");
+    expect(styles).toContain(".open-spot-setup-arc");
+    expect(styles).toContain(".open-spot-step-card");
     expect(styles).toContain("width: clamp(300px, 24vw, 390px)");
     expect(styles).toContain("rotateY(-8deg)");
     expect(styles).toContain("rotateZ(2.5deg)");
-    expect(phone).toContain("Consent checked");
-    expect(phone).toContain("Reply received");
-    expect(phone).toContain("Open slot created");
-    expect(phone).toContain("Ready to");
-    expect(phone).toContain("fill.");
+    expect(phone).toContain("Secure & compliant");
+    expect(phone).toContain("Fill more. No-shows down.");
+    expect(phone).toContain("Open spots filled this week");
+    expect(phone).toContain("Revenue recovered");
     expect(homepage).not.toContain("setScrollProgress");
     expect(homepage).toContain(".style.setProperty(");
     expect(homepage).toContain('"--lunera-progress"');
@@ -178,49 +200,38 @@ describe("public navigation", () => {
     const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
 
-    expect(phone).toContain("4:31");
-    expect(phone).toContain("Open Spots");
-    expect(phone).toContain("Open slot");
-    expect(phone).toContain("4:30 PM");
-    expect(phone).toContain("Haircut + brushing");
-    expect(phone).toContain("2 replies");
-    expect(phone).toContain("Manual review");
-    expect(phone).toContain("Client replies");
-    expect(phone).toContain("Maria C.");
-    expect(phone).toContain("I can do that!");
-    expect(phone).toContain("James L.");
+    expect(phone).toContain("Open Spot");
+    expect(phone).toContain("New cancellation");
+    expect(phone).toContain("Today, 10:30 AM");
+    expect(phone).toContain("60-min Massage with Alex");
+    expect(phone).toContain("Waitlist replies");
+    expect(phone).toContain("7");
+    expect(phone).toContain("Sarah M.");
+    expect(phone).toContain("I can come in");
+    expect(phone).toContain("Best match");
+    expect(phone).toContain("Mike R.");
     expect(phone).toContain("Yes, I");
+    expect(phone).toContain("90% match");
+    expect(phone).toContain("Jessica T.");
+    expect(phone).toContain("Interested");
+    expect(phone).toContain("80% match");
+    expect(phone).toContain("Confirm Sarah M.");
+    expect(phone).toContain("View all replies");
     expect(styles).toContain(".lunera-phone-screen-overlay");
     expect(styles).toContain("transform-origin: center center");
   });
 
-  it("uses a long seamless business marquee instead of a short logo loop", () => {
+  it("uses the requested category strip instead of fake brand logos", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
     const expectedBusinessTypes = [
-      "Salons",
       "Barbers",
       "Beauty Clinics",
+      "Hair Salons",
       "Spas",
-      "Nail Studios",
-      "Hair Stylists",
-      "Massage Clinics",
-      "Med Spas",
-      "Tattoo Studios",
-      "Physio Clinics",
-      "Chiropractors",
-      "Dental Clinics",
-      "Estheticians",
-      "Lash Studios",
-      "Brow Studios",
-      "Wellness Studios",
-      "Pet Groomers",
-      "Personal Trainers",
-      "Therapy Clinics",
-      "Appointment Teams",
+      "Nail Studios"
     ];
     const oldPlaceholderTypes = [
-      "Hair Salons",
       "Barbershops",
       "Massage Therapists",
       "Physiotherapy",
@@ -241,16 +252,12 @@ describe("public navigation", () => {
       expect(homepage).not.toContain(businessType);
     }
 
-    expect(homepage).toContain(
-      "[...t.businessTypes, ...t.businessTypes, ...t.businessTypes]"
-    );
-    expect(homepage).toContain("lunera-business-marquee");
-    expect(homepage).toContain("lunera-business-marquee-track");
+    expect(homepage).toContain("CategoryStrip");
+    expect(homepage).toContain("Built for appointment-based teams");
     expect(homepage).not.toContain('logos: ["Salons", "Barbers"');
-    expect(styles).toContain(".lunera-business-marquee");
-    expect(styles).toContain(".lunera-business-marquee-track");
-    expect(styles).toContain("@keyframes lunera-business-marquee");
-    expect(styles).toContain("translate3d(-33.333%");
+    expect(homepage).not.toContain("40K+ users worldwide");
+    expect(homepage).not.toContain("Codecraft");
+    expect(styles).toContain(".open-spot-category-strip");
   });
 
   it("links sign-in and signup pages to each other", () => {

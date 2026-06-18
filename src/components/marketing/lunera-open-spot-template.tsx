@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
 import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
 import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils/cn";
+
+const loginHref = "/sign-in";
 
 const openSpotCopy = {
   nav: {
@@ -17,187 +19,128 @@ const openSpotCopy = {
     primary: "Se connecter"
   },
   hero: {
-    title: ["Fill every opening,", "recover every booking."],
+    title: ["Fill last-minute", "cancellations by SMS."],
     subtitle:
-      "Open Spot helps appointment-based teams send SMS alerts, receive client replies and manually confirm the right appointment.",
+      "Open Spot contacts opted-in customers, ranks replies, and lets you choose who to confirm - without replacing your appointment system.",
+    socialProof: "Built for appointment-based teams",
     primary: "Se connecter",
-    secondary: "Réserver un appel"
+    secondary: "How it works",
+    categories: ["Barbers", "Beauty Clinics", "Hair Salons", "Spas", "Nail Studios"]
   },
-  businessTypes: [
-    "Salons",
-    "Barbers",
-    "Beauty Clinics",
-    "Spas",
-    "Nail Studios",
-    "Hair Stylists",
-    "Massage Clinics",
-    "Med Spas",
-    "Tattoo Studios",
-    "Physio Clinics",
-    "Chiropractors",
-    "Dental Clinics",
-    "Estheticians",
-    "Lash Studios",
-    "Brow Studios",
-    "Wellness Studios",
-    "Pet Groomers",
-    "Personal Trainers",
-    "Therapy Clinics",
-    "Appointment Teams"
-  ],
-  features: {
-    tag: "Features",
-    title: ["Refill cancellations", "with simple SMS."],
-    cards: [
-      {
-        title: "Real-Time Replies",
-        text: "See who replied YES as soon as your waitlist responds.",
-        label: "2 replies",
-        visual: "replies"
-      },
-      {
-        title: "Waitlist Alerts",
-        text: "Notify eligible clients when a same-day spot opens.",
-        label: "SMS sent",
-        visual: "alerts"
-      },
-      {
-        title: "Manual Confirmation",
-        text: "Your team chooses who gets the appointment. No one is confirmed without review.",
-        label: "Review",
-        visual: "review"
-      },
-      {
-        title: "Consent Tracking",
-        text: "Keep opt-ins and STOP instructions clear inside your SMS flow.",
-        label: "Consent checked",
-        visual: "consent"
-      },
-      {
-        title: "Recovered Revenue",
-        text: "Track the value of filled cancellations without adding checkout workflows.",
-        label: "$85 recovered",
-        visual: "recovery"
-      }
-    ]
+  metrics: {
+    title: ["Fill your schedule", "with simple SMS."],
+    subtitle:
+      "Open Spot helps you capture interest, notify at the right time, and recover more revenue - with less work."
   },
-  integrations: {
-    tag: "Integrations",
-    title: ["Works with the tools", "you already use."],
-    text: "Connect Open Spot around your calendar, booking flow and SMS workflow.",
-    tools: [
-      "Calendar",
-      "SMS",
-      "Waitlist",
-      "Booking",
-      "Replies",
-      "Consent",
-      "Team",
-      "QR",
-      "Services",
-      "Reports",
-      "Review",
-      "Follow-up"
-    ]
+  setup: {
+    tag: "Simple setup",
+    title: ["Keep your booking system.", "Fill the empty spots."],
+    subtitle:
+      "Open Spot adds a simple SMS recovery layer to your existing appointment workflow, so your team can fill cancellations without changing how they already book clients.",
+    steps: ["Spot opens", "SMS sent to waitlist", "Replies ranked", "You confirm manually"]
   },
   how: {
     tag: "How It Works",
-    title: ["From cancellation", "to filled spot - just", "three simple steps."],
+    title: ["From cancellation", "to confirmation -", "just three", "simple steps."],
     steps: [
       {
         number: "01",
-        title: "Create an opening",
-        text: "A client cancels and your team creates a same-day Open Spot alert.",
-        label: "4:30 PM opening"
+        title: "Send Waitlist Alert",
+        text: "Notify interested clients in seconds when a spot opens."
       },
       {
         number: "02",
-        title: "Text your waitlist",
-        text: "Eligible clients receive a clear SMS and reply YES if they want the spot.",
-        label: "SMS sent"
+        title: "Review Replies",
+        text: "See responses in one clean queue and spot the best match."
       },
       {
         number: "03",
-        title: "Manually confirm",
-        text: "Review the replies and choose who gets the appointment. Open Spot never confirms automatically.",
-        label: "Manual confirmation"
+        title: "Confirm the Client",
+        text: "Choose the best fit and confirm the appointment manually."
       }
     ]
   },
+  workflow: {
+    tag: "Workflow",
+    title: "Non-disruptive cancellation recovery",
+    text:
+      "Open Spot works beside your booking system. You send SMS alerts, review replies, and manually confirm the best client."
+  },
   pricing: {
     tag: "Pricing",
-    title: "Simple plans, clear value.",
+    title: "Simple pricing for appointment teams.",
     cards: [
       {
         title: "Starter",
-        price: "Early Access",
-        text: "For one location testing SMS recovery.",
-        cta: "Start a pilot",
+        price: "$0 / mo",
+        text: "For testing your waitlist workflow.",
+        cta: "Se connecter",
+        href: loginHref,
         featured: false,
         features: [
-          "SMS waitlist",
-          "Opening alerts",
-          "Reply queue",
-          "Manual confirmation",
-          "Basic recovery view"
+          "Manual opening creation",
+          "SMS simulator",
+          "Basic waitlist page",
+          "Manual confirmation"
         ]
       },
       {
         title: "Growth",
-        price: "Open Spot",
-        text: "For teams recovering multiple cancellations each week.",
-        cta: "Talk to the team",
+        price: "$49 / mo",
+        text: "For appointment-based businesses ready to recover cancellations.",
+        cta: "Se connecter",
+        href: loginHref,
         featured: true,
+        badge: "Best Deal",
         features: [
-          "Everything in Starter",
-          "Customer import controls",
-          "Consent-aware targeting",
-          "Recovered value reporting",
-          "Setup support"
+          "Real SMS alerts",
+          "Customer waitlist",
+          "Reply tracking",
+          "Manual validation",
+          "Basic recovered revenue reporting"
         ]
       },
       {
         title: "Scale",
         price: "Custom",
-        text: "For multi-location operators or custom workflows.",
-        cta: "Contact us",
+        text: "For teams with multiple locations or higher SMS volume.",
+        cta: "Book a call",
+        href: "/book-call/questions",
         featured: false,
         features: [
-          "Location controls",
-          "Team workflows",
-          "Operational review",
-          "Volume planning",
+          "Multi-location support",
+          "Advanced reporting",
+          "Custom onboarding",
           "Priority support"
         ]
       }
     ]
   },
-  results: {
-    title: "Real recovery workflows for real appointment teams.",
+  testimonials: {
+    title: "Real results from local teams.",
     text:
-      "Open Spot is built around the moment a local business would otherwise start calling clients one by one.",
+      "Representative workflows for local teams using consent-based SMS recovery. Final confirmation always stays with the business.",
     cards: [
       [
-        "Salon",
-        "A color appointment cancels in the morning. The waitlist receives one SMS and the team picks who to confirm."
+        "SO",
+        "Salon owner",
+        "When a color appointment opens, the team can notify the waitlist quickly and choose the best fit without changing the calendar."
       ],
       [
-        "Barber",
-        "A 4:30 PM haircut opens. Replies arrive by SMS while the barber keeps serving clients."
+        "BM",
+        "Barber shop manager",
+        "Replies land in one place, so the shop can keep serving clients while the next opening gets reviewed."
       ],
       [
-        "Clinic",
-        "A treatment slot becomes available. Eligible clients reply and staff manually confirms the right fit."
+        "BC",
+        "Beauty clinic coordinator",
+        "The manual confirmation step keeps the staff in control when multiple clients want the same slot."
       ],
       [
-        "Spa",
-        "A same-day opening is recovered without moving clients into a new booking flow."
+        "SR",
+        "Spa receptionist",
+        "Open Spot gives us a clean recovery layer beside the booking system instead of another booking tool to manage."
       ]
-    ],
-    stats: [
-      ["85", "Dollars recovered on one haircut slot"],
-      ["2 min", "To send a focused SMS alert"],
-      ["100%", "Manual final confirmation"]
     ]
   },
   faq: {
@@ -207,55 +150,36 @@ const openSpotCopy = {
     items: [
       [
         "Does Open Spot replace my booking system?",
-        "No. Your calendar, POS, and booking tools stay in place. Open Spot handles the SMS recovery workflow."
+        "No. It works beside your current system."
       ],
       [
-        "Does Open Spot choose the client for me?",
-        "No. Replies are organized for review, but the business always chooses who to confirm."
+        "Are clients confirmed automatically?",
+        "No. Your team reviews replies and confirms manually."
+      ],
+      ["Do clients need an app?", "No. They reply by SMS."],
+      [
+        "Can I use SMS safely?",
+        "Open Spot is designed around consent-based messaging and STOP opt-out handling."
       ],
       [
-        "Can I message every imported client?",
-        "No. Clients need valid SMS consent before they receive opening alerts."
-      ],
-      [
-        "What happens if someone replies STOP?",
-        "They are opted out and must be excluded from future sends."
-      ],
-      ["Do clients need an app?", "No. Clients receive and answer a normal SMS."]
-    ]
-  },
-  resources: {
-    tag: "Blog",
-    title: "Guides to recover more appointments.",
-    cards: [
-      [
-        "How to reduce lost cancellations",
-        "A practical workflow for reacting fast when a slot opens."
-      ],
-      [
-        "Managing SMS consent properly",
-        "Why clean consent keeps your waitlist useful and compliant."
-      ],
-      [
-        "Building a useful waitlist",
-        "How QR signups and service interests improve recovery messages."
+        "Can I start with a small list?",
+        "Yes. You can start with a simple opted-in waitlist."
       ]
     ]
   },
   final: {
-    title: "Stop losing revenue to last-minute cancellations.",
+    title: "Ready to recover your next cancellation?",
     text:
-      "Open Spot gives your team a simple SMS workflow to refill empty appointment slots before they disappear.",
-    primary: "Se connecter",
-    secondary: "Contact Sales"
+      "Launch a simple SMS recovery workflow that keeps your booking system, your team, and your manual confirmation step in place.",
+    primary: "Se connecter"
   },
   footer: {
-    line: "Fill last-minute cancellations with one simple SMS.",
-    product: "Platform",
-    resource: "Resource",
-    legal: "Legal",
-    privacy: "Privacy",
-    terms: "Terms"
+    line: "Recover last-minute cancellations by SMS.",
+    columns: [
+      ["Product", "Features", "How it works", "Pricing"],
+      ["Company", "Contact", "Support"],
+      ["Legal", "Privacy", "Terms", "SMS consent"]
+    ]
   }
 } as const;
 
@@ -266,21 +190,13 @@ const copy = {
 
 type TemplateCopy = (typeof copy)[Locale];
 
-const loginHref = "/sign-in";
-
 export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   const t = copy[locale];
   const rootRef = useRef<HTMLDivElement>(null);
-  const logoStripItems = useMemo(
-    () => [...t.businessTypes, ...t.businessTypes, ...t.businessTypes],
-    [t.businessTypes]
-  );
-  const resultCards = useMemo(
-    () => [...t.results.cards, ...t.results.cards],
-    [t.results.cards]
-  );
 
   useEffect(() => {
+    rootRef.current?.classList.add("is-reveal-ready");
+
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
     const revealItems = Array.from(
       document.querySelectorAll<HTMLElement>("[data-lunera-reveal]")
@@ -356,20 +272,20 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 
   return (
     <div
-      className="lunera-template min-h-screen overflow-hidden bg-white text-[#07090f]"
+      className="lunera-template min-h-screen overflow-hidden bg-white text-[#05070a]"
       ref={rootRef}
       style={{ "--lunera-progress": 0 } as CSSProperties}
     >
       <FloatingNavbar t={t} />
       <main>
         <Hero t={t} />
-        <LogoStrip items={logoStripItems} />
-        <IntegrationsSection t={t} />
+        <MetricsSection t={t} />
+        <SetupSection t={t} />
         <HowItWorks t={t} />
+        <WorkflowPreview t={t} />
         <Pricing t={t} />
-        <Results resultCards={resultCards} t={t} />
+        <Testimonials t={t} />
         <Faq t={t} />
-        <Resources t={t} />
         <FinalCta t={t} />
       </main>
       <Footer t={t} />
@@ -379,26 +295,26 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 
 function FloatingNavbar({ t }: { t: TemplateCopy }) {
   return (
-    <header className="fixed inset-x-0 top-5 z-50 px-4">
-      <div className="mx-auto flex min-h-[3.75rem] max-w-[52.5rem] items-center justify-between gap-3 rounded-full border border-white/90 bg-white/94 px-3.5 py-2 shadow-[0_16px_44px_rgba(15,23,42,0.11)] backdrop-blur-2xl sm:px-4">
+    <header className="fixed inset-x-0 top-4 z-50 px-3 sm:top-5">
+      <div className="mx-auto flex min-h-[3.45rem] max-w-[54rem] items-center justify-between gap-2 rounded-full border border-white/90 bg-white/94 px-3 py-2 shadow-[0_16px_44px_rgba(15,23,42,0.11)] backdrop-blur-2xl sm:min-h-[3.75rem] sm:px-4">
         <Link
-          className="flex shrink-0 items-center gap-2 rounded-full text-[0.98rem] font-semibold tracking-normal text-[#07090f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#4388ff]"
+          className="flex min-w-0 shrink-0 items-center gap-2 rounded-full text-[0.94rem] font-bold text-[#07090f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#3478ff]"
           href="/"
         >
           <OpenSpotMark />
-          <span>Open Spot</span>
+          <span className="whitespace-nowrap">Open Spot</span>
         </Link>
         <nav aria-label="Main navigation" className="hidden items-center gap-1 md:flex">
           <NavLink href="#features">{t.nav.features}</NavLink>
-          <NavLink href="#how">{t.nav.how}</NavLink>
+          <NavLink href="#how-it-works">{t.nav.how}</NavLink>
           <NavLink href="#pricing">{t.nav.pricing}</NavLink>
           <NavLink href="/contact">{t.nav.contact}</NavLink>
         </nav>
         <Link
-          className="inline-flex min-h-[2.5rem] shrink-0 items-center justify-center rounded-full bg-black px-3.5 text-[0.82rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:px-4"
+          className="inline-flex min-h-[2.38rem] shrink-0 items-center justify-center rounded-full bg-black px-3.5 text-[0.78rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:min-h-[2.5rem] sm:px-4"
           href={loginHref}
         >
-          <span>{t.nav.primary}</span>
+          {t.nav.primary}
         </Link>
       </div>
     </header>
@@ -428,15 +344,15 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
 function Hero({ t }: { t: TemplateCopy }) {
   return (
     <section
-      className="relative isolate overflow-hidden px-4 pb-0 pt-24"
+      className="relative isolate overflow-hidden px-4 pb-10 pt-24 sm:pb-14 sm:pt-28"
       data-lunera-hero
       id="features"
     >
       <div className="lunera-hero-sky absolute inset-0 -z-20" />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(163,223,250,0.92)_0%,rgba(188,235,255,0.78)_42%,rgba(255,255,255,0)_88%)]" />
-      <div className="mx-auto max-w-[68rem] text-center">
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(223,243,255,0.96)_0%,rgba(234,248,255,0.82)_44%,rgba(255,255,255,0)_86%)]" />
+      <div className="mx-auto max-w-[70rem] text-center">
         <h1
-          className="lunera-hero-title mx-auto max-w-[62rem] text-balance text-[3.3rem] font-semibold leading-[0.96] tracking-normal text-[#040507] sm:text-[4.85rem] lg:text-[5.45rem]"
+          className="lunera-hero-title mx-auto max-w-[61rem] text-balance text-5xl font-black leading-[0.96] text-[#040507] sm:text-6xl lg:text-7xl"
           data-lunera-reveal
         >
           {t.hero.title.map((line) => (
@@ -446,30 +362,18 @@ function Hero({ t }: { t: TemplateCopy }) {
           ))}
         </h1>
         <p
-          className="lunera-hero-subtitle mx-auto mt-4 max-w-[39rem] text-balance text-[1.02rem] font-medium leading-8 text-[#334155] sm:text-[1.2rem]"
+          className="lunera-hero-subtitle mx-auto mt-5 max-w-[19.5rem] text-balance px-1 text-base font-medium leading-7 text-[#526173] sm:max-w-[44rem] sm:text-lg"
           data-lunera-reveal
         >
           {t.hero.subtitle}
         </p>
-        <HeroCtaRow t={t} />
       </div>
       <HeroPhoneMockup />
-      <HeroMetricsGrid />
+      <HeroSocialProof label={t.hero.socialProof} />
+      <HeroCtaRow t={t} />
+      <CategoryStrip items={t.hero.categories} />
       <HeroCloudBlend />
     </section>
-  );
-}
-
-function HeroCtaRow({ t }: { t: TemplateCopy }) {
-  return (
-    <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row" data-lunera-reveal>
-      <Link className="lunera-cta-primary bg-black shadow-[0_18px_42px_rgba(0,0,0,0.2)]" href={loginHref}>
-        {t.hero.primary}
-      </Link>
-      <Link className="lunera-cta-secondary" href="/book-call/questions">
-        {t.hero.secondary}
-      </Link>
-    </div>
   );
 }
 
@@ -479,6 +383,52 @@ function HeroPhoneMockup() {
       <div className="lunera-phone-depth-layer">
         <SmsConversationPhone locale="en" />
       </div>
+    </div>
+  );
+}
+
+function HeroSocialProof({ label }: { label: string }) {
+  return (
+    <div className="lunera-hero-social-proof" data-lunera-reveal>
+      <div className="lunera-avatar-stack" aria-hidden="true">
+        {["SA", "MR", "JT", "AL"].map((initials) => (
+          <span className="bg-white text-[0.65rem] font-black text-[#3478ff]" key={initials}>
+            {initials}
+          </span>
+        ))}
+      </div>
+      <div>
+        <div className="lunera-stars" aria-label="Five star style social proof">
+          *****
+        </div>
+        <p>{label}</p>
+      </div>
+    </div>
+  );
+}
+
+function HeroCtaRow({ t }: { t: TemplateCopy }) {
+  return (
+    <div
+      className="lunera-hero-cta-row relative z-40 mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row"
+      data-lunera-reveal
+    >
+      <Link className="lunera-cta-primary bg-[#3478ff]" href={loginHref}>
+        {t.hero.primary}
+      </Link>
+      <Link className="lunera-cta-secondary" href="#how-it-works">
+        {t.hero.secondary}
+      </Link>
+    </div>
+  );
+}
+
+function CategoryStrip({ items }: { items: readonly string[] }) {
+  return (
+    <div className="open-spot-category-strip relative z-40 mx-auto mt-11 flex max-w-[54rem] flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-black text-slate-400 sm:gap-x-12">
+      {items.map((item) => (
+        <span key={item}>{item}</span>
+      ))}
     </div>
   );
 }
@@ -494,247 +444,206 @@ function HeroCloudBlend() {
   );
 }
 
-function HeroMetricsGrid() {
+function MetricsSection({ t }: { t: TemplateCopy }) {
   return (
-    <div className="open-spot-metrics-grid mx-auto grid max-w-[68rem] gap-4 px-1 pb-20 sm:gap-5 lg:grid-cols-5">
-      <MetricCard
-        body="YES replies"
-        eyebrow="+24% vs yesterday"
-        title="Real-Time Replies"
-        value="128"
-        visual={<ReplyDots />}
-      />
-      <MetricCard
-        body="Revenue saved"
-        className="lg:col-span-2"
-        eyebrow="Example month"
-        title="Revenue Saved"
-        value="$8.3K"
-        visual={<RevenueLine />}
-      />
-      <MetricCard
-        body="100% manual review"
-        eyebrow="Merchant review only"
-        title="Manual Confirmation"
-        value="Reviewed"
-        visual={<ManualCheck />}
-      />
-      <MetricCard
-        body="Average fill time"
-        eyebrow="Example dashboard preview. Results vary by business."
-        title="Average Fill Time"
-        value="18 min"
-        visual={<FillTimeBar />}
-      />
-      <MetricCard
-        body="Successfully filled"
-        className="lg:col-span-2"
-        eyebrow="9 filled spots"
-        title="Successfully Filled"
-        value="72%"
-        visual={<FilledGauge />}
-      />
-      <div className="rounded-[1.25rem] border border-white/80 bg-white/80 p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur lg:col-span-3">
-        <p className="text-sm font-semibold leading-6 text-[#334155]">
-          Clients reply. You review. You confirm manually.
-        </p>
-        <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-[#4388ff]">
-          Example dashboard preview. Results vary by business.
-        </p>
+    <section className="bg-white px-4 py-20 sm:py-28">
+      <SectionHeading subtitle={t.metrics.subtitle} title={t.metrics.title} />
+      <div className="mx-auto mt-12 grid max-w-[72rem] gap-5 lg:grid-cols-3">
+        <DashboardCard
+          text="See who replied YES as soon as your waitlist responds."
+          title="Real-Time Replies"
+          visual={<RepliesVisual />}
+        />
+        <DashboardCard
+          text="Track how much revenue is recovered from filled last-minute openings."
+          title="Revenue Saved"
+          visual={<RevenueVisual />}
+        />
+        <DashboardCard
+          text="Your team chooses who gets the appointment. No one is confirmed without review."
+          title="Manual Confirmation"
+          visual={<ManualVisual />}
+        />
+        <DashboardCard
+          className="lg:col-span-1 xl:col-span-1"
+          text="See how quickly last-minute openings are filled after your SMS goes out."
+          title="Average Fill Time"
+          visual={<FillTimeVisual />}
+        />
+        <DashboardCard
+          className="lg:col-span-2"
+          text="Track the number of cancelled appointments you've successfully filled."
+          title="Successfully Filled Spots"
+          visual={<FilledSpotsVisual />}
+        />
       </div>
-    </div>
+    </section>
   );
 }
 
-function MetricCard({
-  body,
+function DashboardCard({
   className,
-  eyebrow,
+  text,
   title,
-  value,
   visual
 }: {
-  body: string;
   className?: string;
-  eyebrow: string;
+  text: string;
   title: string;
-  value: string;
   visual: ReactNode;
 }) {
   return (
     <article
       className={cn(
-        "open-spot-metric-card min-h-[13.5rem] rounded-[1.25rem] border border-white/80 bg-white/92 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.09)] backdrop-blur",
+        "open-spot-dashboard-card min-h-[18rem] rounded-[1.5rem] border border-slate-100 bg-white p-7 shadow-[0_20px_70px_rgba(15,23,42,0.07)]",
         className
       )}
       data-lunera-reveal
     >
-      <div className="relative z-10">
-        <p className="text-xs font-black uppercase tracking-[0.12em] text-[#4388ff]">{title}</p>
-        <p className="mt-4 text-4xl font-semibold leading-none text-[#05070b]">{value}</p>
-        <p className="mt-3 text-sm font-semibold leading-6 text-[#334155]">{body}</p>
-        <p className="mt-2 text-xs font-bold leading-5 text-slate-400">{eyebrow}</p>
-      </div>
-      {visual}
+      <h3 className="text-xl font-black text-[#0a0a0a]">{title}</h3>
+      <p className="mt-3 max-w-[19rem] text-sm font-medium leading-6 text-slate-500">{text}</p>
+      <div className="mt-7">{visual}</div>
     </article>
   );
 }
 
-function ReplyDots() {
+function RepliesVisual() {
   return (
-    <div aria-hidden="true" className="mt-5 flex items-center gap-2">
-      {[0, 1, 2].map((dot) => (
-        <span className="h-2.5 w-2.5 rounded-full bg-[#4388ff]" key={dot} />
+    <div className="flex items-center gap-5 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.06)]">
+      <div className="grid h-20 w-20 place-items-center rounded-full bg-[conic-gradient(#3478ff_0_78%,#e8f0ff_78%_100%)]">
+        <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-xl font-black text-[#3478ff]">
+          ...
+        </div>
+      </div>
+      <div>
+        <p className="text-4xl font-black text-[#05070a]">128</p>
+        <p className="text-sm font-bold text-slate-500">YES replies</p>
+        <p className="mt-1 text-xs font-black text-[#22c55e]">+24% vs yesterday</p>
+      </div>
+    </div>
+  );
+}
+
+function RevenueVisual() {
+  return (
+    <div>
+      <div className="mb-3 w-fit rounded-[0.8rem] bg-white px-4 py-2 text-center shadow-[0_12px_32px_rgba(52,120,255,0.12)]">
+        <p className="text-xs font-black text-[#3478ff]">Revenue saved</p>
+        <p className="text-xl font-black">$8.3K</p>
+        <p className="text-xs font-bold text-slate-400">This month</p>
+      </div>
+      <svg aria-hidden="true" className="h-24 w-full" fill="none" viewBox="0 0 360 120">
+        <path
+          d="M5 92 C45 88 55 70 85 75 C125 82 132 46 170 52 C208 58 214 34 252 38 C292 42 308 18 355 12"
+          stroke="#3478ff"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="5"
+        />
+        <circle cx="252" cy="38" fill="#3478ff" r="7" />
+      </svg>
+    </div>
+  );
+}
+
+function ManualVisual() {
+  return (
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {[
+        ["Reviewed", "100%"],
+        ["Confirmation", "72%"]
+      ].map(([label, value]) => (
+        <div
+          className="rotate-[-2deg] rounded-[1rem] border border-slate-100 bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,0.07)] even:rotate-[3deg]"
+          key={label}
+        >
+          <p className="text-xs font-black text-[#3478ff]">{label}</p>
+          <div className="mt-4 grid h-20 place-items-center rounded-full bg-[conic-gradient(#3478ff_0_78%,#eef4ff_78%_100%)]">
+            <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-lg font-black">
+              {value}
+            </div>
+          </div>
+        </div>
       ))}
-      <span className="ml-2 rounded-full bg-[#eaf7ff] px-3 py-1 text-xs font-black text-[#1764d8]">
-        live
-      </span>
     </div>
   );
 }
 
-function RevenueLine() {
+function FillTimeVisual() {
   return (
-    <svg aria-hidden="true" className="mt-5 h-24 w-full" fill="none" viewBox="0 0 320 96">
-      <path d="M0 78 C42 68 45 84 82 58 C116 34 134 54 164 42 C203 26 218 44 248 22 C278 0 292 18 320 8" stroke="#4388ff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="5" />
-      <path d="M0 78 C42 68 45 84 82 58 C116 34 134 54 164 42 C203 26 218 44 248 22 C278 0 292 18 320 8 L320 96 L0 96 Z" fill="url(#revenueFill)" />
-      <defs>
-        <linearGradient id="revenueFill" x1="0" x2="0" y1="0" y2="1">
-          <stop stopColor="#4388ff" stopOpacity="0.2" />
-          <stop offset="1" stopColor="#4388ff" stopOpacity="0" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
-
-function ManualCheck() {
-  return (
-    <div aria-hidden="true" className="mt-6 rounded-[1rem] border border-[#d9eaff] bg-[#f7fbff] p-4">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-sm font-black text-[#0f172a]">Manual review</span>
-        <span className="rounded-full bg-[#dcfce7] px-3 py-1 text-xs font-black text-[#08775c]">
-          reviewed
-        </span>
+    <div>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-5xl font-black">18</p>
+          <p className="-mt-2 text-lg font-black">min</p>
+        </div>
+        <p className="rounded-full bg-[#ecfdf3] px-3 py-1 text-xs font-black text-[#22c55e]">
+          +22% faster this week
+        </p>
       </div>
-      <div className="mt-4 h-2 rounded-full bg-[#e2e8f0]">
-        <div className="h-2 w-full rounded-full bg-[#4388ff]" />
-      </div>
-    </div>
-  );
-}
-
-function FillTimeBar() {
-  return (
-    <div aria-hidden="true" className="mt-7">
-      <div className="h-2.5 rounded-full bg-[#e2e8f0]">
-        <div className="h-2.5 w-[62%] rounded-full bg-[#4388ff]" />
+      <div className="mt-8 h-2.5 rounded-full bg-[#e8eef8]">
+        <div className="relative h-2.5 w-[58%] rounded-full bg-[#3478ff]">
+          <span className="absolute right-0 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-4 border-white bg-[#3478ff] shadow-md" />
+        </div>
       </div>
       <div className="mt-3 flex justify-between text-xs font-bold text-slate-400">
-        <span>0</span>
+        <span>0 min</span>
+        <span>15 min</span>
         <span>30 min</span>
       </div>
     </div>
   );
 }
 
-function FilledGauge() {
+function FilledSpotsVisual() {
   return (
-    <div aria-hidden="true" className="mt-5 flex items-center gap-5">
-      <div className="grid h-24 w-24 place-items-center rounded-full bg-[conic-gradient(#4388ff_0_72%,#e8eef8_72%_100%)] shadow-[inset_0_0_0_10px_#f8fbff]">
-        <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-sm font-black text-[#1764d8]">
-          72%
-        </div>
+    <div className="flex flex-col items-center justify-center gap-5 sm:flex-row sm:justify-between">
+      <div>
+        <p className="text-5xl font-black">84</p>
+        <p className="text-sm font-bold text-slate-500">filled spots</p>
+        <p className="mt-2 text-xs font-black text-[#22c55e]">+18% this week</p>
       </div>
-      <div className="grid gap-2">
-        <span className="h-2 w-24 rounded-full bg-[#4388ff]" />
-        <span className="h-2 w-16 rounded-full bg-[#bddbff]" />
-        <span className="h-2 w-20 rounded-full bg-[#e0efff]" />
+      <div className="grid h-44 w-44 place-items-center rounded-full bg-[conic-gradient(from_225deg,#3478ff_0_68%,#edf3ff_68%_100%)] p-5">
+        <div className="h-24 w-24 rounded-full bg-white shadow-[inset_0_0_0_1px_rgba(15,23,42,0.05)]" />
       </div>
     </div>
   );
 }
 
-function LogoStrip({ items }: { items: readonly string[] }) {
+function SetupSection({ t }: { t: TemplateCopy }) {
   return (
-    <section className="bg-white px-4 pb-16 pt-8">
-      <div className="lunera-business-marquee" data-lunera-reveal>
-        <div className="lunera-business-marquee-track">
-          {items.map((item, index) => (
-            <span
-              className="grid h-9 min-w-[10rem] place-items-center whitespace-nowrap rounded-full px-5 text-sm font-black text-slate-300"
-              key={`${item}-${index}`}
-            >
-              {item}
+    <section className="bg-white px-4 py-12 sm:py-20">
+      <div className="mx-auto max-w-[72rem] rounded-[2.25rem] bg-[#f8fbff] px-5 py-16 text-center sm:px-10 sm:py-20">
+        <span className="lunera-pill" data-lunera-reveal>
+          {t.setup.tag}
+        </span>
+        <h2
+          className="mx-auto mt-6 max-w-[48rem] text-4xl font-black leading-[1.02] text-[#05070a] sm:text-5xl"
+          data-lunera-reveal
+        >
+          {t.setup.title.map((line) => (
+            <span className="block" key={line}>
+              {line}
             </span>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function IntegrationsSection({ t }: { t: TemplateCopy }) {
-  return (
-    <section className="relative overflow-hidden bg-white px-4 py-24 sm:py-32" id="tools">
-      <SectionHeading tag={t.integrations.tag} title={t.integrations.title} />
-      <p
-        className="mx-auto mt-5 max-w-[38rem] text-center text-base font-medium leading-7 text-slate-500"
-        data-lunera-reveal
-      >
-        {t.integrations.text}
-      </p>
-      <div className="lunera-arc-stage mx-auto mt-16" data-lunera-reveal>
-        {t.integrations.tools.map((item, index) => (
-          <div
-            className="lunera-arc-card"
-            key={item}
-            style={{ "--arc-index": index } as CSSProperties}
-          >
-            <span>{item.slice(0, 2)}</span>
-            <strong>{item}</strong>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function HowItWorks({ t }: { t: TemplateCopy }) {
-  return (
-    <section className="bg-white px-4 py-20 sm:py-32" id="how">
-      <div className="mx-auto grid max-w-[70rem] gap-10 lg:grid-cols-[0.82fr_1.18fr]">
-        <div className="lg:sticky lg:top-32 lg:h-fit">
-          <span className="lunera-pill" data-lunera-reveal>
-            {t.how.tag}
-          </span>
-          <h2
-            className="mt-8 text-4xl font-semibold leading-[1.02] tracking-normal text-[#06080d] md:text-5xl"
-            data-lunera-reveal
-          >
-            {t.how.title.map((line) => (
-              <span className="block" key={line}>
-                {line}
-              </span>
-            ))}
-          </h2>
-          <div className="mt-8 h-2 overflow-hidden rounded-full bg-slate-100" data-lunera-reveal>
-            <div className="lunera-scroll-progress h-full rounded-full bg-[#4388ff]" />
-          </div>
-        </div>
-        <div className="space-y-5">
-          {t.how.steps.map((step, index) => (
-            <article className="lunera-step-card" data-lunera-reveal key={step.number}>
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#edf5ff] text-sm font-black text-[#4388ff]">
-                {step.number}
-              </span>
-              <div>
-                <h3 className="text-3xl font-semibold leading-tight text-[#06080d]">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-sm font-medium leading-7 text-slate-500">{step.text}</p>
-                <StepVisual index={index} label={step.label} />
+        </h2>
+        <p
+          className="mx-auto mt-6 max-w-[44rem] text-base font-medium leading-7 text-slate-500"
+          data-lunera-reveal
+        >
+          {t.setup.subtitle}
+        </p>
+        <div className="open-spot-setup-arc mx-auto mt-14 grid max-w-[60rem] gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {t.setup.steps.map((step, index) => (
+            <article
+              className="relative z-10 rounded-[1.25rem] border border-slate-100 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.07)] transition duration-300 ease-out hover:-translate-y-2 hover:border-blue-200 hover:shadow-[0_24px_70px_rgba(52,120,255,0.16)]"
+              data-lunera-reveal
+              key={step}
+            >
+              <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#edf5ff] text-lg font-black text-[#3478ff]">
+                {index + 1}
               </div>
+              <p className="mt-4 text-sm font-black leading-5 text-[#111827]">{step}</p>
             </article>
           ))}
         </div>
@@ -743,28 +652,172 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
   );
 }
 
-function StepVisual({ index, label }: { index: number; label: string }) {
+function HowItWorks({ t }: { t: TemplateCopy }) {
   return (
-    <div className="mt-8 overflow-hidden rounded-[1.5rem] bg-[#f7faff] p-5">
-      <div className="mb-5 flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm">
-        <span className="text-sm font-black text-[#4388ff]">{label}</span>
-        <span className="rounded-full bg-black px-3 py-1 text-xs font-black text-white">
-          {index === 2 ? "Review" : "Ready"}
-        </span>
+    <section className="bg-white px-4 py-20 sm:py-28" id="how-it-works">
+      <div className="mx-auto grid max-w-[72rem] gap-10 border-l-4 border-[#141414] pl-6 sm:pl-10 lg:grid-cols-[0.72fr_1.28fr]">
+        <div className="lg:sticky lg:top-32 lg:h-fit">
+          <span className="lunera-pill" data-lunera-reveal>
+            {t.how.tag}
+          </span>
+          <h2
+            className="mt-8 max-w-[21rem] text-4xl font-black leading-[1.02] text-[#05070a] sm:text-5xl"
+            data-lunera-reveal
+          >
+            {t.how.title.map((line) => (
+              <span className="block" key={line}>
+                {line}
+              </span>
+            ))}
+          </h2>
+        </div>
+        <div className="grid gap-6">
+          {t.how.steps.map((step, index) => (
+            <article className="open-spot-step-card" data-lunera-reveal key={step.number}>
+              <div className="flex gap-5">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#eef4ff] text-xl font-black text-[#3478ff]">
+                  {index === 0 ? "!" : index === 1 ? "2" : "✓"}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-2xl font-black text-[#05070a]">{step.title}</h3>
+                  <p className="mt-2 max-w-[25rem] text-sm font-medium leading-6 text-slate-500">
+                    {step.text}
+                  </p>
+                  <StepMiniUi index={index} />
+                </div>
+              </div>
+              <span className="absolute bottom-5 right-5 text-sm font-black text-slate-300">
+                {step.number}
+              </span>
+            </article>
+          ))}
+        </div>
       </div>
-      <div className="grid grid-cols-5 items-end gap-3">
-        {[0, 1, 2, 3, 4].map((bar) => (
-          <span
-            className="lunera-bar block rounded-t-2xl bg-[#4388ff]"
-            key={bar}
-            style={{
-              height: `${44 + ((bar + index) % 4) * 24}px`,
-              opacity: 0.34 + bar * 0.13
-            }}
-          />
+    </section>
+  );
+}
+
+function StepMiniUi({ index }: { index: number }) {
+  if (index === 0) {
+    return (
+      <div className="mt-6 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-sm">
+        <div className="rounded-[0.8rem] bg-[#f8fbff] p-4">
+          <p className="text-xs font-black text-[#3478ff]">Spot opening detected</p>
+          <p className="mt-1 text-xs font-bold text-slate-500">Tomorrow at 10:00 AM</p>
+        </div>
+        <div className="mt-3 rounded-[0.8rem] border border-slate-100 p-4">
+          <span className="block h-3 w-4/5 rounded-full bg-slate-200" />
+          <span className="mt-3 block h-3 w-3/5 rounded-full bg-slate-200" />
+        </div>
+      </div>
+    );
+  }
+
+  if (index === 1) {
+    return (
+      <div className="mt-6 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-sm">
+        {[
+          ["SM", "Sarah M.", "Best match"],
+          ["JL", "Jamie L.", "Good match"],
+          ["MC", "Maria C.", "Review"]
+        ].map(([initials, name, status]) => (
+          <div className="flex items-center gap-3 border-b border-slate-100 py-3 last:border-b-0" key={name}>
+            <span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-[0.65rem] font-black text-slate-500">
+              {initials}
+            </span>
+            <span className="flex-1 text-xs font-black text-slate-700">{name}</span>
+            <span className="rounded-full bg-[#f4f7ff] px-3 py-1 text-[0.62rem] font-black text-[#3478ff]">
+              {status}
+            </span>
+          </div>
         ))}
       </div>
+    );
+  }
+
+  return (
+    <div className="mt-6 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-sm">
+      <div className="flex items-center gap-3">
+        <span className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-xs font-black text-slate-500">
+          SM
+        </span>
+        <div>
+          <p className="text-sm font-black text-slate-800">Sarah M.</p>
+          <p className="text-xs font-bold text-slate-400">May 14 - 10:00 AM - 60 min Facial</p>
+        </div>
+      </div>
+      <button
+        className="mt-4 min-h-11 w-full rounded-[0.8rem] bg-[#3478ff] text-sm font-black text-white"
+        type="button"
+      >
+        Confirm Sarah
+      </button>
     </div>
+  );
+}
+
+function WorkflowPreview({ t }: { t: TemplateCopy }) {
+  return (
+    <section className="bg-white px-4 py-20 sm:py-28">
+      <div className="mx-auto grid max-w-[72rem] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div data-lunera-reveal>
+          <span className="lunera-pill">{t.workflow.tag}</span>
+          <h2 className="mt-7 max-w-[33rem] text-4xl font-black leading-[1.04] text-[#05070a] sm:text-5xl">
+            {t.workflow.title}
+          </h2>
+          <p className="mt-5 max-w-[34rem] text-base font-medium leading-7 text-slate-500">
+            {t.workflow.text}
+          </p>
+          <div className="mt-8 grid gap-3 text-sm font-bold text-slate-600">
+            <p>Consent-based SMS alerts</p>
+            <p>Ranked reply queue for review</p>
+            <p>Manual confirmation before any appointment is filled</p>
+          </div>
+        </div>
+        <div className="relative" data-lunera-reveal>
+          <div className="rounded-[2rem] border border-slate-100 bg-[#f8fbff] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-8">
+            <div className="rounded-[1.5rem] bg-white p-5 shadow-[0_16px_45px_rgba(15,23,42,0.07)]">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                  <p className="text-xs font-black uppercase text-[#3478ff]">Open Spot queue</p>
+                  <p className="mt-1 text-xl font-black text-[#05070a]">New cancellation</p>
+                </div>
+                <span className="rounded-full bg-[#ecfdf3] px-3 py-1 text-xs font-black text-[#22c55e]">
+                  7 replies
+                </span>
+              </div>
+              <div className="mt-5 grid gap-3">
+                {["Sarah M.", "Mike R.", "Jessica T."].map((name, index) => (
+                  <div
+                    className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-4"
+                    key={name}
+                  >
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-[#eef4ff] text-xs font-black text-[#3478ff]">
+                      {name.slice(0, 1)}
+                    </span>
+                    <div className="flex-1">
+                      <p className="text-sm font-black text-slate-800">{name}</p>
+                      <p className="text-xs font-bold text-slate-400">
+                        {index === 0 ? "Best match" : index === 1 ? "90% match" : "80% match"}
+                      </p>
+                    </div>
+                    <button
+                      className="rounded-full bg-black px-3 py-1 text-xs font-black text-white"
+                      type="button"
+                    >
+                      Review
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="absolute -right-3 top-8 hidden rounded-full bg-black px-4 py-2 text-xs font-black text-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] sm:block">
+            You stay in control
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -772,42 +825,42 @@ function Pricing({ t }: { t: TemplateCopy }) {
   return (
     <TemplateSection id="pricing">
       <SectionHeading tag={t.pricing.tag} title={t.pricing.title} />
-      <div className="mx-auto mt-16 grid max-w-[70rem] gap-5 lg:grid-cols-3">
+      <div className="mx-auto mt-14 grid max-w-[72rem] gap-5 lg:grid-cols-3">
         {t.pricing.cards.map((card) => (
           <article
             className={cn(
-              "lunera-card flex min-h-[31rem] flex-col p-7",
-              card.featured && "border-[#4388ff] shadow-[0_28px_80px_rgba(67,136,255,0.2)]"
+              "open-spot-pricing-card lunera-card flex min-h-[31rem] flex-col p-7",
+              card.featured &&
+                "scale-[1.02] border-[#3478ff] shadow-[0_28px_80px_rgba(52,120,255,0.2)]"
             )}
             data-lunera-reveal
             key={card.title}
           >
-            {card.featured ? (
-              <span className="mb-5 w-fit rounded-full bg-[#4388ff] px-3 py-1 text-xs font-black text-white">
-                Best fit
+            {"badge" in card ? (
+              <span className="mb-5 w-fit rounded-full bg-[#3478ff] px-3 py-1 text-xs font-black text-white">
+                {card.badge}
               </span>
             ) : null}
-            <h3 className="text-3xl font-semibold text-[#06080d]">{card.title}</h3>
-            <p className="mt-4 min-h-20 text-sm font-medium leading-7 text-slate-500">
+            <h3 className="text-3xl font-black text-[#05070a]">{card.title}</h3>
+            <p className="mt-3 min-h-14 text-sm font-medium leading-6 text-slate-500">
               {card.text}
             </p>
-            <div className="mt-6 border-t border-slate-100 pt-6">
-              <p className="text-4xl font-semibold text-[#06080d]">{card.price}</p>
-              <p className="mt-2 text-sm font-bold text-slate-400">No fixed public price</p>
-            </div>
+            <p className="mt-7 border-t border-slate-100 pt-6 text-4xl font-black text-[#05070a]">
+              {card.price}
+            </p>
             <Link
               className={cn(
                 "mt-6 inline-flex min-h-[2.75rem] items-center justify-center rounded-full px-5 text-sm font-black transition hover:-translate-y-0.5",
-                card.featured ? "bg-[#4388ff] text-white" : "bg-black text-white"
+                card.featured ? "bg-[#3478ff] text-white" : "bg-black text-white"
               )}
-              href="/book-call/questions"
+              href={card.href}
             >
               {card.cta}
             </Link>
             <ul className="mt-7 space-y-4">
               {card.features.map((feature) => (
                 <li className="flex gap-3 text-sm font-bold leading-6 text-slate-600" key={feature}>
-                  <span className="mt-0.5 text-[#4388ff]">+</span>
+                  <span className="mt-0.5 text-[#22c55e]">✓</span>
                   <span>{feature}</span>
                 </li>
               ))}
@@ -819,51 +872,28 @@ function Pricing({ t }: { t: TemplateCopy }) {
   );
 }
 
-function Results({
-  resultCards,
-  t
-}: {
-  resultCards: readonly (readonly [string, string])[];
-  t: TemplateCopy;
-}) {
+function Testimonials({ t }: { t: TemplateCopy }) {
   return (
-    <section className="overflow-hidden bg-white px-4 py-20 sm:py-32">
-      <div className="mx-auto max-w-[70rem] text-center">
-        <h2
-          className="mx-auto max-w-[44rem] text-4xl font-semibold leading-tight text-[#06080d] md:text-5xl"
-          data-lunera-reveal
-        >
-          {t.results.title}
-        </h2>
-        <p
-          className="mx-auto mt-5 max-w-[36rem] text-base font-medium leading-7 text-slate-500"
-          data-lunera-reveal
-        >
-          {t.results.text}
-        </p>
-      </div>
-      <div className="lunera-marquee mt-12" data-lunera-reveal>
-        <div className="lunera-marquee-track lunera-marquee-slow">
-          {resultCards.map(([title, text], index) => (
-            <article
-              className="w-[22.4rem] shrink-0 rounded-[1.5rem] border border-slate-100 bg-white p-6 shadow-[0_22px_55px_rgba(15,23,42,0.08)]"
-              key={`${title}-${index}`}
-            >
-              <h3 className="text-xl font-semibold text-[#06080d]">{title}</h3>
-              <p className="mt-4 text-sm font-medium leading-7 text-slate-500">{text}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-      <div
-        className="mx-auto mt-16 grid max-w-[48rem] gap-8 text-center sm:grid-cols-3"
-        data-lunera-reveal
-      >
-        {t.results.stats.map(([value, label]) => (
-          <div key={label}>
-            <p className="text-4xl font-semibold text-[#06080d]">{value}</p>
-            <p className="mt-2 text-sm font-bold leading-6 text-slate-500">{label}</p>
-          </div>
+    <section className="bg-[#f8fbff] px-4 py-20 sm:py-28">
+      <SectionHeading subtitle={t.testimonials.text} title={t.testimonials.title} />
+      <div className="mx-auto mt-12 grid max-w-[72rem] gap-5 md:grid-cols-2">
+        {t.testimonials.cards.map(([initials, role, quote]) => (
+          <article
+            className="lunera-card p-6 transition duration-300 ease-out hover:-translate-y-2 hover:border-blue-200 hover:shadow-[0_28px_80px_rgba(15,23,42,0.12)]"
+            data-lunera-reveal
+            key={role}
+          >
+            <div className="flex items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#3478ff] text-sm font-black text-white">
+                {initials}
+              </span>
+              <div>
+                <h3 className="text-base font-black text-[#05070a]">{role}</h3>
+                <p className="text-xs font-bold text-slate-400">Appointment-based team</p>
+              </div>
+            </div>
+            <p className="mt-6 text-base font-medium leading-8 text-slate-600">{quote}</p>
+          </article>
         ))}
       </div>
     </section>
@@ -874,27 +904,21 @@ function Faq({ t }: { t: TemplateCopy }) {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="bg-white px-4 py-20 sm:py-32" id="faq">
-      <div className="mx-auto grid max-w-[70rem] gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+    <section className="bg-white px-4 py-20 sm:py-28" id="faq">
+      <div className="mx-auto grid max-w-[72rem] gap-10 lg:grid-cols-[0.78fr_1.22fr]">
         <div>
           <span className="lunera-pill" data-lunera-reveal>
             {t.faq.tag}
           </span>
           <h2
-            className="mt-7 text-4xl font-semibold leading-tight text-[#06080d] md:text-5xl"
+            className="mt-7 max-w-[29rem] text-4xl font-black leading-tight text-[#05070a] sm:text-5xl"
             data-lunera-reveal
           >
             {t.faq.title}
           </h2>
-          <p
-            className="mt-6 max-w-md text-base font-medium leading-7 text-slate-500"
-            data-lunera-reveal
-          >
+          <p className="mt-5 max-w-md text-base font-medium leading-7 text-slate-500" data-lunera-reveal>
             {t.faq.text}
           </p>
-          <Link className="lunera-cta-secondary mt-8" href="/contact" data-lunera-reveal>
-            Ask a question
-          </Link>
         </div>
         <div className="rounded-[1.5rem] bg-[#f8fafc] p-3" data-lunera-reveal>
           {t.faq.items.map(([question, answer], index) => {
@@ -904,7 +928,7 @@ function Faq({ t }: { t: TemplateCopy }) {
               <div className="border-b border-white last:border-b-0" key={question}>
                 <button
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-5 rounded-[1rem] bg-white px-5 py-5 text-left text-base font-bold text-[#06080d] transition hover:bg-[#f7fbff]"
+                  className="flex w-full items-center justify-between gap-5 rounded-[1rem] bg-white px-5 py-5 text-left text-base font-black text-[#05070a] transition hover:bg-[#f7fbff]"
                   onClick={() => setOpenIndex(isOpen ? -1 : index)}
                   type="button"
                 >
@@ -927,63 +951,22 @@ function Faq({ t }: { t: TemplateCopy }) {
   );
 }
 
-function Resources({ t }: { t: TemplateCopy }) {
-  return (
-    <TemplateSection id="resources">
-      <SectionHeading tag={t.resources.tag} title={t.resources.title} />
-      <div className="mx-auto mt-16 grid max-w-[70rem] gap-5 lg:grid-cols-3">
-        {t.resources.cards.map(([title, text], index) => (
-          <article
-            className="lunera-card min-h-[24rem] overflow-hidden p-0"
-            data-lunera-reveal
-            key={title}
-          >
-            <div className="h-44 bg-[linear-gradient(135deg,#dff3ff,#ffffff)] p-6">
-              <div className="h-full rounded-[1.5rem] border border-white/80 bg-white/70 p-4 shadow-sm">
-                <div className="h-3 w-4/5 rounded-full bg-[#4388ff]/50" />
-                <div className="mt-4 h-3 w-1/2 rounded-full bg-white" />
-                <div className="mt-10 grid grid-cols-3 gap-2">
-                  {[0, 1, 2].map((item) => (
-                    <span
-                      className="h-12 rounded-2xl bg-white/85 shadow-sm"
-                      key={`${index}-${item}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="p-7">
-              <h3 className="text-2xl font-semibold leading-tight text-[#06080d]">{title}</h3>
-              <p className="mt-4 text-sm font-medium leading-7 text-slate-500">{text}</p>
-            </div>
-          </article>
-        ))}
-      </div>
-    </TemplateSection>
-  );
-}
-
 function FinalCta({ t }: { t: TemplateCopy }) {
   return (
     <section className="bg-white px-4 pb-20 pt-6">
       <div
-        className="mx-auto max-w-[70rem] rounded-[2rem] bg-black px-6 py-16 text-center text-white shadow-[0_28px_90px_rgba(0,0,0,0.22)] sm:px-10 sm:py-20"
+        className="mx-auto max-w-[72rem] rounded-[2rem] bg-[#050505] px-6 py-16 text-center text-white shadow-[0_28px_90px_rgba(0,0,0,0.22)] sm:px-10 sm:py-20"
         data-lunera-reveal
       >
-        <h2 className="mx-auto max-w-[53rem] text-4xl font-semibold leading-tight md:text-6xl">
+        <h2 className="mx-auto max-w-[50rem] text-4xl font-black leading-tight sm:text-6xl">
           {t.final.title}
         </h2>
-        <p className="mx-auto mt-6 max-w-[38rem] text-base font-medium leading-7 text-white/65">
+        <p className="mx-auto mt-6 max-w-[40rem] text-base font-medium leading-7 text-white/65">
           {t.final.text}
         </p>
-        <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-          <Link className="lunera-cta-light" href={loginHref}>
-            {t.final.primary}
-          </Link>
-          <Link className="lunera-cta-dark" href="/contact">
-            {t.final.secondary}
-          </Link>
-        </div>
+        <Link className="lunera-cta-light mt-9" href={loginHref}>
+          {t.final.primary}
+        </Link>
       </div>
     </section>
   );
@@ -991,59 +974,38 @@ function FinalCta({ t }: { t: TemplateCopy }) {
 
 function Footer({ t }: { t: TemplateCopy }) {
   return (
-    <footer className="border-t border-slate-100 bg-white px-4 py-10">
-      <div className="mx-auto grid max-w-[70rem] gap-8 md:grid-cols-[1.5fr_1fr_1fr_1fr]">
+    <footer className="bg-[#050505] px-4 py-12 text-white">
+      <div className="mx-auto grid max-w-[72rem] gap-10 md:grid-cols-[1.45fr_1fr_1fr_1fr]">
         <div>
-          <Link
-            className="inline-flex items-center gap-2.5 text-[1.05rem] font-semibold text-[#06080d]"
-            href="/"
-          >
+          <Link className="inline-flex items-center gap-2.5 text-[1.05rem] font-black" href="/">
             <OpenSpotMark />
             <span>Open Spot</span>
           </Link>
-          <p className="mt-5 max-w-sm text-sm font-medium leading-7 text-slate-500">
+          <p className="mt-5 max-w-sm text-sm font-medium leading-7 text-white/55">
             {t.footer.line}
           </p>
+          <p className="mt-8 text-xs font-bold text-white/35">
+            © 2026 Open Spot. All rights reserved.
+          </p>
         </div>
-        <FooterColumn
-          links={[
-            ["Features", "#features"],
-            ["Pricing", "#pricing"],
-            ["Integrations", "#tools"],
-            ["FAQ", "#faq"]
-          ]}
-          title={t.footer.product}
-        />
-        <FooterColumn
-          links={[
-            ["Contact", "/contact"],
-            ["Blog", "#resources"],
-            [t.nav.primary, loginHref]
-          ]}
-          title={t.footer.resource}
-        />
-        <FooterColumn
-          links={[
-            [t.footer.privacy, "/privacy"],
-            [t.footer.terms, "/terms"]
-          ]}
-          title={t.footer.legal}
-        />
+        {t.footer.columns.map(([title, ...links]) => (
+          <FooterColumn key={title} links={links} title={title} />
+        ))}
       </div>
     </footer>
   );
 }
 
-function FooterColumn({ links, title }: { links: Array<[string, string]>; title: string }) {
+function FooterColumn({ links, title }: { links: readonly string[]; title: string }) {
   return (
     <div>
-      <h3 className="text-sm font-black text-[#06080d]">{title}</h3>
+      <h3 className="text-sm font-black text-white">{title}</h3>
       <div className="mt-4 grid gap-3">
-        {links.map(([label, href]) => (
+        {links.map((label) => (
           <Link
-            className="text-sm font-bold text-slate-500 transition hover:text-slate-950"
-            href={href}
-            key={`${label}-${href}`}
+            className="text-sm font-bold text-white/50 transition hover:text-white"
+            href={footerHref(label)}
+            key={label}
           >
             {label}
           </Link>
@@ -1053,36 +1015,52 @@ function FooterColumn({ links, title }: { links: Array<[string, string]>; title:
   );
 }
 
-function TemplateSection({
-  children,
-  id
-}: {
-  children: ReactNode;
-  id?: string;
-}) {
+function footerHref(label: string) {
+  const normalized = label.toLowerCase();
+
+  if (normalized === "features") return "#features";
+  if (normalized === "how it works") return "#how-it-works";
+  if (normalized === "pricing") return "#pricing";
+  if (normalized === "contact") return "/contact";
+  if (normalized === "support") return "/contact";
+  if (normalized === "privacy") return "/privacy";
+  if (normalized === "terms") return "/terms";
+  if (normalized === "sms consent") return "/privacy";
+
+  return "/";
+}
+
+function TemplateSection({ children, id }: { children: ReactNode; id?: string }) {
   return (
-    <section className="bg-white px-4 py-20 sm:py-32" id={id}>
+    <section className="bg-white px-4 py-20 sm:py-28" id={id}>
       {children}
     </section>
   );
 }
 
 function SectionHeading({
+  subtitle,
   tag,
   title
 }: {
-  tag: string;
+  subtitle?: string;
+  tag?: string;
   title: readonly string[] | string;
 }) {
   const lines = Array.isArray(title) ? title : [title];
 
   return (
-    <div className="mx-auto max-w-[42rem] text-center">
-      <span className="lunera-pill" data-lunera-reveal>
-        {tag}
-      </span>
+    <div className="mx-auto max-w-[48rem] text-center">
+      {tag ? (
+        <span className="lunera-pill" data-lunera-reveal>
+          {tag}
+        </span>
+      ) : null}
       <h2
-        className="mt-7 text-4xl font-semibold leading-[1.04] tracking-normal text-[#06080d] md:text-5xl"
+        className={cn(
+          "text-4xl font-black leading-[1.04] text-[#05070a] sm:text-5xl",
+          tag && "mt-7"
+        )}
         data-lunera-reveal
       >
         {lines.map((line) => (
@@ -1091,6 +1069,11 @@ function SectionHeading({
           </span>
         ))}
       </h2>
+      {subtitle ? (
+        <p className="mx-auto mt-5 max-w-[42rem] text-base font-medium leading-7 text-slate-500" data-lunera-reveal>
+          {subtitle}
+        </p>
+      ) : null}
     </div>
   );
 }
