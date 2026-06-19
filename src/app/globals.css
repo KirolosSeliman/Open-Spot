@@ -1333,7 +1333,108 @@ select {
   white-space: nowrap;
 }
 
-.open-spot-dashboard-card,
+.open-spot-metrics-section {
+  scroll-margin-top: 0;
+}
+
+.open-spot-metrics-heading {
+  position: relative;
+  z-index: 2;
+}
+
+.open-spot-metrics-title {
+  color: #05070a;
+  font-size: clamp(3.05rem, 4.05vw, 3.9rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 0.97;
+}
+
+.open-spot-metrics-grid {
+  align-items: stretch;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  margin-top: 1rem;
+  padding-bottom: 0;
+  position: static;
+  z-index: auto;
+}
+
+.open-spot-dashboard-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(255, 255, 255, 0.94)),
+    radial-gradient(circle at 18% 0%, rgba(52, 120, 255, 0.055), transparent 42%);
+  border: 1px solid rgba(15, 23, 42, 0.075);
+  border-radius: 1.75rem;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  padding: clamp(1.75rem, 2.1vw, 2.1rem);
+  position: relative;
+  transition:
+    transform 350ms ease,
+    box-shadow 350ms ease,
+    border-color 350ms ease,
+    background 350ms ease;
+}
+
+.open-spot-dashboard-card--top {
+  min-height: 19rem;
+}
+
+.open-spot-dashboard-card--wide {
+  min-height: 15.7rem;
+  padding: 1.45rem 2rem;
+}
+
+.open-spot-dashboard-title {
+  color: #05070a;
+  font-size: clamp(1.28rem, 1.45vw, 1.52rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.1;
+}
+
+.open-spot-dashboard-copy {
+  color: rgba(54, 73, 104, 0.84);
+  font-size: clamp(0.9rem, 0.94vw, 1rem);
+  font-weight: 560;
+  line-height: 1.55;
+  margin-top: 0.9rem;
+  max-width: 20.5rem;
+}
+
+.open-spot-dashboard-visual {
+  margin-top: 1.25rem;
+  padding-top: clamp(1.1rem, 1.8vw, 1.45rem);
+  transition: transform 350ms ease;
+}
+
+.open-spot-dashboard-card--top .open-spot-dashboard-visual {
+  margin-top: auto;
+}
+
+.open-spot-dashboard-card--wide .open-spot-dashboard-visual {
+  padding-top: 0;
+}
+
+.open-spot-dashboard-card--gauge {
+  display: grid;
+  column-gap: 1rem;
+  grid-template-columns: minmax(0, 1.18fr) minmax(10.8rem, 0.82fr);
+  grid-template-rows: auto 1fr;
+}
+
+.open-spot-dashboard-card--gauge .open-spot-dashboard-title,
+.open-spot-dashboard-card--gauge .open-spot-dashboard-copy {
+  grid-column: 1;
+}
+
+.open-spot-dashboard-card--gauge .open-spot-dashboard-visual {
+  align-self: center;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin-top: 0;
+}
+
 .open-spot-step-card,
 .open-spot-pricing-card {
   transition:
@@ -1342,12 +1443,302 @@ select {
     transform 260ms ease;
 }
 
-.open-spot-dashboard-card:hover,
 .open-spot-step-card:hover,
 .open-spot-pricing-card:hover {
   border-color: rgba(52, 120, 255, 0.24);
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
   transform: translateY(-6px);
+}
+
+.open-spot-dashboard-card:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(249, 252, 255, 0.98)),
+    radial-gradient(circle at 18% 0%, rgba(52, 120, 255, 0.09), transparent 44%);
+  border-color: rgba(59, 130, 246, 0.18);
+  box-shadow:
+    0 28px 80px rgba(37, 99, 235, 0.1),
+    0 12px 35px rgba(15, 23, 42, 0.08);
+  transform: translateY(-6px) scale(1.01);
+}
+
+.is-reveal-ready [data-lunera-reveal].open-spot-dashboard-card.is-visible:hover {
+  transform: translateY(-6px) scale(1.01);
+}
+
+.open-spot-dashboard-card:hover .open-spot-dashboard-visual {
+  transform: translateY(-2px);
+}
+
+.open-spot-replies-mini {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.05rem;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.07);
+  display: flex;
+  gap: clamp(1.1rem, 1.9vw, 1.6rem);
+  max-width: 18.8rem;
+  padding: 1rem 1.2rem;
+}
+
+.open-spot-replies-donut,
+.open-spot-manual-donut {
+  background: conic-gradient(#3478ff 0 78%, #edf3ff 78% 100%);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+
+.open-spot-replies-donut {
+  height: 5rem;
+  width: 5rem;
+}
+
+.open-spot-replies-donut-core,
+.open-spot-manual-core {
+  background: #ffffff;
+  border-radius: 999px;
+  display: grid;
+  font-weight: 950;
+  place-items: center;
+}
+
+.open-spot-replies-donut-core {
+  color: #3478ff;
+  font-size: 1.35rem;
+  height: 3.38rem;
+  width: 3.38rem;
+}
+
+.open-spot-card-number,
+.open-spot-filled-number,
+.open-spot-fill-number {
+  color: #05070a;
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.open-spot-card-number {
+  font-size: 2.45rem;
+}
+
+.open-spot-card-label {
+  color: rgba(71, 85, 105, 0.86);
+  font-size: 0.9rem;
+  font-weight: 750;
+  line-height: 1.35;
+  margin-top: 0.35rem;
+}
+
+.open-spot-card-positive {
+  color: #15b85d;
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-top: 0.55rem;
+}
+
+.open-spot-revenue-visual {
+  min-height: 7.8rem;
+  position: relative;
+}
+
+.open-spot-revenue-badge {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.82);
+  border-radius: 0.8rem;
+  box-shadow: 0 14px 36px rgba(52, 120, 255, 0.12);
+  left: 23%;
+  padding: 0.75rem 1rem;
+  position: absolute;
+  text-align: center;
+  top: -0.55rem;
+  z-index: 2;
+}
+
+.open-spot-revenue-chart {
+  height: 7.25rem;
+  margin-top: 1.75rem;
+  width: 100%;
+}
+
+.open-spot-manual-visual {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.open-spot-manual-mini {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(226, 232, 240, 0.86);
+  border-radius: 1rem;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.07);
+  min-width: 7.2rem;
+  padding: 0.82rem 0.9rem 0.9rem;
+  transform: rotate(-2deg);
+}
+
+.open-spot-manual-mini:nth-child(2) {
+  transform: rotate(3deg);
+}
+
+.open-spot-manual-donut {
+  height: 4.6rem;
+  margin-top: 0.85rem;
+  width: 4.6rem;
+}
+
+.open-spot-manual-core {
+  color: #0b1f5d;
+  font-size: 1.05rem;
+  height: 3.05rem;
+  width: 3.05rem;
+}
+
+.open-spot-fill-time-visual {
+  display: grid;
+  gap: 0.82rem;
+}
+
+.open-spot-fill-time-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.open-spot-fill-number {
+  font-size: clamp(2.7rem, 4.2vw, 3.35rem);
+}
+
+.open-spot-fill-number span {
+  font-size: 1.45rem;
+  font-weight: 850;
+}
+
+.open-spot-fill-pill {
+  background: rgba(236, 253, 243, 0.9);
+  border-radius: 999px;
+  margin-top: 0;
+  padding: 0.45rem 0.8rem;
+}
+
+.open-spot-fill-slider {
+  background: #e8eef8;
+  border-radius: 999px;
+  height: 0.58rem;
+}
+
+.open-spot-fill-slider-active {
+  background: #3478ff;
+  border-radius: inherit;
+  height: 100%;
+  position: relative;
+  width: 58%;
+}
+
+.open-spot-fill-slider-active span {
+  background: #3478ff;
+  border: 4px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 8px 18px rgba(52, 120, 255, 0.22);
+  height: 1.24rem;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.24rem;
+}
+
+.open-spot-fill-labels {
+  color: rgba(100, 116, 139, 0.75);
+  display: flex;
+  font-size: 0.78rem;
+  font-weight: 850;
+  justify-content: space-between;
+}
+
+.open-spot-filled-spots-visual {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.open-spot-filled-number {
+  font-size: clamp(2.9rem, 4.5vw, 3.5rem);
+}
+
+.open-spot-gauge {
+  height: 10.7rem;
+  justify-self: end;
+  position: relative;
+  width: 10.7rem;
+}
+
+.open-spot-gauge-ticks {
+  inset: 0;
+  position: absolute;
+}
+
+.open-spot-gauge-tick {
+  --tick-index: 0;
+  background: #e6edf7;
+  border-radius: 999px;
+  height: 0.92rem;
+  left: calc(50% - 0.08rem);
+  position: absolute;
+  top: calc(50% - 0.46rem);
+  transform: rotate(calc(-128deg + (var(--tick-index) * 7.8deg))) translateY(-4.65rem);
+  transform-origin: center center;
+  width: 0.16rem;
+}
+
+.open-spot-gauge-tick.is-active {
+  background: #3478ff;
+}
+
+.open-spot-gauge-center {
+  align-items: center;
+  background: #ffffff;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.9);
+  display: flex;
+  flex-direction: column;
+  height: 6.35rem;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 6.35rem;
+}
+
+.open-spot-gauge-center p {
+  color: #05070a;
+  font-size: 2.9rem;
+  font-weight: 950;
+  line-height: 0.96;
+}
+
+.open-spot-gauge-center span {
+  color: rgba(71, 85, 105, 0.88);
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin-top: 0.34rem;
+}
+
+.open-spot-gauge-center strong {
+  color: #15b85d;
+  font-size: 0.74rem;
+  font-weight: 900;
+  margin-top: 0.44rem;
+}
+
+@media (min-width: 1024px) {
+  .open-spot-metrics-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
 }
 
 .open-spot-setup-arc {
@@ -1685,6 +2076,12 @@ select {
 
   .open-spot-category-marquee-group[aria-hidden="true"] {
     display: none;
+  }
+
+  .open-spot-dashboard-card,
+  .open-spot-dashboard-card:hover,
+  .open-spot-dashboard-card:hover .open-spot-dashboard-visual {
+    transform: none !important;
   }
 }
 
@@ -2050,6 +2447,66 @@ select {
 
   .open-spot-category-marquee span {
     font-size: 0.9rem;
+  }
+
+  .open-spot-metrics-section {
+    padding-top: 5.25rem;
+  }
+
+  .open-spot-metrics-title {
+    font-size: clamp(2.55rem, 12vw, 3.35rem);
+    line-height: 1;
+  }
+
+  .open-spot-metrics-grid {
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-bottom: 0;
+  }
+
+  .open-spot-dashboard-card {
+    border-radius: 1.35rem;
+    padding: 1.35rem;
+  }
+
+  .open-spot-dashboard-card--top,
+  .open-spot-dashboard-card--wide {
+    min-height: 0;
+  }
+
+  .open-spot-dashboard-card--gauge {
+    grid-template-columns: 1fr;
+  }
+
+  .open-spot-dashboard-card--gauge .open-spot-dashboard-title,
+  .open-spot-dashboard-card--gauge .open-spot-dashboard-copy,
+  .open-spot-dashboard-card--gauge .open-spot-dashboard-visual {
+    grid-column: 1;
+  }
+
+  .open-spot-dashboard-card--gauge .open-spot-dashboard-visual {
+    grid-row: auto;
+    margin-top: 1rem;
+  }
+
+  .open-spot-replies-mini {
+    max-width: 100%;
+  }
+
+  .open-spot-manual-visual,
+  .open-spot-filled-spots-visual,
+  .open-spot-fill-time-row {
+    align-items: flex-start;
+    grid-template-columns: 1fr;
+  }
+
+  .open-spot-manual-visual {
+    justify-content: flex-start;
+  }
+
+  .open-spot-gauge {
+    justify-self: center;
+    margin-top: 0.75rem;
   }
 
   .open-spot-dashboard-card,

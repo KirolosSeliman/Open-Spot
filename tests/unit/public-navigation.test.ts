@@ -221,6 +221,41 @@ describe("public navigation", () => {
     expect(styles).toContain("transform-origin: center center");
   });
 
+  it("uses the compact Lunera-style analytics grid and card visuals", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const metricsSection = homepage.slice(
+      homepage.indexOf("function MetricsSection("),
+      homepage.indexOf("function DashboardCard(")
+    );
+    const filledSpotsVisual = homepage.slice(
+      homepage.indexOf("function FilledSpotsVisual("),
+      homepage.indexOf("function SetupSection(")
+    );
+
+    expect(metricsSection).toContain("open-spot-metrics-section");
+    expect(metricsSection).toContain("open-spot-metrics-heading");
+    expect(metricsSection).toContain("open-spot-metrics-grid");
+    expect(metricsSection).toContain("lg:grid-cols-12");
+    expect(metricsSection).toContain('size="top"');
+    expect(metricsSection).toContain('size="wide"');
+    expect(metricsSection).toContain("lg:col-span-4");
+    expect(metricsSection).toContain("lg:col-span-6");
+    expect(homepage).toContain("open-spot-dashboard-card--top");
+    expect(homepage).toContain("open-spot-dashboard-card--wide");
+    expect(filledSpotsVisual).toContain("open-spot-gauge-ticks");
+    expect(filledSpotsVisual).toContain("open-spot-gauge-tick");
+    expect(filledSpotsVisual).toContain("Array.from({ length: 34 })");
+    expect(styles).toContain(".open-spot-metrics-grid");
+    expect(styles).toContain(".open-spot-dashboard-card--top");
+    expect(styles).toContain(".open-spot-dashboard-card--wide");
+    expect(styles).toContain("transform: translateY(-6px) scale(1.01)");
+    expect(styles).toContain("0 28px 80px rgba(37, 99, 235, 0.1)");
+    expect(styles).toContain(".open-spot-dashboard-card:hover .open-spot-dashboard-visual");
+    expect(styles).toContain(".open-spot-gauge-tick");
+    expect(styles).toContain("prefers-reduced-motion: reduce");
+  });
+
   it("keeps the mobile sign-in CTA inside the floating navbar", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");

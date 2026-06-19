@@ -2,6 +2,43 @@
 
 final result: passed
 
+## Analytics Cards Section QA - 2026-06-19
+
+final result: passed
+
+Source visual truth:
+- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-20a9260e-3432-4a21-a37e-4380c1450d14.png
+- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-710ec25e-cad8-4331-b7d2-808139a447e6.png
+
+Implementation screenshots:
+- Desktop final: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-metrics\desktop-1674-final-v2.png
+- Tablet final: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-metrics\tablet-1024-final-v2.png
+- Mobile final: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-metrics\mobile-390-final-v2.png
+
+Viewport:
+- Desktop reference match: 1674 x 934, metrics section scrolled to top with sticky navbar visible.
+- Tablet: 1024 x 900.
+- Mobile: 390 x 844 emulated mobile viewport.
+
+Evidence:
+- The metrics section now starts cleanly below the sticky pill navbar and no longer renders under it.
+- Desktop grid uses a 12-column layout: three equal top cards and two equal wide bottom cards.
+- Top cards measure 400 x 339 at the reference viewport; bottom cards measure 612 x 265.
+- The section grid max width is 78rem with a 1.5rem desktop gap and compact mobile gap.
+- Cards use a white premium background, subtle slate border, 1.75rem radius, and soft layered shadow.
+- Hover uses translateY(-6px) scale(1.01), a deeper soft shadow, and a subtle visual lift without document reflow.
+- Reduced motion disables card and visual transforms.
+- Successfully Filled Spots now uses 34 fine gauge ticks instead of a heavy basic donut.
+- CDP checks reported no horizontal overflow on desktop, tablet, or mobile.
+- CDP checks reported no heading/grid overlap and no subtitle/first-card overlap on mobile.
+- No forbidden fintech/Lunera content was detected in the section.
+
+Findings:
+- No actionable P0/P1/P2 findings remain.
+
+Scope note:
+- The existing Open Spot navbar CTA copy was preserved because the prompt limited changes to features/cards/analytics and allowed navbar edits only when positioning affected the section.
+
 ## Social Proof And Business Marquee QA - 2026-06-19
 
 final result: passed

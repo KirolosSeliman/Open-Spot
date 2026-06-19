@@ -490,32 +490,51 @@ function HeroCloudBlend() {
 
 function MetricsSection({ t }: { t: TemplateCopy }) {
   return (
-    <section className="bg-white px-4 pb-20 pt-12 sm:pb-28 sm:pt-16">
-      <SectionHeading subtitle={t.metrics.subtitle} title={t.metrics.title} />
-      <div className="mx-auto mt-12 grid max-w-[72rem] gap-5 lg:grid-cols-3">
+    <section className="open-spot-metrics-section bg-white px-4 pb-20 pt-24 sm:pb-24 sm:pt-24">
+      <div className="open-spot-metrics-heading mx-auto max-w-[48rem] text-center">
+        <h2 className="open-spot-metrics-title" data-lunera-reveal>
+          {t.metrics.title.map((line) => (
+            <span className="block" key={line}>
+              {line}
+            </span>
+          ))}
+        </h2>
+        <p className="mx-auto mt-5 max-w-[42rem] text-base font-medium leading-7 text-slate-500" data-lunera-reveal>
+          {t.metrics.subtitle}
+        </p>
+      </div>
+      <div className="open-spot-metrics-grid mx-auto mt-10 grid max-w-[78rem] gap-6 lg:grid-cols-12">
         <DashboardCard
+          className="lg:col-span-4"
+          size="top"
           text="See who replied YES as soon as your waitlist responds."
           title="Real-Time Replies"
           visual={<RepliesVisual />}
         />
         <DashboardCard
+          className="lg:col-span-4"
+          size="top"
           text="Track how much revenue is recovered from filled last-minute openings."
           title="Revenue Saved"
           visual={<RevenueVisual />}
         />
         <DashboardCard
+          className="lg:col-span-4"
+          size="top"
           text="Your team chooses who gets the appointment. No one is confirmed without review."
           title="Manual Confirmation"
           visual={<ManualVisual />}
         />
         <DashboardCard
-          className="lg:col-span-1 xl:col-span-1"
+          className="open-spot-dashboard-card--fill-time lg:col-span-6"
+          size="wide"
           text="See how quickly last-minute openings are filled after your SMS goes out."
           title="Average Fill Time"
           visual={<FillTimeVisual />}
         />
         <DashboardCard
-          className="lg:col-span-2"
+          className="open-spot-dashboard-card--gauge lg:col-span-6"
+          size="wide"
           text="Track the number of cancelled appointments you've successfully filled."
           title="Successfully Filled Spots"
           visual={<FilledSpotsVisual />}
@@ -527,42 +546,48 @@ function MetricsSection({ t }: { t: TemplateCopy }) {
 
 function DashboardCard({
   className,
+  size,
   text,
   title,
   visual
 }: {
   className?: string;
+  size: "top" | "wide";
   text: string;
   title: string;
   visual: ReactNode;
 }) {
+  const sizeClass =
+    size === "wide" ? "open-spot-dashboard-card--wide" : "open-spot-dashboard-card--top";
+
   return (
     <article
       className={cn(
-        "open-spot-dashboard-card min-h-[18rem] rounded-[1.5rem] border border-slate-100 bg-white p-7 shadow-[0_20px_70px_rgba(15,23,42,0.07)]",
+        "open-spot-dashboard-card group flex flex-col",
+        sizeClass,
         className
       )}
       data-lunera-reveal
     >
-      <h3 className="text-xl font-black text-[#0a0a0a]">{title}</h3>
-      <p className="mt-3 max-w-[19rem] text-sm font-medium leading-6 text-slate-500">{text}</p>
-      <div className="mt-7">{visual}</div>
+      <h3 className="open-spot-dashboard-title">{title}</h3>
+      <p className="open-spot-dashboard-copy">{text}</p>
+      <div className="open-spot-dashboard-visual">{visual}</div>
     </article>
   );
 }
 
 function RepliesVisual() {
   return (
-    <div className="flex items-center gap-5 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-[0_12px_35px_rgba(15,23,42,0.06)]">
-      <div className="grid h-20 w-20 place-items-center rounded-full bg-[conic-gradient(#3478ff_0_78%,#e8f0ff_78%_100%)]">
-        <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-xl font-black text-[#3478ff]">
+    <div className="open-spot-replies-mini">
+      <div className="open-spot-replies-donut">
+        <div className="open-spot-replies-donut-core">
           ...
         </div>
       </div>
       <div>
-        <p className="text-4xl font-black text-[#05070a]">128</p>
-        <p className="text-sm font-bold text-slate-500">YES replies</p>
-        <p className="mt-1 text-xs font-black text-[#22c55e]">+24% vs yesterday</p>
+        <p className="open-spot-card-number">128</p>
+        <p className="open-spot-card-label">YES replies</p>
+        <p className="open-spot-card-positive">+24% vs yesterday</p>
       </div>
     </div>
   );
@@ -570,13 +595,15 @@ function RepliesVisual() {
 
 function RevenueVisual() {
   return (
-    <div>
-      <div className="mb-3 w-fit rounded-[0.8rem] bg-white px-4 py-2 text-center shadow-[0_12px_32px_rgba(52,120,255,0.12)]">
+    <div className="open-spot-revenue-visual">
+      <div className="open-spot-revenue-badge">
         <p className="text-xs font-black text-[#3478ff]">Revenue saved</p>
         <p className="text-xl font-black">$8.3K</p>
         <p className="text-xs font-bold text-slate-400">This month</p>
       </div>
-      <svg aria-hidden="true" className="h-24 w-full" fill="none" viewBox="0 0 360 120">
+      <svg aria-hidden="true" className="open-spot-revenue-chart" fill="none" viewBox="0 0 360 120">
+        <path d="M8 68 H352" stroke="#e8eef8" strokeDasharray="3 6" />
+        <path d="M252 26 V112" stroke="#d8e3f4" />
         <path
           d="M5 92 C45 88 55 70 85 75 C125 82 132 46 170 52 C208 58 214 34 252 38 C292 42 308 18 355 12"
           stroke="#3478ff"
@@ -592,18 +619,18 @@ function RevenueVisual() {
 
 function ManualVisual() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="open-spot-manual-visual">
       {[
         ["Reviewed", "100%"],
         ["Confirmation", "72%"]
       ].map(([label, value]) => (
         <div
-          className="rotate-[-2deg] rounded-[1rem] border border-slate-100 bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,0.07)] even:rotate-[3deg]"
+          className="open-spot-manual-mini"
           key={label}
         >
           <p className="text-xs font-black text-[#3478ff]">{label}</p>
-          <div className="mt-4 grid h-20 place-items-center rounded-full bg-[conic-gradient(#3478ff_0_78%,#eef4ff_78%_100%)]">
-            <div className="grid h-14 w-14 place-items-center rounded-full bg-white text-lg font-black">
+          <div className="open-spot-manual-donut">
+            <div className="open-spot-manual-core">
               {value}
             </div>
           </div>
@@ -615,22 +642,21 @@ function ManualVisual() {
 
 function FillTimeVisual() {
   return (
-    <div>
-      <div className="flex items-start justify-between">
+    <div className="open-spot-fill-time-visual">
+      <div className="open-spot-fill-time-row">
         <div>
-          <p className="text-5xl font-black">18</p>
-          <p className="-mt-2 text-lg font-black">min</p>
+          <p className="open-spot-fill-number">18 <span>min</span></p>
         </div>
-        <p className="rounded-full bg-[#ecfdf3] px-3 py-1 text-xs font-black text-[#22c55e]">
-          +22% faster this week
+        <p className="open-spot-card-positive open-spot-fill-pill">
+          ↓ 22% faster this week
         </p>
       </div>
-      <div className="mt-8 h-2.5 rounded-full bg-[#e8eef8]">
-        <div className="relative h-2.5 w-[58%] rounded-full bg-[#3478ff]">
-          <span className="absolute right-0 top-1/2 h-5 w-5 -translate-y-1/2 rounded-full border-4 border-white bg-[#3478ff] shadow-md" />
+      <div className="open-spot-fill-slider">
+        <div className="open-spot-fill-slider-active">
+          <span />
         </div>
       </div>
-      <div className="mt-3 flex justify-between text-xs font-bold text-slate-400">
+      <div className="open-spot-fill-labels">
         <span>0 min</span>
         <span>15 min</span>
         <span>30 min</span>
@@ -641,14 +667,22 @@ function FillTimeVisual() {
 
 function FilledSpotsVisual() {
   return (
-    <div className="flex flex-col items-center justify-center gap-5 sm:flex-row sm:justify-between">
-      <div>
-        <p className="text-5xl font-black">84</p>
-        <p className="text-sm font-bold text-slate-500">filled spots</p>
-        <p className="mt-2 text-xs font-black text-[#22c55e]">+18% this week</p>
-      </div>
-      <div className="grid h-44 w-44 place-items-center rounded-full bg-[conic-gradient(from_225deg,#3478ff_0_68%,#edf3ff_68%_100%)] p-5">
-        <div className="h-24 w-24 rounded-full bg-white shadow-[inset_0_0_0_1px_rgba(15,23,42,0.05)]" />
+    <div className="open-spot-filled-spots-visual">
+      <div className="open-spot-gauge">
+        <div className="open-spot-gauge-ticks" aria-hidden="true">
+          {Array.from({ length: 34 }).map((_, index) => (
+            <span
+              className={cn("open-spot-gauge-tick", index < 25 && "is-active")}
+              key={index}
+              style={{ "--tick-index": index } as CSSProperties}
+            />
+          ))}
+        </div>
+        <div className="open-spot-gauge-center">
+          <p>84</p>
+          <span>filled spots</span>
+          <strong>↑ 18% this week</strong>
+        </div>
       </div>
     </div>
   );
