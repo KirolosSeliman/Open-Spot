@@ -1,47 +1,53 @@
-# Open Spot Lunera-Style Landing Design QA
+# Open Spot Hero Phone Design QA
 
 final result: passed
 
 Source visual truth:
-- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-b82bfc4f-5201-4df5-9f41-b4fceceea0fd.png
-- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-f35e26d0-eb1e-406a-8b21-13fc014808a6.png
-- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-4ae019c2-b65b-49cc-ad46-b27886c4f420.png
-- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-8d627966-7486-4aae-b4ed-517700e43326.png
+- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-b6c3d969-aa7f-4e07-9187-097d9a1b7a11.png
 
 Implementation screenshots:
-- Desktop full page: docs/visual-qa/open-spot-redesign-1440-cdp-visible.png
-- Desktop top region: docs/visual-qa/open-spot-redesign-1440-after-reveal.png
-- Mobile full page: docs/visual-qa/open-spot-redesign-390-cdp-visible.png
-- Mobile overflow check: docs/visual-qa/open-spot-redesign-390-cdp.png
+- Desktop final: C:\Users\kirol\AppData\Local\Temp\open-spot-phone-desktop-final2-20260619-113913.png
+- Mobile final: C:\Users\kirol\AppData\Local\Temp\open-spot-phone-mobile-final2-20260619-113913.png
+- Side-by-side comparison: C:\Users\kirol\AppData\Local\Temp\open-spot-phone-vs-lunera-qa-final.png
 
 Viewport:
-- Desktop: 1440 x 2400, captureBeyondViewport full-page.
-- Mobile: 390 x 2800 emulated mobile viewport, captureBeyondViewport full-page.
+- Desktop comparison: 1920 x 1000, top-of-page hero state.
+- Mobile check: 390 x 1200 emulated mobile viewport.
 
 State:
 - Homepage at http://localhost:3000.
-- Reveal classes forced visible only for full-page screenshot evidence.
-- FAQ default first item open.
+- Top-of-page hero state for composition.
+- Desktop scroll state also inspected to confirm transform/opacity motion.
 
 Full-view comparison evidence:
-- Desktop follows the requested section order: hero, metrics, setup, how it works, workflow preview, pricing, testimonials, FAQ, final CTA, black footer.
-- Mobile CDP metrics: innerWidth 390, document scrollWidth 390, body scrollWidth 390.
-- Desktop CDP metrics: innerWidth 1440, document scrollWidth 1425, body scrollWidth 1425.
+- Reference Lunera uses a centered phone with a light 3D right edge, soft shadow, cloud fade, and balanced floating cards.
+- Open Spot now keeps the same product content inside the phone while reducing visual heaviness and aligning the phone more closely to the reference hero rhythm.
+- Desktop CDP metrics: innerWidth 1920, scrollWidth 1920, phone width 385, phone top 355, subtitle bottom 326, forbidden fintech text [].
+- Mobile CDP metrics: innerWidth 390, scrollWidth 390, phone width 288, phone top 417, subtitle bottom 292, forbidden fintech text [].
 
 Focused region comparison evidence:
-- Hero: sky-blue cloud field, floating white pill navbar, large centered title, Open Spot phone mockup, white revenue/open-spots cards, black compliance pills, social proof, CTAs, and category strip are present.
-- Metrics: white dashboard cards match the reference card rhythm and include real-time replies, revenue saved, manual confirmation, average fill time, and filled spots.
-- Setup: pale rounded block uses the simple setup badge, centered headline, arc treatment, and four cards.
-- Three steps: desktop uses left sticky text with black vertical rule and three stacked white cards with mini UI and 01/02/03 numbering.
-- Product safety: copy repeatedly preserves manual confirmation and does not claim automatic booking.
+- Phone scale: old max width was 390px; final max is 385px, with less heavy frame treatment and a stronger cloud fade.
+- Phone position: final top-of-phone gap below subtitle is 29px, close enough to the Lunera rhythm while preserving the larger Open Spot headline the brief asked not to change.
+- Frame fidelity: right rail is thinner, black inset is reduced, shadow is softer, and angle is calmer.
+- Motion: scroll animation now travels from translateY 104px to 16px, with opacity 0.94 to 1 and scale 0.965 to 1 through requestAnimationFrame.
+- Responsive: mobile phone remains centered and no horizontal overflow was measured.
 
 Findings:
 - No actionable P0/P1/P2 findings remain.
 
 Patches made since previous QA pass:
-- Rebuilt the old hero-only/partial landing into the full requested section order.
-- Fixed reveal behavior so content is visible by default before client-side IntersectionObserver runs.
-- Fixed mobile layout constraints and verified no horizontal overflow through CDP.
+- Reduced visual weight of the iPhone frame and side rail.
+- Adjusted perspective and rotation to a subtler Lunera-style angle.
+- Increased scroll motion distance so the phone settles smoothly while animating only transform/opacity.
+- Re-anchored floating cards and pills around the smaller/lighter phone.
+- Added tests guarding the phone scale, frame, motion, forbidden text, and mobile navbar constraints.
+
+Required fidelity surfaces:
+- Fonts and typography: unchanged by this task; Open Spot hero typography remains intentionally larger than Lunera because the brief asked not to change hero content.
+- Spacing and layout rhythm: phone now sits with a clearer subtitle gap and a less crowded frame/card relationship.
+- Colors and visual tokens: Open Spot blue/white/cloud palette preserved; no fintech palette or text introduced.
+- Image quality and asset fidelity: phone remains editable React/CSS as requested, not a copied Lunera image.
+- Copy/content: Open Spot appointment workflow copy preserved; no automatic confirmation claim and no forbidden fintech text detected.
 
 Follow-up polish:
-- P3: the phone frame is CSS-rendered rather than photographic, but it matches the requested Open Spot content, scale, cloud blend, and premium angled composition closely enough for this pass.
+- P3: a photographic device asset could match Lunera's physical realism even more closely, but the prompt explicitly asked to keep the Open Spot phone as an editable React/CSS component.

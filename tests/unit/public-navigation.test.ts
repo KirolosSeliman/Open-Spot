@@ -184,9 +184,9 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-dashboard-card");
     expect(styles).toContain(".open-spot-setup-arc");
     expect(styles).toContain(".open-spot-step-card");
-    expect(styles).toContain("width: clamp(300px, 24vw, 390px)");
-    expect(styles).toContain("rotateY(-8deg)");
-    expect(styles).toContain("rotateZ(2.5deg)");
+    expect(styles).toContain("width: clamp(310px, 22.5vw, 385px)");
+    expect(styles).toContain("rotateY(-5.5deg)");
+    expect(styles).toContain("rotateZ(1.15deg)");
     expect(phone).toContain("Secure & compliant");
     expect(phone).toContain("Fill more. No-shows down.");
     expect(phone).toContain("Open spots filled this week");

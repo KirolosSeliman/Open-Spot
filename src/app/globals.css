@@ -735,15 +735,15 @@ select {
   min-height: 0;
   overflow: visible;
   padding-inline: 1rem;
-  perspective: 1200px;
+  perspective: 1350px;
   position: relative;
   transform-style: preserve-3d;
   width: 100%;
-  --lunera-phone-opacity: 0.92;
+  --lunera-phone-opacity: 0.94;
   --lunera-phone-progress: 0;
   --lunera-phone-lift: 0px;
-  --lunera-phone-scale: 0.94;
-  --lunera-phone-y: 18px;
+  --lunera-phone-scale: 0.965;
+  --lunera-phone-y: 104px;
 }
 
 .lunera-phone-motion {
@@ -752,14 +752,14 @@ select {
   opacity: var(--lunera-phone-opacity);
   position: relative;
   transform:
-    perspective(1200px)
-    rotateY(-8deg)
-    rotateZ(2.5deg)
+    perspective(1350px)
+    rotateY(-5.5deg)
+    rotateZ(1.15deg)
     translate3d(0, calc(var(--lunera-phone-y) + var(--lunera-phone-lift)), 0)
     scale(var(--lunera-phone-scale));
   transform-origin: center center;
   transform-style: preserve-3d;
-  width: clamp(300px, 24vw, 390px);
+  width: clamp(310px, 22.5vw, 385px);
   will-change: transform, opacity;
   z-index: 20;
 }
@@ -841,10 +841,10 @@ select {
     linear-gradient(90deg, #07090e 0%, #1d2027 52%, #07090e 100%);
   border-radius: clamp(2.75rem, 5.4vw, 4rem);
   box-shadow:
-    0 42px 95px rgba(15, 23, 42, 0.24),
-    0 14px 36px rgba(15, 23, 42, 0.18),
-    inset 0 0 0 2px rgba(255, 255, 255, 0.82),
-    inset 0 0 0 8px rgba(7, 9, 14, 0.94);
+    0 36px 84px rgba(15, 23, 42, 0.2),
+    0 12px 28px rgba(15, 23, 42, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.78),
+    inset 0 0 0 6px rgba(7, 9, 14, 0.94);
   overflow: hidden;
   position: relative;
   transform: translateZ(28px);
@@ -858,14 +858,14 @@ select {
   border-radius: 0 clamp(2.7rem, 5vw, 3.7rem) clamp(2.7rem, 5vw, 3.7rem) 0;
   bottom: 2rem;
   box-shadow:
-    inset 8px 0 14px rgba(255, 255, 255, 0.16),
-    inset -8px 0 18px rgba(0, 0, 0, 0.58),
-    16px 22px 46px rgba(0, 0, 0, 0.28);
+    inset 5px 0 10px rgba(255, 255, 255, 0.18),
+    inset -5px 0 14px rgba(0, 0, 0, 0.52),
+    10px 18px 36px rgba(0, 0, 0, 0.2);
   position: absolute;
-  right: -1.25rem;
+  right: -0.76rem;
   top: 2rem;
   transform: translateZ(-20px);
-  width: 2.45rem;
+  width: 1.58rem;
   z-index: 1;
 }
 
@@ -876,8 +876,8 @@ select {
   content: "";
   height: 5.2rem;
   position: absolute;
-  right: 0.72rem;
-  width: 0.42rem;
+  right: 0.44rem;
+  width: 0.28rem;
 }
 
 .lunera-phone-side-rail::before {
@@ -1672,11 +1672,11 @@ select {
   }
 
   .lunera-phone-motion {
-    width: min(19.5rem, 82vw);
+    width: min(18.8rem, 78vw);
   }
 
   .lunera-phone-frame-shell {
-    transform: rotateZ(-2.55deg) translateZ(0);
+    transform: rotateZ(-1.15deg) translateZ(0);
   }
 
   .lunera-phone-object {
@@ -1720,9 +1720,9 @@ select {
 
   .lunera-phone-side-rail {
     bottom: 2rem;
-    right: -1.38rem;
+    right: -0.82rem;
     top: 2rem;
-    width: 2.45rem;
+    width: 1.62rem;
   }
 
   .lunera-phone-dynamic-island {

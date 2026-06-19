@@ -38,15 +38,15 @@ export const smsConversationPhoneCopy = {
 } as const satisfies Record<Locale, SmsConversationPhoneCopy>;
 
 const initialMotion: PhoneMotion = {
-  opacity: 0.98,
-  scale: 0.94,
-  translateY: 58
+  opacity: 0.94,
+  scale: 0.965,
+  translateY: 104
 };
 
 const settledMotion: PhoneMotion = {
   opacity: 1,
   scale: 1,
-  translateY: 48
+  translateY: 16
 };
 
 const responses = [
@@ -190,13 +190,13 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
       style={phoneSceneStyle}
     >
       <HeroMetricCard
-        className="left-[5%] top-[45%] hidden md:block"
+        className="left-[7%] top-[49%] hidden md:block"
         eyebrow="Open spots filled this week"
         title="18"
         value="+64% from last week"
       />
       <HeroMetricCard
-        className="right-[7%] top-[38%] hidden md:block"
+        className="right-[9%] top-[42%] hidden md:block"
         eyebrow="Revenue recovered"
         title="$2,340"
         value="+28%"
@@ -342,8 +342,8 @@ function HeroMetricCard({
 
 function FloatingSmsBadge({ badge, index }: { badge: FloatingBadge; index: number }) {
   const positions = [
-    "left-[18%] top-[30%] hidden md:block",
-    "right-[9%] top-[55%] hidden md:block"
+    "left-[20%] top-[32%] hidden md:block",
+    "right-[11%] top-[58%] hidden md:block"
   ];
 
   const toneClass = {
