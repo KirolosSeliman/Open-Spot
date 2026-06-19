@@ -2,6 +2,40 @@
 
 final result: passed
 
+## Social Proof And Business Marquee QA - 2026-06-19
+
+final result: passed
+
+Source visual truth:
+- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-8c48b334-826a-4980-ab91-9bf8b0366a20.png
+- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-f598d1f0-dad5-418d-9327-495e208868d9.png
+
+Implementation screenshots:
+- Desktop top: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-marquee\desktop.png
+- Tablet top: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-marquee\tablet.png
+- Mobile top: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-marquee\mobile.png
+- Desktop scrolled: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-marquee\desktop-scrolled.png
+- Tablet scrolled: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-marquee\tablet-scrolled.png
+- Mobile scrolled: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-marquee\mobile-scrolled.png
+
+Viewport:
+- Desktop: 1920 x 1080.
+- Tablet: 1024 x 900.
+- Mobile: 390 x 844 emulated mobile viewport.
+
+Evidence:
+- The social proof block now uses local photographic avatars from public/lunera-style/avatars instead of initials.
+- The avatar stack is compact, round, overlapped, bordered in white, and paired with gold five-star social proof text.
+- The business categories now render as duplicated marquee groups with a CSS transform animation and side fade mask.
+- The marquee uses 38s linear infinite motion and disables animation under prefers-reduced-motion.
+- The metrics section starts closer to the marquee after reducing the top padding from py-20/sm:py-28 to pt-12/sm:pt-16.
+- CDP checks: desktop/tablet/mobile reported no horizontal overflow, all avatar images loaded, no forbidden fintech or fake social claim text was present.
+- Desktop scrolled metrics: marquee bottom 466px, metrics heading top 586px, social proof opacity 1.
+- Tablet scrolled metrics: marquee bottom 411px, metrics heading top 531px, social proof opacity 1.
+
+Findings:
+- No actionable P0/P1/P2 findings remain.
+
 Source visual truth:
 - C:\Users\kirol\AppData\Local\Temp\codex-clipboard-b6c3d969-aa7f-4e07-9187-097d9a1b7a11.png
 

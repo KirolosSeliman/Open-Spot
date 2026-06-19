@@ -241,12 +241,18 @@ describe("public navigation", () => {
       "Beauty Clinics",
       "Hair Salons",
       "Spas",
-      "Nail Studios"
+      "Nail Studios",
+      "Massage Studios",
+      "Brows & Lashes",
+      "Med Spas",
+      "Wellness Clinics",
+      "Tattoo Studios",
+      "Physiotherapy Clinics",
+      "Aesthetic Clinics"
     ];
     const oldPlaceholderTypes = [
       "Barbershops",
       "Massage Therapists",
-      "Physiotherapy",
       "Medical Aesthetics",
       "Tutors",
       "Yoga Studios",
@@ -265,11 +271,32 @@ describe("public navigation", () => {
     }
 
     expect(homepage).toContain("CategoryStrip");
+    expect(homepage).toContain("open-spot-category-marquee");
+    expect(homepage).toContain("aria-hidden=\"true\"");
     expect(homepage).toContain("Built for appointment-based teams");
     expect(homepage).not.toContain('logos: ["Salons", "Barbers"');
     expect(homepage).not.toContain("40K+ users worldwide");
     expect(homepage).not.toContain("Codecraft");
-    expect(styles).toContain(".open-spot-category-strip");
+    expect(styles).toContain(".open-spot-category-marquee");
+    expect(styles).toContain("@keyframes open-spot-category-marquee");
+    expect(styles).toContain("animation: open-spot-category-marquee 38s linear infinite");
+    expect(styles).toContain("mask-image");
+    expect(styles).toContain("prefers-reduced-motion: reduce");
+  });
+
+  it("uses photographic social proof avatars instead of initials", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+
+    expect(homepage).toContain("/lunera-style/avatars/review-1.jpg");
+    expect(homepage).toContain("/lunera-style/avatars/review-2.jpg");
+    expect(homepage).toContain("/lunera-style/avatars/review-3.jpg");
+    expect(homepage).toContain("open-spot-social-avatar");
+    expect(homepage).toContain("Five star social proof");
+    expect(homepage).not.toContain('["SA", "MR", "JT", "AL"]');
+    expect(styles).toContain(".open-spot-social-avatar");
+    expect(styles).toContain("height: 2.52rem");
+    expect(styles).toContain("margin-left: -0.58rem");
   });
 
   it("links sign-in and signup pages to each other", () => {

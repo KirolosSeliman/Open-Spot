@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
@@ -25,7 +26,20 @@ const openSpotCopy = {
     socialProof: "Built for appointment-based teams",
     primary: "Se connecter",
     secondary: "How it works",
-    categories: ["Barbers", "Beauty Clinics", "Hair Salons", "Spas", "Nail Studios"]
+    categories: [
+      "Barbers",
+      "Beauty Clinics",
+      "Hair Salons",
+      "Spas",
+      "Nail Studios",
+      "Massage Studios",
+      "Brows & Lashes",
+      "Med Spas",
+      "Wellness Clinics",
+      "Tattoo Studios",
+      "Physiotherapy Clinics",
+      "Aesthetic Clinics"
+    ]
   },
   metrics: {
     title: ["Fill your schedule", "with simple SMS."],
@@ -189,6 +203,21 @@ const copy = {
 } as const satisfies Record<Locale, typeof openSpotCopy>;
 
 type TemplateCopy = (typeof copy)[Locale];
+
+const socialProofAvatars = [
+  {
+    alt: "Appointment team member",
+    src: "/lunera-style/avatars/review-1.jpg"
+  },
+  {
+    alt: "Salon team member",
+    src: "/lunera-style/avatars/review-2.jpg"
+  },
+  {
+    alt: "Clinic team member",
+    src: "/lunera-style/avatars/review-3.jpg"
+  }
+] as const;
 
 export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   const t = copy[locale];
@@ -391,15 +420,21 @@ function HeroSocialProof({ label }: { label: string }) {
   return (
     <div className="lunera-hero-social-proof" data-lunera-reveal>
       <div className="lunera-avatar-stack" aria-hidden="true">
-        {["SA", "MR", "JT", "AL"].map((initials) => (
-          <span className="bg-white text-[0.65rem] font-black text-[#3478ff]" key={initials}>
-            {initials}
+        {socialProofAvatars.map((avatar) => (
+          <span key={avatar.src}>
+            <Image
+              alt={avatar.alt}
+              className="open-spot-social-avatar"
+              height={44}
+              src={avatar.src}
+              width={44}
+            />
           </span>
         ))}
       </div>
       <div>
-        <div className="lunera-stars" aria-label="Five star style social proof">
-          *****
+        <div className="lunera-stars" aria-label="Five star social proof">
+          {"★★★★★"}
         </div>
         <p>{label}</p>
       </div>
@@ -425,10 +460,19 @@ function HeroCtaRow({ t }: { t: TemplateCopy }) {
 
 function CategoryStrip({ items }: { items: readonly string[] }) {
   return (
-    <div className="open-spot-category-strip relative z-40 mx-auto mt-11 flex max-w-[54rem] flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm font-black text-slate-400 sm:gap-x-12">
-      {items.map((item) => (
-        <span key={item}>{item}</span>
-      ))}
+    <div className="open-spot-category-marquee relative z-40 mx-auto" aria-label="Appointment business types">
+      <div className="open-spot-category-marquee-track">
+        <div className="open-spot-category-marquee-group">
+          {items.map((item) => (
+            <span key={item}>{item}</span>
+          ))}
+        </div>
+        <div aria-hidden="true" className="open-spot-category-marquee-group">
+          {items.map((item) => (
+            <span key={`duplicate-${item}`}>{item}</span>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -446,7 +490,7 @@ function HeroCloudBlend() {
 
 function MetricsSection({ t }: { t: TemplateCopy }) {
   return (
-    <section className="bg-white px-4 py-20 sm:py-28">
+    <section className="bg-white px-4 pb-20 pt-12 sm:pb-28 sm:pt-16">
       <SectionHeading subtitle={t.metrics.subtitle} title={t.metrics.title} />
       <div className="mx-auto mt-12 grid max-w-[72rem] gap-5 lg:grid-cols-3">
         <DashboardCard
