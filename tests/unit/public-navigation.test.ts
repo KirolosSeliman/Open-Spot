@@ -256,6 +256,46 @@ describe("public navigation", () => {
     expect(styles).toContain("prefers-reduced-motion: reduce");
   });
 
+  it("uses the premium How It Works reference layout and step cards", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const howSection = homepage.slice(
+      homepage.indexOf("function HowItWorks("),
+      homepage.indexOf("function StepMiniUi(")
+    );
+    const stepMiniUi = homepage.slice(
+      homepage.indexOf("function StepMiniUi("),
+      homepage.indexOf("function WorkflowPreview(")
+    );
+
+    expect(homepage).toContain('"to confirmation—"');
+    expect(homepage).not.toContain('"to confirmation -"');
+    expect(howSection).toContain("open-spot-how-section");
+    expect(howSection).toContain("open-spot-how-shell");
+    expect(howSection).toContain("open-spot-how-title");
+    expect(howSection).toContain("open-spot-how-title-nowrap");
+    expect(howSection).not.toContain("border-l-4");
+    expect(howSection).not.toContain("border-[#141414]");
+    expect(howSection).toContain("open-spot-how-card");
+    expect(howSection).toContain("open-spot-how-icon");
+    expect(howSection).toContain("open-spot-how-step-number");
+    expect(stepMiniUi).toContain("open-spot-how-alert-mockup");
+    expect(stepMiniUi).toContain("open-spot-how-replies-mockup");
+    expect(stepMiniUi).toContain("open-spot-how-confirm-mockup");
+    expect(stepMiniUi).toContain("Spot opening detected");
+    expect(stepMiniUi).toContain("Confirm Sarah");
+    expect(homepage).toContain("confirm the appointment manually");
+    expect(styles).toContain(".open-spot-how-shell");
+    expect(styles).toContain("grid-template-columns: minmax(17rem, 0.85fr) minmax(0, 1.35fr)");
+    expect(styles).toContain(".open-spot-how-card");
+    expect(styles).toContain("height: 15rem");
+    expect(styles).toContain(".open-spot-how-step-number");
+    expect(styles).toContain("bottom: 1rem");
+    expect(styles).toContain(".open-spot-how-card:hover");
+    expect(styles).toContain("0 28px 90px rgba(37, 99, 235, 0.12)");
+    expect(styles).toContain(".open-spot-how-card:hover .open-spot-how-mockup");
+  });
+
   it("keeps the mobile sign-in CTA inside the floating navbar", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");

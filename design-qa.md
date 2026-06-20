@@ -2,6 +2,41 @@
 
 final result: passed
 
+## How It Works Section QA - 2026-06-20
+
+final result: passed
+
+Source visual truth:
+- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-8d1d1a78-d355-4c6c-a1e9-cce038e21c26.png
+
+Implementation screenshots:
+- Desktop final: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-how\desktop-1440-how-visible.png
+- Tablet final: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-how\tablet-1024-how-visible.png
+- Mobile final: C:\Users\kirol\AppData\Local\Temp\open-spot-qa-how\mobile-390-how-visible.png
+
+Viewport:
+- Desktop: 1440 x 900, How It Works section scrolled into view.
+- Tablet: 1024 x 900.
+- Mobile: 390 x 844 emulated mobile viewport.
+
+Evidence:
+- The black vertical border was removed from the How It Works shell.
+- The heading uses a real em dash in `to confirmation—` and keeps that phrase together with nowrap.
+- Desktop and tablet keep the two-column layout with the left copy column and stacked cards on the right.
+- Desktop cards measure 627 x 240; tablet cards measure 560 x 240.
+- Step numbers measure 28 x 28 and sit in subtle circles at each card's bottom-right corner.
+- Internal mockups are compact and centered in the lower portion of each card.
+- The confirm card keeps `manually` in the visible product copy and does not introduce automatic confirmation language.
+- CDP checks reported no horizontal overflow on desktop, tablet, or mobile.
+- CDP checks reported no black vertical border, manual confirmation text present, and forbidden automatic confirmation text absent.
+- Hover uses transform/box-shadow/border-color only, with reduced-motion transforms disabled.
+
+Findings:
+- No actionable P0/P1/P2 findings remain.
+
+Scope note:
+- This pass changed only the How It Works landing section, its local mockups/styles, the focused regression test, and this QA report.
+
 ## Analytics Cards Section QA - 2026-06-19
 
 final result: passed

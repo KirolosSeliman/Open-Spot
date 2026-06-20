@@ -55,7 +55,7 @@ const openSpotCopy = {
   },
   how: {
     tag: "How It Works",
-    title: ["From cancellation", "to confirmation -", "just three", "simple steps."],
+    title: ["From cancellation", "to confirmation—", "just three", "simple steps."],
     steps: [
       {
         number: "01",
@@ -732,39 +732,40 @@ function SetupSection({ t }: { t: TemplateCopy }) {
 
 function HowItWorks({ t }: { t: TemplateCopy }) {
   return (
-    <section className="bg-white px-4 py-20 sm:py-28" id="how-it-works">
-      <div className="mx-auto grid max-w-[72rem] gap-10 border-l-4 border-[#141414] pl-6 sm:pl-10 lg:grid-cols-[0.72fr_1.28fr]">
-        <div className="lg:sticky lg:top-32 lg:h-fit">
-          <span className="lunera-pill" data-lunera-reveal>
+    <section className="open-spot-how-section bg-white px-4 py-20 sm:py-24" id="how-it-works">
+      <div className="open-spot-how-shell mx-auto grid">
+        <div className="open-spot-how-copy" data-lunera-reveal>
+          <span className="open-spot-how-pill">
             {t.how.tag}
           </span>
-          <h2
-            className="mt-8 max-w-[21rem] text-4xl font-black leading-[1.02] text-[#05070a] sm:text-5xl"
-            data-lunera-reveal
-          >
+          <h2 className="open-spot-how-title">
             {t.how.title.map((line) => (
-              <span className="block" key={line}>
+              <span
+                className={cn("block", line.includes("confirmation") && "open-spot-how-title-nowrap")}
+                key={line}
+              >
                 {line}
               </span>
             ))}
           </h2>
         </div>
-        <div className="grid gap-6">
+        <div className="open-spot-how-cards">
           {t.how.steps.map((step, index) => (
-            <article className="open-spot-step-card" data-lunera-reveal key={step.number}>
-              <div className="flex gap-5">
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#eef4ff] text-xl font-black text-[#3478ff]">
+            <article className="open-spot-how-card" data-lunera-reveal key={step.number}>
+              <div className="open-spot-how-card-header">
+                <div className="open-spot-how-icon" aria-hidden="true">
+                  <StepIcon index={index} />
                   {index === 0 ? "!" : index === 1 ? "2" : "✓"}
                 </div>
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-2xl font-black text-[#05070a]">{step.title}</h3>
-                  <p className="mt-2 max-w-[25rem] text-sm font-medium leading-6 text-slate-500">
+                <div>
+                  <h3 className="open-spot-how-card-title">{step.title}</h3>
+                  <p className="open-spot-how-card-copy">
                     {step.text}
                   </p>
-                  <StepMiniUi index={index} />
                 </div>
               </div>
-              <span className="absolute bottom-5 right-5 text-sm font-black text-slate-300">
+              <StepMiniUi index={index} />
+              <span className="open-spot-how-step-number">
                 {step.number}
               </span>
             </article>
@@ -775,17 +776,80 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
   );
 }
 
+function StepIcon({ index }: { index: number }) {
+  if (index === 0) {
+    return (
+      <svg fill="none" viewBox="0 0 24 24">
+        <path
+          d="M7.6 10.1a4.4 4.4 0 0 1 8.8 0v2.6l1.2 2H6.4l1.2-2v-2.6Z"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+        />
+        <path
+          d="M10 17.2a2.1 2.1 0 0 0 4 0"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeWidth="2"
+        />
+      </svg>
+    );
+  }
+
+  if (index === 1) {
+    return (
+      <svg fill="none" viewBox="0 0 24 24">
+        <path
+          d="M8.5 10.8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM15.5 11.5a2.45 2.45 0 1 0 0-4.9 2.45 2.45 0 0 0 0 4.9ZM3.8 18.8c.55-2.9 2.2-4.35 4.7-4.35s4.15 1.45 4.7 4.35M12.8 18.8c.42-2.2 1.75-3.32 3.8-3.32 1.62 0 2.78.68 3.47 2.05"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.9"
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg fill="none" viewBox="0 0 24 24">
+      <path
+        d="m6.8 12.4 3.15 3.15 7.25-7.1"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2.4"
+      />
+    </svg>
+  );
+}
+
 function StepMiniUi({ index }: { index: number }) {
   if (index === 0) {
     return (
-      <div className="mt-6 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-sm">
-        <div className="rounded-[0.8rem] bg-[#f8fbff] p-4">
-          <p className="text-xs font-black text-[#3478ff]">Spot opening detected</p>
-          <p className="mt-1 text-xs font-bold text-slate-500">Tomorrow at 10:00 AM</p>
+      <div className="open-spot-how-mockup open-spot-how-alert-mockup">
+        <div className="open-spot-how-alert-row">
+          <span className="open-spot-how-alert-dot" aria-hidden="true">
+            <StepIcon index={0} />
+          </span>
+          <div>
+            <p>Spot opening detected</p>
+            <span>Tomorrow at 10:00 AM</span>
+          </div>
         </div>
-        <div className="mt-3 rounded-[0.8rem] border border-slate-100 p-4">
-          <span className="block h-3 w-4/5 rounded-full bg-slate-200" />
-          <span className="mt-3 block h-3 w-3/5 rounded-full bg-slate-200" />
+        <div className="open-spot-how-message-box">
+          <div>
+            <span className="open-spot-how-skeleton-line is-long" />
+            <span className="open-spot-how-skeleton-line is-short" />
+          </div>
+          <span className="open-spot-how-send" aria-hidden="true">
+            <svg fill="none" viewBox="0 0 24 24">
+              <path
+                d="M5 12.4 18.8 5.7l-4.4 12.6-2.45-4.55L5 12.4Z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
         </div>
       </div>
     );
@@ -793,20 +857,21 @@ function StepMiniUi({ index }: { index: number }) {
 
   if (index === 1) {
     return (
-      <div className="mt-6 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-sm">
+      <div className="open-spot-how-mockup open-spot-how-replies-mockup">
         {[
           ["SM", "Sarah M.", "Best match"],
           ["JL", "Jamie L.", "Good match"],
           ["MC", "Maria C.", "Review"]
         ].map(([initials, name, status]) => (
-          <div className="flex items-center gap-3 border-b border-slate-100 py-3 last:border-b-0" key={name}>
-            <span className="grid h-8 w-8 place-items-center rounded-full bg-slate-100 text-[0.65rem] font-black text-slate-500">
+          <div className="open-spot-how-reply-row" key={name}>
+            <span className="open-spot-how-initials">
               {initials}
             </span>
-            <span className="flex-1 text-xs font-black text-slate-700">{name}</span>
-            <span className="rounded-full bg-[#f4f7ff] px-3 py-1 text-[0.62rem] font-black text-[#3478ff]">
+            <span className="open-spot-how-reply-name">{name}</span>
+            <span className={cn("open-spot-how-reply-badge", status === "Review" && "is-neutral")}>
               {status}
             </span>
+            <span className="open-spot-how-chevron" aria-hidden="true">›</span>
           </div>
         ))}
       </div>
@@ -814,20 +879,21 @@ function StepMiniUi({ index }: { index: number }) {
   }
 
   return (
-    <div className="mt-6 rounded-[1rem] border border-slate-100 bg-white p-4 shadow-sm">
-      <div className="flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-xs font-black text-slate-500">
+    <div className="open-spot-how-mockup open-spot-how-confirm-mockup">
+      <div className="open-spot-how-confirm-person">
+        <span className="open-spot-how-confirm-avatar">
           SM
         </span>
         <div>
-          <p className="text-sm font-black text-slate-800">Sarah M.</p>
-          <p className="text-xs font-bold text-slate-400">May 14 - 10:00 AM - 60 min Facial</p>
+          <p>Sarah M.</p>
+          <span>May 14 · 10:00 AM · 60 min Facial</span>
         </div>
       </div>
       <button
-        className="mt-4 min-h-11 w-full rounded-[0.8rem] bg-[#3478ff] text-sm font-black text-white"
+        className="open-spot-how-confirm-button"
         type="button"
       >
+        <span aria-hidden="true">✓</span>
         Confirm Sarah
       </button>
     </div>

@@ -1735,6 +1735,366 @@ select {
   margin-top: 0.44rem;
 }
 
+.open-spot-how-section {
+  overflow: hidden;
+}
+
+.open-spot-how-shell {
+  align-items: start;
+  gap: clamp(4rem, 6vw, 6rem);
+  grid-template-columns: minmax(17rem, 0.85fr) minmax(0, 1.35fr);
+  max-width: 72rem;
+}
+
+.open-spot-how-copy {
+  padding-top: 4.6rem;
+}
+
+.open-spot-how-pill {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(226, 232, 240, 0.82);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+  color: rgba(72, 88, 112, 0.78);
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0.48rem 0.82rem;
+}
+
+.open-spot-how-title {
+  color: #05070a;
+  font-size: clamp(1.95rem, 2.45vw, 2.35rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.03;
+  margin-top: 1.85rem;
+  max-width: 20rem;
+}
+
+.open-spot-how-title-nowrap {
+  white-space: nowrap;
+}
+
+.open-spot-how-cards {
+  display: grid;
+  gap: 1rem;
+  max-width: 39.2rem;
+  width: 100%;
+}
+
+.open-spot-how-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(255, 255, 255, 0.95)),
+    radial-gradient(circle at 16% 0%, rgba(52, 120, 255, 0.045), transparent 45%);
+  border: 1px solid rgba(15, 23, 42, 0.075);
+  border-radius: 1.35rem;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.06);
+  height: 15rem;
+  overflow: hidden;
+  padding: 1.45rem 1.85rem 1.18rem;
+  position: relative;
+  transition:
+    transform 320ms ease,
+    box-shadow 320ms ease,
+    border-color 320ms ease,
+    background 320ms ease;
+}
+
+.open-spot-how-card-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1.2rem;
+}
+
+.open-spot-how-icon {
+  align-items: center;
+  background: #eef4ff;
+  border-radius: 999px;
+  color: #3478ff;
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 0;
+  height: 2.55rem;
+  justify-content: center;
+  width: 2.55rem;
+}
+
+.open-spot-how-icon svg {
+  display: block;
+  height: 1.18rem;
+  width: 1.18rem;
+}
+
+.open-spot-how-card-title {
+  color: #05070a;
+  font-size: clamp(1.1rem, 1.35vw, 1.28rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+.open-spot-how-card-copy {
+  color: rgba(58, 76, 105, 0.76);
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.42;
+  margin-top: 0.52rem;
+  max-width: 17rem;
+}
+
+.open-spot-how-mockup {
+  transition: transform 320ms ease;
+}
+
+.open-spot-how-alert-mockup,
+.open-spot-how-replies-mockup,
+.open-spot-how-confirm-mockup {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.86);
+  border-radius: 0.95rem;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.045);
+  margin-left: 4.2rem;
+  margin-top: 0.82rem;
+  max-width: 21rem;
+}
+
+.open-spot-how-alert-mockup {
+  padding: 0.54rem;
+}
+
+.open-spot-how-alert-row {
+  align-items: center;
+  background: #f8fbff;
+  border-radius: 0.75rem;
+  display: flex;
+  gap: 0.62rem;
+  padding: 0.56rem 0.72rem;
+}
+
+.open-spot-how-alert-dot {
+  align-items: center;
+  background: #3478ff;
+  border-radius: 999px;
+  color: #ffffff;
+  display: flex;
+  height: 1.38rem;
+  justify-content: center;
+  width: 1.38rem;
+}
+
+.open-spot-how-alert-dot svg {
+  height: 0.68rem;
+  width: 0.68rem;
+}
+
+.open-spot-how-alert-row p,
+.open-spot-how-confirm-person p {
+  color: #0f172a;
+  font-size: 0.66rem;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.open-spot-how-alert-row span,
+.open-spot-how-confirm-person span {
+  color: rgba(100, 116, 139, 0.72);
+  display: block;
+  font-size: 0.61rem;
+  font-weight: 760;
+  line-height: 1.25;
+  margin-top: 0.2rem;
+}
+
+.open-spot-how-message-box {
+  align-items: center;
+  border: 1px solid rgba(226, 232, 240, 0.78);
+  border-radius: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.56rem;
+  min-height: 3.2rem;
+  padding: 0.7rem 0.82rem;
+}
+
+.open-spot-how-skeleton-line {
+  background: #e5eaf2;
+  border-radius: 999px;
+  display: block;
+  height: 0.34rem;
+}
+
+.open-spot-how-skeleton-line.is-long {
+  width: 8.2rem;
+}
+
+.open-spot-how-skeleton-line.is-short {
+  margin-top: 0.55rem;
+  width: 6.3rem;
+}
+
+.open-spot-how-send {
+  align-items: center;
+  background: #3478ff;
+  border-radius: 999px;
+  color: #ffffff;
+  display: flex;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+.open-spot-how-send svg {
+  height: 1rem;
+  width: 1rem;
+}
+
+.open-spot-how-replies-mockup {
+  padding: 0.34rem 0.62rem;
+}
+
+.open-spot-how-reply-row {
+  align-items: center;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.72);
+  display: grid;
+  gap: 0.66rem;
+  grid-template-columns: 1.58rem minmax(0, 1fr) auto 0.5rem;
+  min-height: 2.22rem;
+}
+
+.open-spot-how-reply-row:last-child {
+  border-bottom: 0;
+}
+
+.open-spot-how-initials {
+  align-items: center;
+  background: #f1f4f8;
+  border-radius: 999px;
+  color: rgba(100, 116, 139, 0.82);
+  display: flex;
+  font-size: 0.58rem;
+  font-weight: 900;
+  height: 1.58rem;
+  justify-content: center;
+  width: 1.58rem;
+}
+
+.open-spot-how-reply-name {
+  color: #1f2937;
+  font-size: 0.66rem;
+  font-weight: 900;
+}
+
+.open-spot-how-reply-badge {
+  background: rgba(236, 253, 243, 0.9);
+  border-radius: 999px;
+  color: #16a34a;
+  font-size: 0.52rem;
+  font-weight: 900;
+  padding: 0.22rem 0.48rem;
+  white-space: nowrap;
+}
+
+.open-spot-how-reply-badge.is-neutral {
+  background: #f4f6fa;
+  color: rgba(100, 116, 139, 0.84);
+}
+
+.open-spot-how-chevron {
+  color: rgba(100, 116, 139, 0.52);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.open-spot-how-confirm-mockup {
+  padding: 0.74rem 0.82rem 0.74rem;
+}
+
+.open-spot-how-confirm-person {
+  align-items: center;
+  display: flex;
+  gap: 0.74rem;
+}
+
+.open-spot-how-confirm-avatar {
+  align-items: center;
+  background: #f1f4f8;
+  border-radius: 999px;
+  color: rgba(71, 85, 105, 0.84);
+  display: flex;
+  font-size: 0.86rem;
+  font-weight: 900;
+  height: 2.32rem;
+  justify-content: center;
+  width: 2.32rem;
+}
+
+.open-spot-how-confirm-button {
+  align-items: center;
+  background: #3478ff;
+  border-radius: 0.62rem;
+  color: #ffffff;
+  display: flex;
+  font-size: 0.76rem;
+  font-weight: 850;
+  gap: 0.42rem;
+  justify-content: center;
+  margin-top: 0.68rem;
+  min-height: 2.08rem;
+  transition:
+    background 220ms ease,
+    transform 220ms ease;
+  width: 100%;
+}
+
+.open-spot-how-confirm-button span {
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  display: flex;
+  font-size: 0.55rem;
+  height: 0.95rem;
+  justify-content: center;
+  width: 0.95rem;
+}
+
+.open-spot-how-step-number {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(226, 232, 240, 0.86);
+  border-radius: 999px;
+  bottom: 1rem;
+  color: rgba(100, 116, 139, 0.7);
+  display: flex;
+  font-size: 0.68rem;
+  font-weight: 900;
+  height: 1.72rem;
+  justify-content: center;
+  position: absolute;
+  right: 1rem;
+  width: 1.72rem;
+}
+
+.open-spot-how-card:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(249, 252, 255, 0.98)),
+    radial-gradient(circle at 16% 0%, rgba(52, 120, 255, 0.08), transparent 45%);
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow:
+    0 28px 90px rgba(37, 99, 235, 0.12),
+    0 14px 45px rgba(15, 23, 42, 0.08);
+  transform: translateY(-6px) scale(1.01);
+}
+
+.is-reveal-ready [data-lunera-reveal].open-spot-how-card.is-visible:hover {
+  transform: translateY(-6px) scale(1.01);
+}
+
+.open-spot-how-card:hover .open-spot-how-mockup {
+  transform: translateY(-2px);
+}
+
 @media (min-width: 1024px) {
   .open-spot-metrics-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -2080,7 +2440,10 @@ select {
 
   .open-spot-dashboard-card,
   .open-spot-dashboard-card:hover,
-  .open-spot-dashboard-card:hover .open-spot-dashboard-visual {
+  .open-spot-dashboard-card:hover .open-spot-dashboard-visual,
+  .open-spot-how-card,
+  .open-spot-how-card:hover,
+  .open-spot-how-card:hover .open-spot-how-mockup {
     transform: none !important;
   }
 }
@@ -2112,6 +2475,64 @@ select {
 
   .open-spot-metric-card {
     min-height: auto;
+  }
+
+  .open-spot-how-section {
+    padding-bottom: 4.25rem;
+    padding-top: 4.5rem;
+  }
+
+  .open-spot-how-shell {
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    max-width: 32rem;
+  }
+
+  .open-spot-how-copy {
+    padding-top: 0;
+  }
+
+  .open-spot-how-title {
+    font-size: clamp(2rem, 10vw, 2.55rem);
+    max-width: 20.5rem;
+  }
+
+  .open-spot-how-cards {
+    gap: 1rem;
+    max-width: 100%;
+  }
+
+  .open-spot-how-card {
+    border-radius: 1.2rem;
+    height: auto;
+    min-height: 0;
+    padding: 1.35rem 1.25rem 3rem;
+  }
+
+  .open-spot-how-card-header {
+    gap: 1rem;
+  }
+
+  .open-spot-how-card-copy {
+    max-width: 15rem;
+  }
+
+  .open-spot-how-alert-mockup,
+  .open-spot-how-replies-mockup,
+  .open-spot-how-confirm-mockup {
+    margin-left: 0;
+    max-width: 100%;
+  }
+
+  .open-spot-how-reply-row {
+    gap: 0.48rem;
+    grid-template-columns: 1.58rem minmax(0, 1fr) auto 0.5rem;
+  }
+
+  .open-spot-how-reply-badge {
+    max-width: 5.3rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .lunera-hero-visual-scene::before {
