@@ -200,26 +200,60 @@ const openSpotCopy = {
   },
   faq: {
     tag: "FAQ",
-    title: "Questions before your first SMS sends.",
-    text: "Open Spot keeps merchant control intact and respects SMS consent.",
+    title: "Questions before your first open spot.",
+    text:
+      "Everything local teams need to know before using consent-based SMS to recover last-minute cancellations.",
     items: [
-      [
-        "Does Open Spot replace my booking system?",
-        "No. It works beside your current system."
-      ],
-      [
-        "Are clients confirmed automatically?",
-        "No. Your team reviews replies and confirms manually."
-      ],
-      ["Do clients need an app?", "No. They reply by SMS."],
-      [
-        "Can I use SMS safely?",
-        "Open Spot is designed around consent-based messaging and STOP opt-out handling."
-      ],
-      [
-        "Can I start with a small list?",
-        "Yes. You can start with a simple opted-in waitlist."
-      ]
+      {
+        question: "Does Open Spot replace my booking system?",
+        answer:
+          "No. Open Spot is designed to sit beside your existing booking system, not replace it. You keep your current calendar, booking workflow, and staff process. Open Spot only helps you recover last-minute cancellations by notifying opted-in clients and organizing the replies in one place."
+      },
+      {
+        question: "How does Open Spot help fill a last-minute cancellation?",
+        answer:
+          "When a time slot opens, your team creates an open spot with the service, time, and optional details. Open Spot sends a clean SMS alert to clients who have agreed to receive these updates. Clients reply by text, and your team chooses who to confirm manually."
+      },
+      {
+        question: "Are clients confirmed automatically?",
+        answer:
+          "No. Open Spot keeps final confirmation in the hands of the business. Even if several clients reply quickly, your team reviews the responses and confirms the client that makes the most sense for the schedule, service, and staff availability."
+      },
+      {
+        question: "Do clients need to download an app?",
+        answer:
+          "No. Clients receive and reply by regular SMS. This keeps the experience simple for the client and avoids asking them to create an account, install an app, or learn a new booking platform just to claim an opening."
+      },
+      {
+        question: "How does Open Spot handle SMS consent?",
+        answer:
+          "Open Spot should only be used with clients who have agreed to receive appointment-related SMS updates from your business. The product is built around consent-based recovery, not cold texting or mass spam. Your team should keep consent clear, documented, and aligned with the rules that apply to your location and industry."
+      },
+      {
+        question: "What happens if multiple clients reply?",
+        answer:
+          "Replies are collected in one place so your team does not have to manage scattered text messages manually. You can review who replied, compare timing or fit, and then confirm the right client. This prevents the first reply from automatically taking the spot when another client may be a better match."
+      },
+      {
+        question: "Can I start with a small client list?",
+        answer:
+          "Yes. Open Spot can start with a small opted-in waitlist or a focused group of loyal clients. You do not need a large audience to recover value from a single cancellation, especially for higher-value services like color, treatments, spa appointments, or longer bookings."
+      },
+      {
+        question: "Is Open Spot a marketing SMS tool?",
+        answer:
+          "No. Open Spot is not meant to blast promotions or run generic SMS campaigns. It is focused on one practical workflow: helping appointment-based businesses recover real openings caused by cancellations, no-shows, or schedule gaps."
+      },
+      {
+        question: "Which businesses is Open Spot built for?",
+        answer:
+          "Open Spot is built for appointment-based local businesses such as hair salons, barber shops, beauty clinics, spas, wellness studios, and similar teams. It works best when missed appointments or last-minute cancellations represent real lost revenue."
+      },
+      {
+        question: "How quickly can a team start using it?",
+        answer:
+          "A team can start with a simple workflow: create an open spot, notify opted-in clients, review replies, and confirm manually. The product should feel lightweight enough for front-desk staff or owners to use without needing a complex setup or a full migration from existing tools."
+      }
     ]
   },
   final: {
@@ -1146,45 +1180,55 @@ function Faq({ t }: { t: TemplateCopy }) {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="bg-white px-4 py-20 sm:py-28" id="faq">
-      <div className="mx-auto grid max-w-[72rem] gap-10 lg:grid-cols-[0.78fr_1.22fr]">
-        <div>
+    <section className="open-spot-faq-section" id="faq">
+      <div className="open-spot-faq-shell">
+        <div className="open-spot-faq-copy">
           <span className="lunera-pill" data-lunera-reveal>
             {t.faq.tag}
           </span>
-          <h2
-            className="mt-7 max-w-[29rem] text-4xl font-black leading-tight text-[#05070a] sm:text-5xl"
-            data-lunera-reveal
-          >
+          <h2 className="open-spot-faq-title" data-lunera-reveal>
             {t.faq.title}
           </h2>
-          <p className="mt-5 max-w-md text-base font-medium leading-7 text-slate-500" data-lunera-reveal>
+          <p className="open-spot-faq-subtitle" data-lunera-reveal>
             {t.faq.text}
           </p>
         </div>
-        <div className="rounded-[1.5rem] bg-[#f8fafc] p-3" data-lunera-reveal>
-          {t.faq.items.map(([question, answer], index) => {
+        <div className="open-spot-faq-panel" data-lunera-reveal>
+          {t.faq.items.map((item, index) => {
             const isOpen = index === openIndex;
+            const answerId = `open-spot-faq-answer-${index}`;
+            const triggerId = `open-spot-faq-trigger-${index}`;
 
             return (
-              <div className="border-b border-white last:border-b-0" key={question}>
+              <article
+                className="open-spot-faq-item"
+                data-open={isOpen ? "true" : "false"}
+                key={item.question}
+              >
                 <button
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-5 rounded-[1rem] bg-white px-5 py-5 text-left text-base font-black text-[#05070a] transition hover:bg-[#f7fbff]"
+                  aria-controls={answerId}
+                  className="open-spot-faq-trigger"
+                  id={triggerId}
                   onClick={() => setOpenIndex(isOpen ? -1 : index)}
                   type="button"
                 >
-                  <span>{question}</span>
-                  <span className={cn("text-2xl font-light transition", isOpen && "rotate-45")}>
+                  <span>{item.question}</span>
+                  <span className="open-spot-faq-icon" aria-hidden="true">
                     +
                   </span>
                 </button>
-                <div className={cn("lunera-faq-answer", isOpen && "is-open")}>
-                  <p className="px-5 pb-6 pt-1 text-sm font-medium leading-7 text-slate-500">
-                    {answer}
-                  </p>
+                <div
+                  aria-labelledby={triggerId}
+                  className="open-spot-faq-answer"
+                  id={answerId}
+                  role="region"
+                >
+                  <div className="open-spot-faq-answer-inner">
+                    <p>{item.answer}</p>
+                  </div>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>

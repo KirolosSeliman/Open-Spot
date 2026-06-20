@@ -1303,23 +1303,241 @@ select {
   transform-origin: bottom center;
 }
 
-.lunera-faq-answer {
+.open-spot-faq-section {
+  background: #ffffff;
+  padding: clamp(5rem, 8vw, 7rem) 1rem;
+}
+
+.open-spot-faq-shell {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 4.5rem);
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  margin-inline: auto;
+  max-width: 72rem;
+}
+
+.open-spot-faq-copy {
+  align-self: start;
+}
+
+.open-spot-faq-title {
+  color: #05070a;
+  font-size: clamp(2.6rem, 4.4vw, 3.9rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1.02;
+  margin: 1.75rem 0 0;
+  max-width: 32rem;
+}
+
+.open-spot-faq-subtitle {
+  color: #536783;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.75;
+  margin: 1.35rem 0 0;
+  max-width: 30rem;
+}
+
+.open-spot-faq-panel {
+  background:
+    linear-gradient(180deg, rgba(248, 251, 255, 0.96), rgba(248, 250, 252, 0.98)),
+    radial-gradient(circle at 50% 0%, rgba(52, 120, 255, 0.06), transparent 42%);
+  border: 1px solid rgba(226, 232, 240, 0.78);
+  border-radius: 1.65rem;
+  box-shadow: 0 22px 70px rgba(15, 23, 42, 0.045);
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.open-spot-faq-item {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.94)),
+    radial-gradient(circle at 8% 0%, rgba(52, 120, 255, 0.035), transparent 38%);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 1.15rem;
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.035);
+  overflow: hidden;
+  position: relative;
+  transition:
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 280ms ease,
+    background 280ms ease;
+}
+
+.open-spot-faq-item::before {
+  background: #3478ff;
+  border-radius: 999px;
+  bottom: 1rem;
+  content: "";
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 1rem;
+  transform: scaleY(0.35);
+  transform-origin: center;
+  transition:
+    opacity 260ms ease,
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+  width: 0.2rem;
+}
+
+.open-spot-faq-item:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(248, 251, 255, 0.98)),
+    radial-gradient(circle at 8% 0%, rgba(52, 120, 255, 0.08), transparent 42%);
+  border-color: rgba(59, 130, 246, 0.24);
+  box-shadow:
+    0 22px 60px rgba(37, 99, 235, 0.1),
+    0 8px 24px rgba(15, 23, 42, 0.06);
+  transform: translateY(-3px);
+}
+
+.open-spot-faq-item[data-open="true"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(250, 253, 255, 0.98)),
+    radial-gradient(circle at 8% 0%, rgba(52, 120, 255, 0.1), transparent 46%);
+  border-color: rgba(59, 130, 246, 0.28);
+  box-shadow:
+    0 28px 80px rgba(37, 99, 235, 0.12),
+    0 10px 30px rgba(15, 23, 42, 0.07);
+}
+
+.open-spot-faq-item[data-open="true"]::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.open-spot-faq-trigger {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: #05070a;
+  cursor: pointer;
+  display: flex;
+  gap: 1.25rem;
+  justify-content: space-between;
+  padding: clamp(1.1rem, 2vw, 1.35rem) clamp(1.15rem, 2vw, 1.5rem);
+  position: relative;
+  text-align: left;
+  width: 100%;
+  z-index: 1;
+}
+
+.open-spot-faq-trigger span:first-child {
+  font-size: clamp(1rem, 1.25vw, 1.12rem);
+  font-weight: 950;
+  line-height: 1.35;
+}
+
+.open-spot-faq-trigger:focus-visible {
+  border-radius: 1rem;
+  box-shadow:
+    0 0 0 3px rgba(52, 120, 255, 0.16),
+    inset 0 0 0 1px rgba(52, 120, 255, 0.28);
+  outline: none;
+}
+
+.open-spot-faq-icon {
+  align-items: center;
+  background: rgba(52, 120, 255, 0.09);
+  border: 1px solid rgba(52, 120, 255, 0.12);
+  border-radius: 999px;
+  color: #3478ff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 1.35rem;
+  font-weight: 400;
+  height: 2.2rem;
+  justify-content: center;
+  line-height: 1;
+  transition:
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 260ms ease,
+    border-color 260ms ease,
+    box-shadow 260ms ease;
+  width: 2.2rem;
+}
+
+.open-spot-faq-item:hover .open-spot-faq-icon {
+  background: rgba(52, 120, 255, 0.12);
+  border-color: rgba(52, 120, 255, 0.22);
+  box-shadow: 0 12px 28px rgba(52, 120, 255, 0.12);
+}
+
+.open-spot-faq-item[data-open="true"] .open-spot-faq-icon {
+  background: #3478ff;
+  border-color: #3478ff;
+  box-shadow: 0 14px 32px rgba(52, 120, 255, 0.22);
+  color: #ffffff;
+  transform: rotate(45deg);
+}
+
+.open-spot-faq-answer {
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
   overflow: hidden;
+  transform: translateY(-4px);
   transition:
-    grid-template-rows 240ms ease,
-    opacity 240ms ease;
+    grid-template-rows 300ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 240ms ease,
+    transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.lunera-faq-answer > p {
+.open-spot-faq-answer-inner {
   min-height: 0;
+  padding: 0 clamp(1.15rem, 2vw, 1.5rem);
 }
 
-.lunera-faq-answer.is-open {
+.open-spot-faq-answer-inner p {
+  color: #536783;
+  font-size: 0.96rem;
+  font-weight: 560;
+  line-height: 1.78;
+  margin: 0;
+  padding: 0 0 clamp(1.25rem, 2vw, 1.55rem);
+}
+
+.open-spot-faq-item[data-open="true"] .open-spot-faq-answer {
   grid-template-rows: 1fr;
   opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 1023px) {
+  .open-spot-faq-shell {
+    grid-template-columns: 1fr;
+    max-width: 44rem;
+  }
+
+  .open-spot-faq-title,
+  .open-spot-faq-subtitle {
+    max-width: 40rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .open-spot-faq-section {
+    padding: 4rem 0.75rem;
+  }
+
+  .open-spot-faq-panel {
+    border-radius: 1.25rem;
+    padding: 0.5rem;
+  }
+
+  .open-spot-faq-trigger {
+    gap: 0.9rem;
+    padding: 1rem;
+  }
+
+  .open-spot-faq-icon {
+    height: 2rem;
+    width: 2rem;
+  }
 }
 
 .open-spot-category-marquee {
@@ -2868,6 +3086,10 @@ select {
   .open-spot-testimonial-card,
   .open-spot-testimonial-card:hover,
   .open-spot-testimonial-card:hover .open-spot-testimonial-photo,
+  .open-spot-faq-item,
+  .open-spot-faq-item:hover,
+  .open-spot-faq-answer,
+  .open-spot-faq-icon,
   .open-spot-how-card,
   .open-spot-how-card:hover,
   .open-spot-how-card:hover .open-spot-how-mockup {

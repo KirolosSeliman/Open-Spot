@@ -298,3 +298,32 @@ Verification:
 
 Remaining risk:
 - P3: true role-specific generated portrait assets would improve credibility further if a future ImageGen run exposes downloadable files or approved customer/stock assets are provided.
+
+## Premium FAQ Upgrade QA - 2026-06-20
+
+final result: passed
+
+Source truth:
+- Prompt requirements: C:\Users\kirol\.codex\attachments\b2fd20ba-3078-4fb9-947c-8b882bd0f1e1\pasted-text.txt
+
+Implementation evidence:
+- Left-side title changed to "Questions before your first open spot."
+- Subtitle now explains consent-based SMS recovery for local appointment teams.
+- FAQ data expanded from 5 short tuple answers to 10 structured question/answer objects.
+- New answers address booking-system compatibility, cancellation workflow, manual confirmation, client SMS replies, app-free client experience, SMS consent, multiple replies, small waitlists, non-marketing positioning, business fit, and setup speed.
+- Compliance language avoids absolute legal guarantees and frames Open Spot as consent-based rather than fully compliant by default.
+
+Interaction and accessibility QA:
+- FAQ triggers remain real buttons with `aria-expanded` and `aria-controls`.
+- Answer panels now have stable IDs, `role="region"`, and `aria-labelledby`.
+- Premium hover state lifts closed cards, deepens the shadow, and reacts on the plus icon.
+- Active card state uses stronger blue border/shadow, a subtle accent line, and a rotated plus icon.
+- Answer panels expand with grid-row, opacity, and translate animation.
+- Reduced-motion mode disables FAQ transforms and transitions through the global reduced-motion override.
+
+Verification:
+- Focused public-navigation test passed: 19/19.
+- Old FAQ title, one-line answers, tuple renderer, and `lunera-faq-answer` renderer are blocked by the test.
+
+Remaining risk:
+- P3: browser screenshot automation was not rerun for this section before the build gates, so visual confidence comes from source inspection, existing design patterns, and production compilation.

@@ -368,6 +368,96 @@ describe("public navigation", () => {
     expect(styles).toContain("prefers-reduced-motion: reduce");
   });
 
+  it("upgrades the FAQ with relevant professional answers and accessible premium accordion states", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const faqCopy = homepage.slice(
+      homepage.indexOf("faq: {"),
+      homepage.indexOf("final: {")
+    );
+    const faqSection = homepage.slice(
+      homepage.indexOf("function Faq("),
+      homepage.indexOf("function FinalCta(")
+    );
+    const requiredQuestions = [
+      "Does Open Spot replace my booking system?",
+      "How does Open Spot help fill a last-minute cancellation?",
+      "Are clients confirmed automatically?",
+      "Do clients need to download an app?",
+      "How does Open Spot handle SMS consent?",
+      "What happens if multiple clients reply?",
+      "Can I start with a small client list?",
+      "Is Open Spot a marketing SMS tool?",
+      "Which businesses is Open Spot built for?",
+      "How quickly can a team start using it?"
+    ];
+    const forbiddenFaqCopy = [
+      "Questions before your first SMS sends.",
+      "Open Spot keeps merchant control intact and respects SMS consent.",
+      "No. It works beside your current system.",
+      "No. Your team reviews replies and confirms manually.",
+      "No. They reply by SMS.",
+      "Open Spot is designed around consent-based messaging and STOP opt-out handling.",
+      "Yes. You can start with a simple opted-in waitlist.",
+      "fully compliant",
+      "guarantees SMS compliance"
+    ];
+
+    expect(faqCopy).toContain('title: "Questions before your first open spot."');
+    expect(faqCopy).toContain(
+      "Everything local teams need to know before using consent-based SMS to recover last-minute cancellations."
+    );
+    expect((faqCopy.match(/question:/g) ?? []).length).toBe(10);
+    for (const question of requiredQuestions) {
+      expect(faqCopy).toContain(question);
+    }
+    expect(faqCopy).toContain("sit beside your existing booking system, not replace it");
+    expect(faqCopy).toContain("service, time, and optional details");
+    expect(faqCopy).toContain("final confirmation in the hands of the business");
+    expect(faqCopy).toContain("regular SMS");
+    expect(faqCopy).toContain("consent-based recovery, not cold texting or mass spam");
+    expect(faqCopy).toContain("prevents the first reply from automatically taking the spot");
+    expect(faqCopy).toContain("higher-value services like color, treatments, spa appointments, or longer bookings");
+    expect(faqCopy).toContain("not meant to blast promotions or run generic SMS campaigns");
+    expect(faqCopy).toContain("hair salons, barber shops, beauty clinics, spas, wellness studios");
+    expect(faqCopy).toContain("without needing a complex setup or a full migration from existing tools");
+
+    for (const term of forbiddenFaqCopy) {
+      expect(faqCopy).not.toContain(term);
+    }
+
+    expect(faqSection).toContain("open-spot-faq-section");
+    expect(faqSection).toContain("open-spot-faq-shell");
+    expect(faqSection).toContain("open-spot-faq-panel");
+    expect(faqSection).toContain("open-spot-faq-item");
+    expect(faqSection).toContain('data-open={isOpen ? "true" : "false"}');
+    expect(faqSection).toContain("open-spot-faq-trigger");
+    expect(faqSection).toContain("aria-expanded={isOpen}");
+    expect(faqSection).toContain("aria-controls={answerId}");
+    expect(faqSection).toContain("id={answerId}");
+    expect(faqSection).toContain('role="region"');
+    expect(faqSection).toContain("open-spot-faq-icon");
+    expect(faqSection).toContain("open-spot-faq-answer");
+    expect(faqSection).toContain("open-spot-faq-answer-inner");
+    expect(faqSection).not.toContain("map(([question, answer]");
+    expect(faqSection).not.toContain("lunera-faq-answer");
+
+    expect(styles).toContain(".open-spot-faq-item");
+    expect(styles).toContain(".open-spot-faq-item:hover");
+    expect(styles).toContain("transform: translateY(-3px)");
+    expect(styles).toContain("0 22px 60px rgba(37, 99, 235, 0.1)");
+    expect(styles).toContain('.open-spot-faq-item[data-open="true"]');
+    expect(styles).toContain("0 28px 80px rgba(37, 99, 235, 0.12)");
+    expect(styles).toContain(".open-spot-faq-icon");
+    expect(styles).toContain('.open-spot-faq-item[data-open="true"] .open-spot-faq-icon');
+    expect(styles).toContain("transform: rotate(45deg)");
+    expect(styles).toContain(".open-spot-faq-answer");
+    expect(styles).toContain("grid-template-rows: 0fr");
+    expect(styles).toContain('.open-spot-faq-item[data-open="true"] .open-spot-faq-answer');
+    expect(styles).toContain("grid-template-rows: 1fr");
+    expect(styles).toContain(".open-spot-faq-trigger:focus-visible");
+  });
+
   it("keeps hero social proof, CTA, and business marquee in an airy lower white flow", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
