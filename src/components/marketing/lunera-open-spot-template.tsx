@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
 
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
 import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils/cn";
@@ -17,14 +18,20 @@ const openSpotCopy = {
     how: "How it works",
     pricing: "Pricing",
     contact: "Contact",
-    primary: "Se connecter"
+    primary: "Log in"
+  },
+  dashboardTerms: {
+    createOpenSpot: "Create open spot",
+    repliesReceived: "Replies received",
+    manualReview: "Manual review",
+    confirmClient: "Confirm client"
   },
   hero: {
-    title: ["Fill last-minute", "cancellations by SMS."],
+    title: ["Recover every booking."],
     subtitle:
       "Open Spot contacts opted-in customers, ranks replies, and lets you choose who to confirm - without replacing your appointment system.",
     socialProof: "Built for appointment-based teams",
-    primary: "Se connecter",
+    primary: "Log in",
     secondary: "How it works",
     categories: [
       "Barbers",
@@ -44,7 +51,40 @@ const openSpotCopy = {
   metrics: {
     title: ["Fill your schedule", "with simple SMS."],
     subtitle:
-      "Open Spot helps you capture interest, notify at the right time, and recover more revenue - with less work."
+      "Open Spot helps you capture interest, notify at the right time, and recover more revenue - with less work.",
+    cards: [
+      {
+        title: "Real-Time Replies",
+        text: "See who replied YES as soon as your waitlist responds."
+      },
+      {
+        title: "Revenue Saved",
+        text: "Track how much revenue is recovered from filled last-minute openings."
+      },
+      {
+        title: "Manual Confirmation",
+        text: "Your team chooses who gets the appointment. No one is confirmed without review."
+      },
+      {
+        title: "Average Fill Time",
+        text: "See how quickly last-minute openings are filled after your SMS goes out."
+      },
+      {
+        title: "Successfully Filled Spots",
+        text: "Track the number of cancelled appointments you've successfully filled."
+      }
+    ],
+    visuals: {
+      yesReplies: "YES replies",
+      vsYesterday: "+24% vs yesterday",
+      revenueSaved: "Revenue saved",
+      thisMonth: "This month",
+      reviewed: "Reviewed",
+      confirmation: "Confirmation",
+      fasterThisWeek: "22% faster this week",
+      filledSpots: "filled spots",
+      thisWeek: "18% this week"
+    }
   },
   setup: {
     tag: "Simple setup",
@@ -72,7 +112,34 @@ const openSpotCopy = {
         title: "You stay in control",
         text: "Review the replies and manually choose who gets confirmed."
       }
-    ]
+    ],
+    mockups: {
+      detected: "Spot opening detected",
+      detectedTime: "Tomorrow at 10:00 AM",
+      bestMatch: "Best match",
+      goodMatch: "Good match",
+      review: "Review",
+      appointment: "May 14 · 10:00 AM · 60 min Facial",
+      confirm: "Confirm Sarah"
+    }
+  },
+  revenue: {
+    badge: "Revenue calculator",
+    title: ["See what empty spots", "are costing you."],
+    subtitle:
+      "Enter your average service price and the number of last-minute cancellations you usually lose. Open Spot estimates the revenue at risk and what you could recover.",
+    averageServiceCost: "Average service cost",
+    lostPerWeek: "Last-minute spots lost per week",
+    recoveryEstimate: "Recovery estimate",
+    notePrefix: "Based on a",
+    noteSuffix: "recovery estimate",
+    monthlyAtRisk: "Monthly revenue at risk",
+    recoveredWithOpenSpot: "Recovered with Open Spot",
+    averageService: "Average service",
+    openSpotsPerWeek: "Open spots / week",
+    manualConfirmation: "Manual confirmation",
+    manualConfirmationValue: "stays in your control",
+    perMonth: "/ month"
   },
   how: {
     tag: "How It Works",
@@ -93,57 +160,45 @@ const openSpotCopy = {
         title: "Confirm the Client",
         text: "Choose the best fit and confirm the appointment manually."
       }
-    ]
+    ],
+    mockups: {
+      detected: "Spot opening detected",
+      detectedTime: "Tomorrow at 10:00 AM",
+      bestMatch: "Best match",
+      goodMatch: "Good match",
+      review: "Review",
+      appointment: "May 14 · 10:00 AM · 60 min Facial",
+      confirm: "Confirm Sarah"
+    }
   },
   pricing: {
     tag: "Pricing",
-    title: "Simple pricing for appointment teams.",
-    cards: [
-      {
-        title: "Starter",
-        price: "$0 / mo",
-        text: "For testing your waitlist workflow.",
-        cta: "Se connecter",
-        href: loginHref,
-        featured: false,
-        features: [
-          "Manual opening creation",
-          "SMS simulator",
-          "Basic waitlist page",
-          "Manual confirmation"
-        ]
-      },
-      {
-        title: "Growth",
-        price: "$49 / mo",
-        text: "For appointment-based businesses ready to recover cancellations.",
-        cta: "Se connecter",
-        href: loginHref,
-        featured: true,
-        badge: "Best Deal",
-        features: [
-          "Real SMS alerts",
-          "Customer waitlist",
-          "Reply tracking",
-          "Manual validation",
-          "Basic recovered revenue reporting"
-        ]
-      },
-      {
-        title: "Scale",
-        price: "Custom",
-        text: "For teams with multiple locations or higher SMS volume.",
-        cta: "Book a call",
-        href: "/book-call",
-        featured: false,
-        features: [
-          "Multi-location support",
-          "Advanced reporting",
-          "Custom onboarding",
-          "Priority support"
-        ]
-      }
-    ]
+    title: ["Personalized pricing for", "every appointment business."],
+    subtitle:
+      "Every team has different needs. Book a call and we'll walk you through Open Spot, answer your questions, and tailor a setup that fits your workflow, volume, and goals.",
+    leftTitle: ["Let's find the", "right setup"],
+    leftText: [
+      "Open Spot adapts to how your business runs.",
+      "We'll help you get the right tools, flows,",
+      "and SMS capacity to drive bookings",
+      "and reduce no-shows."
+    ],
+    bullets: [
+      "Personalized setup recommendations",
+      "SMS volume matched to your needs",
+      "Workflow tailored to your business"
+    ],
+    pill: "Book a call",
+    rightTitle: ["Tell us about your business and", "we'll recommend the best setup."],
+    options: [
+      "Single location or multi-location",
+      "Low or high SMS volume",
+      "Custom rollout support"
+    ],
+    primaryCta: "Book a call",
+    secondaryCta: "Contact sales",
+    primaryHref: "/book-call",
+    secondaryHref: "/contact"
   },
   testimonials: {
     title: "What local teams say about Open Spot.",
@@ -266,10 +321,308 @@ const openSpotCopy = {
   }
 } as const;
 
+const openSpotFrCopy = {
+  ...openSpotCopy,
+  nav: {
+    features: "Fonctionnalites",
+    how: "Comment ca marche",
+    pricing: "Prix",
+    contact: "Contact",
+    primary: "Se connecter"
+  },
+  dashboardTerms: {
+    createOpenSpot: "Creer un creneau",
+    repliesReceived: "Reponses recues",
+    manualReview: "Revision manuelle",
+    confirmClient: "Confirmer le client"
+  },
+  hero: {
+    ...openSpotCopy.hero,
+    title: ["Recuperez chaque rendez-vous."],
+    subtitle:
+      "Open Spot contacte les clients consentants, classe les reponses et vous laisse choisir qui confirmer - sans remplacer votre systeme de rendez-vous.",
+    socialProof: "Concu pour les equipes sur rendez-vous",
+    primary: "Se connecter",
+    secondary: "Comment ca marche",
+    categories: [
+      "Barbiers",
+      "Cliniques beaute",
+      "Salons de coiffure",
+      "Spas",
+      "Studios d'ongles",
+      "Massotherapie",
+      "Sourcils et cils",
+      "Med spas",
+      "Cliniques bien-etre",
+      "Studios de tatouage",
+      "Physiotherapie",
+      "Cliniques esthetiques"
+    ]
+  },
+  metrics: {
+    title: ["Remplissez votre horaire", "avec de simples SMS."],
+    subtitle:
+      "Open Spot vous aide a capter l'interet, avertir au bon moment et recuperer plus de revenu avec moins de travail.",
+    cards: [
+      {
+        title: "Reponses en temps reel",
+        text: "Voyez qui a repondu OUI des que votre liste d'attente repond."
+      },
+      {
+        title: "Revenu recupere",
+        text: "Suivez le revenu recupere grace aux ouvertures de derniere minute remplies."
+      },
+      {
+        title: "Confirmation manuelle",
+        text: "Votre equipe choisit qui obtient le rendez-vous. Personne n'est confirme sans revision."
+      },
+      {
+        title: "Temps moyen de remplissage",
+        text: "Voyez la vitesse a laquelle les ouvertures de derniere minute sont remplies apres l'envoi du SMS."
+      },
+      {
+        title: "Creneaux remplis",
+        text: "Suivez le nombre de rendez-vous annules que vous avez reussi a remplir."
+      }
+    ],
+    visuals: {
+      yesReplies: "Reponses OUI",
+      vsYesterday: "+24% vs hier",
+      revenueSaved: "Revenu recupere",
+      thisMonth: "Ce mois-ci",
+      reviewed: "Revise",
+      confirmation: "Confirmation",
+      fasterThisWeek: "22% plus rapide cette semaine",
+      filledSpots: "creneaux remplis",
+      thisWeek: "18% cette semaine"
+    }
+  },
+  setup: {
+    tag: "Configuration simple",
+    title: ["Gardez votre systeme de rendez-vous.", "Recuperez les places libres."],
+    subtitle:
+      "Open Spot fonctionne autour de votre workflow existant, pour que votre equipe remplisse les annulations de derniere minute sans changer la facon dont les clients reservent.",
+    cards: [
+      {
+        icon: "calendar",
+        title: "Aucune migration requise",
+        text: "Continuez a utiliser votre systeme actuel. Open Spot intervient seulement lorsqu'une place se libere."
+      },
+      {
+        icon: "bell",
+        title: "Concu pour les annulations",
+        text: "Lancez une alerte SMS ciblee lorsqu'un rendez-vous devient disponible."
+      },
+      {
+        icon: "message",
+        title: "Les clients repondent par SMS",
+        text: "Les clients interesses repondent directement de leur telephone. Aucune application a telecharger."
+      },
+      {
+        icon: "shield",
+        title: "Vous gardez le controle",
+        text: "Revisez les reponses et choisissez manuellement qui sera confirme."
+      }
+    ]
+  },
+  how: {
+    tag: "Comment ca marche",
+    title: ["De l'annulation", "a la confirmation", "en trois etapes", "simples."],
+    steps: [
+      {
+        number: "01",
+        title: "Envoyer l'alerte",
+        text: "Avertissez les clients interesses en quelques secondes lorsqu'une place se libere."
+      },
+      {
+        number: "02",
+        title: "Reviser les reponses",
+        text: "Voyez les reponses dans une file claire et reperez le meilleur choix."
+      },
+      {
+        number: "03",
+        title: "Confirmer le client",
+        text: "Choisissez le meilleur client et confirmez le rendez-vous manuellement."
+      }
+    ],
+    mockups: {
+      detected: "Place disponible detectee",
+      detectedTime: "Demain a 10 h",
+      bestMatch: "Meilleur choix",
+      goodMatch: "Bon choix",
+      review: "Reviser",
+      appointment: "14 mai · 10 h · Facial 60 min",
+      confirm: "Confirmer Sarah"
+    }
+  },
+  revenue: {
+    badge: "Calculateur de revenu",
+    title: ["Voyez ce que les places libres", "vous coutent."],
+    subtitle:
+      "Entrez votre prix moyen de service et le nombre d'annulations de derniere minute que vous perdez habituellement. Open Spot estime le revenu a risque et ce que vous pourriez recuperer.",
+    averageServiceCost: "Cout moyen du service",
+    lostPerWeek: "Places de derniere minute perdues par semaine",
+    recoveryEstimate: "Estimation de recuperation",
+    notePrefix: "Base sur une estimation de",
+    noteSuffix: "de recuperation",
+    monthlyAtRisk: "Revenu mensuel a risque",
+    recoveredWithOpenSpot: "Recupere avec Open Spot",
+    averageService: "Service moyen",
+    openSpotsPerWeek: "Places / semaine",
+    manualConfirmation: "Revision manuelle",
+    manualConfirmationValue: "reste sous votre controle",
+    perMonth: "/ mois"
+  },
+  pricing: {
+    tag: "Prix",
+    title: ["Tarification personnalisee pour", "chaque commerce sur rendez-vous."],
+    subtitle:
+      "Chaque equipe a des besoins differents. Reservez un appel et nous vous guiderons dans Open Spot, repondrons a vos questions et adapterons la configuration a votre workflow, votre volume et vos objectifs.",
+    leftTitle: ["Trouvons la", "bonne configuration"],
+    leftText: [
+      "Open Spot s'adapte a la facon dont votre commerce fonctionne.",
+      "Nous vous aidons a choisir les bons outils, flux,",
+      "et la capacite SMS pour generer des rendez-vous",
+      "et reduire les absences."
+    ],
+    bullets: [
+      "Recommandations de configuration personnalisees",
+      "Volume SMS adapte a vos besoins",
+      "Workflow adapte a votre commerce"
+    ],
+    pill: "Reserver un appel",
+    rightTitle: ["Parlez-nous de votre commerce et", "nous recommanderons la meilleure configuration."],
+    options: [
+      "Emplacement unique ou multi-emplacements",
+      "Volume SMS faible ou eleve",
+      "Accompagnement de deploiement sur mesure"
+    ],
+    primaryCta: "Reserver un appel",
+    secondaryCta: "Contacter les ventes",
+    primaryHref: "/book-call",
+    secondaryHref: "/contact"
+  },
+  testimonials: {
+    title: "Ce que les equipes locales disent d'Open Spot.",
+    text:
+      "Des histoires humaines d'equipes sur rendez-vous qui utilisent les SMS bases sur le consentement pour recuperer les annulations de derniere minute tout en gardant la confirmation finale entre leurs mains.",
+    cards: [
+      {
+        ...openSpotCopy.testimonials.cards[0],
+        role: "Proprietaire de salon",
+        business: "Salon de coiffure",
+        quote:
+          "Quand une coloration est annulee, je ne veux pas que mon equipe texte les clients un par un. Open Spot envoie une alerte propre, montre qui repond et nous laisse choisir le bon client.",
+        resultBadge: "Coloration recuperee",
+        imageAlt: "Portrait representatif d'une proprietaire de salon"
+      },
+      {
+        ...openSpotCopy.testimonials.cards[1],
+        role: "Gestionnaire de barbershop",
+        business: "Barbershop",
+        quote:
+          "Entre les walk-ins et les rendez-vous, on ne peut pas courir apres chaque chaise vide. Les reponses arrivent maintenant au meme endroit et je confirme quand ca fait vraiment du sens.",
+        resultBadge: "Chaise remplie",
+        imageAlt: "Portrait representatif d'un gestionnaire de barbershop"
+      },
+      {
+        ...openSpotCopy.testimonials.cards[2],
+        role: "Coordonnatrice de clinique",
+        business: "Clinique beaute",
+        quote:
+          "On perdait des facials en fin de journee parce que la reception etait deja occupee. Open Spot ajoute une couche simple pres de notre calendrier, sans devenir un autre outil de reservation.",
+        resultBadge: "Place tardive recuperee",
+        imageAlt: "Portrait representatif d'une coordonnatrice de clinique beaute"
+      },
+      {
+        ...openSpotCopy.testimonials.cards[3],
+        role: "Receptionniste de spa",
+        business: "Spa",
+        quote:
+          "Nos clientes regulieres aiment savoir quand une place se libere. Les SMS bases sur le consentement restent personnels, et on decide toujours qui sera confirme.",
+        resultBadge: "Revision manuelle gardee",
+        imageAlt: "Portrait representatif d'une receptionniste de spa"
+      }
+    ]
+  },
+  faq: {
+    tag: "FAQ",
+    title: "Questions avant votre premier creneau.",
+    text:
+      "Ce que les equipes locales doivent savoir avant d'utiliser des SMS bases sur le consentement pour recuperer les annulations.",
+    items: [
+      {
+        question: "Est-ce qu'Open Spot remplace mon systeme de rendez-vous?",
+        answer:
+          "Non. Open Spot est concu pour fonctionner a cote de votre systeme actuel, pas pour le remplacer. Vous gardez votre calendrier, votre processus et votre equipe. Open Spot aide seulement a recuperer les annulations de derniere minute en avisant les clients consentants et en organisant les reponses."
+      },
+      {
+        question: "Comment Open Spot aide-t-il a remplir une annulation?",
+        answer:
+          "Lorsqu'une place se libere, votre equipe cree un creneau avec le service, l'heure et les details utiles. Open Spot envoie une alerte SMS aux clients qui ont accepte ces mises a jour. Les clients repondent par texto et votre equipe choisit qui confirmer manuellement."
+      },
+      {
+        question: "Les clients sont-ils confirmes automatiquement?",
+        answer:
+          "Non. Open Spot garde la confirmation finale entre les mains du commerce. Meme si plusieurs clients repondent rapidement, votre equipe revise les reponses et confirme le client qui convient le mieux a l'horaire, au service et a la disponibilite."
+      },
+      {
+        question: "Les clients doivent-ils telecharger une application?",
+        answer:
+          "Non. Les clients recoivent et repondent par SMS regulier. L'experience reste simple et ne demande pas de creer un compte ou d'apprendre une nouvelle plateforme."
+      },
+      {
+        question: "Comment Open Spot gere-t-il le consentement SMS?",
+        answer:
+          "Open Spot devrait etre utilise seulement avec des clients qui ont accepte de recevoir des mises a jour SMS liees aux rendez-vous de votre commerce. Le produit est concu pour des workflows SMS bases sur le consentement, pas pour du cold texting ou du spam de masse."
+      },
+      {
+        question: "Que se passe-t-il si plusieurs clients repondent?",
+        answer:
+          "Les reponses sont regroupees au meme endroit pour eviter les textos disperses. Vous pouvez reviser les reponses, comparer le moment ou l'ajustement, puis confirmer le bon client."
+      },
+      {
+        question: "Puis-je commencer avec une petite liste?",
+        answer:
+          "Oui. Open Spot peut commencer avec une petite liste de clients consentants ou un groupe de clientes fideles. Une seule annulation recuperee peut deja creer de la valeur."
+      },
+      {
+        question: "Open Spot est-il un outil de marketing SMS?",
+        answer:
+          "Non. Open Spot ne sert pas a envoyer des promotions de masse. Il se concentre sur un workflow concret: aider les commerces sur rendez-vous a recuperer les places causees par des annulations, absences ou trous d'horaire."
+      },
+      {
+        question: "Pour quels commerces Open Spot est-il concu?",
+        answer:
+          "Open Spot est concu pour les commerces locaux sur rendez-vous comme les salons, barbershops, cliniques beaute, spas, studios bien-etre et equipes similaires."
+      },
+      {
+        question: "A quelle vitesse une equipe peut-elle commencer?",
+        answer:
+          "Une equipe peut commencer avec un workflow simple: creer un creneau, avertir les clients consentants, reviser les reponses et confirmer manuellement."
+      }
+    ]
+  },
+  final: {
+    title: "Pret a recuperer votre prochaine annulation?",
+    text:
+      "Lancez un workflow SMS simple qui garde votre systeme de rendez-vous, votre equipe et votre confirmation manuelle en place.",
+    primary: "Demander un appel"
+  },
+  footer: {
+    line: "Recuperez les annulations de derniere minute par SMS.",
+    columns: [
+      ["Produit", "Fonctionnalites", "Comment ca marche", "Prix"],
+      ["Entreprise", "Contact", "Support"],
+      ["Legal", "Confidentialite", "Conditions", "Consentement SMS"]
+    ]
+  }
+} as const;
+
 const copy = {
   en: openSpotCopy,
-  fr: openSpotCopy
-} as const satisfies Record<Locale, typeof openSpotCopy>;
+  fr: openSpotFrCopy
+} as const;
 
 type TemplateCopy = (typeof copy)[Locale];
 
@@ -374,14 +727,14 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
       ref={rootRef}
       style={{ "--lunera-progress": 0 } as CSSProperties}
     >
-      <FloatingNavbar t={t} />
+      <FloatingNavbar locale={locale} t={t} />
       <main>
-        <Hero t={t} />
+        <Hero locale={locale} t={t} />
         <MetricsSection t={t} />
         <SetupSection t={t} />
         <HowItWorks t={t} />
-        <RevenueCalculatorSection />
-        <Pricing t={t} />
+        <RevenueCalculatorSection locale={locale} t={t} />
+        <PersonalizedPricingSection t={t} />
         <Testimonials t={t} />
         <Faq t={t} />
         <FinalCta t={t} />
@@ -391,7 +744,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   );
 }
 
-function FloatingNavbar({ t }: { t: TemplateCopy }) {
+function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   return (
     <header className="fixed inset-x-0 top-4 z-50 px-3 sm:top-5">
       <div className="mx-auto flex min-h-[3.45rem] w-[calc(100vw-1.5rem)] max-w-[54rem] items-center justify-between gap-2 rounded-full border border-white/90 bg-white/94 px-3 py-2 shadow-[0_16px_44px_rgba(15,23,42,0.11)] backdrop-blur-2xl sm:min-h-[3.75rem] sm:w-[calc(100vw-2rem)] sm:px-4">
@@ -408,12 +761,18 @@ function FloatingNavbar({ t }: { t: TemplateCopy }) {
           <NavLink href="#pricing">{t.nav.pricing}</NavLink>
           <NavLink href="/contact">{t.nav.contact}</NavLink>
         </nav>
-        <Link
-          className="inline-flex min-h-[2.38rem] shrink-0 items-center justify-center rounded-full bg-black px-3.5 text-[0.78rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:min-h-[2.5rem] sm:px-4"
-          href={loginHref}
-        >
-          {t.nav.primary}
-        </Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <LanguageSwitcher
+            className="hidden border-slate-200/80 bg-white/90 shadow-[0_10px_24px_rgba(15,23,42,0.08)] min-[440px]:inline-flex"
+            initialLocale={locale}
+          />
+          <Link
+            className="inline-flex min-h-[2.38rem] items-center justify-center rounded-full bg-black px-3.5 text-[0.78rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:min-h-[2.5rem] sm:px-4"
+            href={loginHref}
+          >
+            {t.nav.primary}
+          </Link>
+        </div>
       </div>
     </header>
   );
@@ -439,7 +798,7 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
   );
 }
 
-function Hero({ t }: { t: TemplateCopy }) {
+function Hero({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   return (
     <section
       className="lunera-hero-section relative isolate overflow-hidden px-4 pt-24 sm:pt-28"
@@ -466,7 +825,7 @@ function Hero({ t }: { t: TemplateCopy }) {
           {t.hero.subtitle}
         </p>
       </div>
-      <HeroPhoneMockup />
+      <HeroPhoneMockup locale={locale} />
       <div className="lunera-hero-lower-content">
         <HeroSocialProof label={t.hero.socialProof} />
         <HeroCtaRow t={t} />
@@ -477,11 +836,11 @@ function Hero({ t }: { t: TemplateCopy }) {
   );
 }
 
-function HeroPhoneMockup() {
+function HeroPhoneMockup({ locale }: { locale: Locale }) {
   return (
     <div className="lunera-hero-visual-scene" data-lunera-reveal>
       <div className="lunera-phone-depth-layer">
-        <SmsConversationPhone locale="en" />
+        <SmsConversationPhone locale={locale} />
       </div>
     </div>
   );
@@ -578,37 +937,37 @@ function MetricsSection({ t }: { t: TemplateCopy }) {
         <DashboardCard
           className="lg:col-span-4"
           size="top"
-          text="See who replied YES as soon as your waitlist responds."
-          title="Real-Time Replies"
-          visual={<RepliesVisual />}
+          text={t.metrics.cards[0].text}
+          title={t.metrics.cards[0].title}
+          visual={<RepliesVisual t={t} />}
         />
         <DashboardCard
           className="lg:col-span-4"
           size="top"
-          text="Track how much revenue is recovered from filled last-minute openings."
-          title="Revenue Saved"
-          visual={<RevenueVisual />}
+          text={t.metrics.cards[1].text}
+          title={t.metrics.cards[1].title}
+          visual={<RevenueVisual t={t} />}
         />
         <DashboardCard
           className="lg:col-span-4"
           size="top"
-          text="Your team chooses who gets the appointment. No one is confirmed without review."
-          title="Manual Confirmation"
-          visual={<ManualVisual />}
+          text={t.metrics.cards[2].text}
+          title={t.metrics.cards[2].title}
+          visual={<ManualVisual t={t} />}
         />
         <DashboardCard
           className="open-spot-dashboard-card--fill-time lg:col-span-6"
           size="wide"
-          text="See how quickly last-minute openings are filled after your SMS goes out."
-          title="Average Fill Time"
-          visual={<FillTimeVisual />}
+          text={t.metrics.cards[3].text}
+          title={t.metrics.cards[3].title}
+          visual={<FillTimeVisual t={t} />}
         />
         <DashboardCard
           className="open-spot-dashboard-card--gauge lg:col-span-6"
           size="wide"
-          text="Track the number of cancelled appointments you've successfully filled."
-          title="Successfully Filled Spots"
-          visual={<FilledSpotsVisual />}
+          text={t.metrics.cards[4].text}
+          title={t.metrics.cards[4].title}
+          visual={<FilledSpotsVisual t={t} />}
         />
       </div>
     </section>
@@ -647,7 +1006,7 @@ function DashboardCard({
   );
 }
 
-function RepliesVisual() {
+function RepliesVisual({ t }: { t: TemplateCopy }) {
   return (
     <div className="open-spot-replies-mini">
       <div className="open-spot-replies-donut">
@@ -657,20 +1016,20 @@ function RepliesVisual() {
       </div>
       <div>
         <p className="open-spot-card-number">128</p>
-        <p className="open-spot-card-label">YES replies</p>
-        <p className="open-spot-card-positive">+24% vs yesterday</p>
+        <p className="open-spot-card-label">{t.metrics.visuals.yesReplies}</p>
+        <p className="open-spot-card-positive">{t.metrics.visuals.vsYesterday}</p>
       </div>
     </div>
   );
 }
 
-function RevenueVisual() {
+function RevenueVisual({ t }: { t: TemplateCopy }) {
   return (
     <div className="open-spot-revenue-visual">
       <div className="open-spot-revenue-badge">
-        <p className="text-xs font-black text-[#3478ff]">Revenue saved</p>
+        <p className="text-xs font-black text-[#3478ff]">{t.metrics.visuals.revenueSaved}</p>
         <p className="text-xl font-black">$8.3K</p>
-        <p className="text-xs font-bold text-slate-400">This month</p>
+        <p className="text-xs font-bold text-slate-400">{t.metrics.visuals.thisMonth}</p>
       </div>
       <svg aria-hidden="true" className="open-spot-revenue-chart" fill="none" viewBox="0 0 360 120">
         <path d="M8 68 H352" stroke="#e8eef8" strokeDasharray="3 6" />
@@ -688,12 +1047,12 @@ function RevenueVisual() {
   );
 }
 
-function ManualVisual() {
+function ManualVisual({ t }: { t: TemplateCopy }) {
   return (
     <div className="open-spot-manual-visual">
       {[
-        ["Reviewed", "100%"],
-        ["Confirmation", "72%"]
+        [t.metrics.visuals.reviewed, "100%"],
+        [t.metrics.visuals.confirmation, "72%"]
       ].map(([label, value]) => (
         <div
           className="open-spot-manual-mini"
@@ -711,7 +1070,7 @@ function ManualVisual() {
   );
 }
 
-function FillTimeVisual() {
+function FillTimeVisual({ t }: { t: TemplateCopy }) {
   return (
     <div className="open-spot-fill-time-visual">
       <div className="open-spot-fill-time-row">
@@ -719,7 +1078,7 @@ function FillTimeVisual() {
           <p className="open-spot-fill-number">18 <span>min</span></p>
         </div>
         <p className="open-spot-card-positive open-spot-fill-pill">
-          ↓ 22% faster this week
+          ↓ {t.metrics.visuals.fasterThisWeek}
         </p>
       </div>
       <div className="open-spot-fill-slider">
@@ -736,7 +1095,7 @@ function FillTimeVisual() {
   );
 }
 
-function FilledSpotsVisual() {
+function FilledSpotsVisual({ t }: { t: TemplateCopy }) {
   return (
     <div className="open-spot-filled-spots-visual">
       <div className="open-spot-gauge">
@@ -751,8 +1110,8 @@ function FilledSpotsVisual() {
         </div>
         <div className="open-spot-gauge-center">
           <p>84</p>
-          <span>filled spots</span>
-          <strong>↑ 18% this week</strong>
+          <span>{t.metrics.visuals.filledSpots}</span>
+          <strong>↑ {t.metrics.visuals.thisWeek}</strong>
         </div>
       </div>
     </div>
@@ -877,7 +1236,7 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
                   </p>
                 </div>
               </div>
-              <StepMiniUi index={index} />
+              <StepMiniUi index={index} t={t} />
               <span className="open-spot-how-step-number">
                 {step.number}
               </span>
@@ -937,7 +1296,7 @@ function StepIcon({ index }: { index: number }) {
   );
 }
 
-function StepMiniUi({ index }: { index: number }) {
+function StepMiniUi({ index, t }: { index: number; t: TemplateCopy }) {
   if (index === 0) {
     return (
       <div className="open-spot-how-mockup open-spot-how-alert-mockup">
@@ -946,8 +1305,8 @@ function StepMiniUi({ index }: { index: number }) {
             <StepIcon index={0} />
           </span>
           <div>
-            <p>Spot opening detected</p>
-            <span>Tomorrow at 10:00 AM</span>
+            <p>{t.how.mockups.detected}</p>
+            <span>{t.how.mockups.detectedTime}</span>
           </div>
         </div>
         <div className="open-spot-how-message-box">
@@ -972,16 +1331,16 @@ function StepMiniUi({ index }: { index: number }) {
     return (
       <div className="open-spot-how-mockup open-spot-how-replies-mockup">
         {[
-          ["SM", "Sarah M.", "Best match"],
-          ["JL", "Jamie L.", "Good match"],
-          ["MC", "Maria C.", "Review"]
+          ["SM", "Sarah M.", t.how.mockups.bestMatch],
+          ["JL", "Jamie L.", t.how.mockups.goodMatch],
+          ["MC", "Maria C.", t.how.mockups.review]
         ].map(([initials, name, status]) => (
           <div className="open-spot-how-reply-row" key={name}>
             <span className="open-spot-how-initials">
               {initials}
             </span>
             <span className="open-spot-how-reply-name">{name}</span>
-            <span className={cn("open-spot-how-reply-badge", status === "Review" && "is-neutral")}>
+            <span className={cn("open-spot-how-reply-badge", status === t.how.mockups.review && "is-neutral")}>
               {status}
             </span>
             <span className="open-spot-how-chevron" aria-hidden="true">›</span>
@@ -999,7 +1358,7 @@ function StepMiniUi({ index }: { index: number }) {
         </span>
         <div>
           <p>Sarah M.</p>
-          <span>May 14 · 10:00 AM · 60 min Facial</span>
+          <span>{t.how.mockups.appointment}</span>
         </div>
       </div>
       <button
@@ -1007,13 +1366,13 @@ function StepMiniUi({ index }: { index: number }) {
         type="button"
       >
         <span aria-hidden="true">✓</span>
-        Confirm Sarah
+        {t.how.mockups.confirm}
       </button>
     </div>
   );
 }
 
-function RevenueCalculatorSection() {
+function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   const [averageServiceCost, setAverageServiceCost] = useState(85);
   const [lastMinuteSpots, setLastMinuteSpots] = useState(6);
   const [recoveryEstimate, setRecoveryEstimate] = useState(40);
@@ -1026,23 +1385,24 @@ function RevenueCalculatorSection() {
         <div className="open-spot-revenue-heading">
           <span className="open-spot-calculator-pill">
             <CalculatorIcon />
-            Revenue calculator
+            {t.revenue.badge}
           </span>
           <h2 className="open-spot-revenue-title">
-            <span>See what empty spots</span>
-            <span>are costing you.</span>
+            {t.revenue.title.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
           </h2>
           <p className="open-spot-revenue-subtitle">
-            Enter your average service price and the number of last-minute cancellations you usually lose. Open Spot estimates the revenue at risk and what you could recover.
+            {t.revenue.subtitle}
           </p>
         </div>
 
         <div className="open-spot-revenue-card">
           <div className="open-spot-revenue-controls">
             <SliderControl
-              ariaLabel="Average service cost"
-              displayValue={formatRevenueCurrency(averageServiceCost)}
-              label="Average service cost"
+              ariaLabel={t.revenue.averageServiceCost}
+              displayValue={formatRevenueCurrency(averageServiceCost, locale)}
+              label={t.revenue.averageServiceCost}
               max={200}
               min={25}
               onChange={setAverageServiceCost}
@@ -1051,9 +1411,9 @@ function RevenueCalculatorSection() {
               value={averageServiceCost}
             />
             <SliderControl
-              ariaLabel="Last-minute spots lost per week"
+              ariaLabel={t.revenue.lostPerWeek}
               displayValue={String(lastMinuteSpots)}
-              label="Last-minute spots lost per week"
+              label={t.revenue.lostPerWeek}
               max={20}
               min={1}
               onChange={setLastMinuteSpots}
@@ -1062,9 +1422,9 @@ function RevenueCalculatorSection() {
               value={lastMinuteSpots}
             />
             <SliderControl
-              ariaLabel="Recovery estimate"
+              ariaLabel={t.revenue.recoveryEstimate}
               displayValue={`${recoveryEstimate}%`}
-              label="Recovery estimate"
+              label={t.revenue.recoveryEstimate}
               max={60}
               min={10}
               onChange={setRecoveryEstimate}
@@ -1076,41 +1436,41 @@ function RevenueCalculatorSection() {
             <div className="open-spot-revenue-note">
               <InfoIcon />
               <p>
-                Based on a <strong>{recoveryEstimate}%</strong> recovery estimate
+                {t.revenue.notePrefix} <strong>{recoveryEstimate}%</strong> {t.revenue.noteSuffix}
               </p>
             </div>
           </div>
 
           <div className="open-spot-revenue-results">
             <ResultMetricCard
-              label="Monthly revenue at risk"
-              value={formatRevenueCurrency(monthlyRevenueAtRisk)}
+              label={t.revenue.monthlyAtRisk}
+              value={formatRevenueCurrency(monthlyRevenueAtRisk, locale)}
               visual={<MiniLineChart />}
             />
 
             <ResultMetricCard
               accent
-              badge={`${recoveryEstimate}% recovery estimate`}
-              label="Recovered with Open Spot"
-              value={formatRevenueCurrency(recoveredWithOpenSpot)}
-              valueSuffix="/ month"
+              badge={`${recoveryEstimate}% ${t.revenue.noteSuffix}`}
+              label={t.revenue.recoveredWithOpenSpot}
+              value={formatRevenueCurrency(recoveredWithOpenSpot, locale)}
+              valueSuffix={t.revenue.perMonth}
             />
 
             <div className="open-spot-revenue-stats">
               <MiniStatItem
                 icon={<DollarIcon />}
-                label="Average service"
-                value={formatRevenueCurrency(averageServiceCost)}
+                label={t.revenue.averageService}
+                value={formatRevenueCurrency(averageServiceCost, locale)}
               />
               <MiniStatItem
                 icon={<CalendarIcon />}
-                label="Open spots / week"
+                label={t.revenue.openSpotsPerWeek}
                 value={String(lastMinuteSpots)}
               />
               <MiniStatItem
                 icon={<ShieldIcon />}
-                label="Manual confirmation"
-                value="stays in your control"
+                label={t.revenue.manualConfirmation}
+                value={t.revenue.manualConfirmationValue}
               />
             </div>
           </div>
@@ -1255,8 +1615,8 @@ function MiniStatItem({
   );
 }
 
-function formatRevenueCurrency(value: number) {
-  return `$${Math.round(value).toLocaleString("en-CA")}`;
+function formatRevenueCurrency(value: number, locale: Locale) {
+  return `$${Math.round(value).toLocaleString(locale === "fr" ? "fr-CA" : "en-CA")}`;
 }
 
 function CalculatorIcon() {
@@ -1312,57 +1672,139 @@ function ShieldIcon() {
   );
 }
 
-function Pricing({ t }: { t: TemplateCopy }) {
+function PersonalizedPricingSection({ t }: { t: TemplateCopy }) {
   return (
-    <TemplateSection id="pricing">
-      <SectionHeading tag={t.pricing.tag} title={t.pricing.title} />
-      <div className="mx-auto mt-14 grid max-w-[72rem] gap-5 lg:grid-cols-3">
-        {t.pricing.cards.map((card) => (
-          <article
-            className={cn(
-              "open-spot-pricing-card lunera-card flex min-h-[31rem] flex-col p-7",
-              card.featured &&
-                "scale-[1.02] border-[#3478ff] shadow-[0_28px_80px_rgba(52,120,255,0.2)]"
-            )}
-            data-lunera-reveal
-            key={card.title}
-          >
-            {"badge" in card ? (
-              <span className="mb-5 w-fit rounded-full bg-[#3478ff] px-3 py-1 text-xs font-black text-white">
-                {card.badge}
-              </span>
-            ) : null}
-            <h3 className="text-3xl font-black text-[#05070a]">{card.title}</h3>
-            <p className="mt-3 min-h-14 text-sm font-medium leading-6 text-slate-500">
-              {card.text}
-            </p>
-            <p className="mt-7 border-t border-slate-100 pt-6 text-4xl font-black text-[#05070a]">
-              {card.price}
-            </p>
-            <Link
-              className={cn(
-                "mt-6 inline-flex min-h-[2.75rem] items-center justify-center rounded-full px-5 text-sm font-black transition hover:-translate-y-0.5",
-                card.featured ? "bg-[#3478ff] text-white" : "bg-black text-white"
-              )}
-              href={card.href}
-            >
-              {card.cta}
-            </Link>
-            <ul className="mt-7 space-y-4">
-              {card.features.map((feature) => (
-                <li className="flex gap-3 text-sm font-bold leading-6 text-slate-600" key={feature}>
-                  <span className="mt-0.5 text-[#22c55e]">✓</span>
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-        ))}
+    <section className="open-spot-personalized-pricing" id="pricing">
+      <div className="open-spot-pricing-heading" data-lunera-reveal>
+        <span className="open-spot-pricing-badge">{t.pricing.tag}</span>
+        <h2 className="open-spot-pricing-title">
+          {t.pricing.title.map((line) => (
+            <span key={line}>{line}</span>
+          ))}
+        </h2>
+        <p className="open-spot-pricing-subtitle">{t.pricing.subtitle}</p>
       </div>
-    </TemplateSection>
+
+      <div className="open-spot-pricing-panel" data-lunera-reveal>
+        <div className="open-spot-pricing-column open-spot-pricing-column-left">
+          <span className="open-spot-pricing-main-icon" aria-hidden="true">
+            <PricingCalendarIcon />
+          </span>
+          <h3 className="open-spot-pricing-left-title">
+            {t.pricing.leftTitle.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </h3>
+          <p className="open-spot-pricing-left-text">
+            {t.pricing.leftText.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </p>
+          <ul className="open-spot-pricing-bullets">
+            {t.pricing.bullets.map((bullet) => (
+              <li key={bullet}>
+                <span className="open-spot-pricing-check" aria-hidden="true">
+                  <PricingCheckIcon />
+                </span>
+                <span>{bullet}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="open-spot-pricing-column open-spot-pricing-column-right">
+          <span className="open-spot-pricing-call-pill">{t.pricing.pill}</span>
+          <h3 className="open-spot-pricing-right-title">
+            {t.pricing.rightTitle.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </h3>
+          <div className="open-spot-pricing-options">
+            {t.pricing.options.map((option, index) => (
+              <div className="open-spot-pricing-option" key={option}>
+                <span className="open-spot-pricing-option-icon" aria-hidden="true">
+                  <PricingOptionIcon index={index} />
+                </span>
+                <span>{option}</span>
+              </div>
+            ))}
+          </div>
+          <Link
+            aria-label="Book a call about Open Spot pricing"
+            className="open-spot-pricing-primary"
+            href={t.pricing.primaryHref}
+          >
+            <span>{t.pricing.primaryCta}</span>
+            <span className="open-spot-pricing-arrow" aria-hidden="true">
+              <PricingArrowIcon />
+            </span>
+          </Link>
+          <Link
+            aria-label="Contact sales about Open Spot pricing"
+            className="open-spot-pricing-secondary"
+            href={t.pricing.secondaryHref}
+          >
+            {t.pricing.secondaryCta}
+          </Link>
+        </div>
+      </div>
+    </section>
   );
 }
 
+function PricingCalendarIcon() {
+  return (
+    <svg fill="none" viewBox="0 0 48 48">
+      <rect height="27" rx="6" stroke="currentColor" strokeWidth="3" width="30" x="7" y="11" />
+      <path d="M14 7v9M30 7v9M8 19h28" stroke="currentColor" strokeLinecap="round" strokeWidth="3" />
+      <circle cx="34" cy="34" r="8" fill="#f7fbff" stroke="currentColor" strokeWidth="3" />
+      <path d="M34 30v4.4l3 1.8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
+    </svg>
+  );
+}
+
+function PricingCheckIcon() {
+  return (
+    <svg fill="none" viewBox="0 0 24 24">
+      <path d="m7 12.2 3.1 3.1L17 8.7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
+    </svg>
+  );
+}
+
+function PricingOptionIcon({ index }: { index: number }) {
+  if (index === 0) {
+    return (
+      <svg fill="none" viewBox="0 0 24 24">
+        <path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="2.2" />
+        <circle cx="12" cy="10" r="2.1" stroke="currentColor" strokeWidth="2.2" />
+      </svg>
+    );
+  }
+
+  if (index === 1) {
+    return (
+      <svg fill="none" viewBox="0 0 24 24">
+        <path d="M6 19V9M12 19V5M18 19v-7" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" />
+        <path d="M4 19h16" stroke="currentColor" strokeLinecap="round" strokeWidth="2.4" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg fill="none" viewBox="0 0 24 24">
+      <path d="M5 13v-1a7 7 0 0 1 14 0v1" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
+      <path d="M7 12H6a2 2 0 0 0-2 2v1.5a2 2 0 0 0 2 2h1v-5.5ZM17 12h1a2 2 0 0 1 2 2v1.5a2 2 0 0 1-2 2h-1v-5.5ZM17 17.5c0 2-1.4 3-4.2 3H11" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
+function PricingArrowIcon() {
+  return (
+    <svg fill="none" viewBox="0 0 24 24">
+      <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
+    </svg>
+  );
+}
 function Testimonials({ t }: { t: TemplateCopy }) {
   return (
     <section className="open-spot-testimonials-section">
@@ -1533,23 +1975,21 @@ function footerHref(label: string) {
   const normalized = label.toLowerCase();
 
   if (normalized === "features") return "#features";
+  if (normalized === "fonctionnalites") return "#features";
   if (normalized === "how it works") return "#how-it-works";
+  if (normalized === "comment ca marche") return "#how-it-works";
   if (normalized === "pricing") return "#pricing";
+  if (normalized === "prix") return "#pricing";
   if (normalized === "contact") return "/contact";
   if (normalized === "support") return "/contact";
   if (normalized === "privacy") return "/privacy";
+  if (normalized === "confidentialite") return "/privacy";
   if (normalized === "terms") return "/terms";
+  if (normalized === "conditions") return "/terms";
   if (normalized === "sms consent") return "/privacy";
+  if (normalized === "consentement sms") return "/privacy";
 
   return "/";
-}
-
-function TemplateSection({ children, id }: { children: ReactNode; id?: string }) {
-  return (
-    <section className="bg-white px-4 py-20 sm:py-28" id={id}>
-      {children}
-    </section>
-  );
 }
 
 function SectionHeading({

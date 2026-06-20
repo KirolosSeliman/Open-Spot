@@ -20,17 +20,18 @@ describe("public navigation", () => {
     expect(homepage).toContain('how: "How it works"');
     expect(homepage).toContain('pricing: "Pricing"');
     expect(homepage).toContain('contact: "Contact"');
+    expect(homepage).toContain('primary: "Log in"');
     expect(homepage).toContain("Se connecter");
     expect(homepage).not.toContain("Get Early Access");
     expect(homepage).not.toContain('href="/signup"');
-    expect(homepage).not.toContain("LanguageSwitcher");
+    expect(homepage).toContain("LanguageSwitcher");
+    expect(homepage).toContain('initialLocale={locale}');
     expect(homepage).not.toContain('login: "Connexion"');
-    expect(homepage).not.toContain('login: "Sign in"');
     expect(homepage).not.toContain('resources: "Guides"');
     expect(homepage).not.toContain('tools: "Tools"');
   });
 
-  it("uses the Open Spot brand in the public landing copy", () => {
+  it("uses the Open Spot brand in bilingual public landing copy", () => {
     const homepage = source(homepagePath);
     const rootLayout = source("src/app/layout.tsx");
     const bookingPage = source("src/components/marketing/open-spot-booking-page.tsx");
@@ -38,12 +39,16 @@ describe("public navigation", () => {
 
     expect(homepage).toContain("Open Spot");
     expect(homepage).not.toContain("2e Chance RDV");
-    expect(homepage).toContain("Fill last-minute");
-    expect(homepage).toContain("cancellations by SMS.");
+    expect(homepage).toContain("Recover every booking.");
+    expect(homepage).toContain("Recuperez chaque rendez-vous.");
     expect(homepage).toContain(
       "Open Spot contacts opted-in customers, ranks replies, and lets you choose who to confirm"
     );
+    expect(homepage).toContain(
+      "Open Spot contacte les clients consentants, classe les reponses et vous laisse choisir qui confirmer"
+    );
     expect(homepage).toContain("Manual Confirmation");
+    expect(homepage).toContain("Confirmation manuelle");
     expect(homepage).toContain("No one is confirmed without review");
     expect(rootLayout).toContain("Open Spot");
     expect(rootLayout).not.toContain("2e Chance RDV");
@@ -53,8 +58,9 @@ describe("public navigation", () => {
     expect(consentSmsSource).not.toContain("2e Chance RDV");
   });
 
-  it("publishes the requested Open Spot pricing cards without wiring checkout", () => {
+  it("replaces fixed pricing tiers with the personalized call pricing section", () => {
     const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
     const pricingPage = source("src/app/pricing/page.tsx");
     const productRequirements = source("docs/product-requirements.md");
     const fixedPricePattern = /34[,.]99|\$34|CAD 34\.99/i;
@@ -62,10 +68,43 @@ describe("public navigation", () => {
     expect(homepage).not.toMatch(fixedPricePattern);
     expect(pricingPage).not.toMatch(fixedPricePattern);
     expect(productRequirements).not.toMatch(fixedPricePattern);
-    expect(homepage).toContain("$0 / mo");
-    expect(homepage).toContain("$49 / mo");
-    expect(homepage).toContain("Custom");
-    expect(homepage).toContain("Best Deal");
+    expect(homepage).not.toContain("$0 / mo");
+    expect(homepage).not.toContain("$49 / mo");
+    expect(homepage).not.toContain("Best Deal");
+    expect(homepage).not.toContain("Starter");
+    expect(homepage).not.toContain("Growth");
+    expect(homepage).not.toContain("Scale");
+    expect(homepage).toContain("Personalized pricing for");
+    expect(homepage).toContain("every appointment business.");
+    expect(homepage).toContain("Every team has different needs. Book a call and we'll walk you through Open Spot");
+    expect(homepage).toContain("Let's find the");
+    expect(homepage).toContain("right setup");
+    expect(homepage).toContain("Personalized setup recommendations");
+    expect(homepage).toContain("SMS volume matched to your needs");
+    expect(homepage).toContain("Workflow tailored to your business");
+    expect(homepage).toContain("Tell us about your business and");
+    expect(homepage).toContain("we'll recommend the best setup.");
+    expect(homepage).toContain("Single location or multi-location");
+    expect(homepage).toContain("Low or high SMS volume");
+    expect(homepage).toContain("Custom rollout support");
+    expect(homepage).toContain('aria-label="Book a call about Open Spot pricing"');
+    expect(homepage).toContain('aria-label="Contact sales about Open Spot pricing"');
+    expect(homepage).toContain('primaryHref: "/book-call"');
+    expect(homepage).toContain('secondaryHref: "/contact"');
+    expect(homepage).toContain("href={t.pricing.primaryHref}");
+    expect(homepage).toContain("href={t.pricing.secondaryHref}");
+    expect(homepage).toContain('href="/book-call"');
+    expect(homepage).toContain("function PersonalizedPricingSection(");
+    expect(styles).toContain(".open-spot-personalized-pricing");
+    expect(styles).toContain("scroll-margin-top: 7rem");
+    expect(styles).toContain(".open-spot-pricing-panel");
+    expect(styles).toContain("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)");
+    expect(styles).toContain("border-radius: clamp(1.75rem, 2.1vw, 2.125rem)");
+    expect(styles).toContain("0 28px 80px rgba(15, 23, 42, 0.06)");
+    expect(styles).toContain(".open-spot-pricing-panel:hover");
+    expect(styles).toContain(".open-spot-pricing-option:hover");
+    expect(styles).toContain(".open-spot-pricing-primary:hover .open-spot-pricing-arrow");
+    expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
     expect(homepage).not.toContain("stripe");
   });
 
@@ -144,7 +183,7 @@ describe("public navigation", () => {
       "<SetupSection",
       "<HowItWorks",
       "<RevenueCalculatorSection",
-      "<Pricing",
+      "<PersonalizedPricingSection",
       "<Testimonials",
       "<Faq",
       "<FinalCta"
@@ -163,8 +202,10 @@ describe("public navigation", () => {
     expect(heroFunction).toContain("lunera-hero-visual-scene");
     expect(phoneIndex).toBeGreaterThan(-1);
     expect(heroFunction).toContain("<SmsConversationPhone");
+    expect(heroFunction).toContain("locale={locale}");
     expect(heroFunction).toContain("<HeroCloudBlend");
     expect(homepage).toContain("Built for appointment-based teams");
+    expect(homepage).toContain("Concu pour les equipes sur rendez-vous");
     expect(homepage).toContain("Barbers");
     expect(homepage).toContain("Beauty Clinics");
     expect(homepage).toContain("Hair Salons");
@@ -178,6 +219,7 @@ describe("public navigation", () => {
     expect(homepage).toContain("are costing you.");
     expect(homepage).not.toContain("Non-disruptive cancellation recovery");
     expect(homepage).toContain("What local teams say about Open Spot.");
+    expect(homepage).toContain("Ce que les equipes locales disent d'Open Spot.");
     expect(homepage).toContain("Ready to recover your next cancellation?");
     expect(homepage).toContain("SMS consent");
     expect(homepage).toContain("bg-[#050505]");
@@ -196,6 +238,27 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("setScrollProgress");
     expect(homepage).toContain(".style.setProperty(");
     expect(homepage).toContain('"--lunera-progress"');
+  });
+
+  it("keeps the Lunera landing dictionaries distinct across English and French", () => {
+    const homepage = source(homepagePath);
+
+    expect(homepage).toContain("const openSpotFrCopy");
+    expect(homepage).toContain("copy = {");
+    expect(homepage).toContain("en: openSpotCopy");
+    expect(homepage).toContain("fr: openSpotFrCopy");
+    expect(homepage).toContain("Average service cost");
+    expect(homepage).toContain("Cout moyen du service");
+    expect(homepage).toContain("Recovered with Open Spot");
+    expect(homepage).toContain("Recupere avec Open Spot");
+    expect(homepage).toContain("Create open spot");
+    expect(homepage).toContain("Creer un creneau");
+    expect(homepage).toContain("Replies received");
+    expect(homepage).toContain("Reponses recues");
+    expect(homepage).toContain("Manual review");
+    expect(homepage).toContain("Revision manuelle");
+    expect(homepage).toContain("Confirm client");
+    expect(homepage).toContain("Confirmer le client");
   });
 
   it("uses an Open Spot appointment workflow inside the phone", () => {
@@ -553,8 +616,8 @@ describe("public navigation", () => {
     expect(stepMiniUi).toContain("open-spot-how-alert-mockup");
     expect(stepMiniUi).toContain("open-spot-how-replies-mockup");
     expect(stepMiniUi).toContain("open-spot-how-confirm-mockup");
-    expect(stepMiniUi).toContain("Spot opening detected");
-    expect(stepMiniUi).toContain("Confirm Sarah");
+    expect(stepMiniUi).toContain("t.how.mockups.detected");
+    expect(stepMiniUi).toContain("t.how.mockups.confirm");
     expect(homepage).toContain("confirm the appointment manually");
     expect(styles).toContain(".open-spot-how-shell");
     expect(styles).toContain("grid-template-columns: minmax(17rem, 0.85fr) minmax(0, 1.35fr)");
@@ -573,7 +636,7 @@ describe("public navigation", () => {
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
     const calculatorSection = homepage.slice(
       homepage.indexOf("function RevenueCalculatorSection("),
-      homepage.indexOf("function Pricing(")
+      homepage.indexOf("function PersonalizedPricingSection(")
     );
     const forbiddenCalculatorTerms = [
       "Workflow",
@@ -623,21 +686,20 @@ describe("public navigation", () => {
     expect(calculatorSection).toContain("MiniLineChart");
     expect(calculatorSection).toContain("ResultMetricCard");
     expect(calculatorSection).toContain("MiniStatItem");
-    expect(calculatorSection).toContain("Revenue calculator");
-    expect(calculatorSection).toContain("See what empty spots");
-    expect(calculatorSection).toContain("are costing you.");
-    expect(calculatorSection).toContain("Enter your average service price and the number of last-minute cancellations you usually lose. Open Spot estimates the revenue at risk and what you could recover.");
-    expect(calculatorSection).toContain("Average service cost");
-    expect(calculatorSection).toContain("Last-minute spots lost per week");
-    expect(calculatorSection).toContain("Recovery estimate");
-    expect(calculatorSection).toContain("Based on a");
-    expect(calculatorSection).toContain("recovery estimate");
-    expect(calculatorSection).toContain("Monthly revenue at risk");
-    expect(calculatorSection).toContain("Recovered with Open Spot");
-    expect(calculatorSection).toContain("Average service");
-    expect(calculatorSection).toContain("Open spots / week");
-    expect(calculatorSection).toContain("Manual confirmation");
-    expect(calculatorSection).toContain("stays in your control");
+    expect(calculatorSection).toContain("t.revenue.badge");
+    expect(calculatorSection).toContain("t.revenue.title.map");
+    expect(calculatorSection).toContain("t.revenue.subtitle");
+    expect(calculatorSection).toContain("t.revenue.averageServiceCost");
+    expect(calculatorSection).toContain("t.revenue.lostPerWeek");
+    expect(calculatorSection).toContain("t.revenue.recoveryEstimate");
+    expect(calculatorSection).toContain("t.revenue.notePrefix");
+    expect(calculatorSection).toContain("t.revenue.noteSuffix");
+    expect(calculatorSection).toContain("t.revenue.monthlyAtRisk");
+    expect(calculatorSection).toContain("t.revenue.recoveredWithOpenSpot");
+    expect(calculatorSection).toContain("t.revenue.averageService");
+    expect(calculatorSection).toContain("t.revenue.openSpotsPerWeek");
+    expect(calculatorSection).toContain("t.revenue.manualConfirmation");
+    expect(calculatorSection).toContain("t.revenue.manualConfirmationValue");
     expect(calculatorSection).toContain('min={25}');
     expect(calculatorSection).toContain('max={200}');
     expect(calculatorSection).toContain('step={5}');
