@@ -221,6 +221,38 @@ describe("public navigation", () => {
     expect(styles).toContain("transform-origin: center center");
   });
 
+  it("keeps hero social proof, CTA, and business marquee in an airy lower white flow", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const heroFunction = homepage.slice(
+      homepage.indexOf("function Hero("),
+      homepage.indexOf("function HeroPhoneMockup(")
+    );
+    const lowerFlowIndex = heroFunction.indexOf("lunera-hero-lower-content");
+    const socialIndex = heroFunction.indexOf("<HeroSocialProof");
+    const ctaIndex = heroFunction.indexOf("<HeroCtaRow");
+    const marqueeIndex = heroFunction.indexOf("<CategoryStrip");
+
+    expect(lowerFlowIndex).toBeGreaterThan(-1);
+    expect(socialIndex).toBeGreaterThan(lowerFlowIndex);
+    expect(socialIndex).toBeLessThan(ctaIndex);
+    expect(ctaIndex).toBeLessThan(marqueeIndex);
+    expect(heroFunction).not.toContain("pb-10 pt-24");
+
+    expect(styles).toContain(".lunera-hero-lower-content");
+    expect(styles).toContain(".lunera-hero-lower-content::before");
+    expect(styles).toContain("min-height: clamp(66rem, 98vw, 76rem)");
+    expect(styles).toContain("margin-top: clamp(4.25rem, 7vw, 6.75rem)");
+    expect(styles).toContain("padding-bottom: clamp(6rem, 9vw, 8.5rem)");
+    expect(styles).toContain("rgba(255, 255, 255, 0.96) 58%");
+    expect(styles).toContain("margin-top: clamp(1.25rem, 2vw, 1.7rem)");
+    expect(styles).toContain("gap: clamp(0.85rem, 1.4vw, 1.15rem)");
+    expect(styles).toContain("margin-top: clamp(3.75rem, 5.8vw, 5.6rem)");
+    expect(styles).toContain("margin-bottom: clamp(1.25rem, 2vw, 2rem)");
+    expect(styles).toContain(".open-spot-category-marquee-track");
+    expect(styles).toContain("animation: none !important");
+  });
+
   it("uses the compact Lunera-style analytics grid and card visuals", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");

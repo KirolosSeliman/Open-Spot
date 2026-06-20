@@ -373,7 +373,7 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
 function Hero({ t }: { t: TemplateCopy }) {
   return (
     <section
-      className="relative isolate overflow-hidden px-4 pb-10 pt-24 sm:pb-14 sm:pt-28"
+      className="lunera-hero-section relative isolate overflow-hidden px-4 pt-24 sm:pt-28"
       data-lunera-hero
       id="features"
     >
@@ -398,9 +398,11 @@ function Hero({ t }: { t: TemplateCopy }) {
         </p>
       </div>
       <HeroPhoneMockup />
-      <HeroSocialProof label={t.hero.socialProof} />
-      <HeroCtaRow t={t} />
-      <CategoryStrip items={t.hero.categories} />
+      <div className="lunera-hero-lower-content">
+        <HeroSocialProof label={t.hero.socialProof} />
+        <HeroCtaRow t={t} />
+        <CategoryStrip items={t.hero.categories} />
+      </div>
       <HeroCloudBlend />
     </section>
   );

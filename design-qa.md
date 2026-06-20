@@ -157,3 +157,55 @@ Required fidelity surfaces:
 
 Follow-up polish:
 - P3: a photographic device asset could match Lunera's physical realism even more closely, but the prompt explicitly asked to keep the Open Spot phone as an editable React/CSS component.
+
+## Hero Social Proof And Business Marquee Spacing QA - 2026-06-20
+
+final result: passed
+
+Source truth:
+- Prompt requirements: C:\Users\kirol\.codex\attachments\fa79e43b-bb5b-4ce1-8390-6f1a1ed5e024\pasted-text.txt
+
+Implementation screenshots:
+- Desktop: C:\Users\kirol\AppData\Local\Temp\open-spot-hero-spacing-qa-final-v2\desktop-1440.png
+- Tablet: C:\Users\kirol\AppData\Local\Temp\open-spot-hero-spacing-qa-final-v2\tablet-1024.png
+- Mobile: C:\Users\kirol\AppData\Local\Temp\open-spot-hero-spacing-qa-final-v2\mobile-390.png
+
+Viewport and state:
+- Desktop: 1440 x 1200, homepage hero top state.
+- Tablet: 1024 x 1200, homepage hero top state.
+- Mobile: 390 x 1400, homepage hero top state.
+
+Full-view comparison evidence:
+- The visual order is phone, social proof/CTA, business marquee, then the metrics headline section.
+- The social proof block no longer uses negative margins and now sits in a dedicated lower white transition area.
+- Desktop measured gaps: phone to lower content 68px, CTA to marquee 56px, marquee to next section 158px.
+- Tablet measured gaps: phone to lower content 44px, CTA to marquee 60px, marquee to next section 117px.
+- Mobile measured gaps: phone to lower content 43px, CTA to marquee 59px, marquee to next section 128px.
+- Desktop, tablet, and mobile all reported no horizontal overflow.
+
+Focused region comparison evidence:
+- The lower hero area uses a white gradient backing: rgba(255, 255, 255, 0.96) at 58%, which moves reviews and CTA out of the compressed cloud-only feel.
+- The CTA row keeps its existing button styling but now uses a responsive gap and sits after social proof in normal flow.
+- The business marquee remains below the CTA row, uses the existing 38s transform animation, and stays soft gray.
+- prefers-reduced-motion sets the marquee animation to none, wraps the category groups, and hides the duplicate group.
+
+Findings:
+- No actionable P0/P1/P2 findings remain.
+
+Patches made since previous QA pass:
+- Added `lunera-hero-lower-content` around social proof, CTA, and category marquee.
+- Removed negative social-proof margins.
+- Added lower white transition background.
+- Increased hero min-height and lower-area padding.
+- Added responsive mobile spacing so the phone no longer overlaps the social proof block.
+- Adjusted marquee top/bottom spacing.
+
+Required fidelity surfaces:
+- Fonts and typography: unchanged; headline, social proof, CTA, and marquee text retain existing Open Spot/Lunera-style weights.
+- Spacing and layout rhythm: now ordered and airy across desktop, tablet, and mobile.
+- Colors and visual tokens: existing blue, white, gold stars, and soft gray marquee palette preserved.
+- Image quality and asset fidelity: existing real avatar images retained; no generated placeholders or new assets added.
+- Copy/content: product copy unchanged; no backend, auth, SMS, pricing, or API text changed.
+
+Follow-up polish:
+- P3: a taller capture could show the entire desktop CTA and marquee in one frame, but the measured DOM order and gaps confirm the requested hierarchy.
