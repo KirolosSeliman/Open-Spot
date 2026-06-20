@@ -1464,7 +1464,7 @@ select {
   margin-top: 0;
 }
 
-.open-spot-step-card,
+.open-spot-setup-card,
 .open-spot-pricing-card {
   transition:
     border-color 260ms ease,
@@ -1472,7 +1472,7 @@ select {
     transform 260ms ease;
 }
 
-.open-spot-step-card:hover,
+.open-spot-setup-card:hover,
 .open-spot-pricing-card:hover {
   border-color: rgba(52, 120, 255, 0.24);
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.12);
@@ -2130,32 +2130,197 @@ select {
   }
 }
 
-.open-spot-setup-arc {
-  position: relative;
-}
-
-.open-spot-setup-arc::before {
-  background:
-    radial-gradient(ellipse at center bottom, rgba(52, 120, 255, 0.11) 0%, rgba(52, 120, 255, 0.08) 42%, transparent 68%);
-  border-radius: 999px 999px 0 0;
-  bottom: -1.2rem;
-  content: "";
-  height: 13rem;
-  left: 50%;
-  pointer-events: none;
-  position: absolute;
-  transform: translateX(-50%);
-  width: min(58rem, 94vw);
-}
-
-.open-spot-step-card {
+.open-spot-setup-section {
   background: #ffffff;
-  border: 1px solid rgba(226, 232, 240, 0.92);
-  border-radius: 1.5rem;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.08);
-  min-height: 15.5rem;
-  padding: clamp(1.25rem, 2.4vw, 2rem);
+  padding: clamp(4.5rem, 7vw, 6.75rem) 1rem;
+  scroll-margin-top: 7rem;
+}
+
+.open-spot-setup-panel {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.95), transparent 42%),
+    linear-gradient(180deg, #f7fbff 0%, #f4f8ff 100%);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  border-radius: clamp(2rem, 3vw, 3.25rem);
+  box-shadow: 0 24px 90px rgba(37, 99, 235, 0.055);
+  margin-inline: auto;
+  max-width: min(100% - 4rem, 94rem);
+  overflow: hidden;
+  padding: clamp(5.75rem, 7vw, 7.2rem) clamp(4rem, 5.8vw, 5.75rem) clamp(3.5rem, 5vw, 4.5rem);
   position: relative;
+  text-align: center;
+}
+
+.open-spot-setup-pill {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  box-shadow: 0 16px 45px rgba(15, 23, 42, 0.06);
+  color: #3478ff;
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 900;
+  justify-content: center;
+  line-height: 1;
+  min-height: 3.5rem;
+  padding: 0 1.55rem;
+}
+
+.open-spot-setup-title {
+  color: #05070d;
+  font-size: clamp(3.15rem, 3.8vw, 4.05rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 0.98;
+  margin: clamp(2.25rem, 3.1vw, 2.9rem) auto 0;
+  max-width: 70rem;
+}
+
+.open-spot-setup-subtitle {
+  color: #536783;
+  font-size: clamp(1.15rem, 1.45vw, 1.45rem);
+  font-weight: 500;
+  line-height: 1.75;
+  margin: clamp(1.6rem, 2.2vw, 2rem) auto 0;
+  max-width: 60rem;
+}
+
+.open-spot-setup-grid {
+  display: grid;
+  gap: clamp(1.3rem, 1.9vw, 1.6rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: clamp(4rem, 5.7vw, 5.3rem) auto 0;
+  max-width: 82rem;
+  position: relative;
+  z-index: 1;
+}
+
+.open-spot-setup-card {
+  align-items: center;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.92)),
+    radial-gradient(circle at 50% 0%, rgba(52, 120, 255, 0.07), transparent 46%);
+  border: 1px solid rgba(203, 213, 225, 0.58);
+  border-radius: clamp(1.45rem, 2vw, 1.85rem);
+  box-shadow: 0 22px 70px rgba(15, 23, 42, 0.055);
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(18rem, 20vw, 20.9rem);
+  padding: clamp(2.1rem, 2.6vw, 2.85rem) clamp(1.5rem, 2vw, 2rem);
+  position: relative;
+}
+
+.open-spot-setup-card:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 1), rgba(250, 253, 255, 0.98)),
+    radial-gradient(circle at 50% 0%, rgba(52, 120, 255, 0.1), transparent 50%);
+  border-color: rgba(59, 130, 246, 0.2);
+  box-shadow:
+    0 28px 90px rgba(37, 99, 235, 0.1),
+    0 14px 45px rgba(15, 23, 42, 0.07);
+  transform: translateY(-6px) scale(1.01);
+}
+
+.open-spot-setup-icon {
+  align-items: center;
+  background: #eaf2ff;
+  border-radius: 999px;
+  color: #3478ff;
+  display: flex;
+  height: clamp(5.3rem, 6vw, 5.75rem);
+  justify-content: center;
+  margin-bottom: clamp(1.55rem, 2.4vw, 2.05rem);
+  transition:
+    background-color 260ms ease,
+    box-shadow 260ms ease,
+    transform 260ms ease;
+  width: clamp(5.3rem, 6vw, 5.75rem);
+}
+
+.open-spot-setup-icon svg {
+  height: 2.35rem;
+  width: 2.35rem;
+}
+
+.open-spot-setup-card:hover .open-spot-setup-icon {
+  background: #e3efff;
+  box-shadow: 0 16px 38px rgba(52, 120, 255, 0.18);
+  transform: translateY(-2px);
+}
+
+.open-spot-setup-card-title {
+  color: #05070d;
+  font-size: clamp(1.15rem, 1.45vw, 1.45rem);
+  font-weight: 950;
+  line-height: 1.18;
+  margin: 0;
+}
+
+.open-spot-setup-card-copy {
+  color: #40516c;
+  font-size: clamp(1rem, 1.16vw, 1.12rem);
+  font-weight: 500;
+  line-height: 1.65;
+  margin: clamp(1.45rem, 1.8vw, 1.75rem) auto 0;
+  max-width: 15.5rem;
+}
+
+@media (max-width: 1100px) {
+  .open-spot-setup-panel {
+    max-width: min(100% - 2rem, 58rem);
+    padding: clamp(4.75rem, 8vw, 6rem) clamp(2rem, 5vw, 3rem) clamp(3rem, 5vw, 4rem);
+  }
+
+  .open-spot-setup-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 44rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .open-spot-setup-section {
+    padding: 3.5rem 0.75rem;
+  }
+
+  .open-spot-setup-panel {
+    border-radius: 2rem;
+    max-width: 100%;
+    padding: 3.75rem 1.25rem 1.5rem;
+  }
+
+  .open-spot-setup-pill {
+    font-size: 0.9rem;
+    min-height: 3rem;
+    padding: 0 1.15rem;
+  }
+
+  .open-spot-setup-title {
+    font-size: clamp(2.35rem, 11vw, 3.1rem);
+    line-height: 1.04;
+    margin-top: 1.8rem;
+  }
+
+  .open-spot-setup-subtitle {
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-top: 1.3rem;
+  }
+
+  .open-spot-setup-grid {
+    gap: 1rem;
+    grid-template-columns: 1fr;
+    margin-top: 2.75rem;
+  }
+
+  .open-spot-setup-card {
+    min-height: 16.5rem;
+    padding: 2rem 1.35rem;
+  }
+
+  .open-spot-setup-card-copy {
+    max-width: 17.5rem;
+  }
 }
 
 @keyframes lunera-float {
@@ -2470,6 +2635,9 @@ select {
   .open-spot-dashboard-card,
   .open-spot-dashboard-card:hover,
   .open-spot-dashboard-card:hover .open-spot-dashboard-visual,
+  .open-spot-setup-card,
+  .open-spot-setup-card:hover,
+  .open-spot-setup-card:hover .open-spot-setup-icon,
   .open-spot-how-card,
   .open-spot-how-card:hover,
   .open-spot-how-card:hover .open-spot-how-mockup {
@@ -2972,7 +3140,7 @@ select {
   }
 
   .open-spot-dashboard-card,
-  .open-spot-step-card,
+  .open-spot-setup-card,
   .open-spot-pricing-card,
   .lunera-card {
     max-width: calc(100vw - 2rem);

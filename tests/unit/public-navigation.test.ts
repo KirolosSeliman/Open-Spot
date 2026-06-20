@@ -171,7 +171,7 @@ describe("public navigation", () => {
     expect(homepage).toContain("Spas");
     expect(homepage).toContain("Nail Studios");
     expect(homepage).toContain("Keep your booking system.");
-    expect(homepage).toContain("Fill the empty spots.");
+    expect(homepage).toContain("Recover the empty spots.");
     expect(homepage).toContain("From cancellation");
     expect(homepage).toContain("to confirmation");
     expect(homepage).toContain("Non-disruptive cancellation recovery");
@@ -182,8 +182,8 @@ describe("public navigation", () => {
     expect(styles).toContain(".lunera-phone-depth-layer");
     expect(styles).toContain(".lunera-hero-cloud-blend");
     expect(styles).toContain(".open-spot-dashboard-card");
-    expect(styles).toContain(".open-spot-setup-arc");
-    expect(styles).toContain(".open-spot-step-card");
+    expect(styles).toContain(".open-spot-setup-panel");
+    expect(styles).toContain(".open-spot-setup-card");
     expect(styles).toContain("width: clamp(310px, 22.5vw, 385px)");
     expect(styles).toContain("rotateY(-5.5deg)");
     expect(styles).toContain("rotateZ(1.15deg)");
@@ -219,6 +219,74 @@ describe("public navigation", () => {
     expect(phone).toContain("View all replies");
     expect(styles).toContain(".lunera-phone-screen-overlay");
     expect(styles).toContain("transform-origin: center center");
+  });
+
+  it("replaces the setup workflow steps with the premium booking-system trust section", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const setupCopy = homepage.slice(
+      homepage.indexOf("setup: {"),
+      homepage.indexOf("how: {")
+    );
+    const setupSection = homepage.slice(
+      homepage.indexOf("function SetupSection("),
+      homepage.indexOf("function HowItWorks(")
+    );
+    const forbiddenSetupTerms = [
+      "Fill the empty spots.",
+      "Open Spot adds a simple SMS recovery layer",
+      "steps:",
+      "Spot opens",
+      "SMS sent to waitlist",
+      "Replies ranked",
+      "You confirm manually",
+      "{index + 1}",
+      "workflow step",
+      "step 1",
+      "step 2",
+      "step 3",
+      "step 4",
+      "confirmed automatically",
+      "automatically confirmed",
+      "first reply confirmed"
+    ];
+
+    expect(setupCopy).toContain('tag: "Simple setup"');
+    expect(setupCopy).toContain('"Keep your booking system."');
+    expect(setupCopy).toContain('"Recover the empty spots."');
+    expect(setupCopy).toContain(
+      "Open Spot works around your existing appointment workflow, so your team can fill last-minute cancellations without changing how clients already book."
+    );
+    expect(setupCopy).toContain("No migration needed");
+    expect(setupCopy).toContain("Built for cancellations");
+    expect(setupCopy).toContain("Clients reply by SMS");
+    expect(setupCopy).toContain("You stay in control");
+    expect(setupCopy).toContain("Keep using your current booking system. Open Spot only helps when a spot opens.");
+    expect(setupCopy).toContain("Launch a targeted SMS alert when you have an empty appointment to fill.");
+    expect(setupCopy).toContain("Interested clients answer directly from their phone. No app download required.");
+    expect(setupCopy).toContain("Review the replies and manually choose who gets confirmed.");
+
+    for (const term of forbiddenSetupTerms) {
+      expect(setupCopy).not.toContain(term);
+      expect(setupSection).not.toContain(term);
+    }
+
+    expect(setupSection).toContain("open-spot-setup-section");
+    expect(setupSection).toContain("open-spot-setup-panel");
+    expect(setupSection).toContain("open-spot-setup-grid");
+    expect(setupSection).toContain("open-spot-setup-card");
+    expect(setupSection).toContain("open-spot-setup-icon");
+    expect(setupSection).toContain("<SetupIcon");
+    expect(styles).toContain(".open-spot-setup-panel");
+    expect(styles).toContain("max-width: min(100% - 4rem, 94rem)");
+    expect(styles).toContain("border-radius: clamp(2rem, 3vw, 3.25rem)");
+    expect(styles).toContain("padding: clamp(5.75rem, 7vw, 7.2rem) clamp(4rem, 5.8vw, 5.75rem) clamp(3.5rem, 5vw, 4.5rem)");
+    expect(styles).toContain(".open-spot-setup-grid");
+    expect(styles).toContain("grid-template-columns: repeat(4, minmax(0, 1fr))");
+    expect(styles).toContain(".open-spot-setup-card:hover");
+    expect(styles).toContain("transform: translateY(-6px) scale(1.01)");
+    expect(styles).toContain("0 28px 90px rgba(37, 99, 235, 0.1)");
+    expect(styles).toContain(".open-spot-setup-card:hover .open-spot-setup-icon");
   });
 
   it("keeps hero social proof, CTA, and business marquee in an airy lower white flow", () => {

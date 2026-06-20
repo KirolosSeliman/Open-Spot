@@ -209,3 +209,57 @@ Required fidelity surfaces:
 
 Follow-up polish:
 - P3: a taller capture could show the entire desktop CTA and marquee in one frame, but the measured DOM order and gaps confirm the requested hierarchy.
+
+## Premium Booking-System Setup Section QA - 2026-06-20
+
+final result: passed
+
+Source truth:
+- Prompt requirements: C:\Users\kirol\.codex\attachments\1b5ea75b-90ae-4037-814e-de073a84092a\pasted-text.txt
+- Reference image: C:\Users\kirol\AppData\Local\Temp\codex-clipboard-801e97a3-bdd5-4acd-8bbb-685e0eb2104e.png
+
+Implementation screenshots:
+- Desktop inspection screenshot: C:\Users\kirol\AppData\Local\Temp\open-spot-setup-qa-final\desktop-1680.png
+- Tablet inspection screenshot: C:\Users\kirol\AppData\Local\Temp\open-spot-setup-qa-final\tablet-1024.png
+- Mobile inspection screenshot: C:\Users\kirol\AppData\Local\Temp\open-spot-setup-qa-final\mobile-390.png
+
+Viewport and state:
+- Desktop: 1680 x 950, setup section scrolled into view.
+- Tablet: 1024 x 900, setup section scrolled into view.
+- Mobile: 390 x 900, setup section scrolled into view.
+
+Full-view comparison evidence:
+- The old numbered setup workflow was replaced with a trust/objection-handling panel.
+- The section now uses the exact heading pair: "Keep your booking system." and "Recover the empty spots."
+- The subtitle now states that Open Spot works around the existing appointment workflow and does not change how clients already book.
+- Four premium cards are rendered: No migration needed, Built for cancellations, Clients reply by SMS, You stay in control.
+- Cards use blue icon circles, white surfaces, rounded corners, subtle border/shadow, and centered copy.
+- Desktop headline wrapping was manually caught as too tall in the first inspection pass and corrected by widening/reducing the setup title scale.
+- The section now includes scroll margin so the floating navbar does not hide the pill when the section is navigated into view.
+
+Focused region comparison evidence:
+- Desktop grid CSS is fixed at four equal columns: repeat(4, minmax(0, 1fr)).
+- Tablet CSS collapses to two columns at max-width 1100px.
+- Mobile CSS collapses to one column at max-width 640px.
+- Source guards confirm the old setup workflow terms are absent from both setup copy and the SetupSection renderer.
+- Reduced-motion mode disables transform movement for the new setup card hover state.
+
+Findings:
+- No actionable P0/P1/P2 findings remain.
+
+Patches made in this QA pass:
+- Replaced `setup.steps` with explicit premium setup cards.
+- Rebuilt `SetupSection` around `open-spot-setup-section`, `open-spot-setup-panel`, `open-spot-setup-grid`, `open-spot-setup-card`, and `open-spot-setup-icon`.
+- Added inline editable SVG setup icons because the project has no icon library dependency.
+- Replaced legacy setup arc/step-card CSS with the new panel, typography, card, responsive, hover, and reduced-motion styles.
+- Added a focused unit test that blocks the old workflow copy and verifies the new section contract.
+
+Required fidelity surfaces:
+- Fonts and typography: headline weight, centered copy, and line-height tuned to the reference while respecting the project's existing type system.
+- Spacing and layout rhythm: large rounded panel, generous top copy spacing, and four-card desktop row match the reference structure.
+- Colors and visual tokens: Open Spot blue/white palette preserved with pale-blue icon wells and soft blue panel background.
+- Image quality and asset fidelity: icons are vector SVGs in the component, not raster placeholders.
+- Copy/content: no automatic confirmation claim, no first-reply confirmation language, no backend/auth/SMS/API/pricing text changed.
+
+Follow-up polish:
+- P3: Chrome/Playwright automation produced screenshots but timed out before returning full DOM metrics after the final title-width tweak; the final source/test checks guard the corrected layout values.

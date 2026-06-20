@@ -48,10 +48,31 @@ const openSpotCopy = {
   },
   setup: {
     tag: "Simple setup",
-    title: ["Keep your booking system.", "Fill the empty spots."],
+    title: ["Keep your booking system.", "Recover the empty spots."],
     subtitle:
-      "Open Spot adds a simple SMS recovery layer to your existing appointment workflow, so your team can fill cancellations without changing how they already book clients.",
-    steps: ["Spot opens", "SMS sent to waitlist", "Replies ranked", "You confirm manually"]
+      "Open Spot works around your existing appointment workflow, so your team can fill last-minute cancellations without changing how clients already book.",
+    cards: [
+      {
+        icon: "calendar",
+        title: "No migration needed",
+        text: "Keep using your current booking system. Open Spot only helps when a spot opens."
+      },
+      {
+        icon: "bell",
+        title: "Built for cancellations",
+        text: "Launch a targeted SMS alert when you have an empty appointment to fill."
+      },
+      {
+        icon: "message",
+        title: "Clients reply by SMS",
+        text: "Interested clients answer directly from their phone. No app download required."
+      },
+      {
+        icon: "shield",
+        title: "You stay in control",
+        text: "Review the replies and manually choose who gets confirmed."
+      }
+    ]
   },
   how: {
     tag: "How It Works",
@@ -690,40 +711,82 @@ function FilledSpotsVisual() {
   );
 }
 
+function SetupIcon({ icon }: { icon: string }) {
+  switch (icon) {
+    case "calendar":
+      return (
+        <svg aria-hidden="true" fill="none" viewBox="0 0 32 32">
+          <rect height="22" rx="3.5" stroke="currentColor" strokeWidth="2.6" width="22" x="5" y="6.5" />
+          <path d="M10.5 4.5v5M21.5 4.5v5M5.5 13h21" stroke="currentColor" strokeLinecap="round" strokeWidth="2.6" />
+          <path d="M11 18h3M18 18h3M11 23h3M18 23h3" stroke="currentColor" strokeLinecap="round" strokeWidth="2.6" />
+        </svg>
+      );
+    case "bell":
+      return (
+        <svg aria-hidden="true" fill="none" viewBox="0 0 32 32">
+          <path
+            d="M9 22.5h14l-1.3-2.4a6.7 6.7 0 0 1-.8-3.2v-3.2a4.9 4.9 0 0 0-9.8 0v3.2c0 1.1-.3 2.2-.8 3.2L9 22.5Z"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2.6"
+          />
+          <path d="M13.7 25.2a2.6 2.6 0 0 0 4.6 0" stroke="currentColor" strokeLinecap="round" strokeWidth="2.6" />
+        </svg>
+      );
+    case "message":
+      return (
+        <svg aria-hidden="true" fill="none" viewBox="0 0 32 32">
+          <path
+            d="M7 15.7c0-5 4.1-8.7 9.1-8.7s8.9 3.7 8.9 8.5-4 8.4-9 8.4c-1.2 0-2.4-.2-3.4-.7L8 25l1.3-4A8.1 8.1 0 0 1 7 15.7Z"
+            stroke="currentColor"
+            strokeLinejoin="round"
+            strokeWidth="2.6"
+          />
+          <path d="M12.4 15.8h.1M16 15.8h.1M19.6 15.8h.1" stroke="currentColor" strokeLinecap="round" strokeWidth="3.4" />
+        </svg>
+      );
+    case "shield":
+    default:
+      return (
+        <svg aria-hidden="true" fill="none" viewBox="0 0 32 32">
+          <path
+            d="M16 4.5 25 8v7.1c0 5.8-3.6 10.2-9 12.4-5.4-2.2-9-6.6-9-12.4V8l9-3.5Z"
+            stroke="currentColor"
+            strokeLinejoin="round"
+            strokeWidth="2.6"
+          />
+          <path d="m12.2 15.9 2.5 2.5 5.4-5.6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.6" />
+        </svg>
+      );
+  }
+}
+
 function SetupSection({ t }: { t: TemplateCopy }) {
   return (
-    <section className="bg-white px-4 py-12 sm:py-20">
-      <div className="mx-auto max-w-[72rem] rounded-[2.25rem] bg-[#f8fbff] px-5 py-16 text-center sm:px-10 sm:py-20">
-        <span className="lunera-pill" data-lunera-reveal>
+    <section className="open-spot-setup-section">
+      <div className="open-spot-setup-panel">
+        <span className="open-spot-setup-pill" data-lunera-reveal>
           {t.setup.tag}
         </span>
-        <h2
-          className="mx-auto mt-6 max-w-[48rem] text-4xl font-black leading-[1.02] text-[#05070a] sm:text-5xl"
-          data-lunera-reveal
-        >
+        <h2 className="open-spot-setup-title" data-lunera-reveal>
           {t.setup.title.map((line) => (
             <span className="block" key={line}>
               {line}
             </span>
           ))}
         </h2>
-        <p
-          className="mx-auto mt-6 max-w-[44rem] text-base font-medium leading-7 text-slate-500"
-          data-lunera-reveal
-        >
+        <p className="open-spot-setup-subtitle" data-lunera-reveal>
           {t.setup.subtitle}
         </p>
-        <div className="open-spot-setup-arc mx-auto mt-14 grid max-w-[60rem] gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {t.setup.steps.map((step, index) => (
-            <article
-              className="relative z-10 rounded-[1.25rem] border border-slate-100 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.07)] transition duration-300 ease-out hover:-translate-y-2 hover:border-blue-200 hover:shadow-[0_24px_70px_rgba(52,120,255,0.16)]"
-              data-lunera-reveal
-              key={step}
-            >
-              <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-[#edf5ff] text-lg font-black text-[#3478ff]">
-                {index + 1}
+        <div className="open-spot-setup-grid">
+          {t.setup.cards.map((card) => (
+            <article className="open-spot-setup-card" data-lunera-reveal key={card.title}>
+              <div className="open-spot-setup-icon">
+                <SetupIcon icon={card.icon} />
               </div>
-              <p className="mt-4 text-sm font-black leading-5 text-[#111827]">{step}</p>
+              <h3 className="open-spot-setup-card-title">{card.title}</h3>
+              <p className="open-spot-setup-card-copy">{card.text}</p>
             </article>
           ))}
         </div>
