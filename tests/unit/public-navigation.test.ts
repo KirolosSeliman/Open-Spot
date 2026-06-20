@@ -143,7 +143,7 @@ describe("public navigation", () => {
       "<MetricsSection",
       "<SetupSection",
       "<HowItWorks",
-      "<WorkflowPreview",
+      "<RevenueCalculatorSection",
       "<Pricing",
       "<Testimonials",
       "<Faq",
@@ -174,7 +174,9 @@ describe("public navigation", () => {
     expect(homepage).toContain("Recover the empty spots.");
     expect(homepage).toContain("From cancellation");
     expect(homepage).toContain("to confirmation");
-    expect(homepage).toContain("Non-disruptive cancellation recovery");
+    expect(homepage).toContain("See what empty spots");
+    expect(homepage).toContain("are costing you.");
+    expect(homepage).not.toContain("Non-disruptive cancellation recovery");
     expect(homepage).toContain("What local teams say about Open Spot.");
     expect(homepage).toContain("Ready to recover your next cancellation?");
     expect(homepage).toContain("SMS consent");
@@ -534,7 +536,7 @@ describe("public navigation", () => {
     );
     const stepMiniUi = homepage.slice(
       homepage.indexOf("function StepMiniUi("),
-      homepage.indexOf("function WorkflowPreview(")
+      homepage.indexOf("function RevenueCalculatorSection(")
     );
 
     expect(homepage).toContain('"to confirmation—"');
@@ -563,6 +565,122 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-how-card:hover");
     expect(styles).toContain("0 28px 90px rgba(37, 99, 235, 0.12)");
     expect(styles).toContain(".open-spot-how-card:hover .open-spot-how-mockup");
+  });
+
+  it("replaces the workflow preview with an interactive premium revenue calculator", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
+    const calculatorSection = homepage.slice(
+      homepage.indexOf("function RevenueCalculatorSection("),
+      homepage.indexOf("function Pricing(")
+    );
+    const forbiddenCalculatorTerms = [
+      "Workflow",
+      "Non-disruptive cancellation recovery",
+      "Open Spot queue",
+      "New cancellation",
+      "Sarah M.",
+      "Mike R.",
+      "Jessica T.",
+      "Consent-based SMS alerts",
+      "Ranked reply queue for review",
+      "Manual confirmation before any appointment is filled",
+      "Works with your existing workflow",
+      "No booking system migration",
+      "My Cards",
+      "Apple Store",
+      "Spotify",
+      "Secure payment",
+      "Entertainment Spending",
+      "New Sales from App Store",
+      "Credit card",
+      "Budgeting",
+      "Investment",
+      "Download App",
+      "40K+ users worldwide",
+      "automatically confirmed",
+      "auto-confirmed",
+      "first reply confirmed",
+      "first client gets the appointment",
+      "confirmed without review"
+    ];
+
+    expect(mainMarkup).toContain("<RevenueCalculatorSection");
+    expect(mainMarkup).not.toContain("<WorkflowPreview");
+    expect(homepage).not.toContain("function WorkflowPreview(");
+    expect(homepage).not.toContain("workflow: {");
+    expect(homepage).not.toContain("Consent-based SMS alerts");
+    expect(homepage).not.toContain("Ranked reply queue for review");
+    expect(homepage).not.toContain("Manual confirmation before any appointment is filled");
+    expect(calculatorSection).toContain("useState(85)");
+    expect(calculatorSection).toContain("useState(6)");
+    expect(calculatorSection).toContain("useState(40)");
+    expect(calculatorSection).toContain("averageServiceCost * lastMinuteSpots * 4");
+    expect(calculatorSection).toContain("monthlyRevenueAtRisk * recoveryEstimate / 100");
+    expect(calculatorSection).toContain("formatRevenueCurrency");
+    expect(calculatorSection).toContain("SliderControl");
+    expect(calculatorSection).toContain("MiniLineChart");
+    expect(calculatorSection).toContain("ResultMetricCard");
+    expect(calculatorSection).toContain("MiniStatItem");
+    expect(calculatorSection).toContain("Revenue calculator");
+    expect(calculatorSection).toContain("See what empty spots");
+    expect(calculatorSection).toContain("are costing you.");
+    expect(calculatorSection).toContain("Enter your average service price and the number of last-minute cancellations you usually lose. Open Spot estimates the revenue at risk and what you could recover.");
+    expect(calculatorSection).toContain("Average service cost");
+    expect(calculatorSection).toContain("Last-minute spots lost per week");
+    expect(calculatorSection).toContain("Recovery estimate");
+    expect(calculatorSection).toContain("Based on a");
+    expect(calculatorSection).toContain("recovery estimate");
+    expect(calculatorSection).toContain("Monthly revenue at risk");
+    expect(calculatorSection).toContain("Recovered with Open Spot");
+    expect(calculatorSection).toContain("Average service");
+    expect(calculatorSection).toContain("Open spots / week");
+    expect(calculatorSection).toContain("Manual confirmation");
+    expect(calculatorSection).toContain("stays in your control");
+    expect(calculatorSection).toContain('min={25}');
+    expect(calculatorSection).toContain('max={200}');
+    expect(calculatorSection).toContain('step={5}');
+    expect(calculatorSection).toContain('min={1}');
+    expect(calculatorSection).toContain('max={20}');
+    expect(calculatorSection).toContain('min={10}');
+    expect(calculatorSection).toContain('max={60}');
+    expect(calculatorSection).toContain('"$25"');
+    expect(calculatorSection).toContain('"$50"');
+    expect(calculatorSection).toContain('"$100"');
+    expect(calculatorSection).toContain('"$150"');
+    expect(calculatorSection).toContain('"$200"');
+    expect(calculatorSection).toContain('"10%"');
+    expect(calculatorSection).toContain('"20%"');
+    expect(calculatorSection).toContain('"30%"');
+    expect(calculatorSection).toContain('"40%"');
+    expect(calculatorSection).toContain('"50%"');
+    expect(calculatorSection).toContain('"60%"');
+    expect(calculatorSection).toContain('"--slider-progress"');
+    expect(calculatorSection).toContain('type="range"');
+    expect(calculatorSection).toContain("aria-label");
+    expect(calculatorSection).toContain('aria-live="polite"');
+
+    for (const term of forbiddenCalculatorTerms) {
+      expect(calculatorSection).not.toContain(term);
+    }
+
+    expect(styles).toContain(".open-spot-revenue-section");
+    expect(styles).toContain(".open-spot-revenue-shell");
+    expect(styles).toContain("max-width: min(calc(100% - 48px), 1520px)");
+    expect(styles).toContain("border-radius: clamp(2.75rem, 3.4vw, 3.5rem)");
+    expect(styles).toContain("linear-gradient(180deg, rgba(248, 251, 255, 1) 0%, rgba(241, 247, 255, 0.92) 100%)");
+    expect(styles).toContain(".open-spot-revenue-card");
+    expect(styles).toContain("grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr)");
+    expect(styles).toContain(".revenue-calculator-range");
+    expect(styles).toContain("height: 0.5rem");
+    expect(styles).toContain("height: 2rem");
+    expect(styles).toContain("width: 2rem");
+    expect(styles).toContain(".open-spot-revenue-card:hover");
+    expect(styles).toContain("transform: translateY(-4px)");
+    expect(styles).toContain(".open-spot-result-card:hover");
+    expect(styles).toContain("transform: translateY(-2px)");
+    expect(styles).toContain("@media (max-width: 767px)");
   });
 
   it("keeps the mobile sign-in CTA inside the floating navbar", () => {

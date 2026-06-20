@@ -95,12 +95,6 @@ const openSpotCopy = {
       }
     ]
   },
-  workflow: {
-    tag: "Workflow",
-    title: "Non-disruptive cancellation recovery",
-    text:
-      "Open Spot works beside your booking system. You send SMS alerts, review replies, and manually confirm the best client."
-  },
   pricing: {
     tag: "Pricing",
     title: "Simple pricing for appointment teams.",
@@ -386,7 +380,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
         <MetricsSection t={t} />
         <SetupSection t={t} />
         <HowItWorks t={t} />
-        <WorkflowPreview t={t} />
+        <RevenueCalculatorSection />
         <Pricing t={t} />
         <Testimonials t={t} />
         <Faq t={t} />
@@ -1019,68 +1013,302 @@ function StepMiniUi({ index }: { index: number }) {
   );
 }
 
-function WorkflowPreview({ t }: { t: TemplateCopy }) {
+function RevenueCalculatorSection() {
+  const [averageServiceCost, setAverageServiceCost] = useState(85);
+  const [lastMinuteSpots, setLastMinuteSpots] = useState(6);
+  const [recoveryEstimate, setRecoveryEstimate] = useState(40);
+  const monthlyRevenueAtRisk = averageServiceCost * lastMinuteSpots * 4;
+  const recoveredWithOpenSpot = Math.round(monthlyRevenueAtRisk * recoveryEstimate / 100);
+
   return (
-    <section className="bg-white px-4 py-20 sm:py-28">
-      <div className="mx-auto grid max-w-[72rem] items-center gap-10 lg:grid-cols-[0.9fr_1.1fr]">
-        <div data-lunera-reveal>
-          <span className="lunera-pill">{t.workflow.tag}</span>
-          <h2 className="mt-7 max-w-[33rem] text-4xl font-black leading-[1.04] text-[#05070a] sm:text-5xl">
-            {t.workflow.title}
+    <section className="open-spot-revenue-section" id="revenue-calculator">
+      <div className="open-spot-revenue-shell" data-lunera-reveal>
+        <div className="open-spot-revenue-heading">
+          <span className="open-spot-calculator-pill">
+            <CalculatorIcon />
+            Revenue calculator
+          </span>
+          <h2 className="open-spot-revenue-title">
+            <span>See what empty spots</span>
+            <span>are costing you.</span>
           </h2>
-          <p className="mt-5 max-w-[34rem] text-base font-medium leading-7 text-slate-500">
-            {t.workflow.text}
+          <p className="open-spot-revenue-subtitle">
+            Enter your average service price and the number of last-minute cancellations you usually lose. Open Spot estimates the revenue at risk and what you could recover.
           </p>
-          <div className="mt-8 grid gap-3 text-sm font-bold text-slate-600">
-            <p>Consent-based SMS alerts</p>
-            <p>Ranked reply queue for review</p>
-            <p>Manual confirmation before any appointment is filled</p>
-          </div>
         </div>
-        <div className="relative" data-lunera-reveal>
-          <div className="rounded-[2rem] border border-slate-100 bg-[#f8fbff] p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-8">
-            <div className="rounded-[1.5rem] bg-white p-5 shadow-[0_16px_45px_rgba(15,23,42,0.07)]">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                <div>
-                  <p className="text-xs font-black uppercase text-[#3478ff]">Open Spot queue</p>
-                  <p className="mt-1 text-xl font-black text-[#05070a]">New cancellation</p>
-                </div>
-                <span className="rounded-full bg-[#ecfdf3] px-3 py-1 text-xs font-black text-[#22c55e]">
-                  7 replies
-                </span>
-              </div>
-              <div className="mt-5 grid gap-3">
-                {["Sarah M.", "Mike R.", "Jessica T."].map((name, index) => (
-                  <div
-                    className="flex items-center gap-3 rounded-[1rem] border border-slate-100 p-4"
-                    key={name}
-                  >
-                    <span className="grid h-10 w-10 place-items-center rounded-full bg-[#eef4ff] text-xs font-black text-[#3478ff]">
-                      {name.slice(0, 1)}
-                    </span>
-                    <div className="flex-1">
-                      <p className="text-sm font-black text-slate-800">{name}</p>
-                      <p className="text-xs font-bold text-slate-400">
-                        {index === 0 ? "Best match" : index === 1 ? "90% match" : "80% match"}
-                      </p>
-                    </div>
-                    <button
-                      className="rounded-full bg-black px-3 py-1 text-xs font-black text-white"
-                      type="button"
-                    >
-                      Review
-                    </button>
-                  </div>
-                ))}
-              </div>
+
+        <div className="open-spot-revenue-card">
+          <div className="open-spot-revenue-controls">
+            <SliderControl
+              ariaLabel="Average service cost"
+              displayValue={formatRevenueCurrency(averageServiceCost)}
+              label="Average service cost"
+              max={200}
+              min={25}
+              onChange={setAverageServiceCost}
+              step={5}
+              ticks={["$25", "$50", "$100", "$150", "$200"]}
+              value={averageServiceCost}
+            />
+            <SliderControl
+              ariaLabel="Last-minute spots lost per week"
+              displayValue={String(lastMinuteSpots)}
+              label="Last-minute spots lost per week"
+              max={20}
+              min={1}
+              onChange={setLastMinuteSpots}
+              step={1}
+              ticks={["1", "5", "10", "15", "20"]}
+              value={lastMinuteSpots}
+            />
+            <SliderControl
+              ariaLabel="Recovery estimate"
+              displayValue={`${recoveryEstimate}%`}
+              label="Recovery estimate"
+              max={60}
+              min={10}
+              onChange={setRecoveryEstimate}
+              step={5}
+              ticks={["10%", "20%", "30%", "40%", "50%", "60%"]}
+              value={recoveryEstimate}
+            />
+
+            <div className="open-spot-revenue-note">
+              <InfoIcon />
+              <p>
+                Based on a <strong>{recoveryEstimate}%</strong> recovery estimate
+              </p>
             </div>
           </div>
-          <div className="absolute -right-3 top-8 hidden rounded-full bg-black px-4 py-2 text-xs font-black text-white shadow-[0_18px_45px_rgba(0,0,0,0.18)] sm:block">
-            You stay in control
+
+          <div className="open-spot-revenue-results">
+            <ResultMetricCard
+              label="Monthly revenue at risk"
+              value={formatRevenueCurrency(monthlyRevenueAtRisk)}
+              visual={<MiniLineChart />}
+            />
+
+            <ResultMetricCard
+              accent
+              badge={`${recoveryEstimate}% recovery estimate`}
+              label="Recovered with Open Spot"
+              value={formatRevenueCurrency(recoveredWithOpenSpot)}
+              valueSuffix="/ month"
+            />
+
+            <div className="open-spot-revenue-stats">
+              <MiniStatItem
+                icon={<DollarIcon />}
+                label="Average service"
+                value={formatRevenueCurrency(averageServiceCost)}
+              />
+              <MiniStatItem
+                icon={<CalendarIcon />}
+                label="Open spots / week"
+                value={String(lastMinuteSpots)}
+              />
+              <MiniStatItem
+                icon={<ShieldIcon />}
+                label="Manual confirmation"
+                value="stays in your control"
+              />
+            </div>
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function SliderControl({
+  ariaLabel,
+  displayValue,
+  label,
+  max,
+  min,
+  onChange,
+  step,
+  ticks,
+  value
+}: {
+  ariaLabel?: string;
+  displayValue: string;
+  label: string;
+  max: number;
+  min: number;
+  onChange: (value: number) => void;
+  step: number;
+  ticks: string[];
+  value: number;
+}) {
+  const sliderProgress = ((value - min) / (max - min)) * 100;
+  const sliderStyle = { "--slider-progress": `${sliderProgress}%` } as CSSProperties;
+
+  return (
+    <div className="open-spot-slider-control">
+      <div className="open-spot-slider-label-row">
+        <p className="open-spot-slider-label">
+          {label}
+        </p>
+        <span className="open-spot-slider-value" aria-live="polite">
+          {displayValue}
+        </span>
+      </div>
+      <input
+        aria-label={ariaLabel ?? label}
+        className="revenue-calculator-range"
+        max={max}
+        min={min}
+        onChange={(event) => onChange(Number(event.target.value))}
+        step={step}
+        style={sliderStyle}
+        type="range"
+        value={value}
+      />
+      <div className="open-spot-slider-ticks" aria-hidden="true">
+        {ticks.map((tick) => (
+          <span key={tick}>{tick}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ResultMetricCard({
+  accent = false,
+  badge,
+  label,
+  value,
+  valueSuffix,
+  visual
+}: {
+  accent?: boolean;
+  badge?: string;
+  label: string;
+  value: string;
+  valueSuffix?: string;
+  visual?: ReactNode;
+}) {
+  return (
+    <article className={cn("open-spot-result-card", accent && "is-accent")}>
+      <div>
+        <p className="open-spot-result-label">{label}</p>
+        <p className="open-spot-result-value" aria-live="polite">
+          {value}
+          {valueSuffix ? <span>{valueSuffix}</span> : null}
+        </p>
+      </div>
+      {badge ? (
+        <span className="open-spot-recovery-badge">
+          <TrendingIcon />
+          {badge}
+        </span>
+      ) : null}
+      {visual ? <div className="open-spot-result-visual">{visual}</div> : null}
+    </article>
+  );
+}
+
+function MiniLineChart() {
+  return (
+    <svg aria-hidden="true" className="open-spot-calculator-chart" fill="none" viewBox="0 0 160 96">
+      <path d="M0 66 H160" stroke="#dbe7f8" strokeDasharray="4 7" />
+      <path d="M0 88 H160" stroke="#edf3fb" />
+      <path
+        d="M2 72 C18 62 27 51 43 56 C63 63 72 49 85 43 C100 36 110 46 122 37 C135 28 140 18 158 16"
+        fill="url(#open-spot-chart-fill)"
+      />
+      <path
+        d="M2 72 C18 62 27 51 43 56 C63 63 72 49 85 43 C100 36 110 46 122 37 C135 28 140 18 158 16"
+        stroke="#3478ff"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="4"
+      />
+      <defs>
+        <linearGradient id="open-spot-chart-fill" x1="80" x2="80" y1="16" y2="96">
+          <stop stopColor="#3478ff" stopOpacity="0.16" />
+          <stop offset="1" stopColor="#3478ff" stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+}
+
+function MiniStatItem({
+  icon,
+  label,
+  value
+}: {
+  icon: ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="open-spot-revenue-stat">
+      <span className="open-spot-revenue-stat-icon">{icon}</span>
+      <div>
+        <p>{label}</p>
+        <span>{value}</span>
+      </div>
+    </div>
+  );
+}
+
+function formatRevenueCurrency(value: number) {
+  return `$${Math.round(value).toLocaleString("en-CA")}`;
+}
+
+function CalculatorIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <rect height="16" rx="3" stroke="currentColor" strokeWidth="2" width="14" x="5" y="4" />
+      <path d="M9 8h6M9 12h2M13 12h2M9 16h2M13 16h2" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+      <path d="M12 11v6M12 7.5v.01" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function TrendingIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="M4 15.5l5-5 4 4 7-7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+      <path d="M15 7.5h5v5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function DollarIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="M12 3v18M16 7.5c-.9-1-2.3-1.5-4-1.5-2.1 0-3.5 1-3.5 2.6 0 4 7 1.8 7 5.6 0 1.6-1.4 2.8-3.7 2.8-1.7 0-3.3-.6-4.4-1.8" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <rect height="15" rx="3" stroke="currentColor" strokeWidth="2" width="16" x="4" y="5" />
+      <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function ShieldIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="M12 3.5l7 2.7v5.4c0 4.4-2.8 7.2-7 8.9-4.2-1.7-7-4.5-7-8.9V6.2l7-2.7z" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
+      <path d="M8.8 12.1l2.1 2.1 4.4-4.7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+    </svg>
   );
 }
 

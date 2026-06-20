@@ -2,6 +2,46 @@
 
 final result: passed
 
+## Revenue Calculator Section QA - 2026-06-20
+
+final result: blocked
+
+Source visual truth:
+- C:\Users\kirol\AppData\Local\Temp\codex-clipboard-833cb46a-8b25-448d-806a-4b6e9d9712c9.png
+
+Implementation screenshots:
+- Blocked: browser screenshot capture did not produce a file in this Codex sandbox.
+
+Viewport attempts:
+- Desktop target attempted at 1680 x 1050 with `/#revenue-calculator`.
+- Built Next server reached `Ready` on temporary local ports.
+- Chrome DevTools Protocol connection to headless Chrome was refused.
+- Chrome direct `--screenshot` mode produced no screenshot file.
+- Edge direct `--screenshot` mode produced no screenshot file.
+
+Evidence:
+- The old `WorkflowPreview` section and `workflow` copy object were removed from the landing template.
+- The landing render order now uses `RevenueCalculatorSection` between How It Works and Pricing.
+- The calculator has three stateful range inputs with defaults 85, 6, and 40.
+- The monthly-at-risk formula is `averageServiceCost * lastMinuteSpots * 4`.
+- The recovered amount formula is `monthlyRevenueAtRisk * recoveryEstimate / 100`.
+- Default values render as `$2,040`, `$816 / month`, and `40% recovery estimate`.
+- The info note, green badge, and bottom mini stats use the live slider state.
+- Range styling is scoped to `.revenue-calculator-range` and uses `--slider-progress`.
+- Desktop uses the requested two-column card with a subtle divider.
+- Tablet/mobile media queries stack the calculator and remove the vertical divider.
+- Reduced motion disables calculator hover/slider thumb transforms.
+- Focus-visible styling remains on the range inputs.
+- Forbidden fintech and automatic-confirmation phrases are covered by regression tests.
+- `npm run lint`, `npm run typecheck`, `npm run build`, and `npm test` pass after the implementation.
+
+Findings:
+- P2 visual capture gap: rendered screenshot comparison could not be completed because local headless browser capture failed in this environment.
+- No source-level or automated validation blocker remains.
+
+Scope note:
+- This pass changed only the landing template, scoped global CSS, focused regression tests, and this QA report.
+
 ## How It Works Section QA - 2026-06-20
 
 final result: passed
