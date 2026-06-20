@@ -152,30 +152,50 @@ const openSpotCopy = {
     ]
   },
   testimonials: {
-    title: "Real results from local teams.",
+    title: "What local teams say about Open Spot.",
     text:
-      "Representative workflows for local teams using consent-based SMS recovery. Final confirmation always stays with the business.",
+      "Human stories from appointment-based teams using consent-based SMS to recover last-minute cancellations while keeping final confirmation in their hands.",
     cards: [
-      [
-        "SO",
-        "Salon owner",
-        "When a color appointment opens, the team can notify the waitlist quickly and choose the best fit without changing the calendar."
-      ],
-      [
-        "BM",
-        "Barber shop manager",
-        "Replies land in one place, so the shop can keep serving clients while the next opening gets reviewed."
-      ],
-      [
-        "BC",
-        "Beauty clinic coordinator",
-        "The manual confirmation step keeps the staff in control when multiple clients want the same slot."
-      ],
-      [
-        "SR",
-        "Spa receptionist",
-        "Open Spot gives us a clean recovery layer beside the booking system instead of another booking tool to manage."
-      ]
+      {
+        name: "Maya R.",
+        role: "Salon owner",
+        business: "Hair salon",
+        quote:
+          "When someone cancels a color appointment, I do not want my team texting clients one by one. Open Spot lets us send one clean alert, see who replies, and choose the right client without changing our booking system.",
+        resultBadge: "Color slot recovered",
+        image: "/testimonials/maya-salon-owner.webp",
+        imageAlt: "Representative portrait of a salon owner"
+      },
+      {
+        name: "Karim B.",
+        role: "Barber shop manager",
+        business: "Barber shop",
+        quote:
+          "Between walk-ins and appointments, we cannot chase every empty chair manually. Now replies land in one place, and I can confirm the client when it actually makes sense for the shop.",
+        resultBadge: "Empty chair filled",
+        image: "/testimonials/karim-barber-manager.webp",
+        imageAlt: "Representative portrait of a barber shop manager"
+      },
+      {
+        name: "Sophie L.",
+        role: "Clinic coordinator",
+        business: "Beauty clinic",
+        quote:
+          "We used to lose late-day facial slots because reception was already busy. Open Spot gives us a simple recovery layer beside our calendar, without becoming another booking tool to manage.",
+        resultBadge: "Late slot recovered",
+        image: "/testimonials/sophie-clinic-coordinator.webp",
+        imageAlt: "Representative portrait of a beauty clinic coordinator"
+      },
+      {
+        name: "Amélie T.",
+        role: "Spa receptionist",
+        business: "Spa",
+        quote:
+          "Our regulars love knowing when a last-minute opening appears. Consent-based SMS feels personal instead of spammy, and we still decide who gets confirmed.",
+        resultBadge: "Manual review kept",
+        image: "/testimonials/amelie-spa-receptionist.webp",
+        imageAlt: "Representative portrait of a spa receptionist"
+      }
     ]
   },
   faq: {
@@ -1083,25 +1103,38 @@ function Pricing({ t }: { t: TemplateCopy }) {
 
 function Testimonials({ t }: { t: TemplateCopy }) {
   return (
-    <section className="bg-[#f8fbff] px-4 py-20 sm:py-28">
+    <section className="open-spot-testimonials-section">
       <SectionHeading subtitle={t.testimonials.text} title={t.testimonials.title} />
-      <div className="mx-auto mt-12 grid max-w-[72rem] gap-5 md:grid-cols-2">
-        {t.testimonials.cards.map(([initials, role, quote]) => (
-          <article
-            className="lunera-card p-6 transition duration-300 ease-out hover:-translate-y-2 hover:border-blue-200 hover:shadow-[0_28px_80px_rgba(15,23,42,0.12)]"
-            data-lunera-reveal
-            key={role}
-          >
-            <div className="flex items-center gap-3">
-              <span className="grid h-12 w-12 place-items-center rounded-full bg-[#3478ff] text-sm font-black text-white">
-                {initials}
-              </span>
-              <div>
-                <h3 className="text-base font-black text-[#05070a]">{role}</h3>
-                <p className="text-xs font-bold text-slate-400">Appointment-based team</p>
+      <div className="open-spot-testimonials-grid">
+        {t.testimonials.cards.map((testimonial) => (
+          <article className="open-spot-testimonial-card" data-lunera-reveal key={testimonial.name}>
+            <span className="open-spot-testimonial-shine" aria-hidden="true" />
+            <div className="open-spot-testimonial-header">
+              <div className="open-spot-testimonial-photo-wrap">
+                <Image
+                  alt={testimonial.imageAlt}
+                  className="open-spot-testimonial-photo"
+                  height={96}
+                  sizes="96px"
+                  src={testimonial.image}
+                  width={96}
+                />
+              </div>
+              <div className="open-spot-testimonial-person">
+                <h3>{testimonial.name}</h3>
+                <p>{testimonial.role}</p>
+                <span>{testimonial.business}</span>
               </div>
             </div>
-            <p className="mt-6 text-base font-medium leading-8 text-slate-600">{quote}</p>
+            <div className="open-spot-testimonial-quote-wrap">
+              <span className="open-spot-testimonial-quote-mark" aria-hidden="true">
+                &ldquo;
+              </span>
+              <p className="open-spot-testimonial-quote">&ldquo;{testimonial.quote}&rdquo;</p>
+            </div>
+            <div className="open-spot-testimonial-footer">
+              <span className="open-spot-testimonial-badge">{testimonial.resultBadge}</span>
+            </div>
           </article>
         ))}
       </div>

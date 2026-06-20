@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
@@ -175,7 +175,7 @@ describe("public navigation", () => {
     expect(homepage).toContain("From cancellation");
     expect(homepage).toContain("to confirmation");
     expect(homepage).toContain("Non-disruptive cancellation recovery");
-    expect(homepage).toContain("Real results from local teams.");
+    expect(homepage).toContain("What local teams say about Open Spot.");
     expect(homepage).toContain("Ready to recover your next cancellation?");
     expect(homepage).toContain("SMS consent");
     expect(homepage).toContain("bg-[#050505]");
@@ -287,6 +287,85 @@ describe("public navigation", () => {
     expect(styles).toContain("transform: translateY(-6px) scale(1.01)");
     expect(styles).toContain("0 28px 90px rgba(37, 99, 235, 0.1)");
     expect(styles).toContain(".open-spot-setup-card:hover .open-spot-setup-icon");
+  });
+
+  it("uses premium human testimonial cards with local profile photos", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const testimonialCopy = homepage.slice(
+      homepage.indexOf("testimonials: {"),
+      homepage.indexOf("faq: {")
+    );
+    const testimonialSection = homepage.slice(
+      homepage.indexOf("function Testimonials("),
+      homepage.indexOf("function Faq(")
+    );
+    const testimonialImagePaths = [
+      "public/testimonials/maya-salon-owner.webp",
+      "public/testimonials/karim-barber-manager.webp",
+      "public/testimonials/sophie-clinic-coordinator.webp",
+      "public/testimonials/amelie-spa-receptionist.webp"
+    ];
+    const forbiddenTerms = [
+      "Real results from local teams.",
+      "SO",
+      "BM",
+      "BC",
+      "SR",
+      "Appointment-based team",
+      "Verified customers",
+      "Real clients",
+      "Actual customer results"
+    ];
+
+    expect(testimonialCopy).toContain("What local teams say about Open Spot.");
+    expect(testimonialCopy).toContain(
+      "Human stories from appointment-based teams using consent-based SMS to recover last-minute cancellations while keeping final confirmation in their hands."
+    );
+    expect(testimonialCopy).toContain("Maya R.");
+    expect(testimonialCopy).toContain("Salon owner");
+    expect(testimonialCopy).toContain("Hair salon");
+    expect(testimonialCopy).toContain("Color slot recovered");
+    expect(testimonialCopy).toContain("Karim B.");
+    expect(testimonialCopy).toContain("Barber shop manager");
+    expect(testimonialCopy).toContain("Barber shop");
+    expect(testimonialCopy).toContain("Empty chair filled");
+    expect(testimonialCopy).toContain("Sophie L.");
+    expect(testimonialCopy).toContain("Clinic coordinator");
+    expect(testimonialCopy).toContain("Beauty clinic");
+    expect(testimonialCopy).toContain("Late slot recovered");
+    expect(testimonialCopy).toContain("Amélie T.");
+    expect(testimonialCopy).toContain("Spa receptionist");
+    expect(testimonialCopy).toContain("Manual review kept");
+    expect(testimonialCopy).toContain("/testimonials/maya-salon-owner.webp");
+    expect(testimonialCopy).toContain("/testimonials/karim-barber-manager.webp");
+    expect(testimonialCopy).toContain("/testimonials/sophie-clinic-coordinator.webp");
+    expect(testimonialCopy).toContain("/testimonials/amelie-spa-receptionist.webp");
+    expect(testimonialSection).toContain("<Image");
+    expect(testimonialSection).toContain("open-spot-testimonial-card");
+    expect(testimonialSection).toContain("open-spot-testimonial-photo");
+    expect(testimonialSection).toContain("open-spot-testimonial-badge");
+    expect(testimonialSection).toContain("open-spot-testimonial-shine");
+    expect(testimonialSection).not.toContain("initials");
+    expect(testimonialSection).not.toContain("map(([");
+
+    for (const term of forbiddenTerms) {
+      expect(testimonialCopy).not.toContain(term);
+      expect(testimonialSection).not.toContain(term);
+    }
+
+    for (const imagePath of testimonialImagePaths) {
+      expect(existsSync(fileURLToPath(new URL(`../../${imagePath}`, import.meta.url)))).toBe(true);
+    }
+
+    expect(styles).toContain(".open-spot-testimonials-section");
+    expect(styles).toContain(".open-spot-testimonial-card");
+    expect(styles).toContain("transform: translateY(-8px) scale(1.012)");
+    expect(styles).toContain("0 28px 80px rgba(37, 99, 235, 0.14)");
+    expect(styles).toContain(".open-spot-testimonial-card:hover .open-spot-testimonial-photo");
+    expect(styles).toContain("transform: scale(1.045)");
+    expect(styles).toContain(".open-spot-testimonial-card:hover .open-spot-testimonial-badge");
+    expect(styles).toContain("prefers-reduced-motion: reduce");
   });
 
   it("keeps hero social proof, CTA, and business marquee in an airy lower white flow", () => {

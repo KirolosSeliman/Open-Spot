@@ -263,3 +263,38 @@ Required fidelity surfaces:
 
 Follow-up polish:
 - P3: Chrome/Playwright automation produced screenshots but timed out before returning full DOM metrics after the final title-width tweak; the final source/test checks guard the corrected layout values.
+
+## Human Premium Testimonials QA - 2026-06-20
+
+final result: passed
+
+Source truth:
+- Prompt requirements: C:\Users\kirol\.codex\attachments\924a4c41-9da3-42eb-9bd5-02e06b04e9cd\pasted-text.txt
+
+Implementation evidence:
+- Section title changed to "What local teams say about Open Spot."
+- Subtitle now frames the cards as human stories from appointment-based teams using consent-based SMS recovery.
+- The old initials-only cards (`SO`, `BM`, `BC`, `SR`) were replaced with named representative testimonial cards.
+- Four local WebP files were added under `public/testimonials/` and consumed through `next/image`.
+- Each card now includes a name, role, business context, quote, local profile image, image alt text, and result badge.
+
+Profile image source:
+- Built-in ImageGen was attempted for four role-matched representative portraits, but this desktop session did not expose a generated filesystem artifact under `$CODEX_HOME/generated_images`.
+- Final workspace assets were derived from existing safe local photographic avatars in `public/lunera-style/avatars/`, cropped and tone-matched into project-local WebP files.
+- The copy intentionally avoids verified-customer claims and keeps the stories representative.
+
+Interaction and responsive QA:
+- Desktop uses a 2x2 testimonial grid.
+- Tablet/mobile collapse to one column when space is constrained.
+- Cards lift subtly on hover, deepen the blue-tinted shadow, brighten the badge, and add a soft ring/glow plus slight profile-image zoom.
+- Reduced-motion mode disables transform movement and hides the shine overlay.
+
+Verification:
+- Focused public-navigation test passed: 18/18.
+- Lint passed.
+- Typecheck passed.
+- Production build passed.
+- Full test suite passed: 61 files, 336 tests.
+
+Remaining risk:
+- P3: true role-specific generated portrait assets would improve credibility further if a future ImageGen run exposes downloadable files or approved customer/stock assets are provided.
