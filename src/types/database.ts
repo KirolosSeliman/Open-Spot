@@ -1013,6 +1013,117 @@ export type Database = {
         };
         Relationships: [];
       };
+      potential_clients: {
+        Row: {
+          id: string;
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          phone_normalized: string | null;
+          business_type: string;
+          preferred_contact_method: "sms" | "email" | "either";
+          message: string | null;
+          status:
+            | "new"
+            | "contacted"
+            | "call_booked"
+            | "qualified"
+            | "not_a_fit"
+            | "won"
+            | "lost"
+            | "archived";
+          source: string;
+          source_path: string | null;
+          consent_to_contact: boolean;
+          consent_text: string;
+          consented_at: string;
+          consent_ip: string | null;
+          consent_user_agent: string | null;
+          confirmation_email_sent_at: string | null;
+          confirmation_email_status: "pending" | "sent" | "failed" | "skipped" | null;
+          owner_notification_sent_at: string | null;
+          owner_notification_status: "pending" | "sent" | "failed" | "skipped" | null;
+          last_contacted_at: string | null;
+          last_contact_channel: "sms" | "email" | "phone" | "other" | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          phone_normalized?: string | null;
+          business_type: string;
+          preferred_contact_method: "sms" | "email" | "either";
+          message?: string | null;
+          status?:
+            | "new"
+            | "contacted"
+            | "call_booked"
+            | "qualified"
+            | "not_a_fit"
+            | "won"
+            | "lost"
+            | "archived";
+          source?: string;
+          source_path?: string | null;
+          consent_to_contact: boolean;
+          consent_text: string;
+          consented_at: string;
+          consent_ip?: string | null;
+          consent_user_agent?: string | null;
+          confirmation_email_sent_at?: string | null;
+          confirmation_email_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          owner_notification_sent_at?: string | null;
+          owner_notification_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          last_contacted_at?: string | null;
+          last_contact_channel?: "sms" | "email" | "phone" | "other" | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          full_name?: string;
+          business_name?: string;
+          email?: string;
+          phone?: string;
+          phone_normalized?: string | null;
+          business_type?: string;
+          preferred_contact_method?: "sms" | "email" | "either";
+          message?: string | null;
+          status?:
+            | "new"
+            | "contacted"
+            | "call_booked"
+            | "qualified"
+            | "not_a_fit"
+            | "won"
+            | "lost"
+            | "archived";
+          source?: string;
+          source_path?: string | null;
+          consent_to_contact?: boolean;
+          consent_text?: string;
+          consented_at?: string;
+          consent_ip?: string | null;
+          consent_user_agent?: string | null;
+          confirmation_email_sent_at?: string | null;
+          confirmation_email_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          owner_notification_sent_at?: string | null;
+          owner_notification_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          last_contacted_at?: string | null;
+          last_contact_channel?: "sms" | "email" | "phone" | "other" | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;

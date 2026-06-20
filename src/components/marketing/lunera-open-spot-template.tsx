@@ -134,7 +134,7 @@ const openSpotCopy = {
         price: "Custom",
         text: "For teams with multiple locations or higher SMS volume.",
         cta: "Book a call",
-        href: "/book-call/questions",
+        href: "/book-call",
         featured: false,
         features: [
           "Multi-location support",
@@ -254,7 +254,7 @@ const openSpotCopy = {
     title: "Ready to recover your next cancellation?",
     text:
       "Launch a simple SMS recovery workflow that keeps your booking system, your team, and your manual confirmation step in place.",
-    primary: "Se connecter"
+    primary: "Request a call"
   },
   footer: {
     line: "Recover last-minute cancellations by SMS.",
@@ -1478,7 +1478,7 @@ function FinalCta({ t }: { t: TemplateCopy }) {
         <p className="mx-auto mt-6 max-w-[40rem] text-base font-medium leading-7 text-white/65">
           {t.final.text}
         </p>
-        <Link className="lunera-cta-light mt-9" href={loginHref}>
+        <Link className="lunera-cta-light mt-9" href="/book-call">
           {t.final.primary}
         </Link>
       </div>

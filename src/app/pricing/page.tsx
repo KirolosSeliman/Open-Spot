@@ -62,7 +62,7 @@ export default async function PricingPage() {
           <p className="os-kicker">{t.eyebrow}</p>
           <h1 className="os-page-title mt-5">{t.title}</h1>
           <p className="os-body-large mt-6">{t.description}</p>
-          <Link className="os-primary-cta mt-8" href="/book-call/questions">
+          <Link className="os-primary-cta mt-8" href="/book-call">
             {t.cta}
           </Link>
         </div>
