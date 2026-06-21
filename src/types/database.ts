@@ -174,6 +174,72 @@ export type Database = {
         };
         Relationships: [];
       };
+      book_call_requests: {
+        Row: {
+          id: string;
+          locale: "fr" | "en";
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          business_type: string | null;
+          current_booking_system: string | null;
+          cancellation_volume: string | null;
+          preferred_time_message: string | null;
+          consent_sms_email: boolean;
+          status: "new" | "contacted" | "qualified" | "closed" | "spam";
+          source_path: string;
+          source_url: string | null;
+          user_agent: string | null;
+          internal_notes: string | null;
+          created_at: string;
+          updated_at: string;
+          contacted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          locale?: "fr" | "en";
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          business_type?: string | null;
+          current_booking_system?: string | null;
+          cancellation_volume?: string | null;
+          preferred_time_message?: string | null;
+          consent_sms_email?: boolean;
+          status?: "new" | "contacted" | "qualified" | "closed" | "spam";
+          source_path?: string;
+          source_url?: string | null;
+          user_agent?: string | null;
+          internal_notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          contacted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          locale?: "fr" | "en";
+          full_name?: string;
+          business_name?: string;
+          email?: string;
+          phone?: string;
+          business_type?: string | null;
+          current_booking_system?: string | null;
+          cancellation_volume?: string | null;
+          preferred_time_message?: string | null;
+          consent_sms_email?: boolean;
+          status?: "new" | "contacted" | "qualified" | "closed" | "spam";
+          source_path?: string;
+          source_url?: string | null;
+          user_agent?: string | null;
+          internal_notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          contacted_at?: string | null;
+        };
+        Relationships: [];
+      };
       commission_records: {
         Row: {
           id: string;

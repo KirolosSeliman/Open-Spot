@@ -15,7 +15,7 @@ export const metadata = {
 const adminNav = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/organizations", label: "Companies" },
-  { href: "/admin/potential-clients", label: "Potential Clients" },
+  { href: "/admin/call-requests", label: "Call Requests" },
   { href: "/admin/sms", label: "SMS" },
   { href: "/admin/replies", label: "Replies" },
   { href: "/admin/compliance", label: "Compliance" },
@@ -101,9 +101,9 @@ export default async function AdminLayout({
                 </Link>
                 <Link
                   className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black"
-                  href="/admin/potential-clients"
+                  href="/admin/call-requests"
                 >
-                  Leads
+                  Calls
                 </Link>
                 <Link
                   className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black"

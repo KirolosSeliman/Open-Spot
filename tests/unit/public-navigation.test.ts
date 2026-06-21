@@ -215,8 +215,8 @@ describe("public navigation", () => {
     expect(homepage).toContain("Recover the empty spots.");
     expect(homepage).toContain("From cancellation");
     expect(homepage).toContain("to confirmation");
-    expect(homepage).toContain("See what empty spots");
-    expect(homepage).toContain("are costing you.");
+    expect(homepage).toContain("Estimate the revenue");
+    expect(homepage).toContain("you could recover");
     expect(homepage).not.toContain("Non-disruptive cancellation recovery");
     expect(homepage).toContain("What local teams say about Open Spot.");
     expect(homepage).toContain("Ce que les equipes locales disent d'Open Spot.");
@@ -247,10 +247,10 @@ describe("public navigation", () => {
     expect(homepage).toContain("copy = {");
     expect(homepage).toContain("en: openSpotCopy");
     expect(homepage).toContain("fr: openSpotFrCopy");
-    expect(homepage).toContain("Average service cost");
-    expect(homepage).toContain("Cout moyen du service");
-    expect(homepage).toContain("Recovered with Open Spot");
-    expect(homepage).toContain("Recupere avec Open Spot");
+    expect(homepage).toContain("Average service price");
+    expect(homepage).toContain("Coût moyen du service");
+    expect(homepage).toContain("Potential recovered revenue");
+    expect(homepage).toContain("Revenu potentiel récupéré");
     expect(homepage).toContain("Create open spot");
     expect(homepage).toContain("Creer un creneau");
     expect(homepage).toContain("Replies received");
@@ -447,7 +447,7 @@ describe("public navigation", () => {
     const requiredQuestions = [
       "Does Open Spot replace my booking system?",
       "How does Open Spot help fill a last-minute cancellation?",
-      "Are clients confirmed automatically?",
+      "Does Open Spot confirm clients for me?",
       "Do clients need to download an app?",
       "How does Open Spot handle SMS consent?",
       "What happens if multiple clients reply?",
@@ -633,6 +633,7 @@ describe("public navigation", () => {
   it("replaces the workflow preview with an interactive premium revenue calculator", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
+    const revenueCalculator = source("src/lib/marketing/revenue-calculator.ts");
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
     const calculatorSection = homepage.slice(
       homepage.indexOf("function RevenueCalculatorSection("),
@@ -676,30 +677,29 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("Consent-based SMS alerts");
     expect(homepage).not.toContain("Ranked reply queue for review");
     expect(homepage).not.toContain("Manual confirmation before any appointment is filled");
-    expect(calculatorSection).toContain("useState(85)");
-    expect(calculatorSection).toContain("useState(6)");
-    expect(calculatorSection).toContain("useState(40)");
-    expect(calculatorSection).toContain("averageServiceCost * lastMinuteSpots * 4");
-    expect(calculatorSection).toContain("monthlyRevenueAtRisk * recoveryEstimate / 100");
-    expect(calculatorSection).toContain("formatRevenueCurrency");
+    expect(calculatorSection).toContain("useState(110)");
+    expect(calculatorSection).toContain("useState(11)");
+    expect(calculatorSection).toContain("useState(50)");
+    expect(revenueCalculator).toContain("averageServicePrice * lostSpotsPerWeek * 4");
+    expect(revenueCalculator).toContain("monthlyRevenueAtRisk * (recoveryRate / 100)");
+    expect(calculatorSection).toContain("calculateRevenueEstimate");
+    expect(calculatorSection).toContain("formatRevenueAmount");
     expect(calculatorSection).toContain("SliderControl");
-    expect(calculatorSection).toContain("MiniLineChart");
     expect(calculatorSection).toContain("ResultMetricCard");
-    expect(calculatorSection).toContain("MiniStatItem");
+    expect(calculatorSection).toContain("open-spot-revenue-note");
     expect(calculatorSection).toContain("t.revenue.badge");
-    expect(calculatorSection).toContain("t.revenue.title.map");
+    expect(homepage).toContain("Estimez le revenu que");
     expect(calculatorSection).toContain("t.revenue.subtitle");
     expect(calculatorSection).toContain("t.revenue.averageServiceCost");
     expect(calculatorSection).toContain("t.revenue.lostPerWeek");
     expect(calculatorSection).toContain("t.revenue.recoveryEstimate");
     expect(calculatorSection).toContain("t.revenue.notePrefix");
     expect(calculatorSection).toContain("t.revenue.noteSuffix");
-    expect(calculatorSection).toContain("t.revenue.monthlyAtRisk");
-    expect(calculatorSection).toContain("t.revenue.recoveredWithOpenSpot");
-    expect(calculatorSection).toContain("t.revenue.averageService");
-    expect(calculatorSection).toContain("t.revenue.openSpotsPerWeek");
-    expect(calculatorSection).toContain("t.revenue.manualConfirmation");
-    expect(calculatorSection).toContain("t.revenue.manualConfirmationValue");
+    expect(calculatorSection).toContain("t.revenue.recoveredRevenue");
+    expect(calculatorSection).toContain("t.revenue.monthlyAtRiskBeforeRecovery");
+    expect(calculatorSection).toContain("t.revenue.trustNote");
+    expect(calculatorSection).toContain("t.revenue.primaryCta");
+    expect(calculatorSection).toContain("t.revenue.secondaryCta");
     expect(calculatorSection).toContain('min={25}');
     expect(calculatorSection).toContain('max={200}');
     expect(calculatorSection).toContain('step={5}');
@@ -712,12 +712,12 @@ describe("public navigation", () => {
     expect(calculatorSection).toContain('"$100"');
     expect(calculatorSection).toContain('"$150"');
     expect(calculatorSection).toContain('"$200"');
-    expect(calculatorSection).toContain('"10%"');
-    expect(calculatorSection).toContain('"20%"');
-    expect(calculatorSection).toContain('"30%"');
-    expect(calculatorSection).toContain('"40%"');
-    expect(calculatorSection).toContain('"50%"');
-    expect(calculatorSection).toContain('"60%"');
+    expect(calculatorSection).toContain('"10 %"');
+    expect(calculatorSection).toContain('"20 %"');
+    expect(calculatorSection).toContain('"30 %"');
+    expect(calculatorSection).toContain('"40 %"');
+    expect(calculatorSection).toContain('"50 %"');
+    expect(calculatorSection).toContain('"60 %"');
     expect(calculatorSection).toContain('"--slider-progress"');
     expect(calculatorSection).toContain('type="range"');
     expect(calculatorSection).toContain("aria-label");
@@ -729,19 +729,23 @@ describe("public navigation", () => {
 
     expect(styles).toContain(".open-spot-revenue-section");
     expect(styles).toContain(".open-spot-revenue-shell");
-    expect(styles).toContain("max-width: min(calc(100% - 48px), 1520px)");
-    expect(styles).toContain("border-radius: clamp(2.75rem, 3.4vw, 3.5rem)");
-    expect(styles).toContain("linear-gradient(180deg, rgba(248, 251, 255, 1) 0%, rgba(241, 247, 255, 0.92) 100%)");
+    expect(styles).toContain("radial-gradient(circle at 50% 100%, rgba(74, 139, 255, 0.16), transparent 38rem)");
+    expect(styles).toContain("max-width: min(calc(100% - 32px), 76rem)");
+    expect(styles).toContain("border-radius: clamp(1.75rem, 3vw, 2.35rem)");
     expect(styles).toContain(".open-spot-revenue-card");
-    expect(styles).toContain("grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr)");
+    expect(styles).toContain("grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 0.9fr)");
+    const rangeStyles = styles.slice(
+      styles.indexOf(".revenue-calculator-range"),
+      styles.indexOf(".open-spot-slider-ticks")
+    );
+
     expect(styles).toContain(".revenue-calculator-range");
-    expect(styles).toContain("height: 0.5rem");
-    expect(styles).toContain("height: 2rem");
-    expect(styles).toContain("width: 2rem");
-    expect(styles).toContain(".open-spot-revenue-card:hover");
-    expect(styles).toContain("transform: translateY(-4px)");
-    expect(styles).toContain(".open-spot-result-card:hover");
-    expect(styles).toContain("transform: translateY(-2px)");
+    expect(styles).toContain(".open-spot-slider-marker");
+    expect(styles).toContain("width: 3px");
+    expect(rangeStyles).not.toContain("width: 2rem");
+    expect(rangeStyles).not.toContain("height: 2rem");
+    expect(styles).toContain(".open-spot-result-primary");
+    expect(styles).toContain(".open-spot-result-secondary");
     expect(styles).toContain("@media (max-width: 767px)");
   });
 

@@ -8,6 +8,11 @@ import type { CSSProperties, ReactNode } from "react";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
 import type { Locale } from "@/lib/i18n/types";
+import {
+  calculateRevenueEstimate,
+  formatRevenueAmount,
+  sliderPercent
+} from "@/lib/marketing/revenue-calculator";
 import { cn } from "@/lib/utils/cn";
 
 const loginHref = "/sign-in";
@@ -124,22 +129,22 @@ const openSpotCopy = {
     }
   },
   revenue: {
-    badge: "Revenue calculator",
-    title: ["See what empty spots", "are costing you."],
+    badge: "CALCULATOR",
+    title: ["Estimate the revenue", "you could recover"],
     subtitle:
-      "Enter your average service price and the number of last-minute cancellations you usually lose. Open Spot estimates the revenue at risk and what you could recover.",
-    averageServiceCost: "Average service cost",
+      "Enter a few simple numbers and see how much last-minute cancellations may cost you each month.",
+    averageServiceCost: "Average service price",
     lostPerWeek: "Last-minute spots lost per week",
     recoveryEstimate: "Recovery estimate",
     notePrefix: "Based on a",
     noteSuffix: "recovery estimate",
-    monthlyAtRisk: "Monthly revenue at risk",
-    recoveredWithOpenSpot: "Recovered with Open Spot",
-    averageService: "Average service",
-    openSpotsPerWeek: "Open spots / week",
-    manualConfirmation: "Manual confirmation",
-    manualConfirmationValue: "stays in your control",
-    perMonth: "/ month"
+    recoveredRevenue: "Potential recovered revenue",
+    monthlyAtRiskBeforeRecovery: "monthly revenue at risk before recovery.",
+    trustNote:
+      "Estimation based on your data. Actual results vary by clients, services, and cancellation volume.",
+    primaryCta: "Book a call",
+    secondaryCta: "See how it works",
+    perMonth: "per month"
   },
   how: {
     tag: "How It Works",
@@ -264,7 +269,7 @@ const openSpotCopy = {
           "When a time slot opens, your team creates an open spot with the service, time, and optional details. Open Spot sends a clean SMS alert to clients who have agreed to receive these updates. Clients reply by text, and your team chooses who to confirm manually."
       },
       {
-        question: "Are clients confirmed automatically?",
+        question: "Does Open Spot confirm clients for me?",
         answer:
           "No. Open Spot keeps final confirmation in the hands of the business. Even if several clients reply quickly, your team reviews the responses and confirms the client that makes the most sense for the schedule, service, and staff availability."
       },
@@ -456,22 +461,22 @@ const openSpotFrCopy = {
     }
   },
   revenue: {
-    badge: "Calculateur de revenu",
-    title: ["Voyez ce que les places libres", "vous coutent."],
+    badge: "CALCULATEUR",
+    title: ["Estimez le revenu que", "vous pourriez récupérer"],
     subtitle:
-      "Entrez votre prix moyen de service et le nombre d'annulations de derniere minute que vous perdez habituellement. Open Spot estime le revenu a risque et ce que vous pourriez recuperer.",
-    averageServiceCost: "Cout moyen du service",
-    lostPerWeek: "Places de derniere minute perdues par semaine",
-    recoveryEstimate: "Estimation de recuperation",
-    notePrefix: "Base sur une estimation de",
-    noteSuffix: "de recuperation",
-    monthlyAtRisk: "Revenu mensuel a risque",
-    recoveredWithOpenSpot: "Recupere avec Open Spot",
-    averageService: "Service moyen",
-    openSpotsPerWeek: "Places / semaine",
-    manualConfirmation: "Revision manuelle",
-    manualConfirmationValue: "reste sous votre controle",
-    perMonth: "/ mois"
+      "Entrez quelques chiffres simples et découvrez combien d'argent vos annulations de dernière minute vous coûtent chaque mois.",
+    averageServiceCost: "Coût moyen du service",
+    lostPerWeek: "Places de dernière minute perdues par semaine",
+    recoveryEstimate: "Estimation de récupération",
+    notePrefix: "Basé sur une estimation de",
+    noteSuffix: "de récupération",
+    recoveredRevenue: "Revenu potentiel récupéré",
+    monthlyAtRiskBeforeRecovery: "de revenu mensuel à risque avant récupération.",
+    trustNote:
+      "Estimation basée sur vos données. Les résultats réels varient selon vos clients, vos services et votre volume d'annulations.",
+    primaryCta: "Réserver un appel",
+    secondaryCta: "Voir comment ça fonctionne",
+    perMonth: "par mois"
   },
   pricing: {
     tag: "Prix",
@@ -1373,14 +1378,19 @@ function StepMiniUi({ index, t }: { index: number; t: TemplateCopy }) {
 }
 
 function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCopy }) {
-  const [averageServiceCost, setAverageServiceCost] = useState(85);
-  const [lastMinuteSpots, setLastMinuteSpots] = useState(6);
-  const [recoveryEstimate, setRecoveryEstimate] = useState(40);
-  const monthlyRevenueAtRisk = averageServiceCost * lastMinuteSpots * 4;
-  const recoveredWithOpenSpot = Math.round(monthlyRevenueAtRisk * recoveryEstimate / 100);
+  const [averageServiceCost, setAverageServiceCost] = useState(110);
+  const [lastMinuteSpots, setLastMinuteSpots] = useState(11);
+  const [recoveryEstimate, setRecoveryEstimate] = useState(50);
+  const { monthlyRevenueAtRisk, recoveredRevenue } = calculateRevenueEstimate({
+    averageServicePrice: averageServiceCost,
+    lostSpotsPerWeek: lastMinuteSpots,
+    recoveryRate: recoveryEstimate
+  });
 
   return (
     <section className="open-spot-revenue-section" id="revenue-calculator">
+      <span className="open-spot-revenue-sky" aria-hidden="true" />
+      <span className="open-spot-revenue-clouds" aria-hidden="true" />
       <div className="open-spot-revenue-shell" data-lunera-reveal>
         <div className="open-spot-revenue-heading">
           <span className="open-spot-calculator-pill">
@@ -1401,79 +1411,78 @@ function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCo
           <div className="open-spot-revenue-controls">
             <SliderControl
               ariaLabel={t.revenue.averageServiceCost}
-              displayValue={formatRevenueCurrency(averageServiceCost, locale)}
+              displayValue={formatRevenueAmount(averageServiceCost, locale)}
+              icon={<TagIcon />}
               label={t.revenue.averageServiceCost}
               max={200}
               min={25}
               onChange={setAverageServiceCost}
               step={5}
-              ticks={["$25", "$50", "$100", "$150", "$200"]}
+              ticks={[
+                { value: 25, label: locale === "fr" ? "25 $" : "$25" },
+                { value: 50, label: locale === "fr" ? "50 $" : "$50" },
+                { value: 100, label: locale === "fr" ? "100 $" : "$100" },
+                { value: 150, label: locale === "fr" ? "150 $" : "$150" },
+                { value: 200, label: locale === "fr" ? "200 $" : "$200" }
+              ]}
               value={averageServiceCost}
             />
             <SliderControl
               ariaLabel={t.revenue.lostPerWeek}
               displayValue={String(lastMinuteSpots)}
+              icon={<CalendarIcon />}
               label={t.revenue.lostPerWeek}
               max={20}
               min={1}
               onChange={setLastMinuteSpots}
               step={1}
-              ticks={["1", "5", "10", "15", "20"]}
+              ticks={[
+                { value: 1, label: "1" },
+                { value: 5, label: "5" },
+                { value: 10, label: "10" },
+                { value: 15, label: "15" },
+                { value: 20, label: "20" }
+              ]}
               value={lastMinuteSpots}
             />
             <SliderControl
               ariaLabel={t.revenue.recoveryEstimate}
-              displayValue={`${recoveryEstimate}%`}
+              displayValue={`${recoveryEstimate} %`}
+              icon={<TrendingIcon />}
               label={t.revenue.recoveryEstimate}
               max={60}
               min={10}
               onChange={setRecoveryEstimate}
               step={5}
-              ticks={["10%", "20%", "30%", "40%", "50%", "60%"]}
+              ticks={[
+                { value: 10, label: "10 %" },
+                { value: 20, label: "20 %" },
+                { value: 30, label: "30 %" },
+                { value: 40, label: "40 %" },
+                { value: 50, label: "50 %" },
+                { value: 60, label: "60 %" }
+              ]}
               value={recoveryEstimate}
             />
 
             <div className="open-spot-revenue-note">
               <InfoIcon />
               <p>
-                {t.revenue.notePrefix} <strong>{recoveryEstimate}%</strong> {t.revenue.noteSuffix}
+                {t.revenue.notePrefix} <strong>{recoveryEstimate} %</strong> {t.revenue.noteSuffix}
               </p>
             </div>
           </div>
 
-          <div className="open-spot-revenue-results">
-            <ResultMetricCard
-              label={t.revenue.monthlyAtRisk}
-              value={formatRevenueCurrency(monthlyRevenueAtRisk, locale)}
-              visual={<MiniLineChart />}
-            />
-
-            <ResultMetricCard
-              accent
-              badge={`${recoveryEstimate}% ${t.revenue.noteSuffix}`}
-              label={t.revenue.recoveredWithOpenSpot}
-              value={formatRevenueCurrency(recoveredWithOpenSpot, locale)}
-              valueSuffix={t.revenue.perMonth}
-            />
-
-            <div className="open-spot-revenue-stats">
-              <MiniStatItem
-                icon={<DollarIcon />}
-                label={t.revenue.averageService}
-                value={formatRevenueCurrency(averageServiceCost, locale)}
-              />
-              <MiniStatItem
-                icon={<CalendarIcon />}
-                label={t.revenue.openSpotsPerWeek}
-                value={String(lastMinuteSpots)}
-              />
-              <MiniStatItem
-                icon={<ShieldIcon />}
-                label={t.revenue.manualConfirmation}
-                value={t.revenue.manualConfirmationValue}
-              />
-            </div>
-          </div>
+          <ResultMetricCard
+            atRiskLabel={t.revenue.monthlyAtRiskBeforeRecovery}
+            atRiskValue={formatRevenueAmount(monthlyRevenueAtRisk, locale)}
+            label={t.revenue.recoveredRevenue}
+            period={t.revenue.perMonth}
+            primaryCta={t.revenue.primaryCta}
+            recoveredValue={formatRevenueAmount(recoveredRevenue, locale)}
+            secondaryCta={t.revenue.secondaryCta}
+            trustNote={t.revenue.trustNote}
+          />
         </div>
       </div>
     </section>
@@ -1483,6 +1492,7 @@ function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCo
 function SliderControl({
   ariaLabel,
   displayValue,
+  icon,
   label,
   max,
   min,
@@ -1493,41 +1503,52 @@ function SliderControl({
 }: {
   ariaLabel?: string;
   displayValue: string;
+  icon: ReactNode;
   label: string;
   max: number;
   min: number;
   onChange: (value: number) => void;
   step: number;
-  ticks: string[];
+  ticks: Array<{ label: string; value: number }>;
   value: number;
 }) {
-  const sliderProgress = ((value - min) / (max - min)) * 100;
+  const sliderProgress = sliderPercent({ max, min, value });
   const sliderStyle = { "--slider-progress": `${sliderProgress}%` } as CSSProperties;
 
   return (
     <div className="open-spot-slider-control">
       <div className="open-spot-slider-label-row">
-        <p className="open-spot-slider-label">
-          {label}
-        </p>
+        <span className="open-spot-slider-icon" aria-hidden="true">
+          {icon}
+        </span>
+        <p className="open-spot-slider-label">{label}</p>
         <span className="open-spot-slider-value" aria-live="polite">
           {displayValue}
         </span>
       </div>
-      <input
-        aria-label={ariaLabel ?? label}
-        className="revenue-calculator-range"
-        max={max}
-        min={min}
-        onChange={(event) => onChange(Number(event.target.value))}
-        step={step}
-        style={sliderStyle}
-        type="range"
-        value={value}
-      />
+      <div className="open-spot-slider-input-wrap" style={sliderStyle}>
+        <div className="open-spot-slider-track" aria-hidden="true">
+          <span className="open-spot-slider-track-active" />
+          <span className="open-spot-slider-marker" />
+        </div>
+        <input
+          aria-label={ariaLabel ?? label}
+          aria-valuemax={max}
+          aria-valuemin={min}
+          aria-valuenow={value}
+          aria-valuetext={displayValue}
+          className="revenue-calculator-range"
+          max={max}
+          min={min}
+          onChange={(event) => onChange(Number(event.target.value))}
+          step={step}
+          type="range"
+          value={value}
+        />
+      </div>
       <div className="open-spot-slider-ticks" aria-hidden="true">
         {ticks.map((tick) => (
-          <span key={tick}>{tick}</span>
+          <span key={`${tick.value}-${tick.label}`}>{tick.label}</span>
         ))}
       </div>
     </div>
@@ -1535,88 +1556,56 @@ function SliderControl({
 }
 
 function ResultMetricCard({
-  accent = false,
-  badge,
+  atRiskLabel,
+  atRiskValue,
   label,
-  value,
-  valueSuffix,
-  visual
+  period,
+  primaryCta,
+  recoveredValue,
+  secondaryCta,
+  trustNote
 }: {
-  accent?: boolean;
-  badge?: string;
+  atRiskLabel: string;
+  atRiskValue: string;
   label: string;
-  value: string;
-  valueSuffix?: string;
-  visual?: ReactNode;
+  period: string;
+  primaryCta: string;
+  recoveredValue: string;
+  secondaryCta: string;
+  trustNote: string;
 }) {
   return (
-    <article className={cn("open-spot-result-card", accent && "is-accent")}>
-      <div>
+    <aside className="open-spot-revenue-results">
+      <div className="open-spot-result-card">
         <p className="open-spot-result-label">{label}</p>
         <p className="open-spot-result-value" aria-live="polite">
-          {value}
-          {valueSuffix ? <span>{valueSuffix}</span> : null}
+          {recoveredValue}
         </p>
+        <span className="open-spot-result-period">{period}</span>
       </div>
-      {badge ? (
-        <span className="open-spot-recovery-badge">
-          <TrendingIcon />
-          {badge}
+
+      <div className="open-spot-result-note">
+        <span className="open-spot-result-check" aria-hidden="true">
+          <CheckIcon />
         </span>
-      ) : null}
-      {visual ? <div className="open-spot-result-visual">{visual}</div> : null}
-    </article>
-  );
-}
-
-function MiniLineChart() {
-  return (
-    <svg aria-hidden="true" className="open-spot-calculator-chart" fill="none" viewBox="0 0 160 96">
-      <path d="M0 66 H160" stroke="#dbe7f8" strokeDasharray="4 7" />
-      <path d="M0 88 H160" stroke="#edf3fb" />
-      <path
-        d="M2 72 C18 62 27 51 43 56 C63 63 72 49 85 43 C100 36 110 46 122 37 C135 28 140 18 158 16"
-        fill="url(#open-spot-chart-fill)"
-      />
-      <path
-        d="M2 72 C18 62 27 51 43 56 C63 63 72 49 85 43 C100 36 110 46 122 37 C135 28 140 18 158 16"
-        stroke="#3478ff"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="4"
-      />
-      <defs>
-        <linearGradient id="open-spot-chart-fill" x1="80" x2="80" y1="16" y2="96">
-          <stop stopColor="#3478ff" stopOpacity="0.16" />
-          <stop offset="1" stopColor="#3478ff" stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-}
-
-function MiniStatItem({
-  icon,
-  label,
-  value
-}: {
-  icon: ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="open-spot-revenue-stat">
-      <span className="open-spot-revenue-stat-icon">{icon}</span>
-      <div>
-        <p>{label}</p>
-        <span>{value}</span>
+        <p>{trustNote}</p>
       </div>
-    </div>
-  );
-}
 
-function formatRevenueCurrency(value: number, locale: Locale) {
-  return `$${Math.round(value).toLocaleString(locale === "fr" ? "fr-CA" : "en-CA")}`;
+      <p className="open-spot-result-risk">
+        <strong>{atRiskValue}</strong> {atRiskLabel}
+      </p>
+
+      <Link className="open-spot-result-primary" href="/book-call">
+        <span>{primaryCta}</span>
+        <ArrowRightIcon />
+      </Link>
+
+      <Link className="open-spot-result-secondary" href="#how-it-works">
+        <PlayIcon />
+        <span>{secondaryCta}</span>
+      </Link>
+    </aside>
+  );
 }
 
 function CalculatorIcon() {
@@ -1624,6 +1613,15 @@ function CalculatorIcon() {
     <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
       <rect height="16" rx="3" stroke="currentColor" strokeWidth="2" width="14" x="5" y="4" />
       <path d="M9 8h6M9 12h2M13 12h2M9 16h2M13 16h2" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function TagIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="M4.7 12.1 12 4.8h6.3v6.3L11 18.4a2 2 0 0 1-2.8 0l-3.5-3.5a2 2 0 0 1 0-2.8Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
+      <circle cx="16" cy="8" r="1.4" stroke="currentColor" strokeWidth="1.8" />
     </svg>
   );
 }
@@ -1646,14 +1644,6 @@ function TrendingIcon() {
   );
 }
 
-function DollarIcon() {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
-      <path d="M12 3v18M16 7.5c-.9-1-2.3-1.5-4-1.5-2.1 0-3.5 1-3.5 2.6 0 4 7 1.8 7 5.6 0 1.6-1.4 2.8-3.7 2.8-1.7 0-3.3-.6-4.4-1.8" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-    </svg>
-  );
-}
-
 function CalendarIcon() {
   return (
     <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
@@ -1663,11 +1653,27 @@ function CalendarIcon() {
   );
 }
 
-function ShieldIcon() {
+function CheckIcon() {
   return (
     <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
-      <path d="M12 3.5l7 2.7v5.4c0 4.4-2.8 7.2-7 8.9-4.2-1.7-7-4.5-7-8.9V6.2l7-2.7z" stroke="currentColor" strokeLinejoin="round" strokeWidth="2" />
-      <path d="M8.8 12.1l2.1 2.1 4.4-4.7" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+      <path d="m7.4 12.3 3.1 3.1 6.2-6.8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="M5 12h13M13 6.5l5.5 5.5-5.5 5.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
+function PlayIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+      <path d="m10 8.8 5.1 3.2-5.1 3.2V8.8Z" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.8" />
     </svg>
   );
 }

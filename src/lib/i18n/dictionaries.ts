@@ -48,7 +48,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
         "Supabase is not configured: UI preview without persisted data."
     },
     errors: {
-      generic: "Something went wrong.",
+      generic: "The request could not be completed.",
       retry: "Please try again.",
       support: "If the problem persists, contact support."
     },

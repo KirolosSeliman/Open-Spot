@@ -211,7 +211,7 @@ export default async function DashboardPage() {
           <MetricCard
             detail="Demandes OUI/NON sans reponse client."
             label="En attente"
-            value={String(overview.automation.appointmentsPendingConfirmation)}
+            value={String(overview.automation.appointmentsAwaitingConfirmation)}
             tone="amber"
           />
           <MetricCard
