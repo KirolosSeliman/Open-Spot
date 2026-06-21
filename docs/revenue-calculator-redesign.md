@@ -74,11 +74,15 @@ value is still shown as context, but it is not mislabeled as recovered revenue.
 
 ## QA Results
 
-- `npm.cmd test -- tests/unit/revenue-calculator.test.ts tests/unit/public-navigation.test.ts`: passed
-- `npm.cmd run lint`: pending final verification
-- `npm.cmd run typecheck`: pending final verification
-- `npm.cmd test`: pending final verification
-- `npm.cmd run build`: pending final verification
+- `npm.cmd install --no-audit --no-fund`: passed; dependencies were already up to date, with existing peer override warnings from `@napi-rs/wasm-runtime`.
+- `npm.cmd test -- tests/unit/revenue-calculator.test.ts tests/unit/public-navigation.test.ts`: passed.
+- `npm.cmd run lint`: passed.
+- `npm.cmd run typecheck`: passed.
+- `npm.cmd test`: passed, 66 files and 359 tests.
+- `npm.cmd run build`: passed.
+- `design-qa.md`: final result passed.
+- Visual captures created for `375`, `390`, `768`, `1024`, and `1440` widths in `docs/visual-qa/`.
+- Forbidden wording scan: one existing unrelated dashboard billing match remains at `src/app/dashboard/billing/page.tsx:38` (`Payment method`).
 
 ## Remaining Limits
 

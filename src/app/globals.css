@@ -2680,7 +2680,7 @@ select {
 
 .open-spot-revenue-heading {
   margin-inline: auto;
-  max-width: 48rem;
+  max-width: 56rem;
   text-align: center;
 }
 
@@ -2703,11 +2703,12 @@ select {
 .open-spot-revenue-title {
   color: #071126;
   display: grid;
-  font-size: 4.25rem;
+  font-size: 3.5rem;
   font-weight: 900;
   letter-spacing: 0;
   line-height: 1.05;
   margin: 1.65rem auto 0;
+  width: 100%;
 }
 
 .open-spot-revenue-subtitle {
