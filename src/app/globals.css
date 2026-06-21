@@ -71,6 +71,641 @@ select {
   outline-offset: 3px;
 }
 
+.open-spot-metrics-showcase-page {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(47, 120, 255, 0.035), transparent 34rem),
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  color: #071126;
+  overflow-x: hidden;
+  padding-top: 2rem;
+}
+
+.open-spot-metrics-floating-header {
+  margin: 0 auto;
+  max-width: min(1120px, calc(100% - 3rem));
+  position: relative;
+  z-index: 10;
+}
+
+.open-spot-metrics-header-inner {
+  align-items: center;
+  backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1.65rem;
+  box-shadow: 0 18px 55px rgba(15, 23, 42, 0.06);
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  min-height: 4.75rem;
+  padding: 0.8rem 1.35rem 0.8rem 1.6rem;
+}
+
+.open-spot-metrics-brand {
+  align-items: center;
+  color: #071126;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 1.18rem;
+  font-weight: 820;
+  gap: 0.8rem;
+}
+
+.open-spot-metrics-mark {
+  align-items: center;
+  background: linear-gradient(145deg, #1f6fff 0%, #5da2ff 100%);
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 10px 24px rgba(47, 120, 255, 0.24);
+  display: inline-flex;
+  height: 2.28rem;
+  justify-content: center;
+  position: relative;
+  width: 2.28rem;
+}
+
+.open-spot-metrics-mark span {
+  background: #ffffff;
+  border-radius: 999px;
+  height: 0.22rem;
+  left: 0.68rem;
+  position: absolute;
+  transform: rotate(-38deg);
+  width: 0.92rem;
+}
+
+.open-spot-metrics-mark span:first-child {
+  top: 0.77rem;
+}
+
+.open-spot-metrics-mark span:last-child {
+  top: 1.24rem;
+}
+
+.open-spot-metrics-nav {
+  align-items: center;
+  display: flex;
+  gap: clamp(1.75rem, 3vw, 3.05rem);
+  justify-content: center;
+}
+
+.open-spot-metrics-nav a {
+  color: #64708a;
+  font-size: 0.92rem;
+  font-weight: 720;
+  transition:
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.open-spot-metrics-nav a:hover {
+  color: #071126;
+  transform: translateY(-1px);
+}
+
+.open-spot-metrics-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1rem;
+}
+
+.open-spot-metrics-language-toggle {
+  background: #f8fbff !important;
+  border-color: rgba(148, 163, 184, 0.22) !important;
+}
+
+.open-spot-metrics-language-toggle button {
+  color: #64708a !important;
+  min-height: 2.45rem;
+  padding-inline: 1rem;
+}
+
+.open-spot-metrics-language-toggle button[aria-pressed="true"] {
+  background: #eaf2ff !important;
+  box-shadow: 0 8px 18px rgba(47, 120, 255, 0.08);
+  color: #2f78ff !important;
+}
+
+.open-spot-metrics-login {
+  align-items: center;
+  background: #071126;
+  border-radius: 1rem;
+  box-shadow: 0 14px 32px rgba(7, 17, 38, 0.2);
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 0.93rem;
+  font-weight: 820;
+  justify-content: center;
+  min-height: 3.05rem;
+  padding: 0 1.55rem;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.open-spot-metrics-login:hover {
+  box-shadow: 0 16px 38px rgba(7, 17, 38, 0.25);
+  transform: translateY(-1px);
+}
+
+.open-spot-metrics-main {
+  margin-top: 2.55rem;
+}
+
+.open-spot-metrics-showcase-page .open-spot-metrics-grid {
+  align-items: stretch;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  margin-top: 0;
+  padding-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.open-spot-metrics-showcase-page .open-spot-metric-card {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 1.75rem;
+  box-shadow: 0 18px 60px rgba(15, 23, 42, 0.045);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: clamp(1.8rem, 2.5vw, 2.35rem);
+  position: relative;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.open-spot-metrics-showcase-page .open-spot-metric-card::before {
+  content: none;
+}
+
+.open-spot-metrics-showcase-page .open-spot-metric-card:hover {
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.065);
+  transform: translateY(-2px);
+}
+
+.open-spot-metrics-showcase-page .open-spot-metric-card--top {
+  min-height: 360px;
+}
+
+.open-spot-metrics-showcase-page .open-spot-metric-card--wide {
+  min-height: 310px;
+}
+
+.open-spot-metric-card-heading {
+  align-items: center;
+  display: flex;
+  gap: 1.28rem;
+}
+
+.open-spot-metric-icon {
+  color: #2f78ff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 2rem;
+  width: 2rem;
+}
+
+.open-spot-metric-icon svg {
+  height: 100%;
+  width: 100%;
+}
+
+.open-spot-metric-card h2 {
+  color: #071126;
+  font-size: clamp(1.18rem, 1.55vw, 1.42rem);
+  font-weight: 820;
+  letter-spacing: 0;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.open-spot-metric-description {
+  color: #687692;
+  font-size: 0.98rem;
+  font-weight: 500;
+  line-height: 1.68;
+  margin: 1.25rem 0 0;
+  max-width: 22.5rem;
+}
+
+.open-spot-metric-description span {
+  display: block;
+}
+
+.open-spot-metric-visual {
+  flex: 1;
+  margin-top: 1.25rem;
+  min-height: 0;
+  position: relative;
+}
+
+.open-spot-metric-card--top .open-spot-metric-visual {
+  min-height: 10.5rem;
+}
+
+.open-spot-metric-card--wide .open-spot-metric-visual {
+  min-height: 10.8rem;
+}
+
+.open-spot-replies-figure {
+  bottom: 0.1rem;
+  left: 0;
+  position: absolute;
+}
+
+.open-spot-replies-figure p,
+.open-spot-filled-gauge-copy p,
+.open-spot-fill-time-number {
+  color: #071126;
+  font-weight: 520;
+  letter-spacing: -0.07em;
+  line-height: 0.94;
+  margin: 0;
+}
+
+.open-spot-replies-figure p {
+  font-size: clamp(4.8rem, 7vw, 5.75rem);
+}
+
+.open-spot-replies-figure span {
+  color: #66728a;
+  display: block;
+  font-size: 1.22rem;
+  font-weight: 520;
+  margin-top: 0.72rem;
+}
+
+.open-spot-revenue-line-visual {
+  bottom: -0.4rem;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 1.1rem;
+}
+
+.open-spot-revenue-line-chart {
+  bottom: 0.2rem;
+  height: 10rem;
+  left: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+}
+
+.open-spot-revenue-tooltip {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 0.8rem;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.06);
+  left: 45%;
+  padding: 0.72rem 1.08rem;
+  position: absolute;
+  text-align: center;
+  top: 1.1rem;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.open-spot-revenue-tooltip strong {
+  color: #071126;
+  display: block;
+  font-size: 1.28rem;
+  font-weight: 780;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.open-spot-revenue-tooltip span {
+  color: #687692;
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 650;
+  margin-top: 0.36rem;
+}
+
+.open-spot-confirmation-mini-card {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1.35rem;
+  bottom: 0.2rem;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  left: 50%;
+  min-height: 9.4rem;
+  padding: 1.15rem 1.55rem;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(12.8rem, 100%);
+}
+
+.open-spot-confirmation-mini-card > p {
+  color: #66728a;
+  font-size: 0.94rem;
+  font-weight: 680;
+  margin: 0 0 0.75rem;
+}
+
+.open-spot-confirmation-ring {
+  display: grid;
+  height: 6.35rem;
+  place-items: center;
+  position: relative;
+  width: 6.35rem;
+}
+
+.open-spot-confirmation-ring svg {
+  height: 100%;
+  transform: rotate(-90deg);
+  width: 100%;
+}
+
+.open-spot-confirmation-ring circle {
+  fill: none;
+  stroke-width: 12;
+}
+
+.open-spot-confirmation-ring-track {
+  stroke: #dfe8f8;
+}
+
+.open-spot-confirmation-ring-value {
+  stroke: #2f78ff;
+  stroke-dasharray: 199 277;
+  stroke-linecap: round;
+}
+
+.open-spot-confirmation-ring strong {
+  color: #071126;
+  font-size: 1.55rem;
+  font-weight: 760;
+  letter-spacing: -0.045em;
+  position: absolute;
+}
+
+.open-spot-fill-time-panel {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.open-spot-fill-time-row {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.7rem;
+}
+
+.open-spot-fill-time-number {
+  font-size: clamp(2.35rem, 4vw, 3rem);
+}
+
+.open-spot-fill-time-number span {
+  font-size: 1.08rem;
+  font-weight: 720;
+  letter-spacing: -0.03em;
+  margin-left: 0.2rem;
+}
+
+.open-spot-green-pill {
+  align-items: center;
+  background: #e9f8ef;
+  border-radius: 999px;
+  color: #0a9f4d;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 820;
+  min-height: 2.45rem;
+  padding: 0 1rem;
+  white-space: nowrap;
+}
+
+.open-spot-fill-time-track {
+  background: #e9eef7;
+  border-radius: 999px;
+  height: 0.48rem;
+  overflow: visible;
+  position: relative;
+}
+
+.open-spot-fill-time-track span {
+  background: #2f78ff;
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+  position: relative;
+  width: 54%;
+}
+
+.open-spot-fill-time-track span::after {
+  background: #2f78ff;
+  border: 4px solid #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 7px 16px rgba(47, 120, 255, 0.22);
+  content: "";
+  height: 1.25rem;
+  position: absolute;
+  right: -0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+}
+
+.open-spot-fill-time-labels {
+  color: #687692;
+  display: flex;
+  font-size: 0.92rem;
+  font-weight: 560;
+  justify-content: space-between;
+  margin-top: 1.35rem;
+}
+
+.open-spot-metrics-showcase-page .open-spot-filled-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.open-spot-filled-card .open-spot-metric-description {
+  max-width: 20.5rem;
+}
+
+.open-spot-filled-card .open-spot-metric-visual {
+  bottom: 1rem;
+  position: absolute;
+  right: clamp(1.6rem, 3vw, 2.4rem);
+  top: 1.55rem;
+  width: min(17rem, 42%);
+}
+
+.open-spot-filled-gauge-wrap {
+  height: 100%;
+  min-height: 13rem;
+  position: relative;
+}
+
+.open-spot-filled-gauge {
+  height: 100%;
+  width: 100%;
+}
+
+.open-spot-filled-gauge-tick {
+  stroke: #e2e8f0;
+  stroke-width: 3;
+}
+
+.open-spot-filled-gauge-tick.is-active {
+  stroke: #2f78ff;
+}
+
+.open-spot-filled-gauge-copy {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  left: 50%;
+  position: absolute;
+  text-align: center;
+  top: 54%;
+  transform: translate(-50%, -50%);
+}
+
+.open-spot-filled-gauge-copy p {
+  font-size: clamp(3rem, 5vw, 3.8rem);
+}
+
+.open-spot-filled-gauge-copy span {
+  color: #66728a;
+  font-size: 1.05rem;
+  font-weight: 560;
+  margin-top: 0.45rem;
+  white-space: nowrap;
+}
+
+.open-spot-filled-gauge-copy strong {
+  color: #0a9f4d;
+  font-size: 0.9rem;
+  font-weight: 820;
+  margin-top: 0.75rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .open-spot-metrics-header-inner {
+    gap: 1.15rem;
+  }
+
+  .open-spot-metrics-nav {
+    gap: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .open-spot-metrics-showcase-page .open-spot-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .open-spot-metrics-showcase-page .open-spot-metrics-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .open-spot-metrics-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .open-spot-metrics-showcase-page {
+    padding-top: 1rem;
+  }
+
+  .open-spot-metrics-floating-header {
+    max-width: calc(100% - 1.5rem);
+  }
+
+  .open-spot-metrics-header-inner {
+    border-radius: 1.25rem;
+    min-height: 4.1rem;
+    padding: 0.6rem 0.72rem 0.6rem 0.9rem;
+  }
+
+  .open-spot-metrics-brand {
+    font-size: 1rem;
+    gap: 0.6rem;
+  }
+
+  .open-spot-metrics-mark {
+    height: 2rem;
+    width: 2rem;
+  }
+
+  .open-spot-metrics-actions {
+    gap: 0.55rem;
+  }
+
+  .open-spot-metrics-language-toggle {
+    display: none !important;
+  }
+
+  .open-spot-metrics-login {
+    border-radius: 0.9rem;
+    font-size: 0.82rem;
+    min-height: 2.65rem;
+    padding-inline: 1rem;
+  }
+
+  .open-spot-metrics-main {
+    margin-top: 1.5rem;
+    padding-inline: 1rem;
+  }
+
+  .open-spot-metrics-showcase-page .open-spot-metric-card,
+  .open-spot-metrics-showcase-page .open-spot-metric-card--top,
+  .open-spot-metrics-showcase-page .open-spot-metric-card--wide {
+    min-height: 22rem;
+  }
+
+  .open-spot-metrics-showcase-page .open-spot-filled-card {
+    display: flex;
+  }
+
+  .open-spot-filled-card .open-spot-metric-visual {
+    bottom: 0;
+    left: 0;
+    margin-top: 1.25rem;
+    position: relative;
+    right: auto;
+    top: auto;
+    width: 100%;
+  }
+
+  .open-spot-fill-time-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .open-spot-metrics-showcase-page .open-spot-metric-card,
+  .open-spot-metrics-showcase-page .open-spot-metric-card:hover,
+  .open-spot-metrics-login,
+  .open-spot-metrics-login:hover,
+  .open-spot-metrics-nav a,
+  .open-spot-metrics-nav a:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 .os-container {
   margin-inline: auto;
   width: min(100% - 2rem, 74rem);

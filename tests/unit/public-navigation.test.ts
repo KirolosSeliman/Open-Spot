@@ -11,6 +11,103 @@ function source(path: string) {
 
 describe("public navigation", () => {
   const homepagePath = "src/components/marketing/lunera-open-spot-template.tsx";
+  const metricsShowcasePath = "src/components/marketing/open-spot-metrics-showcase.tsx";
+
+  it("renders the screenshot-matched metrics showcase as the public homepage surface", () => {
+    const funnel = source("src/components/marketing/open-spot-funnel.tsx");
+    const metricsShowcase = source(metricsShowcasePath);
+    const styles = source("src/app/globals.css");
+
+    expect(funnel).toContain("OpenSpotMetricsShowcase");
+    expect(funnel).not.toContain("LuneraOpenSpotTemplate");
+    expect(funnel).toContain('const locale = isLocale(savedLocale) ? savedLocale : "en";');
+    expect(funnel).toContain("locale={locale}");
+
+    expect(metricsShowcase).toContain("Open Spot metrics overview");
+    expect(metricsShowcase).toContain("open-spot-metrics-showcase-page");
+    expect(metricsShowcase).toContain("open-spot-metrics-floating-header");
+    expect(metricsShowcase).toContain("open-spot-metrics-grid");
+    expect(metricsShowcase).toContain("open-spot-metric-card--top");
+    expect(metricsShowcase).toContain("open-spot-metric-card--wide");
+    expect(metricsShowcase).toContain("grid-cols-1");
+    expect(metricsShowcase).toContain("xl:grid-cols-12");
+    expect(metricsShowcase).not.toContain("<Hero");
+    expect(metricsShowcase).not.toContain("SmsConversationPhone");
+    expect(metricsShowcase).not.toContain("HeroPhoneMockup");
+
+    for (const requiredText of [
+      "Features",
+      "How it works",
+      "Pricing",
+      "Contact",
+      "Log in",
+      "Real-Time Replies",
+      "See who replied YES as soon as your waitlist responds.",
+      "12",
+      "people replied",
+      "Revenue Saved",
+      "Track how much revenue is recovered from filled last-minute openings.",
+      "$8.3K",
+      "This month",
+      "Manual Confirmation",
+      "Your team chooses who gets the appointment.",
+      "No one is confirmed without review.",
+      "Confirmation",
+      "72%",
+      "Average Fill Time",
+      "See how quickly last-minute openings are filled after your SMS goes out.",
+      "18",
+      "min",
+      "22% faster this week",
+      "Successfully Filled Spots",
+      "Track the number of cancelled appointments you've successfully filled.",
+      "84",
+      "filled spots",
+      "18% this week"
+    ]) {
+      expect(metricsShowcase).toContain(requiredText);
+    }
+
+    expect(metricsShowcase).toContain("Réponses en temps réel");
+    expect(metricsShowcase).toContain("Confirmation manuelle");
+    expect(metricsShowcase).toContain("Créneaux remplis avec succès");
+    expect(metricsShowcase).toContain("LanguageSwitcher");
+    expect(metricsShowcase).toContain('const loginHref = "/sign-in";');
+    expect(metricsShowcase).toContain('aria-hidden="true"');
+    expect(metricsShowcase).toContain("RevenueLineChart");
+    expect(metricsShowcase).toContain("ConfirmationRing");
+    expect(metricsShowcase).toContain("FilledSpotsGauge");
+    expect(metricsShowcase).toContain("Array.from({ length: 42 })");
+    const restrictedHomepageTerms = [
+      ["automatically", " confirmed"].join(""),
+      ["confirmed", " automatically"].join(""),
+      ["auto", "-confirm"].join(""),
+      ["pay", "ment"].join(""),
+      ["wal", "let"].join(""),
+      ["cry", "pto"].join(""),
+      ["credit", " card"].join(""),
+      ["ba", "nk"].join("")
+    ];
+
+    for (const restrictedTerm of restrictedHomepageTerms) {
+      expect(metricsShowcase).not.toContain(restrictedTerm);
+    }
+
+    expect(styles).toContain(".open-spot-metrics-showcase-page");
+    expect(styles).toContain("background:");
+    expect(styles).toContain(".open-spot-metrics-floating-header");
+    expect(styles).toContain("max-width: min(1120px, calc(100% - 3rem))");
+    expect(styles).toContain("border-radius: 1.65rem");
+    expect(styles).toContain(".open-spot-metric-card");
+    expect(styles).toContain("border: 1px solid rgba(148, 163, 184, 0.26)");
+    expect(styles).toContain(".open-spot-metric-card--top");
+    expect(styles).toContain("min-height: 360px");
+    expect(styles).toContain(".open-spot-metric-card--wide");
+    expect(styles).toContain("min-height: 310px");
+    expect(styles).toContain(".open-spot-filled-gauge-tick");
+    expect(styles).toContain("@media (max-width: 767px)");
+    expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
+  });
 
   it("keeps the homepage header minimal for Lunera-style parity", () => {
     const homepage = source(homepagePath);
