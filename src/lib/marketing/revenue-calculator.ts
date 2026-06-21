@@ -12,6 +12,16 @@ type SliderPercentInput = {
   max: number;
 };
 
+type SliderValueFromClientXInput = {
+  clientX: number;
+  fallbackValue: number;
+  max: number;
+  min: number;
+  step: number;
+  trackLeft: number;
+  trackWidth: number;
+};
+
 export function calculateRevenueEstimate({
   averageServicePrice,
   lostSpotsPerWeek,
@@ -42,4 +52,25 @@ export function sliderPercent({ max, min, value }: SliderPercentInput) {
   const percent = ((value - min) / (max - min)) * 100;
 
   return Math.min(100, Math.max(0, Math.round(percent * 100) / 100));
+}
+
+export function sliderValueFromClientX({
+  clientX,
+  fallbackValue,
+  max,
+  min,
+  step,
+  trackLeft,
+  trackWidth
+}: SliderValueFromClientXInput) {
+  if (trackWidth <= 0 || max <= min || step <= 0) {
+    return fallbackValue;
+  }
+
+  const rawPercent = (clientX - trackLeft) / trackWidth;
+  const clampedPercent = Math.min(1, Math.max(0, rawPercent));
+  const rawValue = min + clampedPercent * (max - min);
+  const steppedValue = min + Math.round((rawValue - min) / step) * step;
+
+  return Math.min(max, Math.max(min, Number(steppedValue.toFixed(5))));
 }

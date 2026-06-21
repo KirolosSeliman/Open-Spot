@@ -678,13 +678,13 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("Ranked reply queue for review");
     expect(homepage).not.toContain("Manual confirmation before any appointment is filled");
     expect(calculatorSection).toContain("useState(110)");
-    expect(calculatorSection).toContain("useState(11)");
-    expect(calculatorSection).toContain("useState(50)");
+    expect(calculatorSection).toContain("useState(4)");
+    expect(calculatorSection).toContain("useState(30)");
     expect(revenueCalculator).toContain("averageServicePrice * lostSpotsPerWeek * 4");
     expect(revenueCalculator).toContain("monthlyRevenueAtRisk * (recoveryRate / 100)");
     expect(calculatorSection).toContain("calculateRevenueEstimate");
     expect(calculatorSection).toContain("formatRevenueAmount");
-    expect(calculatorSection).toContain("SliderControl");
+    expect(calculatorSection).toContain("RevenueSlider");
     expect(calculatorSection).toContain("ResultMetricCard");
     expect(calculatorSection).toContain("open-spot-revenue-note");
     expect(calculatorSection).toContain("t.revenue.badge");
@@ -697,7 +697,7 @@ describe("public navigation", () => {
     expect(calculatorSection).toContain("t.revenue.noteSuffix");
     expect(calculatorSection).toContain("t.revenue.recoveredRevenue");
     expect(calculatorSection).toContain("t.revenue.monthlyAtRiskBeforeRecovery");
-    expect(calculatorSection).toContain("t.revenue.trustNote");
+    expect(calculatorSection).not.toContain("t.revenue.trustNote");
     expect(calculatorSection).toContain("t.revenue.primaryCta");
     expect(calculatorSection).toContain("t.revenue.secondaryCta");
     expect(calculatorSection).toContain('min={25}');
@@ -706,22 +706,32 @@ describe("public navigation", () => {
     expect(calculatorSection).toContain('min={1}');
     expect(calculatorSection).toContain('max={20}');
     expect(calculatorSection).toContain('min={10}');
-    expect(calculatorSection).toContain('max={60}');
+    expect(calculatorSection).toContain('max={100}');
     expect(calculatorSection).toContain('"$25"');
     expect(calculatorSection).toContain('"$50"');
     expect(calculatorSection).toContain('"$100"');
     expect(calculatorSection).toContain('"$150"');
     expect(calculatorSection).toContain('"$200"');
     expect(calculatorSection).toContain('"10 %"');
-    expect(calculatorSection).toContain('"20 %"');
-    expect(calculatorSection).toContain('"30 %"');
-    expect(calculatorSection).toContain('"40 %"');
+    expect(calculatorSection).toContain('"25 %"');
     expect(calculatorSection).toContain('"50 %"');
-    expect(calculatorSection).toContain('"60 %"');
+    expect(calculatorSection).toContain('"75 %"');
+    expect(calculatorSection).toContain('"100 %"');
     expect(calculatorSection).toContain('"--slider-progress"');
     expect(calculatorSection).toContain('type="range"');
     expect(calculatorSection).toContain("aria-label");
+    expect(calculatorSection).toContain("aria-valuemax={max}");
+    expect(calculatorSection).toContain("aria-valuemin={min}");
+    expect(calculatorSection).toContain("aria-valuenow={value}");
+    expect(calculatorSection).toContain("aria-valuetext={displayValue}");
+    expect(calculatorSection).toContain("onInput");
+    expect(calculatorSection).toContain("onPointerDown");
+    expect(calculatorSection).toContain("onPointerMove");
+    expect(calculatorSection).toContain("onPointerUp");
     expect(calculatorSection).toContain('aria-live="polite"');
+    expect(homepage).not.toContain(
+      "Estimation basÃ©e sur vos donnÃ©es. Les rÃ©sultats rÃ©els varient selon vos clients, vos services et votre volume d'annulations."
+    );
 
     for (const term of forbiddenCalculatorTerms) {
       expect(calculatorSection).not.toContain(term);
@@ -739,11 +749,17 @@ describe("public navigation", () => {
       styles.indexOf(".open-spot-slider-ticks")
     );
 
-    expect(styles).toContain(".revenue-calculator-range");
+    expect(styles).toContain(".revenue-slider-native");
     expect(styles).toContain(".open-spot-slider-marker");
     expect(styles).toContain("width: 3px");
-    expect(rangeStyles).not.toContain("width: 2rem");
-    expect(rangeStyles).not.toContain("height: 2rem");
+    expect(rangeStyles).toContain("-webkit-tap-highlight-color: transparent");
+    expect(rangeStyles).toContain("touch-action: pan-y");
+    expect(rangeStyles).toContain("width: 44px");
+    expect(rangeStyles).toContain("height: 44px");
+    expect(rangeStyles).not.toContain(".open-spot-slider-input-wrap:focus-within");
+    expect(styles).toContain("color: #071126");
+    expect(styles).toContain("letter-spacing: -0.04em");
+    expect(styles).not.toContain(".open-spot-result-note");
     expect(styles).toContain(".open-spot-result-primary");
     expect(styles).toContain(".open-spot-result-secondary");
     expect(styles).toContain("@media (max-width: 767px)");

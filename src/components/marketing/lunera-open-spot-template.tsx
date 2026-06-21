@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties, MouseEvent, PointerEvent, ReactNode } from "react";
 
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
@@ -11,7 +11,8 @@ import type { Locale } from "@/lib/i18n/types";
 import {
   calculateRevenueEstimate,
   formatRevenueAmount,
-  sliderPercent
+  sliderPercent,
+  sliderValueFromClientX
 } from "@/lib/marketing/revenue-calculator";
 import { cn } from "@/lib/utils/cn";
 
@@ -140,8 +141,6 @@ const openSpotCopy = {
     noteSuffix: "recovery estimate",
     recoveredRevenue: "Potential recovered revenue",
     monthlyAtRiskBeforeRecovery: "monthly revenue at risk before recovery.",
-    trustNote:
-      "Estimation based on your data. Actual results vary by clients, services, and cancellation volume.",
     primaryCta: "Book a call",
     secondaryCta: "See how it works",
     perMonth: "per month"
@@ -472,8 +471,6 @@ const openSpotFrCopy = {
     noteSuffix: "de récupération",
     recoveredRevenue: "Revenu potentiel récupéré",
     monthlyAtRiskBeforeRecovery: "de revenu mensuel à risque avant récupération.",
-    trustNote:
-      "Estimation basée sur vos données. Les résultats réels varient selon vos clients, vos services et votre volume d'annulations.",
     primaryCta: "Réserver un appel",
     secondaryCta: "Voir comment ça fonctionne",
     perMonth: "par mois"
@@ -1379,8 +1376,8 @@ function StepMiniUi({ index, t }: { index: number; t: TemplateCopy }) {
 
 function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   const [averageServiceCost, setAverageServiceCost] = useState(110);
-  const [lastMinuteSpots, setLastMinuteSpots] = useState(11);
-  const [recoveryEstimate, setRecoveryEstimate] = useState(50);
+  const [lastMinuteSpots, setLastMinuteSpots] = useState(4);
+  const [recoveryEstimate, setRecoveryEstimate] = useState(30);
   const { monthlyRevenueAtRisk, recoveredRevenue } = calculateRevenueEstimate({
     averageServicePrice: averageServiceCost,
     lostSpotsPerWeek: lastMinuteSpots,
@@ -1409,7 +1406,7 @@ function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCo
 
         <div className="open-spot-revenue-card">
           <div className="open-spot-revenue-controls">
-            <SliderControl
+            <RevenueSlider
               ariaLabel={t.revenue.averageServiceCost}
               displayValue={formatRevenueAmount(averageServiceCost, locale)}
               icon={<TagIcon />}
@@ -1427,7 +1424,7 @@ function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCo
               ]}
               value={averageServiceCost}
             />
-            <SliderControl
+            <RevenueSlider
               ariaLabel={t.revenue.lostPerWeek}
               displayValue={String(lastMinuteSpots)}
               icon={<CalendarIcon />}
@@ -1445,22 +1442,21 @@ function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCo
               ]}
               value={lastMinuteSpots}
             />
-            <SliderControl
+            <RevenueSlider
               ariaLabel={t.revenue.recoveryEstimate}
               displayValue={`${recoveryEstimate} %`}
               icon={<TrendingIcon />}
               label={t.revenue.recoveryEstimate}
-              max={60}
+              max={100}
               min={10}
               onChange={setRecoveryEstimate}
-              step={5}
+              step={1}
               ticks={[
                 { value: 10, label: "10 %" },
-                { value: 20, label: "20 %" },
-                { value: 30, label: "30 %" },
-                { value: 40, label: "40 %" },
+                { value: 25, label: "25 %" },
                 { value: 50, label: "50 %" },
-                { value: 60, label: "60 %" }
+                { value: 75, label: "75 %" },
+                { value: 100, label: "100 %" }
               ]}
               value={recoveryEstimate}
             />
@@ -1481,7 +1477,6 @@ function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCo
             primaryCta={t.revenue.primaryCta}
             recoveredValue={formatRevenueAmount(recoveredRevenue, locale)}
             secondaryCta={t.revenue.secondaryCta}
-            trustNote={t.revenue.trustNote}
           />
         </div>
       </div>
@@ -1489,7 +1484,7 @@ function RevenueCalculatorSection({ locale, t }: { locale: Locale; t: TemplateCo
   );
 }
 
-function SliderControl({
+function RevenueSlider({
   ariaLabel,
   displayValue,
   icon,
@@ -1512,8 +1507,145 @@ function SliderControl({
   ticks: Array<{ label: string; value: number }>;
   value: number;
 }) {
+  const [isDragging, setIsDragging] = useState(false);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const isDraggingRef = useRef(false);
   const sliderProgress = sliderPercent({ max, min, value });
   const sliderStyle = { "--slider-progress": `${sliderProgress}%` } as CSSProperties;
+  const resolvedAriaLabel = ariaLabel ?? label;
+
+  function setDragging(nextDragging: boolean) {
+    isDraggingRef.current = nextDragging;
+    setIsDragging(nextDragging);
+  }
+
+  function getValueFromClientX(clientX: number) {
+    const rect = trackRef.current?.getBoundingClientRect();
+
+    if (!rect || rect.width <= 0) {
+      return value;
+    }
+
+    return sliderValueFromClientX({
+      clientX,
+      fallbackValue: value,
+      max,
+      min,
+      step,
+      trackLeft: rect.left,
+      trackWidth: rect.width
+    });
+  }
+
+  function handlePointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function handlePointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (!isDraggingRef.current) {
+      return;
+    }
+
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function stopDragging(event: PointerEvent<HTMLDivElement>) {
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    setDragging(false);
+  }
+
+  function handleMouseDown(event: MouseEvent<HTMLDivElement>) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    setDragging(true);
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function handleMouseMove(event: MouseEvent<HTMLDivElement>) {
+    if (!isDraggingRef.current) {
+      return;
+    }
+
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function stopMouseDragging() {
+    setDragging(false);
+  }
+
+  function handleClick(event: MouseEvent<HTMLDivElement>) {
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function handleInputPointerDown(event: PointerEvent<HTMLInputElement>) {
+    if (event.pointerType === "mouse" && event.button !== 0) {
+      return;
+    }
+
+    event.stopPropagation();
+    setDragging(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function handleInputPointerMove(event: PointerEvent<HTMLInputElement>) {
+    if (!isDraggingRef.current) {
+      return;
+    }
+
+    event.stopPropagation();
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function stopInputDragging(event: PointerEvent<HTMLInputElement>) {
+    event.stopPropagation();
+
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+
+    setDragging(false);
+  }
+
+  function handleInputMouseDown(event: MouseEvent<HTMLInputElement>) {
+    if (event.button !== 0) {
+      return;
+    }
+
+    event.stopPropagation();
+    setDragging(true);
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function handleInputMouseMove(event: MouseEvent<HTMLInputElement>) {
+    if (!isDraggingRef.current) {
+      return;
+    }
+
+    event.stopPropagation();
+    onChange(getValueFromClientX(event.clientX));
+  }
+
+  function stopInputMouseDragging(event: MouseEvent<HTMLInputElement>) {
+    event.stopPropagation();
+    setDragging(false);
+  }
+
+  function handleInputClick(event: MouseEvent<HTMLInputElement>) {
+    event.stopPropagation();
+    onChange(getValueFromClientX(event.clientX));
+  }
 
   return (
     <div className="open-spot-slider-control">
@@ -1526,21 +1658,45 @@ function SliderControl({
           {displayValue}
         </span>
       </div>
-      <div className="open-spot-slider-input-wrap" style={sliderStyle}>
+      <div
+        className="open-spot-slider-input-wrap"
+        data-dragging={isDragging ? "true" : "false"}
+        onClick={handleClick}
+        onMouseDown={handleMouseDown}
+        onMouseLeave={stopMouseDragging}
+        onMouseMove={handleMouseMove}
+        onMouseUp={stopMouseDragging}
+        onPointerCancel={stopDragging}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={stopDragging}
+        ref={trackRef}
+        style={sliderStyle}
+      >
         <div className="open-spot-slider-track" aria-hidden="true">
           <span className="open-spot-slider-track-active" />
           <span className="open-spot-slider-marker" />
         </div>
         <input
-          aria-label={ariaLabel ?? label}
+          aria-label={resolvedAriaLabel}
           aria-valuemax={max}
           aria-valuemin={min}
           aria-valuenow={value}
           aria-valuetext={displayValue}
-          className="revenue-calculator-range"
+          className="revenue-calculator-range revenue-slider-native"
           max={max}
           min={min}
+          onClick={handleInputClick}
           onChange={(event) => onChange(Number(event.target.value))}
+          onInput={(event) => onChange(Number(event.currentTarget.value))}
+          onMouseDown={handleInputMouseDown}
+          onMouseLeave={stopInputMouseDragging}
+          onMouseMove={handleInputMouseMove}
+          onMouseUp={stopInputMouseDragging}
+          onPointerCancel={stopInputDragging}
+          onPointerDown={handleInputPointerDown}
+          onPointerMove={handleInputPointerMove}
+          onPointerUp={stopInputDragging}
           step={step}
           type="range"
           value={value}
@@ -1562,8 +1718,7 @@ function ResultMetricCard({
   period,
   primaryCta,
   recoveredValue,
-  secondaryCta,
-  trustNote
+  secondaryCta
 }: {
   atRiskLabel: string;
   atRiskValue: string;
@@ -1572,7 +1727,6 @@ function ResultMetricCard({
   primaryCta: string;
   recoveredValue: string;
   secondaryCta: string;
-  trustNote: string;
 }) {
   return (
     <aside className="open-spot-revenue-results">
@@ -1582,13 +1736,6 @@ function ResultMetricCard({
           {recoveredValue}
         </p>
         <span className="open-spot-result-period">{period}</span>
-      </div>
-
-      <div className="open-spot-result-note">
-        <span className="open-spot-result-check" aria-hidden="true">
-          <CheckIcon />
-        </span>
-        <p>{trustNote}</p>
       </div>
 
       <p className="open-spot-result-risk">
@@ -1649,14 +1796,6 @@ function CalendarIcon() {
     <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
       <rect height="15" rx="3" stroke="currentColor" strokeWidth="2" width="16" x="4" y="5" />
       <path d="M8 3v4M16 3v4M4 10h16" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-    </svg>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
-      <path d="m7.4 12.3 3.1 3.1 6.2-6.8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
     </svg>
   );
 }
