@@ -28,7 +28,7 @@ const bookingCopy = {
     ],
     controlTitle: "Le commerce garde le contrôle",
     control:
-      "Open Spot n’envoie aucun SMS marketing depuis ce formulaire et ne confirme jamais automatiquement le premier client qui répond.",
+      "Open Spot n’envoie aucun SMS marketing depuis ce formulaire. La validation finale reste entre les mains du commerce.",
     readyNote:
       "Si vous êtes prêt à configurer Open Spot, donnez les mêmes informations et ajoutez vos disponibilités dans le message."
   },
@@ -51,7 +51,7 @@ const bookingCopy = {
     ],
     controlTitle: "The business stays in control",
     control:
-      "Open Spot sends no marketing SMS from this form and never automatically confirms the first client who replies.",
+      "Open Spot sends no marketing SMS from this form. Final validation stays with the business.",
     readyNote:
       "If you are ready to configure Open Spot, use the same form and add your availability in the message."
   }

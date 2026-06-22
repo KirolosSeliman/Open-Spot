@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent, PointerEvent, ReactNode } from "react";
 
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { BookingFlowSection } from "@/components/marketing/booking-flow-section";
+import { OpenSpotMetricsShowcase } from "@/components/marketing/open-spot-metrics-showcase";
 import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
 import type { Locale } from "@/lib/i18n/types";
 import {
@@ -285,7 +287,7 @@ const openSpotCopy = {
       {
         question: "What happens if multiple clients reply?",
         answer:
-          "Replies are collected in one place so your team does not have to manage scattered text messages manually. You can review who replied, compare timing or fit, and then confirm the right client. This prevents the first reply from automatically taking the spot when another client may be a better match."
+          "Replies are collected in one place so your team does not have to manage scattered text messages manually. You can review who replied, compare timing or fit, and then confirm the right client. This keeps the decision with your team when another client may be a better match."
       },
       {
         question: "Can I start with a small client list?",
@@ -564,7 +566,7 @@ const openSpotFrCopy = {
           "Lorsqu'une place se libere, votre equipe cree un creneau avec le service, l'heure et les details utiles. Open Spot envoie une alerte SMS aux clients qui ont accepte ces mises a jour. Les clients repondent par texto et votre equipe choisit qui confirmer manuellement."
       },
       {
-        question: "Les clients sont-ils confirmes automatiquement?",
+        question: "Les clients sont-ils confirmes sans validation?",
         answer:
           "Non. Open Spot garde la confirmation finale entre les mains du commerce. Meme si plusieurs clients repondent rapidement, votre equipe revise les reponses et confirme le client qui convient le mieux a l'horaire, au service et a la disponibilite."
       },
@@ -732,10 +734,11 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
       <FloatingNavbar locale={locale} t={t} />
       <main>
         <Hero locale={locale} t={t} />
-        <MetricsSection t={t} />
+        <OpenSpotMetricsShowcase locale={locale} />
+        <RevenueCalculatorSection locale={locale} t={t} />
+        <BookingFlowSection locale={locale} />
         <SetupSection t={t} />
         <HowItWorks t={t} />
-        <RevenueCalculatorSection locale={locale} t={t} />
         <PersonalizedPricingSection t={t} />
         <Testimonials t={t} />
         <Faq t={t} />
@@ -916,206 +919,6 @@ function HeroCloudBlend() {
       <div className="lunera-cloud-blob lunera-cloud-blob-center" />
       <div className="lunera-cloud-blob lunera-cloud-blob-right" />
       <div className="lunera-cloud-gradient-whiteout" />
-    </div>
-  );
-}
-
-function MetricsSection({ t }: { t: TemplateCopy }) {
-  return (
-    <section className="open-spot-metrics-section bg-white px-4 pb-20 pt-24 sm:pb-24 sm:pt-24">
-      <div className="open-spot-metrics-heading mx-auto max-w-[48rem] text-center">
-        <h2 className="open-spot-metrics-title" data-lunera-reveal>
-          {t.metrics.title.map((line) => (
-            <span className="block" key={line}>
-              {line}
-            </span>
-          ))}
-        </h2>
-        <p className="mx-auto mt-5 max-w-[42rem] text-base font-medium leading-7 text-slate-500" data-lunera-reveal>
-          {t.metrics.subtitle}
-        </p>
-      </div>
-      <div className="open-spot-metrics-grid mx-auto mt-10 grid max-w-[78rem] gap-6 lg:grid-cols-12">
-        <DashboardCard
-          className="lg:col-span-4"
-          size="top"
-          text={t.metrics.cards[0].text}
-          title={t.metrics.cards[0].title}
-          visual={<RepliesVisual t={t} />}
-        />
-        <DashboardCard
-          className="lg:col-span-4"
-          size="top"
-          text={t.metrics.cards[1].text}
-          title={t.metrics.cards[1].title}
-          visual={<RevenueVisual t={t} />}
-        />
-        <DashboardCard
-          className="lg:col-span-4"
-          size="top"
-          text={t.metrics.cards[2].text}
-          title={t.metrics.cards[2].title}
-          visual={<ManualVisual t={t} />}
-        />
-        <DashboardCard
-          className="open-spot-dashboard-card--fill-time lg:col-span-6"
-          size="wide"
-          text={t.metrics.cards[3].text}
-          title={t.metrics.cards[3].title}
-          visual={<FillTimeVisual t={t} />}
-        />
-        <DashboardCard
-          className="open-spot-dashboard-card--gauge lg:col-span-6"
-          size="wide"
-          text={t.metrics.cards[4].text}
-          title={t.metrics.cards[4].title}
-          visual={<FilledSpotsVisual t={t} />}
-        />
-      </div>
-    </section>
-  );
-}
-
-function DashboardCard({
-  className,
-  size,
-  text,
-  title,
-  visual
-}: {
-  className?: string;
-  size: "top" | "wide";
-  text: string;
-  title: string;
-  visual: ReactNode;
-}) {
-  const sizeClass =
-    size === "wide" ? "open-spot-dashboard-card--wide" : "open-spot-dashboard-card--top";
-
-  return (
-    <article
-      className={cn(
-        "open-spot-dashboard-card group flex flex-col",
-        sizeClass,
-        className
-      )}
-      data-lunera-reveal
-    >
-      <h3 className="open-spot-dashboard-title">{title}</h3>
-      <p className="open-spot-dashboard-copy">{text}</p>
-      <div className="open-spot-dashboard-visual">{visual}</div>
-    </article>
-  );
-}
-
-function RepliesVisual({ t }: { t: TemplateCopy }) {
-  return (
-    <div className="open-spot-replies-mini">
-      <div className="open-spot-replies-donut">
-        <div className="open-spot-replies-donut-core">
-          ...
-        </div>
-      </div>
-      <div>
-        <p className="open-spot-card-number">128</p>
-        <p className="open-spot-card-label">{t.metrics.visuals.yesReplies}</p>
-        <p className="open-spot-card-positive">{t.metrics.visuals.vsYesterday}</p>
-      </div>
-    </div>
-  );
-}
-
-function RevenueVisual({ t }: { t: TemplateCopy }) {
-  return (
-    <div className="open-spot-revenue-visual">
-      <div className="open-spot-revenue-badge">
-        <p className="text-xs font-black text-[#3478ff]">{t.metrics.visuals.revenueSaved}</p>
-        <p className="text-xl font-black">$8.3K</p>
-        <p className="text-xs font-bold text-slate-400">{t.metrics.visuals.thisMonth}</p>
-      </div>
-      <svg aria-hidden="true" className="open-spot-revenue-chart" fill="none" viewBox="0 0 360 120">
-        <path d="M8 68 H352" stroke="#e8eef8" strokeDasharray="3 6" />
-        <path d="M252 26 V112" stroke="#d8e3f4" />
-        <path
-          d="M5 92 C45 88 55 70 85 75 C125 82 132 46 170 52 C208 58 214 34 252 38 C292 42 308 18 355 12"
-          stroke="#3478ff"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="5"
-        />
-        <circle cx="252" cy="38" fill="#3478ff" r="7" />
-      </svg>
-    </div>
-  );
-}
-
-function ManualVisual({ t }: { t: TemplateCopy }) {
-  return (
-    <div className="open-spot-manual-visual">
-      {[
-        [t.metrics.visuals.reviewed, "100%"],
-        [t.metrics.visuals.confirmation, "72%"]
-      ].map(([label, value]) => (
-        <div
-          className="open-spot-manual-mini"
-          key={label}
-        >
-          <p className="text-xs font-black text-[#3478ff]">{label}</p>
-          <div className="open-spot-manual-donut">
-            <div className="open-spot-manual-core">
-              {value}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function FillTimeVisual({ t }: { t: TemplateCopy }) {
-  return (
-    <div className="open-spot-fill-time-visual">
-      <div className="open-spot-fill-time-row">
-        <div>
-          <p className="open-spot-fill-number">18 <span>min</span></p>
-        </div>
-        <p className="open-spot-card-positive open-spot-fill-pill">
-          ↓ {t.metrics.visuals.fasterThisWeek}
-        </p>
-      </div>
-      <div className="open-spot-fill-slider">
-        <div className="open-spot-fill-slider-active">
-          <span />
-        </div>
-      </div>
-      <div className="open-spot-fill-labels">
-        <span>0 min</span>
-        <span>15 min</span>
-        <span>30 min</span>
-      </div>
-    </div>
-  );
-}
-
-function FilledSpotsVisual({ t }: { t: TemplateCopy }) {
-  return (
-    <div className="open-spot-filled-spots-visual">
-      <div className="open-spot-gauge">
-        <div className="open-spot-gauge-ticks" aria-hidden="true">
-          {Array.from({ length: 34 }).map((_, index) => (
-            <span
-              className={cn("open-spot-gauge-tick", index < 25 && "is-active")}
-              key={index}
-              style={{ "--tick-index": index } as CSSProperties}
-            />
-          ))}
-        </div>
-        <div className="open-spot-gauge-center">
-          <p>84</p>
-          <span>{t.metrics.visuals.filledSpots}</span>
-          <strong>↑ {t.metrics.visuals.thisWeek}</strong>
-        </div>
-      </div>
     </div>
   );
 }

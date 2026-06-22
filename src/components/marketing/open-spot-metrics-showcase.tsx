@@ -1,11 +1,7 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import type { Locale } from "@/lib/i18n/types";
 import { cn } from "@/lib/utils/cn";
-
-const loginHref = "/sign-in";
 
 const showcaseCopy = {
   en: {
@@ -98,16 +94,19 @@ const showcaseCopy = {
   }
 } as const;
 
-type ShowcaseCopy = (typeof showcaseCopy)[Locale];
-
 export function OpenSpotMetricsShowcase({ locale }: { locale: Locale }) {
   const t = showcaseCopy[locale];
 
   return (
-    <div className="open-spot-metrics-showcase-page min-h-screen text-[#071126]">
-      <FloatingMetricsHeader locale={locale} t={t} />
-      <main className="open-spot-metrics-main mx-auto w-full max-w-[1240px] px-6 pb-16" id="features">
-        <h1 className="sr-only">{t.srTitle}</h1>
+    <section
+      aria-labelledby="open-spot-metrics-showcase-title"
+      className="open-spot-metrics-showcase-page bg-white px-4 text-[#071126]"
+      id="metrics-showcase"
+    >
+      <div className="open-spot-metrics-main mx-auto w-full max-w-[1240px] px-2 sm:px-6">
+        <h2 className="sr-only" id="open-spot-metrics-showcase-title">
+          {t.srTitle}
+        </h2>
         <div className="open-spot-metrics-grid grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-12">
           <MetricCard
             className="open-spot-metric-card--top xl:col-span-4"
@@ -168,38 +167,8 @@ export function OpenSpotMetricsShowcase({ locale }: { locale: Locale }) {
             />
           </MetricCard>
         </div>
-      </main>
-    </div>
-  );
-}
-
-function FloatingMetricsHeader({ locale, t }: { locale: Locale; t: ShowcaseCopy }) {
-  return (
-    <header className="open-spot-metrics-floating-header">
-      <div className="open-spot-metrics-header-inner">
-        <Link className="open-spot-metrics-brand" href="/">
-          <OpenSpotMark />
-          <span>Open Spot</span>
-        </Link>
-
-        <nav aria-label="Main navigation" className="open-spot-metrics-nav">
-          <Link href="#features">{t.nav.features}</Link>
-          <Link href="/how-it-works">{t.nav.how}</Link>
-          <Link href="/pricing">{t.nav.pricing}</Link>
-          <Link href="/contact">{t.nav.contact}</Link>
-        </nav>
-
-        <div className="open-spot-metrics-actions">
-          <LanguageSwitcher
-            className="open-spot-metrics-language-toggle"
-            initialLocale={locale}
-          />
-          <Link className="open-spot-metrics-login" href={loginHref}>
-            {t.nav.login}
-          </Link>
-        </div>
       </div>
-    </header>
+    </section>
   );
 }
 
@@ -358,15 +327,6 @@ function FilledSpotsGauge({
         <strong>↑ {improvement}</strong>
       </div>
     </div>
-  );
-}
-
-function OpenSpotMark() {
-  return (
-    <span aria-hidden="true" className="open-spot-metrics-mark">
-      <span />
-      <span />
-    </span>
   );
 }
 

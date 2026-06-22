@@ -1,12 +1,8 @@
-import { OpenSpotMetricsShowcase } from "@/components/marketing/open-spot-metrics-showcase";
-import { cookies } from "next/headers";
-
-import { isLocale, localeCookieName } from "@/lib/i18n/shared";
+import { LuneraOpenSpotTemplate } from "@/components/marketing/lunera-open-spot-template";
+import { getRequestLocale } from "@/lib/i18n/locale";
 
 export async function OpenSpotFunnel() {
-  const cookieStore = await cookies();
-  const savedLocale = cookieStore.get(localeCookieName)?.value;
-  const locale = isLocale(savedLocale) ? savedLocale : "en";
+  const locale = await getRequestLocale();
 
-  return <OpenSpotMetricsShowcase locale={locale} />;
+  return <LuneraOpenSpotTemplate locale={locale} />;
 }

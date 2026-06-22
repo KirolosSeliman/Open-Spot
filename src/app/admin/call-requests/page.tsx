@@ -46,7 +46,7 @@ export default async function CallRequestsPage({
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Consultez les demandes d'appel Open Spot, contactez les commerces et gardez le statut de suivi a jour sans confirmer automatiquement de rendez-vous."
+        description="Consultez les demandes d'appel Open Spot, contactez les commerces et gardez le statut de suivi a jour tout en gardant le suivi manuel."
         title="Demandes d'appel"
       />
 
@@ -69,7 +69,7 @@ export default async function CallRequestsPage({
       </div>
 
       <Panel
-        description="Les liens SMS et email servent au suivi manuel seulement. Aucun SMS marketing et aucune confirmation de rendez-vous ne sont envoyes automatiquement depuis cette page."
+        description="Les liens SMS et email servent au suivi manuel seulement. Aucun SMS marketing et aucune validation de rendez-vous ne part depuis cette page."
         title="Boite de demandes"
       >
         <form className="mb-5 grid gap-3 md:grid-cols-[1fr_14rem_auto]" method="get">

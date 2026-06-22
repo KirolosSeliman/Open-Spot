@@ -12,20 +12,47 @@ function source(path: string) {
 describe("public navigation", () => {
   const homepagePath = "src/components/marketing/lunera-open-spot-template.tsx";
   const metricsShowcasePath = "src/components/marketing/open-spot-metrics-showcase.tsx";
+  const bookingFlowPath = "src/components/marketing/booking-flow-section.tsx";
 
-  it("renders the screenshot-matched metrics showcase as the public homepage surface", () => {
+  it("renders the full Lunera landing as the public homepage and integrates the metrics showcase as a section", () => {
     const funnel = source("src/components/marketing/open-spot-funnel.tsx");
+    const homepage = source(homepagePath);
     const metricsShowcase = source(metricsShowcasePath);
     const styles = source("src/app/globals.css");
+    const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
 
-    expect(funnel).toContain("OpenSpotMetricsShowcase");
-    expect(funnel).not.toContain("LuneraOpenSpotTemplate");
-    expect(funnel).toContain('const locale = isLocale(savedLocale) ? savedLocale : "en";');
+    expect(funnel).toContain("LuneraOpenSpotTemplate");
+    expect(funnel).toContain("getRequestLocale");
+    expect(funnel).not.toContain("OpenSpotMetricsShowcase");
     expect(funnel).toContain("locale={locale}");
+
+    expect(mainMarkup).toContain("<Hero");
+    expect(mainMarkup).toContain("<OpenSpotMetricsShowcase");
+    expect(mainMarkup).toContain("<RevenueCalculatorSection");
+    expect(mainMarkup).toContain("<BookingFlowSection");
+    expect(mainMarkup).toContain("<SetupSection");
+    expect(mainMarkup).toContain("<HowItWorks");
+    expect(mainMarkup).toContain("<PersonalizedPricingSection");
+    expect(mainMarkup).toContain("<Faq");
+    expect(mainMarkup.indexOf("<Hero")).toBeLessThan(
+      mainMarkup.indexOf("<OpenSpotMetricsShowcase")
+    );
+    expect(mainMarkup.indexOf("<OpenSpotMetricsShowcase")).toBeLessThan(
+      mainMarkup.indexOf("<RevenueCalculatorSection")
+    );
+    expect(mainMarkup.indexOf("<RevenueCalculatorSection")).toBeLessThan(
+      mainMarkup.indexOf("<BookingFlowSection")
+    );
+    expect(mainMarkup.indexOf("<BookingFlowSection")).toBeLessThan(
+      mainMarkup.indexOf("<SetupSection")
+    );
+    expect(mainMarkup.indexOf("<SetupSection")).toBeLessThan(
+      mainMarkup.indexOf("<HowItWorks")
+    );
 
     expect(metricsShowcase).toContain("Open Spot metrics overview");
     expect(metricsShowcase).toContain("open-spot-metrics-showcase-page");
-    expect(metricsShowcase).toContain("open-spot-metrics-floating-header");
+    expect(metricsShowcase).not.toContain("open-spot-metrics-floating-header");
     expect(metricsShowcase).toContain("open-spot-metrics-grid");
     expect(metricsShowcase).toContain("open-spot-metric-card--top");
     expect(metricsShowcase).toContain("open-spot-metric-card--wide");
@@ -34,13 +61,10 @@ describe("public navigation", () => {
     expect(metricsShowcase).not.toContain("<Hero");
     expect(metricsShowcase).not.toContain("SmsConversationPhone");
     expect(metricsShowcase).not.toContain("HeroPhoneMockup");
+    expect(metricsShowcase).not.toContain("LanguageSwitcher");
+    expect(metricsShowcase).not.toContain('const loginHref = "/sign-in";');
 
     for (const requiredText of [
-      "Features",
-      "How it works",
-      "Pricing",
-      "Contact",
-      "Log in",
       "Real-Time Replies",
       "See who replied YES as soon as your waitlist responds.",
       "12",
@@ -71,8 +95,6 @@ describe("public navigation", () => {
     expect(metricsShowcase).toContain("Réponses en temps réel");
     expect(metricsShowcase).toContain("Confirmation manuelle");
     expect(metricsShowcase).toContain("Créneaux remplis avec succès");
-    expect(metricsShowcase).toContain("LanguageSwitcher");
-    expect(metricsShowcase).toContain('const loginHref = "/sign-in";');
     expect(metricsShowcase).toContain('aria-hidden="true"');
     expect(metricsShowcase).toContain("RevenueLineChart");
     expect(metricsShowcase).toContain("ConfirmationRing");
@@ -95,9 +117,6 @@ describe("public navigation", () => {
 
     expect(styles).toContain(".open-spot-metrics-showcase-page");
     expect(styles).toContain("background:");
-    expect(styles).toContain(".open-spot-metrics-floating-header");
-    expect(styles).toContain("max-width: min(1120px, calc(100% - 3rem))");
-    expect(styles).toContain("border-radius: 1.65rem");
     expect(styles).toContain(".open-spot-metric-card");
     expect(styles).toContain("border: 1px solid rgba(148, 163, 184, 0.26)");
     expect(styles).toContain(".open-spot-metric-card--top");
@@ -107,6 +126,86 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-filled-gauge-tick");
     expect(styles).toContain("@media (max-width: 767px)");
     expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
+  });
+
+  it("adds the screenshot-matched booking flow compatibility section to the public homepage", () => {
+    const homepage = source(homepagePath);
+    const metricsShowcase = source(metricsShowcasePath);
+    const bookingFlow = source(bookingFlowPath);
+    const styles = source("src/app/globals.css");
+    const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
+
+    expect(mainMarkup).toContain("<BookingFlowSection locale={locale} />");
+    expect(metricsShowcase).not.toContain("BookingFlowSection");
+
+    expect(bookingFlow).toContain("booking-flow-section");
+    expect(bookingFlow).toContain('aria-labelledby="why-open-spot-title"');
+    expect(bookingFlow).toContain('id="why-open-spot-title"');
+    expect(bookingFlow).toContain("open-spot-booking-flow-dome");
+    expect(bookingFlow).toContain("open-spot-booking-flow-stage");
+    expect(bookingFlow).toContain("open-spot-booking-flow-card");
+    expect(bookingFlow).toContain("open-spot-booking-flow-mobile-grid");
+
+    for (const requiredText of [
+      "Why Open Spot",
+      "Works with the booking",
+      "flow you already use.",
+      "Open Spot fits around your existing appointment workflow so your team",
+      "can fill last-minute cancellations without changing how clients already book.",
+      "No migration",
+      "needed",
+      "Built for",
+      "cancellations",
+      "Clients reply",
+      "by SMS",
+      "You stay in",
+      "control",
+      "Pourquoi Open Spot",
+      "Fonctionne avec le flux de réservation que vous utilisez déjà.",
+      "Aucune migration",
+      "nécessaire",
+      "Conçu pour les",
+      "annulations",
+      "Les clients répondent",
+      "par SMS",
+      "Vous gardez le",
+      "contrôle"
+    ]) {
+      expect(bookingFlow).toContain(requiredText);
+    }
+
+    for (const cardClass of [
+      "open-spot-booking-flow-card--migration",
+      "open-spot-booking-flow-card--cancellations",
+      "open-spot-booking-flow-card--sms",
+      "open-spot-booking-flow-card--control"
+    ]) {
+      expect(styles).toContain(`.${cardClass}`);
+    }
+
+    for (const restrictedTerm of [
+      ["automatically", " confirmed"].join(""),
+      ["confirmed", " automatically"].join(""),
+      ["auto", "-confirm"].join(""),
+      ["first", " reply"].join(""),
+      ["pay", "ment"].join(""),
+      ["wal", "let"].join(""),
+      ["cry", "pto"].join(""),
+      ["credit", " card"].join(""),
+      ["ba", "nk"].join("")
+    ]) {
+      expect(bookingFlow).not.toContain(restrictedTerm);
+    }
+
+    expect(styles).toContain(".open-spot-booking-flow-section");
+    expect(styles).toContain(".open-spot-booking-flow-dome");
+    expect(styles).toContain("radial-gradient(ellipse at 50% 0%");
+    expect(styles).toContain(".open-spot-booking-flow-card--migration");
+    expect(styles).toContain("rotate(-18deg)");
+    expect(styles).toContain(".open-spot-booking-flow-card--sms");
+    expect(styles).toContain("rotate(7deg)");
+    expect(styles).toContain(".open-spot-booking-flow-mobile-grid");
+    expect(styles).toContain("@media (max-width: 1023px)");
   });
 
   it("keeps the homepage header minimal for Lunera-style parity", () => {
@@ -276,10 +375,11 @@ describe("public navigation", () => {
     const phoneIndex = heroFunction.indexOf("<HeroPhoneMockup");
     const requiredOrder = [
       "<Hero",
-      "<MetricsSection",
+      "<OpenSpotMetricsShowcase",
+      "<RevenueCalculatorSection",
+      "<BookingFlowSection",
       "<SetupSection",
       "<HowItWorks",
-      "<RevenueCalculatorSection",
       "<PersonalizedPricingSection",
       "<Testimonials",
       "<Faq",
@@ -578,7 +678,7 @@ describe("public navigation", () => {
     expect(faqCopy).toContain("final confirmation in the hands of the business");
     expect(faqCopy).toContain("regular SMS");
     expect(faqCopy).toContain("consent-based recovery, not cold texting or mass spam");
-    expect(faqCopy).toContain("prevents the first reply from automatically taking the spot");
+    expect(faqCopy).toContain("keeps the decision with your team when another client may be a better match");
     expect(faqCopy).toContain("higher-value services like color, treatments, spa appointments, or longer bookings");
     expect(faqCopy).toContain("not meant to blast promotions or run generic SMS campaigns");
     expect(faqCopy).toContain("hair salons, barber shops, beauty clinics, spas, wellness studios");
@@ -652,38 +752,27 @@ describe("public navigation", () => {
     expect(styles).toContain("animation: none !important");
   });
 
-  it("uses the compact Lunera-style analytics grid and card visuals", () => {
+  it("uses the premium integrated metrics showcase grid and card visuals", () => {
     const homepage = source(homepagePath);
+    const metricsShowcase = source(metricsShowcasePath);
     const styles = source("src/app/globals.css");
-    const metricsSection = homepage.slice(
-      homepage.indexOf("function MetricsSection("),
-      homepage.indexOf("function DashboardCard(")
-    );
-    const filledSpotsVisual = homepage.slice(
-      homepage.indexOf("function FilledSpotsVisual("),
-      homepage.indexOf("function SetupSection(")
-    );
 
-    expect(metricsSection).toContain("open-spot-metrics-section");
-    expect(metricsSection).toContain("open-spot-metrics-heading");
-    expect(metricsSection).toContain("open-spot-metrics-grid");
-    expect(metricsSection).toContain("lg:grid-cols-12");
-    expect(metricsSection).toContain('size="top"');
-    expect(metricsSection).toContain('size="wide"');
-    expect(metricsSection).toContain("lg:col-span-4");
-    expect(metricsSection).toContain("lg:col-span-6");
-    expect(homepage).toContain("open-spot-dashboard-card--top");
-    expect(homepage).toContain("open-spot-dashboard-card--wide");
-    expect(filledSpotsVisual).toContain("open-spot-gauge-ticks");
-    expect(filledSpotsVisual).toContain("open-spot-gauge-tick");
-    expect(filledSpotsVisual).toContain("Array.from({ length: 34 })");
+    expect(homepage).toContain("<OpenSpotMetricsShowcase locale={locale} />");
+    expect(homepage).not.toContain("function MetricsSection(");
+    expect(metricsShowcase).toContain("open-spot-metrics-showcase-page");
+    expect(metricsShowcase).toContain("open-spot-metrics-grid");
+    expect(metricsShowcase).toContain("xl:grid-cols-12");
+    expect(metricsShowcase).toContain("open-spot-metric-card--top");
+    expect(metricsShowcase).toContain("open-spot-metric-card--wide");
+    expect(metricsShowcase).toContain("RevenueLineChart");
+    expect(metricsShowcase).toContain("ConfirmationRing");
+    expect(metricsShowcase).toContain("FilledSpotsGauge");
+    expect(metricsShowcase).toContain("Array.from({ length: 42 })");
     expect(styles).toContain(".open-spot-metrics-grid");
-    expect(styles).toContain(".open-spot-dashboard-card--top");
-    expect(styles).toContain(".open-spot-dashboard-card--wide");
-    expect(styles).toContain("transform: translateY(-6px) scale(1.01)");
-    expect(styles).toContain("0 28px 80px rgba(37, 99, 235, 0.1)");
-    expect(styles).toContain(".open-spot-dashboard-card:hover .open-spot-dashboard-visual");
-    expect(styles).toContain(".open-spot-gauge-tick");
+    expect(styles).toContain(".open-spot-metrics-showcase-page .open-spot-metric-card");
+    expect(styles).toContain(".open-spot-metric-card--top");
+    expect(styles).toContain(".open-spot-metric-card--wide");
+    expect(styles).toContain(".open-spot-filled-gauge-tick");
     expect(styles).toContain("prefers-reduced-motion: reduce");
   });
 

@@ -77,7 +77,8 @@ select {
     linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   color: #071126;
   overflow-x: hidden;
-  padding-top: 2rem;
+  padding-bottom: clamp(5rem, 7vw, 6.5rem);
+  padding-top: clamp(5rem, 7vw, 6.5rem);
 }
 
 .open-spot-metrics-floating-header {
@@ -211,7 +212,7 @@ select {
 }
 
 .open-spot-metrics-main {
-  margin-top: 2.55rem;
+  margin-top: 0;
 }
 
 .open-spot-metrics-showcase-page .open-spot-metrics-grid {
@@ -595,6 +596,157 @@ select {
   white-space: nowrap;
 }
 
+.open-spot-booking-flow-section {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(47, 120, 255, 0.035), transparent 34rem),
+    linear-gradient(180deg, #fbfdff 0%, #ffffff 45%, #fbfdff 100%);
+  min-height: clamp(760px, 73vw, 900px);
+}
+
+.open-spot-booking-flow-dome {
+  background: radial-gradient(ellipse at 50% 0%, rgba(232, 242, 255, 0.96), rgba(239, 247, 255, 0.8) 56%, rgba(255, 255, 255, 0) 100%);
+  border-top-left-radius: 999px;
+  border-top-right-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 -28px 80px rgba(47, 120, 255, 0.045);
+  height: 46rem;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 31.5rem;
+  transform: translateX(-50%);
+  width: min(96rem, 132vw);
+  z-index: -1;
+}
+
+.open-spot-booking-flow-eyebrow {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 999px;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+  color: #6d7a95;
+  display: inline-flex;
+  font-size: 0.98rem;
+  font-weight: 860;
+  line-height: 1;
+  margin: 0 auto;
+  padding: 0.78rem 1.65rem;
+}
+
+.open-spot-booking-flow-title {
+  color: #071126;
+  font-size: clamp(3.6rem, 7vw, 6.4rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+  margin: 1.75rem auto 0;
+  max-width: 57rem;
+  text-align: center;
+}
+
+.open-spot-booking-flow-title span,
+.open-spot-booking-flow-description span,
+.open-spot-booking-flow-card p span {
+  display: block;
+}
+
+.open-spot-booking-flow-description {
+  color: #75839d;
+  font-size: clamp(1.15rem, 1.8vw, 1.38rem);
+  font-weight: 500;
+  line-height: 1.72;
+  margin: 1.9rem auto 0;
+  max-width: 53rem;
+  text-align: center;
+}
+
+.open-spot-booking-flow-stage {
+  height: 360px;
+  margin: 5.9rem auto 0;
+  max-width: 72rem;
+  position: relative;
+}
+
+.open-spot-booking-flow-card {
+  align-items: center;
+  backdrop-filter: blur(18px);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.84);
+  border-radius: 2rem;
+  box-shadow: 0 24px 65px rgba(15, 23, 42, 0.09);
+  color: #071126;
+  display: flex;
+  flex-direction: column;
+  height: 178px;
+  justify-content: center;
+  padding: 1.55rem 1.25rem;
+  position: absolute;
+  text-align: center;
+  transition:
+    box-shadow 280ms ease,
+    translate 280ms ease;
+  width: 158px;
+}
+
+.open-spot-booking-flow-card:hover {
+  box-shadow: 0 30px 75px rgba(15, 23, 42, 0.11);
+  translate: 0 -4px;
+}
+
+.open-spot-booking-flow-card-icon {
+  color: #2f78ff;
+  display: inline-flex;
+  height: 3.1rem;
+  margin-bottom: 1.15rem;
+  width: 3.1rem;
+}
+
+.open-spot-booking-flow-card-icon svg {
+  height: 100%;
+  width: 100%;
+}
+
+.open-spot-booking-flow-card p {
+  font-size: 1.08rem;
+  font-weight: 820;
+  letter-spacing: -0.03em;
+  line-height: 1.24;
+  margin: 0;
+}
+
+.open-spot-booking-flow-card--migration {
+  left: 6.5%;
+  top: 150px;
+  transform: rotate(-18deg);
+}
+
+.open-spot-booking-flow-card--cancellations {
+  left: 31%;
+  top: 35px;
+  transform: rotate(-5deg);
+}
+
+.open-spot-booking-flow-card--sms {
+  right: 31%;
+  top: 38px;
+  transform: rotate(7deg);
+}
+
+.open-spot-booking-flow-card--control {
+  right: 6.5%;
+  top: 154px;
+  transform: rotate(16deg);
+}
+
+.open-spot-booking-flow-mobile-grid .open-spot-booking-flow-card {
+  height: auto;
+  min-height: 10.7rem;
+  position: relative;
+  transform: none;
+  width: auto;
+}
+
 @media (max-width: 1100px) {
   .open-spot-metrics-header-inner {
     gap: 1.15rem;
@@ -623,9 +775,35 @@ select {
   }
 }
 
+@media (max-width: 1023px) {
+  .open-spot-booking-flow-section {
+    min-height: auto;
+  }
+
+  .open-spot-booking-flow-dome {
+    height: 34rem;
+    opacity: 0.7;
+    top: 28rem;
+    width: 65rem;
+  }
+
+  .open-spot-booking-flow-title {
+    font-size: clamp(2.6rem, 8vw, 4.6rem);
+    letter-spacing: -0.045em;
+    max-width: 48rem;
+  }
+
+  .open-spot-booking-flow-description {
+    font-size: 1.08rem;
+    line-height: 1.65;
+    max-width: 42rem;
+  }
+}
+
 @media (max-width: 767px) {
   .open-spot-metrics-showcase-page {
-    padding-top: 1rem;
+    padding-bottom: 4.5rem;
+    padding-top: 4rem;
   }
 
   .open-spot-metrics-floating-header {
@@ -664,7 +842,7 @@ select {
   }
 
   .open-spot-metrics-main {
-    margin-top: 1.5rem;
+    margin-top: 0;
     padding-inline: 1rem;
   }
 
@@ -692,11 +870,63 @@ select {
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .open-spot-booking-flow-section {
+    padding-bottom: 5.5rem;
+    padding-top: 5.75rem;
+  }
+
+  .open-spot-booking-flow-eyebrow {
+    font-size: 0.86rem;
+    padding: 0.65rem 1.2rem;
+  }
+
+  .open-spot-booking-flow-title {
+    font-size: clamp(2.45rem, 12vw, 3.25rem);
+    line-height: 1;
+    margin-top: 1.35rem;
+  }
+
+  .open-spot-booking-flow-description {
+    font-size: 1rem;
+    line-height: 1.62;
+    margin-top: 1.25rem;
+  }
+
+  .open-spot-booking-flow-dome {
+    height: 28rem;
+    opacity: 0.55;
+    top: 24rem;
+    width: 44rem;
+  }
+
+  .open-spot-booking-flow-mobile-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 2.8rem;
+  }
+
+  .open-spot-booking-flow-mobile-grid .open-spot-booking-flow-card {
+    border-radius: 1.35rem;
+    min-height: 9.7rem;
+    padding: 1.2rem 0.7rem;
+  }
+
+  .open-spot-booking-flow-card-icon {
+    height: 2.4rem;
+    margin-bottom: 0.78rem;
+    width: 2.4rem;
+  }
+
+  .open-spot-booking-flow-card p {
+    font-size: 0.95rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .open-spot-metrics-showcase-page .open-spot-metric-card,
   .open-spot-metrics-showcase-page .open-spot-metric-card:hover,
+  .open-spot-booking-flow-card,
+  .open-spot-booking-flow-card:hover,
   .open-spot-metrics-login,
   .open-spot-metrics-login:hover,
   .open-spot-metrics-nav a,

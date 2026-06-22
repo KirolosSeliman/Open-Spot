@@ -13,7 +13,7 @@ const pricingCopy = {
     cards: [
       ["Point de départ", "Discuté après un appel", "Aucun prix public fixe n’est affiché parce que le bon modèle dépend de votre réalité opérationnelle."],
       ["Usage SMS", "Clair avant l’envoi", "Le volume, les mots-clés d’opt-out et les limites d’usage doivent être compris avant le déploiement."],
-      ["Contrôle marchand", "Validation manuelle", "Open Spot ne promet pas de revenu garanti et ne confirme pas automatiquement le premier répondant."]
+      ["Contrôle marchand", "Validation manuelle", "Open Spot ne promet pas de revenu garanti; le commerce garde toujours la validation finale."]
     ],
     bundlesTitle: "Des forfaits simples avant de parler facturation.",
     bundlesDescription:
@@ -35,7 +35,7 @@ const pricingCopy = {
     cards: [
       ["Starting point", "Discussed after a call", "No fixed public price is shown because the right model depends on your operating reality."],
       ["SMS usage", "Clear before sending", "Volume, opt-out keywords, and usage limits should be understood before rollout."],
-      ["Merchant control", "Manual validation", "Open Spot does not promise guaranteed revenue and does not automatically confirm the first respondent."]
+      ["Merchant control", "Manual validation", "Open Spot does not promise guaranteed revenue; the merchant always keeps final validation."]
     ],
     bundlesTitle: "Simple bundles before billing tiers.",
     bundlesDescription:
