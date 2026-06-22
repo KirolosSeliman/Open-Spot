@@ -614,7 +614,7 @@ select {
   left: 50%;
   pointer-events: none;
   position: absolute;
-  top: 31.5rem;
+  top: 32rem;
   transform: translateX(-50%);
   width: min(96rem, 132vw);
   z-index: -1;
@@ -641,7 +641,7 @@ select {
   letter-spacing: -0.055em;
   line-height: 0.96;
   margin: 1.75rem auto 0;
-  max-width: 57rem;
+  max-width: 54rem;
   text-align: center;
 }
 
@@ -669,6 +669,7 @@ select {
 }
 
 .open-spot-booking-flow-card {
+  --card-rotation: 0deg;
   align-items: center;
   backdrop-filter: blur(18px);
   background: rgba(255, 255, 255, 0.94);
@@ -683,6 +684,7 @@ select {
   padding: 1.55rem 1.25rem;
   position: absolute;
   text-align: center;
+  transform: rotate(var(--card-rotation));
   transition:
     box-shadow 280ms ease,
     translate 280ms ease;
@@ -716,30 +718,31 @@ select {
 }
 
 .open-spot-booking-flow-card--migration {
+  --card-rotation: -18deg;
   left: 6.5%;
   top: 150px;
-  transform: rotate(-18deg);
 }
 
 .open-spot-booking-flow-card--cancellations {
+  --card-rotation: -5deg;
   left: 31%;
   top: 35px;
-  transform: rotate(-5deg);
 }
 
 .open-spot-booking-flow-card--sms {
+  --card-rotation: 7deg;
   right: 31%;
   top: 38px;
-  transform: rotate(7deg);
 }
 
 .open-spot-booking-flow-card--control {
+  --card-rotation: 16deg;
   right: 6.5%;
   top: 154px;
-  transform: rotate(16deg);
 }
 
 .open-spot-booking-flow-mobile-grid .open-spot-booking-flow-card {
+  --card-rotation: 0deg;
   height: auto;
   min-height: 10.7rem;
   position: relative;

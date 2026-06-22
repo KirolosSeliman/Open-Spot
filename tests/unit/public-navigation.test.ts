@@ -139,6 +139,7 @@ describe("public navigation", () => {
     expect(metricsShowcase).not.toContain("BookingFlowSection");
 
     expect(bookingFlow).toContain("booking-flow-section");
+    expect(bookingFlow).toContain('id="why-open-spot"');
     expect(bookingFlow).toContain('aria-labelledby="why-open-spot-title"');
     expect(bookingFlow).toContain('id="why-open-spot-title"');
     expect(bookingFlow).toContain("open-spot-booking-flow-dome");
@@ -198,12 +199,17 @@ describe("public navigation", () => {
     }
 
     expect(styles).toContain(".open-spot-booking-flow-section");
+    expect(bookingFlow).toContain("bg-[#fbfdff]");
     expect(styles).toContain(".open-spot-booking-flow-dome");
     expect(styles).toContain("radial-gradient(ellipse at 50% 0%");
+    expect(styles).toContain("top: 32rem");
+    expect(styles).toContain("max-width: 54rem");
+    expect(styles).toContain("--card-rotation");
+    expect(styles).toContain("transform: rotate(var(--card-rotation))");
     expect(styles).toContain(".open-spot-booking-flow-card--migration");
-    expect(styles).toContain("rotate(-18deg)");
+    expect(styles).toContain("--card-rotation: -18deg");
     expect(styles).toContain(".open-spot-booking-flow-card--sms");
-    expect(styles).toContain("rotate(7deg)");
+    expect(styles).toContain("--card-rotation: 7deg");
     expect(styles).toContain(".open-spot-booking-flow-mobile-grid");
     expect(styles).toContain("@media (max-width: 1023px)");
   });

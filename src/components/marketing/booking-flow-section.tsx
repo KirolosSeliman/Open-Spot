@@ -73,7 +73,8 @@ export function BookingFlowSection({ locale }: { locale: Locale }) {
   return (
     <section
       aria-labelledby="why-open-spot-title"
-      className="open-spot-booking-flow-section relative isolate overflow-hidden px-4 py-24 text-[#071126] sm:px-6 lg:py-32"
+      className="open-spot-booking-flow-section relative isolate overflow-hidden bg-[#fbfdff] px-4 py-24 text-[#071126] sm:px-6 lg:py-32"
+      id="why-open-spot"
     >
       <div className="open-spot-booking-flow-dome" aria-hidden="true" />
 
