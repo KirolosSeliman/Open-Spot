@@ -37,7 +37,7 @@ const openSpotCopy = {
   hero: {
     title: ["Recover every booking."],
     subtitle:
-      "Open Spot contacts opted-in customers, ranks replies, and lets you choose who to confirm - without replacing your appointment system.",
+      "Open Spot contacts opted-in customers, centralizes replies, and lets your team choose who to confirm - without replacing your appointment system.",
     socialProof: "Built for appointment-based teams",
     primary: "Log in",
     secondary: "How it works",
@@ -124,8 +124,8 @@ const openSpotCopy = {
     mockups: {
       detected: "Spot opening detected",
       detectedTime: "Tomorrow at 10:00 AM",
-      bestMatch: "Best match",
-      goodMatch: "Good match",
+      replyReceived: "Reply received",
+      available: "Available",
       review: "Review",
       appointment: "May 14 · 10:00 AM · 60 min Facial",
       confirm: "Confirm Sarah"
@@ -159,7 +159,7 @@ const openSpotCopy = {
       {
         number: "02",
         title: "Review Replies",
-        text: "See responses in one clean queue and spot the best match."
+        text: "See responses in one clean queue and review who is available."
       },
       {
         number: "03",
@@ -170,8 +170,8 @@ const openSpotCopy = {
     mockups: {
       detected: "Spot opening detected",
       detectedTime: "Tomorrow at 10:00 AM",
-      bestMatch: "Best match",
-      goodMatch: "Good match",
+      replyReceived: "Reply received",
+      available: "Available",
       review: "Review",
       appointment: "May 14 · 10:00 AM · 60 min Facial",
       confirm: "Confirm Sarah"
@@ -346,7 +346,7 @@ const openSpotFrCopy = {
     ...openSpotCopy.hero,
     title: ["Recuperez chaque rendez-vous."],
     subtitle:
-      "Open Spot contacte les clients consentants, classe les reponses et vous laisse choisir qui confirmer - sans remplacer votre systeme de rendez-vous.",
+      "Open Spot contacte les clients consentants, centralise les reponses et laisse votre equipe choisir qui confirmer - sans remplacer votre systeme de rendez-vous.",
     socialProof: "Concu pour les equipes sur rendez-vous",
     primary: "Se connecter",
     secondary: "Comment ca marche",
@@ -443,7 +443,7 @@ const openSpotFrCopy = {
       {
         number: "02",
         title: "Reviser les reponses",
-        text: "Voyez les reponses dans une file claire et reperez le meilleur choix."
+        text: "Voyez les reponses dans une file claire et revisez qui est disponible."
       },
       {
         number: "03",
@@ -454,8 +454,8 @@ const openSpotFrCopy = {
     mockups: {
       detected: "Place disponible detectee",
       detectedTime: "Demain a 10 h",
-      bestMatch: "Meilleur choix",
-      goodMatch: "Bon choix",
+      replyReceived: "Reponse recue",
+      available: "Disponible",
       review: "Reviser",
       appointment: "14 mai · 10 h · Facial 60 min",
       confirm: "Confirmer Sarah"
@@ -1136,8 +1136,8 @@ function StepMiniUi({ index, t }: { index: number; t: TemplateCopy }) {
     return (
       <div className="open-spot-how-mockup open-spot-how-replies-mockup">
         {[
-          ["SM", "Sarah M.", t.how.mockups.bestMatch],
-          ["JL", "Jamie L.", t.how.mockups.goodMatch],
+          ["SM", "Sarah M.", t.how.mockups.replyReceived],
+          ["JL", "Jamie L.", t.how.mockups.available],
           ["MC", "Maria C.", t.how.mockups.review]
         ].map(([initials, name, status]) => (
           <div className="open-spot-how-reply-row" key={name}>

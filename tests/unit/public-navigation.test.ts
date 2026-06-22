@@ -244,11 +244,13 @@ describe("public navigation", () => {
     expect(homepage).toContain("Recover every booking.");
     expect(homepage).toContain("Recuperez chaque rendez-vous.");
     expect(homepage).toContain(
-      "Open Spot contacts opted-in customers, ranks replies, and lets you choose who to confirm"
+      "Open Spot contacts opted-in customers, centralizes replies, and lets your team choose who to confirm"
     );
     expect(homepage).toContain(
-      "Open Spot contacte les clients consentants, classe les reponses et vous laisse choisir qui confirmer"
+      "Open Spot contacte les clients consentants, centralise les reponses et laisse votre equipe choisir qui confirmer"
     );
+    expect(homepage).not.toContain("ranks replies");
+    expect(homepage).not.toContain("classe les reponses");
     expect(homepage).toContain("Manual Confirmation");
     expect(homepage).toContain("Confirmation manuelle");
     expect(homepage).toContain("No one is confirmed without review");
@@ -359,6 +361,7 @@ describe("public navigation", () => {
       "Secure payment",
       "Finance",
       "Bank",
+      "Secure & compliant",
       "Automatically confirmed",
       "auto-confirmation",
       "first reply wins"
@@ -431,11 +434,13 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-dashboard-card");
     expect(styles).toContain(".open-spot-setup-panel");
     expect(styles).toContain(".open-spot-setup-card");
-    expect(styles).toContain("width: clamp(310px, 22.5vw, 385px)");
-    expect(styles).toContain("rotateY(-5.5deg)");
+    expect(styles).toContain("width: clamp(370px, 28.5vw, 430px)");
+    expect(styles).toContain("rotateY(-6.25deg)");
     expect(styles).toContain("rotateZ(1.15deg)");
-    expect(phone).toContain("Secure & compliant");
-    expect(phone).toContain("Fill more. No-shows down.");
+    expect(phone).toContain("Manual review");
+    expect(phone).toContain("SMS replies");
+    expect(phone).not.toContain("Secure & compliant");
+    expect(phone).not.toContain("ranked SMS replies");
     expect(phone).toContain("Open spots filled this week");
     expect(phone).toContain("Revenue recovered");
     expect(homepage).not.toContain("setScrollProgress");
@@ -476,15 +481,20 @@ describe("public navigation", () => {
     expect(phone).toContain("7");
     expect(phone).toContain("Sarah M.");
     expect(phone).toContain("I can come in");
-    expect(phone).toContain("Best match");
+    expect(phone).toContain("Reply received");
     expect(phone).toContain("Mike R.");
     expect(phone).toContain("Yes, I");
-    expect(phone).toContain("90% match");
+    expect(phone).toContain("Available");
     expect(phone).toContain("Jessica T.");
     expect(phone).toContain("Interested");
-    expect(phone).toContain("80% match");
+    expect(phone).toContain("To confirm");
     expect(phone).toContain("Confirm Sarah M.");
     expect(phone).toContain("View all replies");
+    expect(phone).toContain("SMS reply queue and manual merchant confirmation");
+    expect(phone).not.toContain("Best match");
+    expect(phone).not.toContain("90% match");
+    expect(phone).not.toContain("80% match");
+    expect(phone).not.toContain("+35 fit");
     expect(styles).toContain(".lunera-phone-screen-overlay");
     expect(styles).toContain("transform-origin: center center");
   });

@@ -18,8 +18,18 @@ describe("SMS conversation phone marketing preview", () => {
     expect(en.businessName).toBe("Open Spot");
     expect(en.statusTime).toBe("9:41");
     expect(en.floatingBadges.map((badge) => badge.label)).toEqual([
-      "Secure & compliant",
-      "Fill more. No-shows down."
+      "Manual review",
+      "SMS replies"
+    ]);
+    expect(en.accessibilityLabel).toContain("SMS reply queue");
+    expect(en.replies.items.map((reply) => reply.status)).toEqual([
+      "Reply received",
+      "Available",
+      "To confirm"
+    ]);
+    expect(smsConversationPhoneCopy.fr.floatingBadges.map((badge) => badge.label)).toEqual([
+      "Revision manuelle",
+      "Reponses SMS"
     ]);
   });
 
@@ -29,7 +39,12 @@ describe("SMS conversation phone marketing preview", () => {
       "Automatically confirmed",
       "First reply wins",
       "Auto-confirmation",
-      "Automatic booking"
+      "Automatic booking",
+      "Best match",
+      "90% match",
+      "80% match",
+      "Secure & compliant",
+      "Fill more. No-shows down."
     ];
     const serializedCopy = JSON.stringify(smsConversationPhoneCopy);
 
@@ -43,10 +58,10 @@ describe("SMS conversation phone marketing preview", () => {
     const styles = source("src/app/globals.css");
 
     expect(phoneSource).toContain("scale: 0.965");
-    expect(phoneSource).toContain("translateY: 104");
-    expect(phoneSource).toContain("translateY: 16");
-    expect(styles).toContain("width: clamp(310px, 22.5vw, 385px)");
-    expect(styles).toContain("rotateY(-5.5deg)");
+    expect(phoneSource).toContain("translateY: 42");
+    expect(phoneSource).toContain("translateY: 0");
+    expect(styles).toContain("width: clamp(370px, 28.5vw, 430px)");
+    expect(styles).toContain("rotateY(-6.25deg)");
     expect(styles).toContain("rotateZ(1.15deg)");
     expect(styles).toContain("right: -0.76rem");
     expect(styles).toContain("width: 1.58rem");
