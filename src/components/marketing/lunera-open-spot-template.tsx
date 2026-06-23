@@ -354,46 +354,46 @@ const openSpotCopy = {
 const openSpotFrCopy = {
   ...openSpotCopy,
   nav: {
-    features: "Fonctionnalites",
-    how: "Comment ca marche",
+    features: "Fonctionnalités",
+    how: "Comment ça marche",
     pricing: "Prix",
     contact: "Contact",
     primary: "Se connecter"
   },
   dashboardTerms: {
-    createOpenSpot: "Creer un creneau",
-    repliesReceived: "Reponses recues",
-    manualReview: "Revision manuelle",
+    createOpenSpot: "Créer un créneau",
+    repliesReceived: "Réponses reçues",
+    manualReview: "Révision manuelle",
     confirmClient: "Confirmer le client"
   },
   hero: {
     ...openSpotCopy.hero,
-    title: ["Comblez les annulations", "de derniere minute par SMS."],
+    title: ["Comblez les annulations", "de dernière minute par SMS."],
     subtitle:
-      "Open Spot alerte les clients interesses, recueille les reponses et laisse votre equipe choisir qui confirmer — sans remplacer votre systeme de reservation.",
+      "Open Spot alerte les clients intéressés, recueille les réponses et laisse votre équipe choisir qui confirmer — sans remplacer votre système de réservation.",
     socialProof: "Adopte par des cliniques, salons et studios",
     primary: "Commencer",
-    secondary: "Reserver un appel",
-    floatingAlert: "Envoyer l'alerte a la liste d'attente",
+    secondary: "Réserver un appel",
+    floatingAlert: "Envoyer l'alerte à la liste d'attente",
     confirmManual: "Confirmer manuellement",
     revenueAmount: "840 $",
-    revenueLabel: "Revenu recupere ce mois-ci",
-    repliesAmount: "12 reponses",
-    repliesLabel: "Clients ayant repondu",
+    revenueLabel: "Revenu récupéré ce mois-ci",
+    repliesAmount: "12 réponses",
+    repliesLabel: "Clients ayant répondu",
     phone: {
       title: "Open Spot",
-      cancellationTitle: "Annulation detectee",
+      cancellationTitle: "Annulation détectée",
       cancellationTime: "Demain · 10 h",
       cancellationService: "Soin du visage · 60 min",
-      smsTitle: "SMS a la liste d'attente (156 personnes)",
+      smsTitle: "SMS à la liste d'attente (156 personnes)",
       smsMessage: [
-        "Une place s'est liberee demain",
-        "a 10 h.",
-        "Repondez OUI si cela vous interesse."
+        "Une place s'est libérée demain",
+        "à 10 h.",
+        "Répondez OUI si cela vous intéresse."
       ],
       smsCounter: "128 / 160",
       send: "Envoyer",
-      replyQueue: "File de reponses",
+      replyQueue: "File de réponses",
       replyCount: "12",
       yes: "OUI",
       confirm: "Confirmer",
@@ -405,98 +405,98 @@ const openSpotFrCopy = {
     },
     categories: [
       "Barbiers",
-      "Cliniques beaute",
+      "Cliniques beauté",
       "Salons de coiffure",
       "Spas",
       "Studios d'ongles",
-      "Massotherapie",
+      "Massothérapie",
       "Sourcils et cils",
       "Med spas",
-      "Cliniques bien-etre",
+      "Cliniques bien-être",
       "Studios de tatouage",
-      "Physiotherapie",
-      "Cliniques esthetiques"
+      "Physiothérapie",
+      "Cliniques esthétiques"
     ]
   },
   metrics: {
     title: ["Remplissez votre horaire", "avec de simples SMS."],
     subtitle:
-      "Open Spot vous aide a capter l'interet, avertir au bon moment et recuperer plus de revenu avec moins de travail.",
+      "Open Spot vous aide à capter l'intérêt, avertir au bon moment et récupérer plus de revenu avec moins de travail.",
     cards: [
       {
-        title: "Reponses en temps reel",
-        text: "Voyez qui a repondu OUI des que votre liste d'attente repond."
+        title: "Réponses en temps réel",
+        text: "Voyez qui a répondu OUI dès que votre liste d'attente répond."
       },
       {
-        title: "Revenu recupere",
-        text: "Suivez le revenu recupere grace aux ouvertures de derniere minute remplies."
+        title: "Revenu récupéré",
+        text: "Suivez le revenu récupéré grâce aux ouvertures de dernière minute remplies."
       },
       {
         title: "Confirmation manuelle",
-        text: "Votre equipe choisit qui obtient le rendez-vous. Personne n'est confirme sans revision."
+        text: "Votre équipe choisit qui obtient le rendez-vous. Personne n'est confirmé sans révision."
       },
       {
         title: "Temps moyen de remplissage",
-        text: "Voyez la vitesse a laquelle les ouvertures de derniere minute sont remplies apres l'envoi du SMS."
+        text: "Voyez la vitesse à laquelle les ouvertures de dernière minute sont remplies après l'envoi du SMS."
       },
       {
-        title: "Creneaux remplis",
-        text: "Suivez le nombre de rendez-vous annules que vous avez reussi a remplir."
+        title: "Créneaux remplis",
+        text: "Suivez le nombre de rendez-vous annulés que vous avez réussi à remplir."
       }
     ],
     visuals: {
-      yesReplies: "Reponses OUI",
+      yesReplies: "Réponses OUI",
       vsYesterday: "+24% vs hier",
-      revenueSaved: "Revenu recupere",
+      revenueSaved: "Revenu récupéré",
       thisMonth: "Ce mois-ci",
-      reviewed: "Revise",
+      reviewed: "Révisé",
       confirmation: "Confirmation",
       fasterThisWeek: "22% plus rapide cette semaine",
-      filledSpots: "creneaux remplis",
+      filledSpots: "créneaux remplis",
       thisWeek: "18% cette semaine"
     }
   },
   setup: {
     tag: "Configuration simple",
-    title: ["Gardez votre systeme de rendez-vous.", "Recuperez les places libres."],
+    title: ["Gardez votre système de rendez-vous.", "Récupérez les places libres."],
     subtitle:
-      "Open Spot fonctionne autour de votre workflow existant, pour que votre equipe remplisse les annulations de derniere minute sans changer la facon dont les clients reservent.",
+      "Open Spot fonctionne autour de votre workflow existant, pour que votre équipe remplisse les annulations de dernière minute sans changer la façon dont les clients réservent.",
     cards: [
       {
         icon: "calendar",
         title: "Aucune migration requise",
-        text: "Continuez a utiliser votre systeme actuel. Open Spot intervient seulement lorsqu'une place se libere."
+        text: "Continuez à utiliser votre système actuel. Open Spot intervient seulement lorsqu'une place se libère."
       },
       {
         icon: "bell",
-        title: "Concu pour les annulations",
-        text: "Lancez une alerte SMS ciblee lorsqu'un rendez-vous devient disponible."
+        title: "Conçu pour les annulations",
+        text: "Lancez une alerte SMS ciblée lorsqu'un rendez-vous devient disponible."
       },
       {
         icon: "message",
-        title: "Les clients repondent par SMS",
-        text: "Les clients interesses repondent directement de leur telephone. Aucune application a telecharger."
+        title: "Les clients répondent par SMS",
+        text: "Les clients intéressés répondent directement de leur téléphone. Aucune application à télécharger."
       },
       {
         icon: "shield",
-        title: "Vous gardez le controle",
-        text: "Revisez les reponses et choisissez manuellement qui sera confirme."
+        title: "Vous gardez le contrôle",
+        text: "Révisez les réponses et choisissez manuellement qui sera confirmé."
       }
     ]
   },
   how: {
-    tag: "Comment ca marche",
-    title: ["De l'annulation", "a la confirmation", "en trois etapes", "simples."],
+    tag: "Comment ça marche",
+    title: ["De l'annulation", "à la confirmation", "en trois étapes", "simples."],
     steps: [
       {
         number: "01",
         title: "Envoyer l'alerte",
-        text: "Avertissez les clients interesses en quelques secondes lorsqu'une place se libere."
+        text: "Avertissez les clients intéressés en quelques secondes lorsqu'une place se libère."
       },
       {
         number: "02",
-        title: "Reviser les reponses",
-        text: "Voyez les reponses dans une file claire et revisez qui est disponible."
+        title: "Réviser les réponses",
+        text: "Voyez les réponses dans une file claire et révisez qui est disponible."
       },
       {
         number: "03",
@@ -505,11 +505,11 @@ const openSpotFrCopy = {
       }
     ],
     mockups: {
-      detected: "Place disponible detectee",
-      detectedTime: "Demain a 10 h",
-      replyReceived: "Reponse recue",
+      detected: "Place disponible détectée",
+      detectedTime: "Demain à 10 h",
+      replyReceived: "Réponse reçue",
       available: "Disponible",
-      review: "Reviser",
+      review: "Réviser",
       appointment: "14 mai · 10 h · Facial 60 min",
       confirm: "Confirmer Sarah"
     }
@@ -534,141 +534,141 @@ const openSpotFrCopy = {
     tag: "Prix",
     title: ["Tarification personnalisee pour", "chaque commerce sur rendez-vous."],
     subtitle:
-      "Chaque equipe a des besoins differents. Reservez un appel et nous vous guiderons dans Open Spot, repondrons a vos questions et adapterons la configuration a votre workflow, votre volume et vos objectifs.",
+      "Chaque équipe a des besoins différents. Réservez un appel et nous vous guiderons dans Open Spot, répondrons à vos questions et adapterons la configuration à votre workflow, votre volume et vos objectifs.",
     leftTitle: ["Trouvons la", "bonne configuration"],
     leftText: [
-      "Open Spot s'adapte a la facon dont votre commerce fonctionne.",
-      "Nous vous aidons a choisir les bons outils, flux,",
-      "et la capacite SMS pour generer des rendez-vous",
-      "et reduire les absences."
+      "Open Spot s'adapte à la façon dont votre commerce fonctionne.",
+      "Nous vous aidons à choisir les bons outils, flux,",
+      "et la capacité SMS pour générer des rendez-vous",
+      "et réduire les absences."
     ],
     bullets: [
-      "Recommandations de configuration personnalisees",
-      "Volume SMS adapte a vos besoins",
-      "Workflow adapte a votre commerce"
+      "Recommandations de configuration personnalisées",
+      "Volume SMS adapté à vos besoins",
+      "Workflow adapté à votre commerce"
     ],
     pill: "Reserver un appel",
     rightTitle: ["Parlez-nous de votre commerce et", "nous recommanderons la meilleure configuration."],
     options: [
       "Emplacement unique ou multi-emplacements",
-      "Volume SMS faible ou eleve",
-      "Accompagnement de deploiement sur mesure"
+      "Volume SMS faible ou élevé",
+      "Accompagnement de déploiement sur mesure"
     ],
     primaryCta: "Reserver un appel",
     primaryHref: "/book-call"
   },
   testimonials: {
-    title: "Ce que les equipes locales disent d'Open Spot.",
+    title: "Ce que les équipes locales disent d'Open Spot.",
     text:
-      "Des histoires humaines d'equipes sur rendez-vous qui utilisent les SMS bases sur le consentement pour recuperer les annulations de derniere minute tout en gardant la confirmation finale entre leurs mains.",
+      "Des histoires humaines d'équipes sur rendez-vous qui utilisent les SMS basés sur le consentement pour récupérer les annulations de dernière minute tout en gardant la confirmation finale entre leurs mains.",
     cards: [
       {
         ...openSpotCopy.testimonials.cards[0],
-        role: "Proprietaire de salon",
+        role: "Propriétaire de salon",
         business: "Salon de coiffure",
         quote:
-          "Quand une coloration est annulee, je ne veux pas que mon equipe texte les clients un par un. Open Spot envoie une alerte propre, montre qui repond et nous laisse choisir le bon client.",
-        resultBadge: "Coloration recuperee",
-        imageAlt: "Portrait representatif d'une proprietaire de salon"
+          "Quand une coloration est annulée, je ne veux pas que mon équipe texte les clients un par un. Open Spot envoie une alerte propre, montre qui répond et nous laisse choisir le bon client.",
+        resultBadge: "Coloration récupérée",
+        imageAlt: "Portrait représentatif d'une propriétaire de salon"
       },
       {
         ...openSpotCopy.testimonials.cards[1],
         role: "Gestionnaire de barbershop",
         business: "Barbershop",
         quote:
-          "Entre les walk-ins et les rendez-vous, on ne peut pas courir apres chaque chaise vide. Les reponses arrivent maintenant au meme endroit et je confirme quand ca fait vraiment du sens.",
+          "Entre les walk-ins et les rendez-vous, on ne peut pas courir après chaque chaise vide. Les réponses arrivent maintenant au même endroit et je confirme quand ça fait vraiment du sens.",
         resultBadge: "Chaise remplie",
         imageAlt: "Portrait representatif d'un gestionnaire de barbershop"
       },
       {
         ...openSpotCopy.testimonials.cards[2],
         role: "Coordonnatrice de clinique",
-        business: "Clinique beaute",
+        business: "Clinique beauté",
         quote:
-          "On perdait des facials en fin de journee parce que la reception etait deja occupee. Open Spot ajoute une couche simple pres de notre calendrier, sans devenir un autre outil de reservation.",
-        resultBadge: "Place tardive recuperee",
-        imageAlt: "Portrait representatif d'une coordonnatrice de clinique beaute"
+          "On perdait des facials en fin de journée parce que la réception était déjà occupée. Open Spot ajoute une couche simple près de notre calendrier, sans devenir un autre outil de réservation.",
+        resultBadge: "Place tardive récupérée",
+        imageAlt: "Portrait représentatif d'une coordonnatrice de clinique beauté"
       },
       {
         ...openSpotCopy.testimonials.cards[3],
         role: "Receptionniste de spa",
         business: "Spa",
         quote:
-          "Nos clientes regulieres aiment savoir quand une place se libere. Les SMS bases sur le consentement restent personnels, et on decide toujours qui sera confirme.",
-        resultBadge: "Revision manuelle gardee",
-        imageAlt: "Portrait representatif d'une receptionniste de spa"
+          "Nos clientes régulières aiment savoir quand une place se libère. Les SMS basés sur le consentement restent personnels, et on décide toujours qui sera confirmé.",
+        resultBadge: "Révision manuelle gardée",
+        imageAlt: "Portrait représentatif d'une réceptionniste de spa"
       }
     ]
   },
   faq: {
     tag: "FAQ",
-    title: "Questions avant votre premier creneau.",
+    title: "Questions avant votre premier créneau.",
     text:
-      "Ce que les equipes locales doivent savoir avant d'utiliser des SMS bases sur le consentement pour recuperer les annulations.",
+      "Ce que les équipes locales doivent savoir avant d'utiliser des SMS basés sur le consentement pour récupérer les annulations.",
     items: [
       {
-        question: "Est-ce qu'Open Spot remplace mon systeme de rendez-vous?",
+        question: "Est-ce qu'Open Spot remplace mon système de rendez-vous?",
         answer:
-          "Non. Open Spot est concu pour fonctionner a cote de votre systeme actuel, pas pour le remplacer. Vous gardez votre calendrier, votre processus et votre equipe. Open Spot aide seulement a recuperer les annulations de derniere minute en avisant les clients consentants et en organisant les reponses."
+          "Non. Open Spot est conçu pour fonctionner à côté de votre système actuel, pas pour le remplacer. Vous gardez votre calendrier, votre processus et votre équipe. Open Spot aide seulement à récupérer les annulations de dernière minute en avisant les clients consentants et en organisant les réponses."
       },
       {
-        question: "Comment Open Spot aide-t-il a remplir une annulation?",
+        question: "Comment Open Spot aide-t-il à remplir une annulation?",
         answer:
-          "Lorsqu'une place se libere, votre equipe cree un creneau avec le service, l'heure et les details utiles. Open Spot envoie une alerte SMS aux clients qui ont accepte ces mises a jour. Les clients repondent par texto et votre equipe choisit qui confirmer manuellement."
+          "Lorsqu'une place se libère, votre équipe crée un créneau avec le service, l'heure et les détails utiles. Open Spot envoie une alerte SMS aux clients qui ont accepté ces mises à jour. Les clients répondent par texto et votre équipe choisit qui confirmer manuellement."
       },
       {
         question: "Les clients sont-ils confirmes sans validation?",
         answer:
-          "Non. Open Spot garde la confirmation finale entre les mains du commerce. Meme si plusieurs clients repondent rapidement, votre equipe revise les reponses et confirme le client qui convient le mieux a l'horaire, au service et a la disponibilite."
+          "Non. Open Spot garde la confirmation finale entre les mains du commerce. Même si plusieurs clients répondent rapidement, votre équipe révise les réponses et confirme le client qui convient le mieux à l'horaire, au service et à la disponibilité."
       },
       {
-        question: "Les clients doivent-ils telecharger une application?",
+        question: "Les clients doivent-ils télécharger une application?",
         answer:
-          "Non. Les clients recoivent et repondent par SMS regulier. L'experience reste simple et ne demande pas de creer un compte ou d'apprendre une nouvelle plateforme."
+          "Non. Les clients reçoivent et répondent par SMS régulier. L'expérience reste simple et ne demande pas de créer un compte ou d'apprendre une nouvelle plateforme."
       },
       {
         question: "Comment Open Spot gere-t-il le consentement SMS?",
         answer:
-          "Open Spot devrait etre utilise seulement avec des clients qui ont accepte de recevoir des mises a jour SMS liees aux rendez-vous de votre commerce. Le produit est concu pour des workflows SMS bases sur le consentement, pas pour du cold texting ou du spam de masse."
+          "Open Spot devrait être utilisé seulement avec des clients qui ont accepté de recevoir des mises à jour SMS liées aux rendez-vous de votre commerce. Le produit est conçu pour des workflows SMS basés sur le consentement, pas pour du cold texting ou du spam de masse."
       },
       {
         question: "Que se passe-t-il si plusieurs clients repondent?",
         answer:
-          "Les reponses sont regroupees au meme endroit pour eviter les textos disperses. Vous pouvez reviser les reponses, comparer le moment ou l'ajustement, puis confirmer le bon client."
+          "Les réponses sont regroupées au même endroit pour éviter les textos dispersés. Vous pouvez réviser les réponses, comparer le moment ou l'ajustement, puis confirmer le bon client."
       },
       {
         question: "Puis-je commencer avec une petite liste?",
         answer:
-          "Oui. Open Spot peut commencer avec une petite liste de clients consentants ou un groupe de clientes fideles. Une seule annulation recuperee peut deja creer de la valeur."
+          "Oui. Open Spot peut commencer avec une petite liste de clients consentants ou un groupe de clientes fidèles. Une seule annulation récupérée peut déjà créer de la valeur."
       },
       {
         question: "Open Spot est-il un outil de marketing SMS?",
         answer:
-          "Non. Open Spot ne sert pas a envoyer des promotions de masse. Il se concentre sur un workflow concret: aider les commerces sur rendez-vous a recuperer les places causees par des annulations, absences ou trous d'horaire."
+          "Non. Open Spot ne sert pas à envoyer des promotions de masse. Il se concentre sur un workflow concret: aider les commerces sur rendez-vous à récupérer les places causées par des annulations, absences ou trous d'horaire."
       },
       {
-        question: "Pour quels commerces Open Spot est-il concu?",
+        question: "Pour quels commerces Open Spot est-il conçu?",
         answer:
-          "Open Spot est concu pour les commerces locaux sur rendez-vous comme les salons, barbershops, cliniques beaute, spas, studios bien-etre et equipes similaires."
+          "Open Spot est conçu pour les commerces locaux sur rendez-vous comme les salons, barbershops, cliniques beauté, spas, studios bien-être et équipes similaires."
       },
       {
-        question: "A quelle vitesse une equipe peut-elle commencer?",
+        question: "À quelle vitesse une équipe peut-elle commencer?",
         answer:
-          "Une equipe peut commencer avec un workflow simple: creer un creneau, avertir les clients consentants, reviser les reponses et confirmer manuellement."
+          "Une équipe peut commencer avec un workflow simple: créer un créneau, avertir les clients consentants, réviser les réponses et confirmer manuellement."
       }
     ]
   },
   final: {
-    title: "Pret a recuperer votre prochaine annulation?",
+    title: "Prêt à récupérer votre prochaine annulation?",
     text:
-      "Lancez un workflow SMS simple qui garde votre systeme de rendez-vous, votre equipe et votre confirmation manuelle en place.",
+      "Lancez un workflow SMS simple qui garde votre système de rendez-vous, votre équipe et votre confirmation manuelle en place.",
     primary: "Demander un appel"
   },
   footer: {
-    line: "Recuperez les annulations de derniere minute par SMS.",
+    line: "Récupérez les annulations de dernière minute par SMS.",
     columns: [
-      ["Produit", "Fonctionnalites", "Comment ca marche", "Prix"],
-      ["Legal", "Confidentialite", "Conditions", "Consentement SMS"]
+      ["Produit", "Fonctionnalités", "Comment ça marche", "Prix"],
+      ["Légal", "Confidentialité", "Conditions", "Consentement SMS"]
     ]
   }
 } as const;
@@ -817,6 +817,9 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
           <NavLink href={contactHref}>{t.nav.contact}</NavLink>
         </nav>
         <div className="reference-navbar-actions">
+          <div className="hidden lg:block">
+            <LanguageSwitcher initialLocale={locale} />
+          </div>
           <details className="reference-mobile-menu">
             <summary aria-label="Open navigation menu">
               <MenuIcon />

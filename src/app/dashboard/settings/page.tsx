@@ -3,6 +3,8 @@ import {
   Panel
 } from "@/components/dashboard/dashboard-ui";
 import { ImportExportPanel } from "@/components/import/import-export-panel";
+import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
+import { getRequestLocale } from "@/lib/i18n/locale";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
@@ -38,8 +40,7 @@ const conservativeAutomationSettings: AutomationSettings = {
 const automationBundles = [
   {
     title: "Essential SMS",
-    description:
-      "24h reminders, YES/OUI confirmation, NO/NON cancellation, STOP/ARRET handling, and message history.",
+    descriptionKey: "essential",
     settings: [
       "appointment_reminders_enabled",
       "appointment_confirmation_requests_enabled",
@@ -48,8 +49,7 @@ const automationBundles = [
   },
   {
     title: "Anti No-Show",
-    description:
-      "24h reminder tracking, non-response lists, no-show reporting, and conservative delay controls. Optional 2h reminders stay future until backend support is safe.",
+    descriptionKey: "noShow",
     settings: [
       "default_reminder_delay_hours",
       "appointment_confirmation_requests_enabled"
@@ -57,8 +57,7 @@ const automationBundles = [
   },
   {
     title: "Recovery Pro",
-    description:
-      "SMS cancellations can create recoverable openings, alert opted-in waitlist clients, rank respondents by timestamp, and keep merchant validation mandatory.",
+    descriptionKey: "recovery",
     settings: [
       "auto_create_opening_on_sms_cancellation",
       "auto_send_recovery_sms_on_cancellation",
@@ -67,30 +66,15 @@ const automationBundles = [
   },
   {
     title: "Client Reactivation",
-    description:
-      "Future/optional winback messages for inactive clients. This requires stronger marketing consent review before any SMS is sent.",
+    descriptionKey: "reactivation",
     settings: ["future/optional"]
   },
   {
     title: "Post-Service Follow-Up",
-    description:
-      "Future/optional thank-you, review, and rebooking prompts. This remains off until consent and review-platform policies are reviewed.",
+    descriptionKey: "followUp",
     settings: ["future/optional"]
   }
-];
-
-const settingLabels: Record<keyof AutomationSettings, string> = {
-  appointment_reminders_enabled: "Enable appointment reminders",
-  default_reminder_delay_hours: "Reminder delay hours",
-  appointment_confirmation_requests_enabled: "Request confirmation in reminder",
-  client_sms_cancellation_enabled: "Enable client cancellation by SMS",
-  auto_create_opening_on_sms_cancellation: "Auto-create opening on SMS cancellation",
-  auto_send_recovery_sms_on_cancellation: "Auto-send recovery SMS after cancellation",
-  unavailable_sms_to_non_selected_enabled:
-    "Unavailable SMS to non-selected respondents",
-  sms_daily_limit: "Daily SMS limit",
-  sms_monthly_limit: "Monthly SMS limit"
-};
+] as const;
 
 async function loadAutomationSettings(
   organizationId: string | null
@@ -115,53 +99,66 @@ async function loadAutomationSettings(
   return data ?? conservativeAutomationSettings;
 }
 
-function formatSettingValue(
-  settings: AutomationSettings,
-  key: keyof AutomationSettings
-) {
+function formatSettingValue({
+  disabledLabel,
+  enabledLabel,
+  key,
+  settings
+}: {
+  disabledLabel: string;
+  enabledLabel: string;
+  key: keyof AutomationSettings;
+  settings: AutomationSettings;
+}) {
   const value = settings[key];
 
   if (typeof value === "boolean") {
-    return value ? "Enabled" : "Disabled";
+    return value ? enabledLabel : disabledLabel;
   }
 
   return String(value);
 }
 
 export default async function SettingsPage() {
-  const workspace = await getActiveOrganizationWorkspace();
+  const [workspace, locale] = await Promise.all([
+    getActiveOrganizationWorkspace(),
+    getRequestLocale()
+  ]);
+  const copy = getDashboardCopy(locale);
   const organization =
     workspace.status === "ready" ? workspace.organization : null;
   const automationSettings = await loadAutomationSettings(organization?.id ?? null);
+  const settingLabels = copy.settings.settingLabels;
+  const settingKeys = Object.keys(settingLabels) as Array<keyof AutomationSettings>;
 
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Parametres reels de l'organisation et controles de securite SMS."
-        title="Parametres"
+        description={copy.settings.description}
+        title={copy.settings.title}
       />
-      <Panel title="Commerce actuel">
+      <Panel title={copy.settings.currentBusiness}>
         <dl className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
           <div>
-            <dt className="font-black">Business name</dt>
+            <dt className="font-black">{copy.settings.businessName}</dt>
             <dd className="mt-1 text-[var(--muted)]">
-              {organization?.name ?? "Supabase non configure"}
+              {organization?.name ?? copy.settings.notConfigured}
             </dd>
           </div>
           <div>
-            <dt className="font-black">Phone</dt>
+            <dt className="font-black">{copy.settings.phone}</dt>
             <dd className="mt-1 text-[var(--muted)]">
-              {organization?.phone ?? "Non renseigne"}
+              {organization?.phone ?? copy.settings.notProvided}
             </dd>
           </div>
           <div>
-            <dt className="font-black">Timezone</dt>
+            <dt className="font-black">{copy.settings.timezone}</dt>
             <dd className="mt-1 text-[var(--muted)]">
               {organization?.timezone ?? "America/Toronto"}
             </dd>
           </div>
           <div>
-            <dt className="font-black">Main language</dt>
+            <dt className="font-black">{copy.settings.mainLanguage}</dt>
             <dd className="mt-1 text-[var(--muted)]">
               {(organization?.defaultLanguage ?? "fr").toUpperCase()}
             </dd>
@@ -169,8 +166,8 @@ export default async function SettingsPage() {
         </dl>
       </Panel>
       <Panel
-        description="Only owners/admins should change these settings. This page is read-only until the settings edit flow is audited and setting changes can be logged safely."
-        title="Automation bundles"
+        description={copy.settings.automationDescription}
+        title={copy.settings.automationBundles}
       >
         <div className="grid gap-4 lg:grid-cols-3">
           {automationBundles.map((bundle) => (
@@ -180,7 +177,7 @@ export default async function SettingsPage() {
             >
               <p className="font-black text-[var(--foreground)]">{bundle.title}</p>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                {bundle.description}
+                {copy.settings.bundleDescriptions[bundle.descriptionKey]}
               </p>
               <ul className="mt-4 grid gap-2 text-sm">
                 {bundle.settings.map((setting) => (
@@ -191,15 +188,17 @@ export default async function SettingsPage() {
                     <span className="text-[var(--muted)]">
                       {setting in settingLabels
                         ? settingLabels[setting as keyof AutomationSettings]
-                        : setting}
+                        : copy.settings.future}
                     </span>
                     <span className="shrink-0 font-black text-[var(--foreground)]">
                       {setting in settingLabels
-                        ? formatSettingValue(
-                            automationSettings,
-                            setting as keyof AutomationSettings
-                          )
-                        : "Future"}
+                        ? formatSettingValue({
+                            disabledLabel: copy.settings.disabled,
+                            enabledLabel: copy.settings.enabled,
+                            key: setting as keyof AutomationSettings,
+                            settings: automationSettings
+                          })
+                        : copy.settings.future}
                     </span>
                   </li>
                 ))}
@@ -209,46 +208,46 @@ export default async function SettingsPage() {
         </div>
       </Panel>
       <Panel
-        description="These controls show current database settings. They are disabled here until owner/admin updates are audited."
-        title="Current automation settings"
+        description={copy.settings.currentAutomationDescription}
+        title={copy.settings.currentAutomationSettings}
       >
         <div className="grid gap-3 md:grid-cols-2">
-          {(Object.keys(settingLabels) as Array<keyof AutomationSettings>).map(
-            (key) => (
-              <label
-                className="flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[var(--line)] bg-slate-50 px-4 py-3 text-sm"
-                key={key}
-              >
-                <span className="font-bold text-[var(--foreground)]">
-                  {settingLabels[key]}
+          {settingKeys.map((key) => (
+            <label
+              className="flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[var(--line)] bg-slate-50 px-4 py-3 text-sm"
+              key={key}
+            >
+              <span className="font-bold text-[var(--foreground)]">
+                {settingLabels[key]}
+              </span>
+              {typeof automationSettings[key] === "boolean" ? (
+                <input
+                  checked={Boolean(automationSettings[key])}
+                  className="h-5 w-5"
+                  disabled
+                  readOnly
+                  type="checkbox"
+                />
+              ) : (
+                <span className="font-black text-[var(--foreground)]">
+                  {formatSettingValue({
+                    disabledLabel: copy.settings.disabled,
+                    enabledLabel: copy.settings.enabled,
+                    key,
+                    settings: automationSettings
+                  })}
                 </span>
-                {typeof automationSettings[key] === "boolean" ? (
-                  <input
-                    checked={Boolean(automationSettings[key])}
-                    className="h-5 w-5"
-                    disabled
-                    readOnly
-                    type="checkbox"
-                  />
-                ) : (
-                  <span className="font-black text-[var(--foreground)]">
-                    {formatSettingValue(automationSettings, key)}
-                  </span>
-                )}
-              </label>
-            )
-          )}
+              )}
+            </label>
+          ))}
         </div>
       </Panel>
-      <Panel title="Import / export">
+      <Panel title={copy.settings.importExport}>
         <ImportExportPanel />
       </Panel>
-      <Panel title="Compliance basics">
+      <Panel title={copy.settings.complianceBasics}>
         <p className="text-sm leading-6 text-[var(--muted)]">
-          Les clients doivent avoir accepte de recevoir des SMS avant tout envoi.
-          Les mots-cles STOP, ARRET et UNSUBSCRIBE doivent exclure automatiquement
-          les clients desinscrits des prochaines alertes. Les recuperations de
-          rendez-vous restent sous validation manuelle du commercant.
+          {copy.settings.complianceText}
         </p>
       </Panel>
     </div>

@@ -8,36 +8,36 @@ export default function BillingPage() {
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Apercu de l'abonnement et de l'usage SMS. Les paiements ne sont pas actives tant qu'un provider billing n'est pas connecte."
+        description="Aperçu de l’abonnement et de l’usage SMS. Les paiements ne sont pas actifs tant qu’un fournisseur de facturation n’est pas connecté."
         title="Abonnement"
       />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           detail="Aucun plan payant actif dans cette version."
-          label="Current plan"
-          value="MVP"
+          label="Plan actuel"
+          value="Plan de lancement"
         />
         <MetricCard
-          detail="Billing provider requis avant facturation reelle."
-          label="Subscription status"
-          value="Not connected"
+          detail="Fournisseur de facturation requis avant toute facturation réelle."
+          label="État de l’abonnement"
+          value="Non connecté"
           tone="amber"
         />
         <MetricCard
-          detail="Aucune date de renouvellement reelle."
-          label="Renewal date"
+          detail="Aucune date de renouvellement réelle."
+          label="Date de renouvellement"
           value="N/A"
         />
         <MetricCard
-          detail="Usage reel calcule depuis les messages de l'organisation."
-          label="SMS usage"
+          detail="Usage réel calculé depuis les messages de l’organisation."
+          label="Usage SMS"
           value="0"
           tone="violet"
         />
       </div>
-      <Panel title="Payment method">
+      <Panel title="Moyen de paiement">
         <p className="text-sm leading-6 text-[var(--muted)]">
-          Aucun moyen de paiement reel n&apos;est relie dans cette interface.
+          Aucun moyen de paiement réel n&apos;est relié dans cette interface.
         </p>
       </Panel>
     </div>

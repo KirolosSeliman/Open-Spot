@@ -22,9 +22,9 @@ describe("public navigation", () => {
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
 
     expect(funnel).toContain("LuneraOpenSpotTemplate");
-    expect(funnel).toContain("getMarketingLocale");
-    expect(funnel).toContain("localeCookieName");
-    expect(funnel).toContain('selectedLocale ? normalizeLocale(selectedLocale) : "en"');
+    expect(funnel).toContain("getRequestLocale");
+    expect(funnel).not.toContain("getMarketingLocale");
+    expect(funnel).not.toContain("localeCookieName");
     expect(funnel).not.toContain("OpenSpotMetricsShowcase");
     expect(funnel).toContain("locale={locale}");
 
@@ -248,12 +248,12 @@ describe("public navigation", () => {
     expect(homepage).toContain("Fill last-minute");
     expect(homepage).toContain("cancellations by SMS.");
     expect(homepage).toContain("Comblez les annulations");
-    expect(homepage).toContain("de derniere minute par SMS.");
+    expect(homepage).toContain("de dernière minute par SMS.");
     expect(homepage).toContain(
       "Open Spot alerts interested clients, collects replies, and lets your team choose who to confirm"
     );
     expect(homepage).toContain(
-      "Open Spot alerte les clients interesses, recueille les reponses et laisse votre equipe choisir qui confirmer"
+      "Open Spot alerte les clients intéressés, recueille les réponses et laisse votre équipe choisir qui confirmer"
     );
     expect(homepage).not.toContain("ranks replies");
     expect(homepage).not.toContain("classe les reponses");
@@ -439,7 +439,7 @@ describe("public navigation", () => {
     expect(homepage).toContain("you could recover");
     expect(homepage).not.toContain("Non-disruptive cancellation recovery");
     expect(homepage).toContain("What local teams say about Open Spot.");
-    expect(homepage).toContain("Ce que les equipes locales disent d'Open Spot.");
+    expect(homepage).toContain("Ce que les équipes locales disent d'Open Spot.");
     expect(homepage).toContain("Ready to recover your next cancellation?");
     expect(homepage).toContain("SMS consent");
     expect(homepage).toContain("bg-[#050505]");
@@ -474,11 +474,11 @@ describe("public navigation", () => {
     expect(homepage).toContain("Potential recovered revenue");
     expect(homepage).toContain("Revenu potentiel récupéré");
     expect(homepage).toContain("Create open spot");
-    expect(homepage).toContain("Creer un creneau");
+    expect(homepage).toContain("Créer un créneau");
     expect(homepage).toContain("Replies received");
-    expect(homepage).toContain("Reponses recues");
+    expect(homepage).toContain("Réponses reçues");
     expect(homepage).toContain("Manual review");
-    expect(homepage).toContain("Revision manuelle");
+    expect(homepage).toContain("Révision manuelle");
     expect(homepage).toContain("Confirm client");
     expect(homepage).toContain("Confirmer le client");
   });

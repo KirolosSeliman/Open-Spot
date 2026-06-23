@@ -48,6 +48,17 @@ function formatConsentRequestStatus(status: string | null | undefined) {
   return labels[status] ?? status;
 }
 
+function formatConsentStatus(status: string | null | undefined) {
+  const labels: Record<string, string> = {
+    missing: "Consentement requis",
+    needs_consent: "Consentement requis",
+    opted_in: "Consentement confirmé",
+    opted_out: "Désinscrit"
+  };
+
+  return labels[status ?? ""] ?? status ?? "Consentement requis";
+}
+
 function formatDeletedAt(value: string | null) {
   if (!value) {
     return "Date inconnue";
@@ -178,9 +189,9 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                 defaultValue="needs_consent"
                 name="consentStatus"
               >
-                <option value="needs_consent">Needs consent</option>
-                <option value="opted_in">Opted in</option>
-                <option value="opted_out">Opted out</option>
+                <option value="needs_consent">Consentement requis</option>
+                <option value="opted_in">Consentement confirmé</option>
+                <option value="opted_out">Désinscrit</option>
               </select>
               <span className="text-xs font-semibold leading-5 text-[var(--muted)]">
                 Une demande de consentement sera envoyée automatiquement par SMS.
@@ -264,7 +275,9 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                         {customer.preferred_language.toUpperCase()}
                       </td>
                       <td className={tableCellClass}>
-                        <StatusBadge>{customer.consentStatus}</StatusBadge>
+                        <StatusBadge>
+                          {formatConsentStatus(customer.consentStatus)}
+                        </StatusBadge>
                       </td>
                       <td className={tableCellClass}>
                         {formatConsentRequestStatus(
@@ -335,7 +348,9 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                         {customer.deleted_reason ?? "Non précisée"}
                       </td>
                       <td className={tableCellClass}>
-                        <StatusBadge>{customer.consentStatus}</StatusBadge>
+                        <StatusBadge>
+                          {formatConsentStatus(customer.consentStatus)}
+                        </StatusBadge>
                       </td>
                       <td className={tableCellClass}>
                         <div className="flex flex-col gap-2 sm:flex-row">

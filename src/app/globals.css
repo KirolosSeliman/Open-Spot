@@ -1412,6 +1412,10 @@ select {
   top: 54px;
 }
 
+.reference-mobile-menu:not([open]) .reference-mobile-menu-panel {
+  display: none;
+}
+
 .reference-mobile-menu-panel a {
   color: #050505;
   font-size: 15px;

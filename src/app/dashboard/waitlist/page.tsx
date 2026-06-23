@@ -39,6 +39,33 @@ const sourceOptions = [
   "copy_paste"
 ];
 
+const consentLabels: Record<string, string> = {
+  missing: "Consentement requis",
+  needs_consent: "Consentement requis",
+  opted_in: "Consentement confirmé",
+  opted_out: "Désinscrit"
+};
+
+const waitlistStatusLabels: Record<string, string> = {
+  active: "Actif",
+  paused: "En pause",
+  booked: "Réservé",
+  removed: "Retiré"
+};
+
+const sourceLabels: Record<string, string> = {
+  manual: "Manuel",
+  csv_import: "Import CSV",
+  qr_code: "Code QR",
+  public_link: "Lien public",
+  kiosk: "Kiosque",
+  copy_paste: "Copier-coller"
+};
+
+function formatLabel(labels: Record<string, string>, value: string) {
+  return labels[value] ?? value;
+}
+
 export default async function WaitlistPage({ searchParams }: WaitlistPageProps) {
   const [params, view] = await Promise.all([
     searchParams,
@@ -81,12 +108,12 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold">
-              Service interest
+              Intérêt de service
               <select
                 className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="serviceId"
               >
-                <option value="">Any service</option>
+                <option value="">Tous les services</option>
                 {view.services.map((service) => (
                   <option key={service.id} value={service.id}>
                     {service.name}
@@ -95,14 +122,14 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold">
-              Status
+              Statut
               <select
                 className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue="active"
                 name="status"
               >
-                <option value="active">Active</option>
-                <option value="paused">Paused</option>
+                <option value="active">Actif</option>
+                <option value="paused">En pause</option>
               </select>
             </label>
             <fieldset className="grid gap-2">
@@ -163,8 +190,8 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
           </form>
           {view.customers.length > eligibleCustomers.length ? (
             <p className="mt-4 rounded-xl border border-[#eadcc2] bg-[#fff7ed] p-3 text-xs font-bold leading-5 text-[#8a4b11]">
-              Les clients en needs_consent, opted_out ou sans consentement ne peuvent
-              pas etre ajoutes aux alertes SMS. Modifiez le consentement seulement
+              Les clients sans consentement actif ou désinscrits ne peuvent
+              pas être ajoutés aux alertes SMS. Modifiez le consentement seulement
               avec une preuve explicite.
             </p>
           ) : null}
@@ -173,26 +200,26 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
           <Panel title="Filtres">
           <form className="grid gap-3 md:grid-cols-2" method="get">
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
-              Search name or phone
+              Rechercher un nom ou téléphone
               <input
                 className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.search}
                 name="search"
-                placeholder="Maya or 514"
+                placeholder="Maya ou 514"
               />
             </label>
             <label className="grid gap-2 text-sm font-bold">
-              Status
+              Statut
               <select
                 className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.status ?? ""}
                 name="status"
               >
-                <option value="">All statuses</option>
-                <option value="active">Active</option>
-                <option value="paused">Paused</option>
-                <option value="booked">Booked</option>
-                <option value="removed">Removed</option>
+                <option value="">Tous les statuts</option>
+                <option value="active">Actif</option>
+                <option value="paused">En pause</option>
+                <option value="booked">Réservé</option>
+                <option value="removed">Retiré</option>
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold">
@@ -202,7 +229,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
                 defaultValue={filters.serviceId ?? ""}
                 name="serviceId"
               >
-                <option value="">All services</option>
+                <option value="">Tous les services</option>
                 {view.services.map((service) => (
                   <option key={service.id} value={service.id}>
                     {service.name}
@@ -211,16 +238,16 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold">
-              Consent
+              Consentement
               <select
                 className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.consent ?? ""}
                 name="consent"
               >
-                <option value="">All consent statuses</option>
+                <option value="">Tous les statuts de consentement</option>
                 {consentOptions.map((status) => (
                   <option key={status} value={status}>
-                    {status}
+                    {formatLabel(consentLabels, status)}
                   </option>
                 ))}
               </select>
@@ -232,36 +259,36 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
                 defaultValue={filters.source ?? ""}
                 name="source"
               >
-                <option value="">All sources</option>
+                <option value="">Toutes les sources</option>
                 {sourceOptions.map((source) => (
                   <option key={source} value={source}>
-                    {source}
+                    {formatLabel(sourceLabels, source)}
                   </option>
                 ))}
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold">
-              Language
+              Langue
               <select
                 className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.language ?? ""}
                 name="language"
               >
-                <option value="">All languages</option>
+                <option value="">Toutes les langues</option>
                 <option value="fr">FR</option>
                 <option value="en">EN</option>
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold">
-              Discount interest
+              Intérêt pour une offre
               <select
                 className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
                 defaultValue={filters.discountInterest ?? ""}
                 name="discountInterest"
               >
-                <option value="">All</option>
-                <option value="yes">Wants discount</option>
-                <option value="no">No discount interest</option>
+                <option value="">Tous</option>
+                <option value="yes">Intéressé</option>
+                <option value="no">Pas d’intérêt</option>
               </select>
             </label>
             <div className="flex flex-wrap gap-2 md:col-span-2">
@@ -269,13 +296,13 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
                 className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                 type="submit"
               >
-                Apply filters
+                Appliquer les filtres
               </button>
               <a
                 className="inline-flex min-h-11 items-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black"
                 href="/dashboard/waitlist"
               >
-                Clear
+                Effacer
               </a>
             </div>
           </form>
@@ -286,12 +313,12 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
               <thead>
                 <tr>
                   <th className={tableHeadClass}>Client</th>
-                  <th className={tableHeadClass}>Eligibility</th>
+                  <th className={tableHeadClass}>Admissibilité</th>
                   <th className={tableHeadClass}>Service</th>
-                  <th className={tableHeadClass}>Status</th>
+                  <th className={tableHeadClass}>Statut</th>
                   <th className={tableHeadClass}>Source</th>
-                  <th className={tableHeadClass}>Preferences</th>
-                  <th className={tableHeadClass}>Added</th>
+                  <th className={tableHeadClass}>Préférences</th>
+                  <th className={tableHeadClass}>Ajouté</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line)] bg-white">
@@ -309,7 +336,7 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
                     <td className={tableCellClass}>
                       <StatusBadge>{entry.smsEligibility}</StatusBadge>
                       <p className="mt-2 text-xs text-[var(--muted)]">
-                        Consent: {entry.consentStatus}
+                        Consentement : {formatLabel(consentLabels, entry.consentStatus)}
                       </p>
                     </td>
                     <td className={tableCellClass}>
@@ -325,20 +352,24 @@ export default async function WaitlistPage({ searchParams }: WaitlistPageProps) 
                           ))
                         ) : (
                           <span className="text-sm text-[var(--muted)]">
-                            General waitlist
+                            Liste générale
                           </span>
                         )}
                       </div>
                     </td>
                     <td className={tableCellClass}>
-                      <StatusBadge>{entry.status}</StatusBadge>
+                      <StatusBadge>
+                        {formatLabel(waitlistStatusLabels, entry.status)}
+                      </StatusBadge>
                     </td>
-                    <td className={tableCellClass}>{entry.source}</td>
                     <td className={tableCellClass}>
-                      {[...entry.preferred_days, ...entry.preferred_time_windows].join(", ") || "No preference"}
+                      {formatLabel(sourceLabels, entry.source)}
+                    </td>
+                    <td className={tableCellClass}>
+                      {[...entry.preferred_days, ...entry.preferred_time_windows].join(", ") || "Aucune préférence"}
                       {entry.discount_interest ? (
                         <p className="mt-2 text-xs font-bold text-[var(--primary)]">
-                          Wants discount
+                          Intéressé par une offre de dernière minute
                         </p>
                       ) : null}
                     </td>

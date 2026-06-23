@@ -121,7 +121,14 @@ export function DashboardShell({
           >
             {t.openings.newCancellation}
           </Link>
-          <nav aria-label="Navigation dashboard" className="mt-5 grid gap-1 overflow-y-auto pr-1">
+          <nav
+            aria-label={
+              initialLocale === "fr"
+                ? "Navigation du tableau de bord"
+                : "Dashboard navigation"
+            }
+            className="mt-5 grid gap-1 overflow-y-auto pr-1"
+          >
             {desktopNavItems.map((item) => (
               <Link
                 aria-current={
@@ -180,7 +187,9 @@ export function DashboardShell({
               >
                 {t.openings.newCancellation}
               </Link>
-              <LanguageSwitcher className="hidden min-[430px]:inline-flex" initialLocale={initialLocale} />
+              <div className="hidden min-[430px]:block">
+                <LanguageSwitcher initialLocale={initialLocale} />
+              </div>
               <form action={signOutAction}>
                 <button
                   className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)]"
@@ -195,9 +204,13 @@ export function DashboardShell({
             <div className="mb-4 rounded-2xl border border-[#d9b35f] bg-[#fff7df] p-4 text-sm shadow-sm">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <p className="font-bold text-[#5b4310]">
-                  Admin manager mode: viewing{" "}
-                  {workspace.adminManagerMode.organizationName} as manager. Actions
-                  are audited. Session expires at{" "}
+                  {initialLocale === "fr"
+                    ? "Mode gestionnaire admin : vous consultez "
+                    : "Admin manager mode: viewing "}
+                  {workspace.adminManagerMode.organizationName}
+                  {initialLocale === "fr"
+                    ? " comme gestionnaire. Les actions sont auditées. La session expire le "
+                    : " as manager. Actions are audited. Session expires at "}
                   {new Date(workspace.adminManagerMode.expiresAt).toLocaleString()}.
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -206,14 +219,18 @@ export function DashboardShell({
                       className="rounded-full bg-[#5b4310] px-4 py-2 text-xs font-black text-white"
                       type="submit"
                     >
-                      Exit manager mode
+                      {initialLocale === "fr"
+                        ? "Quitter le mode gestionnaire"
+                        : "Exit manager mode"}
                     </button>
                   </form>
                   <Link
                     className="rounded-full border border-[#d9b35f] bg-white px-4 py-2 text-xs font-black text-[#5b4310]"
                     href={`/admin/organizations/${workspace.adminManagerMode.organizationId}`}
                   >
-                    Back to admin company
+                    {initialLocale === "fr"
+                      ? "Retour à l’entreprise admin"
+                      : "Back to admin company"}
                   </Link>
                 </div>
               </div>
@@ -226,7 +243,11 @@ export function DashboardShell({
       </div>
 
       <nav
-        aria-label="Navigation mobile dashboard"
+        aria-label={
+          initialLocale === "fr"
+            ? "Navigation mobile du tableau de bord"
+            : "Mobile dashboard navigation"
+        }
         className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-[var(--line)] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.18)] backdrop-blur lg:hidden"
       >
         {mobileNavItems.map((item) => (

@@ -116,29 +116,29 @@ export const dictionaries: Record<Locale, Dictionary> = {
     admin: {
       admin: "Admin",
       audit: "Audit",
-      compliance: "Conformite",
+      compliance: "Conformité",
       reports: "Rapports",
       sms: "SMS"
     },
     auth: {
-      createAccount: "Creer un compte",
+      createAccount: "Créer un compte",
       dashboard: "Tableau de bord",
       signIn: "Connexion",
-      signOut: "Deconnexion"
+      signOut: "Déconnexion"
     },
     common: {
       productName: "Open Spot",
       language: "Langue",
-      french: "Francais",
+      french: "Français",
       english: "Anglais",
       tagline:
-        "Remplissez vos annulations de derniere minute par SMS, sans changer votre systeme de rendez-vous actuel."
+        "Remplissez vos annulations de dernière minute par SMS, sans changer votre système de rendez-vous actuel."
     },
     customers: {
       customers: "Clients",
       consentRequired: "Consentement requis",
       optedIn: "Inscrit",
-      optedOut: "Desinscrit"
+      optedOut: "Désinscrit"
     },
     dashboard: {
       appointments: "Rendez-vous",
@@ -147,17 +147,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
       cancellations: "Annulations",
       messages: "Messages",
       overview: "Accueil",
-      previewWorkspace: "Espace apercu",
-      recoverySms: "Recuperation SMS",
+      previewWorkspace: "Espace aperçu",
+      recoverySms: "Récupération SMS",
       stats: "Statistiques",
-      team: "Equipe",
+      team: "Équipe",
       workspaceUnavailable:
-        "Supabase non configure : apercu UI sans donnees persistees."
+        "Supabase non configuré : aperçu UI sans données persistées."
     },
     errors: {
       generic: "Une erreur est survenue.",
-      retry: "Veuillez reessayer.",
-      support: "Si le probleme persiste, contactez le support."
+      retry: "Veuillez réessayer.",
+      support: "Si le problème persiste, contactez le support."
     },
     import: {
       import: "Import",
@@ -165,20 +165,20 @@ export const dictionaries: Record<Locale, Dictionary> = {
       export: "Exporter"
     },
     marketing: {
-      howItWorks: "Comment ca marche",
+      howItWorks: "Comment ça marche",
       whyOpenSpot: "Pourquoi Open Spot",
-      bookCall: "Reserver un appel"
+      bookCall: "Réserver un appel"
     },
     navigation: {
       dashboard: "Tableau de bord",
       pricing: "Tarifs",
       contact: "Contact",
-      waitlist: "Liste d'attente",
-      settings: "Parametres",
+      waitlist: "Liste d’attente",
+      settings: "Paramètres",
       services: "Services"
     },
     onboarding: {
-      onboarding: "Demarrage",
+      onboarding: "Démarrage",
       businessSetup: "Configuration du commerce"
     },
     openings: {
@@ -188,34 +188,34 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     reports: {
       reports: "Rapports",
-      estimatedRecoveredRevenue: "Revenu recupere estime"
+      estimatedRecoveredRevenue: "Revenus récupérés estimés"
     },
     responses: {
-      responses: "Reponses",
+      responses: "Réponses",
       manualValidation: "Validation manuelle",
-      rankedByReceivedTime: "Classees par heure de reception"
+      rankedByReceivedTime: "Classées par heure de réception"
     },
     services: {
       services: "Services"
     },
     settings: {
-      settings: "Parametres"
+      settings: "Paramètres"
     },
     statuses: {
       needs_consent: "Consentement requis",
       opted_in: "Inscrit",
-      opted_out: "Desinscrit",
+      opted_out: "Désinscrit",
       draft: "Brouillon",
       sending: "Envoi en cours",
-      sent: "Envoye",
+      sent: "Envoyé",
       no_eligible_customers: "Aucun client admissible",
-      replies_received: "Reponses recues",
-      customer_validated: "Client valide",
-      expired: "Expire",
-      cancelled: "Annule"
+      replies_received: "Réponses reçues",
+      customer_validated: "Client validé",
+      expired: "Expiré",
+      cancelled: "Annulé"
     },
     waitlist: {
-      waitlist: "Liste d'attente",
+      waitlist: "Liste d’attente",
       publicSignup: "Inscription publique"
     }
   }

@@ -64,7 +64,9 @@ describe("opening SMS flow", () => {
     expect(cancellationDetailPage).toContain("pendingOffers.length > 0");
     expect(cancellationDetailPage).toContain("smsStatus.canSendOpeningAlerts");
     expect(cancellationDetailPage).toContain("deliveryHistoryWarning");
-    expect(cancellationDetailPage).toContain("SMS alert already sent to eligible clients.");
+    expect(cancellationDetailPage).toContain(
+      "The SMS alert has already been sent to eligible customers."
+    );
     expect(cancellationDetailPage).toContain("SMS sending failed");
     expect(cancellationDetailPage).not.toContain("Simulate reply");
     expect(cancellationDetailPage).not.toContain("simulateReplyAction");

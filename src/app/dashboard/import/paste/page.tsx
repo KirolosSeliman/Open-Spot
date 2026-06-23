@@ -22,6 +22,16 @@ type PasteImportPageProps = {
   }>;
 };
 
+function formatConsentStatus(status: string) {
+  const labels: Record<string, string> = {
+    needs_consent: "Consentement requis",
+    opted_in: "Consentement confirmé",
+    opted_out: "Désinscrit"
+  };
+
+  return labels[status] ?? status;
+}
+
 export default async function PasteImportPage({
   searchParams
 }: PasteImportPageProps) {
@@ -34,7 +44,7 @@ export default async function PasteImportPage({
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Collez des noms et telephones. Rien n'est ecrit avant la confirmation."
+        description="Collez des noms et téléphones. Rien n’est écrit avant la confirmation."
         title="Import rapide par copier-coller"
       />
       {error ? (
@@ -44,10 +54,10 @@ export default async function PasteImportPage({
       ) : null}
       {imported ? (
         <p className="rounded-xl border border-[#b7dfc5] bg-[#edf8f3] p-3 text-sm font-bold text-[var(--primary-strong)]">
-          Import termine. Les clients sont marques source copy_paste.
+          Import terminé. Les clients sont marqués comme source copier-coller.
         </p>
       ) : null}
-      <Panel title="Paste preview">
+      <Panel title="Aperçu du copier-coller">
         <form action={previewPastedCustomerImportAction} className="grid gap-4">
           <textarea
             className="min-h-48 rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm shadow-sm focus:border-[var(--primary)] focus:ring-4 focus:ring-blue-100"
@@ -59,20 +69,20 @@ export default async function PasteImportPage({
             className="w-fit rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
             type="submit"
           >
-            Preview pasted clients
+            Prévisualiser les clients collés
           </button>
         </form>
       </Panel>
       {validation ? (
-        <Panel title="Import result summary">
+        <Panel title="Résumé de l’import">
           <dl className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["Total rows", validation.summary.totalRows],
-              ["Valid rows", validation.summary.validRows],
-              ["Duplicates", validation.summary.duplicateRows],
-              ["Invalid phones", validation.summary.invalidPhoneRows],
-              ["Needs consent", validation.summary.needsConsentRows],
-              ["Opted in", validation.summary.optedInRows]
+              ["Lignes totales", validation.summary.totalRows],
+              ["Lignes valides", validation.summary.validRows],
+              ["Doublons", validation.summary.duplicateRows],
+              ["Téléphones invalides", validation.summary.invalidPhoneRows],
+              ["Consentement requis", validation.summary.needsConsentRows],
+              ["Consentement confirmé", validation.summary.optedInRows]
             ].map(([label, value]) => (
               <div
                 className="rounded-2xl border border-[var(--line)] bg-slate-50 p-3"
@@ -88,22 +98,24 @@ export default async function PasteImportPage({
           <TableShell>
             <thead>
               <tr>
-                <th className={tableHeadClass}>Name</th>
-                <th className={tableHeadClass}>Phone</th>
-                <th className={tableHeadClass}>Consent</th>
-                <th className={tableHeadClass}>Status</th>
+                <th className={tableHeadClass}>Nom</th>
+                <th className={tableHeadClass}>Téléphone</th>
+                <th className={tableHeadClass}>Consentement</th>
+                <th className={tableHeadClass}>Statut</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--line)] bg-white">
               {validation.rows.map((row, index) => (
                 <tr key={`${row.input.phone}-${index}`}>
                   <td className={tableCellClass}>
-                    {row.input.fullName || "Missing name"}
+                    {row.input.fullName || "Nom manquant"}
                   </td>
                   <td className={tableCellClass}>
-                    {row.phoneE164 ?? (row.input.phone || "Missing phone")}
+                    {row.phoneE164 ?? (row.input.phone || "Téléphone manquant")}
                   </td>
-                  <td className={tableCellClass}>{row.consentStatus}</td>
+                  <td className={tableCellClass}>
+                    {formatConsentStatus(row.consentStatus)}
+                  </td>
                   <td className={tableCellClass}>
                     <StatusBadge>{row.status}</StatusBadge>
                     {row.errors.length > 0 ? (
@@ -127,22 +139,23 @@ export default async function PasteImportPage({
                 name="hasConsentProof"
                 type="checkbox"
               />
-              I confirm these clients explicitly agreed to receive SMS from this
-              business. Leave unchecked to import them as needs_consent.
+              Je confirme que ces clients ont explicitement accepté de recevoir
+              des SMS de ce commerce. Laissez décoché pour les importer avec un
+              consentement requis.
             </label>
             <button
               className="w-fit rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
               type="submit"
             >
-              Confirm paste import
+              Confirmer l’import collé
             </button>
           </form>
         </Panel>
       ) : (
-        <Panel title="How it works">
+        <Panel title="Fonctionnement">
           <EmptyState
-            description="Chaque ligne doit contenir un telephone. Le texte restant devient le nom detecte. Le consentement SMS reste needs_consent par defaut."
-            title="Aucune preview pour le moment."
+            description="Chaque ligne doit contenir un téléphone. Le texte restant devient le nom détecté. Le consentement SMS reste requis par défaut."
+            title="Aucun aperçu pour le moment."
           />
         </Panel>
       )}

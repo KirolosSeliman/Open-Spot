@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { dashboardReplies } from "@/lib/dashboard/mock-data";
+import { dashboardCopy } from "@/lib/i18n/dashboard-copy";
 
 const operationsDataSource = readFileSync(
   join(process.cwd(), "src", "lib", "dashboard", "operations-data.ts"),
@@ -38,6 +39,11 @@ describe("dashboard SMS replies", () => {
     expect(operationsDataSource).toContain("lastInboundBody");
     expect(responsesPageSource).toContain("customer.replyClassification");
     expect(responsesPageSource).toContain("item.classification");
-    expect(responsesPageSource).toContain("En attente de validation manuelle");
+    expect(responsesPageSource).toContain(
+      "copy.responses.labels.awaitingManualValidation"
+    );
+    expect(dashboardCopy.fr.responses.labels.awaitingManualValidation).toBe(
+      "En attente de validation manuelle"
+    );
   });
 });
