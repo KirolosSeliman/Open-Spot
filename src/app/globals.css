@@ -1527,7 +1527,8 @@ select {
   padding: 14px;
   position: absolute;
   top: 0;
-  transform: translateX(-50%) perspective(1300px) rotateY(-3deg);
+  transform: translateX(-50%) perspective(1500px) rotateY(-3deg) rotateZ(1.35deg);
+  transform-origin: 50% 6%;
   width: 392px;
   z-index: 14;
 }
@@ -1538,9 +1539,9 @@ select {
   bottom: 42px;
   content: "";
   position: absolute;
-  right: -12px;
+  right: -5px;
   top: 38px;
-  width: 24px;
+  width: 18px;
   z-index: -1;
 }
 
@@ -1549,9 +1550,10 @@ select {
   border-radius: 999px;
   height: 100px;
   position: absolute;
-  right: -17px;
+  right: -8px;
   top: 248px;
   width: 8px;
+  z-index: 2;
 }
 
 .reference-phone-screen {
@@ -1560,7 +1562,7 @@ select {
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
   height: 100%;
   overflow: hidden;
-  padding: 63px 27px 30px;
+  padding: 40px 41px 30px 21px;
   position: relative;
   width: 100%;
 }
@@ -1572,12 +1574,12 @@ select {
   display: flex;
   height: 31px;
   justify-content: flex-end;
-  left: 50%;
+  left: calc(50% - 7px);
   padding-right: 11px;
   position: absolute;
-  top: 26px;
+  top: 12px;
   transform: translateX(-50%);
-  width: 98px;
+  width: 96px;
 }
 
 .reference-dynamic-island span {
@@ -1619,8 +1621,8 @@ select {
   background: #f1f7fd;
   display: flex;
   gap: 18px;
-  min-height: 98px;
-  padding: 20px 18px;
+  min-height: 94px;
+  padding: 16px 16px;
 }
 
 .reference-detected-icon,
@@ -1663,8 +1665,8 @@ select {
 
 .reference-sms-card {
   background: #ffffff;
-  margin-top: 17px;
-  padding: 13px 13px 10px;
+  margin-top: 14px;
+  padding: 11px 12px 8px;
 }
 
 .reference-sms-card > strong {
@@ -1682,7 +1684,7 @@ select {
   font-size: 12.8px;
   font-weight: 520;
   line-height: 1.35;
-  min-height: 74px;
+  min-height: 80px;
   padding: 12px;
 }
 
@@ -1690,7 +1692,7 @@ select {
   align-items: center;
   display: flex;
   gap: 13px;
-  margin-top: 10px;
+  margin-top: 7px;
 }
 
 .reference-mini-icon {
@@ -1722,7 +1724,7 @@ select {
 
 .reference-reply-card {
   background: #ffffff;
-  margin-top: 15px;
+  margin-top: 10px;
   padding: 13px 12px 10px;
 }
 
@@ -1791,7 +1793,9 @@ select {
   color: #111111;
   font-size: 10px;
   font-weight: 720;
-  padding: 8px 13px;
+  min-width: 76px;
+  padding: 8px 18px;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -1881,12 +1885,12 @@ select {
 }
 
 .reference-phone-fade {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.86) 42%, #ffffff 82%);
-  height: 265px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.68) 24%, rgba(255, 255, 255, 0.96) 48%, #ffffff 76%);
+  height: 325px;
   inset-inline: 0;
   pointer-events: none;
   position: absolute;
-  top: 930px;
+  top: 890px;
   z-index: 24;
 }
 
@@ -2128,9 +2132,11 @@ select {
   }
 
   .reference-phone {
-    height: 450px;
+    height: 415px;
+    left: calc(50% - 8px);
     top: 62px;
-    width: min(294px, calc(100vw - 80px));
+    transform: translateX(-50%) perspective(1400px) rotateY(-2deg) rotateZ(0.65deg);
+    width: min(264px, calc(100vw - 118px));
   }
 
   .reference-phone-screen {
