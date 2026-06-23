@@ -8,7 +8,6 @@ import type { CSSProperties, MouseEvent, PointerEvent, ReactNode } from "react";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { BookingFlowSection } from "@/components/marketing/booking-flow-section";
 import { OpenSpotMetricsShowcase } from "@/components/marketing/open-spot-metrics-showcase";
-import { SmsConversationPhone } from "@/components/marketing/sms-conversation-phone";
 import type { Locale } from "@/lib/i18n/types";
 import {
   calculateRevenueEstimate,
@@ -19,12 +18,16 @@ import {
 import { cn } from "@/lib/utils/cn";
 
 const loginHref = "/sign-in";
+const getStartedHref = "/signup";
+const bookCallHref = "/book-call";
+const contactHref = bookCallHref;
 
 const openSpotCopy = {
   nav: {
     features: "Features",
     how: "How it works",
     pricing: "Pricing",
+    contact: "Contact",
     primary: "Log in"
   },
   dashboardTerms: {
@@ -34,12 +37,37 @@ const openSpotCopy = {
     confirmClient: "Confirm client"
   },
   hero: {
-    title: ["Recover every booking."],
+    title: ["Fill last-minute", "cancellations by SMS."],
     subtitle:
-      "Open Spot contacts opted-in customers, centralizes replies, and lets your team choose who to confirm - without replacing your appointment system.",
-    socialProof: "Built for appointment-based teams",
-    primary: "Log in",
-    secondary: "How it works",
+      "Open Spot alerts interested clients, collects replies, and lets your team choose who to confirm — without replacing your booking system.",
+    socialProof: "Trusted by clinics, salons & studios",
+    primary: "Get started",
+    secondary: "Book a call",
+    floatingAlert: "Send waitlist alert",
+    confirmManual: "Confirm manually",
+    revenueAmount: "$840",
+    revenueLabel: "Revenue saved this month",
+    repliesAmount: "12 replies",
+    repliesLabel: "Clients responded",
+    phone: {
+      title: "Open Spot",
+      cancellationTitle: "Cancellation detected",
+      cancellationTime: "Tomorrow · 10:00 AM",
+      cancellationService: "60 min facial",
+      smsTitle: "SMS to waitlist (156 people)",
+      smsMessage: ["We have an opening tomorrow", "at 10:00 AM.", "Reply YES if you'd like it."],
+      smsCounter: "128 / 160",
+      send: "Send",
+      replyQueue: "Reply queue",
+      replyCount: "12",
+      yes: "YES",
+      confirm: "Confirm",
+      replies: [
+        { avatar: "/testimonials/sophie-clinic-coordinator.webp", name: "Sophie M.", time: "2 min ago" },
+        { avatar: "/testimonials/amelie-spa-receptionist.webp", name: "Ava L.", time: "3 min ago" },
+        { avatar: "/testimonials/karim-barber-manager.webp", name: "Jordan K.", time: "5 min ago" }
+      ]
+    },
     categories: [
       "Barbers",
       "Beauty Clinics",
@@ -329,6 +357,7 @@ const openSpotFrCopy = {
     features: "Fonctionnalites",
     how: "Comment ca marche",
     pricing: "Prix",
+    contact: "Contact",
     primary: "Se connecter"
   },
   dashboardTerms: {
@@ -339,12 +368,41 @@ const openSpotFrCopy = {
   },
   hero: {
     ...openSpotCopy.hero,
-    title: ["Recuperez chaque rendez-vous."],
+    title: ["Comblez les annulations", "de derniere minute par SMS."],
     subtitle:
-      "Open Spot contacte les clients consentants, centralise les reponses et laisse votre equipe choisir qui confirmer - sans remplacer votre systeme de rendez-vous.",
-    socialProof: "Concu pour les equipes sur rendez-vous",
-    primary: "Se connecter",
-    secondary: "Comment ca marche",
+      "Open Spot alerte les clients interesses, recueille les reponses et laisse votre equipe choisir qui confirmer — sans remplacer votre systeme de reservation.",
+    socialProof: "Adopte par des cliniques, salons et studios",
+    primary: "Commencer",
+    secondary: "Reserver un appel",
+    floatingAlert: "Envoyer l'alerte a la liste d'attente",
+    confirmManual: "Confirmer manuellement",
+    revenueAmount: "840 $",
+    revenueLabel: "Revenu recupere ce mois-ci",
+    repliesAmount: "12 reponses",
+    repliesLabel: "Clients ayant repondu",
+    phone: {
+      title: "Open Spot",
+      cancellationTitle: "Annulation detectee",
+      cancellationTime: "Demain · 10 h",
+      cancellationService: "Soin du visage · 60 min",
+      smsTitle: "SMS a la liste d'attente (156 personnes)",
+      smsMessage: [
+        "Une place s'est liberee demain",
+        "a 10 h.",
+        "Repondez OUI si cela vous interesse."
+      ],
+      smsCounter: "128 / 160",
+      send: "Envoyer",
+      replyQueue: "File de reponses",
+      replyCount: "12",
+      yes: "OUI",
+      confirm: "Confirmer",
+      replies: [
+        { avatar: "/testimonials/sophie-clinic-coordinator.webp", name: "Sophie M.", time: "il y a 2 min" },
+        { avatar: "/testimonials/amelie-spa-receptionist.webp", name: "Ava L.", time: "il y a 3 min" },
+        { avatar: "/testimonials/karim-barber-manager.webp", name: "Jordan K.", time: "il y a 5 min" }
+      ]
+    },
     categories: [
       "Barbiers",
       "Cliniques beaute",
@@ -743,27 +801,36 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 
 function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   return (
-    <header className="fixed inset-x-0 top-4 z-50 px-3 sm:top-5">
-      <div className="mx-auto flex min-h-[3.45rem] w-[calc(100vw-1.5rem)] max-w-[54rem] items-center justify-between gap-2 rounded-full border border-white/90 bg-white/94 px-3 py-2 shadow-[0_16px_44px_rgba(15,23,42,0.11)] backdrop-blur-2xl sm:min-h-[3.75rem] sm:w-[calc(100vw-2rem)] sm:px-4">
+    <header className="reference-navbar fixed inset-x-0 top-1 z-50 px-3">
+      <div className="reference-navbar-shell mx-auto">
         <Link
-          className="flex min-w-0 shrink-0 items-center gap-2 rounded-full text-[0.94rem] font-bold text-[#07090f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#3478ff]"
+          className="reference-brand-link"
           href="/"
         >
           <OpenSpotMark />
-          <span className="whitespace-nowrap">Open Spot</span>
+          <span>Open Spot</span>
         </Link>
-        <nav aria-label="Main navigation" className="hidden items-center gap-1 md:flex">
+        <nav aria-label="Main navigation" className="reference-nav-links">
           <NavLink href="#features">{t.nav.features}</NavLink>
           <NavLink href="#how-it-works">{t.nav.how}</NavLink>
           <NavLink href="#pricing">{t.nav.pricing}</NavLink>
+          <NavLink href={contactHref}>{t.nav.contact}</NavLink>
         </nav>
-        <div className="flex shrink-0 items-center gap-2">
-          <LanguageSwitcher
-            className="hidden border-slate-200/80 bg-white/90 shadow-[0_10px_24px_rgba(15,23,42,0.08)] min-[440px]:inline-flex"
-            initialLocale={locale}
-          />
+        <div className="reference-navbar-actions">
+          <details className="reference-mobile-menu">
+            <summary aria-label="Open navigation menu">
+              <MenuIcon />
+            </summary>
+            <div className="reference-mobile-menu-panel">
+              <Link href="#features">{t.nav.features}</Link>
+              <Link href="#how-it-works">{t.nav.how}</Link>
+              <Link href="#pricing">{t.nav.pricing}</Link>
+              <Link href={contactHref}>{t.nav.contact}</Link>
+              <LanguageSwitcher initialLocale={locale} />
+            </div>
+          </details>
           <Link
-            className="inline-flex min-h-[2.38rem] items-center justify-center rounded-full bg-black px-3.5 text-[0.78rem] font-bold text-white shadow-[0_12px_26px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5 sm:min-h-[2.5rem] sm:px-4"
+            className="reference-login-link"
             href={loginHref}
           >
             {t.nav.primary}
@@ -786,7 +853,7 @@ function OpenSpotMark() {
 function NavLink({ children, href }: { children: ReactNode; href: string }) {
   return (
     <Link
-      className="rounded-full px-3 py-2 text-[0.82rem] font-semibold text-slate-500 transition hover:bg-slate-100 hover:text-slate-950"
+      className="reference-nav-link"
       href={href}
     >
       {children}
@@ -794,73 +861,182 @@ function NavLink({ children, href }: { children: ReactNode; href: string }) {
   );
 }
 
-function Hero({ locale, t }: { locale: Locale; t: TemplateCopy }) {
+function Hero({ t }: { locale: Locale; t: TemplateCopy }) {
   return (
     <section
-      className="lunera-hero-section relative isolate overflow-hidden px-4 pt-24 sm:pt-28"
+      className="reference-hero-section"
       data-lunera-hero
       id="features"
     >
-      <div className="lunera-hero-sky absolute inset-0 -z-20" />
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(223,243,255,0.96)_0%,rgba(234,248,255,0.82)_44%,rgba(255,255,255,0)_86%)]" />
-      <div className="mx-auto max-w-[70rem] text-center">
-        <h1
-          className="lunera-hero-title mx-auto max-w-[61rem] text-balance text-5xl font-black leading-[0.96] text-[#040507] sm:text-6xl lg:text-7xl"
-          data-lunera-reveal
-        >
+      <div className="reference-hero-cloud reference-hero-cloud-left" aria-hidden="true" />
+      <div className="reference-hero-cloud reference-hero-cloud-right" aria-hidden="true" />
+      <div className="reference-hero-copy">
+        <h1 className="reference-hero-title" data-lunera-reveal>
           {t.hero.title.map((line) => (
-            <span className="block" key={line}>
+            <span key={line}>
               {line}
             </span>
           ))}
         </h1>
-        <p
-          className="lunera-hero-subtitle mx-auto mt-5 max-w-[19.5rem] text-balance px-1 text-base font-medium leading-7 text-[#526173] sm:max-w-[44rem] sm:text-lg"
-          data-lunera-reveal
-        >
+        <p className="reference-hero-subtitle" data-lunera-reveal>
           {t.hero.subtitle}
         </p>
       </div>
-      <HeroPhoneMockup locale={locale} />
-      <div className="lunera-hero-lower-content">
-        <HeroSocialProof label={t.hero.socialProof} />
-        <HeroCtaRow t={t} />
-        <CategoryStrip items={t.hero.categories} />
+      <ReferenceHeroStage t={t} />
+      <div className="reference-phone-fade" aria-hidden="true" />
+      <div className="reference-hero-footer">
+        <TrustRow label={t.hero.socialProof} />
+        <HeroActions t={t} />
       </div>
-      <HeroCloudBlend />
     </section>
   );
 }
 
-function HeroPhoneMockup({ locale }: { locale: Locale }) {
+function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
   return (
-    <div className="lunera-hero-visual-scene" data-lunera-reveal>
-      <div className="lunera-phone-depth-layer">
-        <SmsConversationPhone locale={locale} />
+    <div className="reference-hero-stage" aria-hidden="true" data-lunera-reveal>
+      <FloatingPill className="reference-pill-alert" icon={<PaperPlaneIcon />} label={t.hero.floatingAlert} />
+      <MetricCard
+        amount={t.hero.revenueAmount}
+        className="reference-revenue-card"
+        icon={<TrendIcon />}
+        label={t.hero.revenueLabel}
+      />
+      <MetricCard
+        amount={t.hero.repliesAmount}
+        className="reference-replies-card"
+        icon={<ChatBubbleIcon />}
+        label={t.hero.repliesLabel}
+      />
+      <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
+      <PhoneProductMockup phone={t.hero.phone} />
+    </div>
+  );
+}
+
+function FloatingPill({
+  className,
+  icon,
+  label
+}: {
+  className: string;
+  icon: ReactNode;
+  label: string;
+}) {
+  return (
+    <div className={`reference-floating-pill ${className}`}>
+      {icon}
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function MetricCard({
+  amount,
+  className,
+  icon,
+  label
+}: {
+  amount: string;
+  className: string;
+  icon: ReactNode;
+  label: string;
+}) {
+  return (
+    <div className={`reference-floating-card ${className}`}>
+      <div>
+        <p className="reference-card-amount">{amount}</p>
+        <p className="reference-card-label">{label}</p>
+      </div>
+      <span className="reference-card-icon">{icon}</span>
+    </div>
+  );
+}
+
+function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] }) {
+  return (
+    <div className="reference-phone">
+      <div className="reference-phone-side-button" />
+      <div className="reference-phone-screen">
+        <div className="reference-dynamic-island">
+          <span />
+        </div>
+        <div className="reference-phone-app-header">
+          <MenuIcon />
+          <strong>{phone.title}</strong>
+          <GearIcon />
+        </div>
+        <div className="reference-detected-card">
+          <span className="reference-detected-icon">
+            <BellIcon />
+          </span>
+          <div>
+            <strong>{phone.cancellationTitle}</strong>
+            <p>{phone.cancellationTime}</p>
+            <p>{phone.cancellationService}</p>
+          </div>
+        </div>
+        <div className="reference-sms-card">
+          <strong>{phone.smsTitle}</strong>
+          <div className="reference-sms-message">
+            {phone.smsMessage.map((line) => (
+              <span key={line}>{line}</span>
+            ))}
+          </div>
+          <div className="reference-sms-actions">
+            <span className="reference-mini-icon">
+              <GearIcon />
+            </span>
+            <span className="reference-mini-icon">
+              <GearIcon />
+            </span>
+            <span className="reference-sms-counter">{phone.smsCounter}</span>
+            <span className="reference-send-pill">{phone.send}</span>
+          </div>
+        </div>
+        <div className="reference-reply-card">
+          <div className="reference-reply-heading">
+            <strong>{phone.replyQueue}</strong>
+            <span>{phone.replyCount}</span>
+          </div>
+          <div className="reference-reply-list">
+            {phone.replies.map((reply) => (
+              <div className="reference-reply-item" key={reply.name}>
+                <Image alt="" height={30} src={reply.avatar} width={30} />
+                <strong>{reply.name}</strong>
+                <span className="reference-yes-badge">{phone.yes}</span>
+                <span className="reference-reply-time">{reply.time}</span>
+                <span className="reference-confirm-pill">{phone.confirm}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function HeroSocialProof({ label }: { label: string }) {
+function TrustRow({ label }: { label: string }) {
   return (
-    <div className="lunera-hero-social-proof" data-lunera-reveal>
-      <div className="lunera-avatar-stack" aria-hidden="true">
+    <div className="reference-trust-row" data-lunera-reveal>
+      <div className="reference-avatar-stack">
         {socialProofAvatars.map((avatar) => (
           <span key={avatar.src}>
             <Image
               alt={avatar.alt}
               className="open-spot-social-avatar"
-              height={44}
+              height={52}
               src={avatar.src}
-              width={44}
+              width={52}
             />
           </span>
         ))}
       </div>
       <div>
-        <div className="lunera-stars" aria-label="Five star social proof">
-          {"★★★★★"}
+        <div className="reference-stars" aria-label="Five star social proof">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <StarIcon key={index} />
+          ))}
         </div>
         <p>{label}</p>
       </div>
@@ -868,49 +1044,111 @@ function HeroSocialProof({ label }: { label: string }) {
   );
 }
 
-function HeroCtaRow({ t }: { t: TemplateCopy }) {
+function HeroActions({ t }: { t: TemplateCopy }) {
   return (
-    <div
-      className="lunera-hero-cta-row relative z-40 mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row"
-      data-lunera-reveal
-    >
-      <Link className="lunera-cta-primary bg-[#3478ff]" href={loginHref}>
+    <div className="reference-hero-actions" data-lunera-reveal>
+      <Link className="reference-cta-primary" href={getStartedHref}>
         {t.hero.primary}
       </Link>
-      <Link className="lunera-cta-secondary" href="#how-it-works">
+      <Link className="reference-cta-secondary" href={bookCallHref}>
         {t.hero.secondary}
       </Link>
     </div>
   );
 }
 
-function CategoryStrip({ items }: { items: readonly string[] }) {
+function MenuIcon() {
   return (
-    <div className="open-spot-category-marquee relative z-40 mx-auto" aria-label="Appointment business types">
-      <div className="open-spot-category-marquee-track">
-        <div className="open-spot-category-marquee-group">
-          {items.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-        </div>
-        <div aria-hidden="true" className="open-spot-category-marquee-group">
-          {items.map((item) => (
-            <span key={`duplicate-${item}`}>{item}</span>
-          ))}
-        </div>
-      </div>
-    </div>
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+    </svg>
   );
 }
 
-function HeroCloudBlend() {
+function GearIcon() {
   return (
-    <div aria-hidden="true" className="lunera-hero-cloud-blend lunera-cloud-occlusion-system">
-      <div className="lunera-cloud-blob lunera-cloud-blob-left" />
-      <div className="lunera-cloud-blob lunera-cloud-blob-center" />
-      <div className="lunera-cloud-blob lunera-cloud-blob-right" />
-      <div className="lunera-cloud-gradient-whiteout" />
-    </div>
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="M12 8.4a3.6 3.6 0 1 1 0 7.2 3.6 3.6 0 0 1 0-7.2Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="m19.2 13.1 1.2.9-1.8 3.1-1.5-.6a7.8 7.8 0 0 1-1.7 1l-.2 1.6H8.8l-.2-1.6a7.8 7.8 0 0 1-1.7-1l-1.5.6L3.6 14l1.2-.9a7.7 7.7 0 0 1 0-2.1l-1.2-.9L5.4 7l1.5.6a7.8 7.8 0 0 1 1.7-1l.2-1.6h6.4l.2 1.6a7.8 7.8 0 0 1 1.7 1l1.5-.6 1.8 3.1-1.2.9a7.7 7.7 0 0 1 0 2.1Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      />
+    </svg>
+  );
+}
+
+function BellIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="M7.4 16.4h9.2l-.8-1.7a5.3 5.3 0 0 1-.5-2.2v-2.1a3.3 3.3 0 0 0-6.6 0v2.1c0 .8-.2 1.5-.5 2.2l-.8 1.7Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path d="M10.4 18.3a1.8 1.8 0 0 0 3.2 0" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function PaperPlaneIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="M20 4 4.7 11.2c-.8.4-.7 1.5.2 1.7l5.5 1.2 1.2 5.4c.2.9 1.4 1 1.8.2L20 4Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+      <path d="m10.5 14 3.9-4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function ChatBubbleIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path
+        d="M5.5 6.5h13v9h-6.2L8 18.3v-2.8H5.5v-9Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function TrendIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="m5 15 4.2-4.2 3.2 3.2L19 7.4" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" />
+      <path d="M14.2 7.4H19v4.8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="m5.6 12.4 4.1 4.1 8.7-9" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function StarIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20">
+      <path
+        d="m10 1.8 2.2 5 5.4.5-4.1 3.6 1.2 5.3-4.7-2.8-4.7 2.8 1.2-5.3-4.1-3.6 5.4-.5L10 1.8Z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }
 

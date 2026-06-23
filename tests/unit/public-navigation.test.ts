@@ -221,10 +221,13 @@ describe("public navigation", () => {
     expect(homepage).toContain('features: "Features"');
     expect(homepage).toContain('how: "How it works"');
     expect(homepage).toContain('pricing: "Pricing"');
+    expect(homepage).toContain('contact: "Contact"');
     expect(homepage).toContain('primary: "Log in"');
     expect(homepage).toContain("Se connecter");
     expect(homepage).not.toContain("Get Early Access");
-    expect(homepage).not.toContain('href="/signup"');
+    expect(homepage).toContain('const getStartedHref = "/signup"');
+    expect(homepage).toContain('const bookCallHref = "/book-call"');
+    expect(homepage).toContain("const contactHref = bookCallHref");
     expect(homepage).toContain("LanguageSwitcher");
     expect(homepage).toContain('initialLocale={locale}');
     expect(homepage).not.toContain('login: "Connexion"');
@@ -240,13 +243,15 @@ describe("public navigation", () => {
 
     expect(homepage).toContain("Open Spot");
     expect(homepage).not.toContain("2e Chance RDV");
-    expect(homepage).toContain("Recover every booking.");
-    expect(homepage).toContain("Recuperez chaque rendez-vous.");
+    expect(homepage).toContain("Fill last-minute");
+    expect(homepage).toContain("cancellations by SMS.");
+    expect(homepage).toContain("Comblez les annulations");
+    expect(homepage).toContain("de derniere minute par SMS.");
     expect(homepage).toContain(
-      "Open Spot contacts opted-in customers, centralizes replies, and lets your team choose who to confirm"
+      "Open Spot alerts interested clients, collects replies, and lets your team choose who to confirm"
     );
     expect(homepage).toContain(
-      "Open Spot contacte les clients consentants, centralise les reponses et laisse votre equipe choisir qui confirmer"
+      "Open Spot alerte les clients interesses, recueille les reponses et laisse votre equipe choisir qui confirmer"
     );
     expect(homepage).not.toContain("ranks replies");
     expect(homepage).not.toContain("classe les reponses");
@@ -371,16 +376,14 @@ describe("public navigation", () => {
     }
   });
 
-  it("renders the requested Lunera-style landing sections in order", () => {
+  it("renders the requested reference homepage hero and landing sections in order", () => {
     const homepage = source(homepagePath);
-    const phone = source("src/components/marketing/sms-conversation-phone.tsx");
     const styles = source("src/app/globals.css");
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
     const heroFunction = homepage.slice(
       homepage.indexOf("function Hero("),
       homepage.indexOf("function MetricsSection(")
     );
-    const phoneIndex = heroFunction.indexOf("<HeroPhoneMockup");
     const requiredOrder = [
       "<Hero",
       "<OpenSpotMetricsShowcase",
@@ -403,19 +406,29 @@ describe("public navigation", () => {
 
     expect(homepage).not.toContain("<Resources");
     expect(homepage).not.toContain("<IntegrationsSection");
-    expect(heroFunction).toContain("lunera-hero-sky");
-    expect(heroFunction).toContain("lunera-hero-visual-scene");
-    expect(phoneIndex).toBeGreaterThan(-1);
-    expect(heroFunction).toContain("<SmsConversationPhone");
-    expect(heroFunction).toContain("locale={locale}");
-    expect(heroFunction).toContain("<HeroCloudBlend");
-    expect(homepage).toContain("Built for appointment-based teams");
-    expect(homepage).toContain("Concu pour les equipes sur rendez-vous");
-    expect(homepage).toContain("Barbers");
-    expect(homepage).toContain("Beauty Clinics");
-    expect(homepage).toContain("Hair Salons");
-    expect(homepage).toContain("Spas");
-    expect(homepage).toContain("Nail Studios");
+    expect(heroFunction).toContain("reference-hero-section");
+    expect(heroFunction).toContain("<ReferenceHeroStage");
+    expect(heroFunction).toContain("reference-phone-fade");
+    expect(heroFunction).toContain("<TrustRow");
+    expect(heroFunction).toContain("<HeroActions");
+    expect(heroFunction).not.toContain("<SmsConversationPhone");
+    expect(heroFunction).not.toContain("<HeroPhoneMockup");
+    expect(heroFunction).not.toContain("<HeroCloudBlend");
+    expect(homepage).toContain("Send waitlist alert");
+    expect(homepage).toContain("$840");
+    expect(homepage).toContain("Revenue saved this month");
+    expect(homepage).toContain("12 replies");
+    expect(homepage).toContain("Clients responded");
+    expect(homepage).toContain("Confirm manually");
+    expect(homepage).toContain("Cancellation detected");
+    expect(homepage).toContain("SMS to waitlist (156 people)");
+    expect(homepage).toContain("Reply queue");
+    expect(homepage).toContain("Sophie M.");
+    expect(homepage).toContain("Ava L.");
+    expect(homepage).toContain("Jordan K.");
+    expect(homepage).toContain("Trusted by clinics, salons & studios");
+    expect(homepage).toContain("Get started");
+    expect(homepage).toContain("Book a call");
     expect(homepage).toContain("Keep your booking system.");
     expect(homepage).toContain("Recover the empty spots.");
     expect(homepage).toContain("From cancellation");
@@ -428,23 +441,23 @@ describe("public navigation", () => {
     expect(homepage).toContain("Ready to recover your next cancellation?");
     expect(homepage).toContain("SMS consent");
     expect(homepage).toContain("bg-[#050505]");
-    expect(styles).toContain(".lunera-phone-depth-layer");
-    expect(styles).toContain(".lunera-hero-cloud-blend");
+    expect(styles).toContain(".reference-navbar-shell");
+    expect(styles).toContain(".reference-hero-section");
+    expect(styles).toContain(".reference-hero-cloud");
+    expect(styles).toContain(".reference-phone");
+    expect(styles).toContain(".reference-dynamic-island");
+    expect(styles).toContain(".reference-revenue-card");
+    expect(styles).toContain(".reference-replies-card");
+    expect(styles).toContain(".reference-pill-confirm");
+    expect(styles).toContain(".reference-trust-row");
+    expect(styles).toContain(".reference-cta-primary");
     expect(styles).toContain(".open-spot-dashboard-card");
     expect(styles).toContain(".open-spot-setup-panel");
     expect(styles).toContain(".open-spot-setup-card");
-    expect(styles).toContain("width: clamp(370px, 28.5vw, 430px)");
-    expect(styles).toContain("rotateY(-6.25deg)");
-    expect(styles).toContain("rotateZ(1.15deg)");
-    expect(phone).toContain("Manual review");
-    expect(phone).toContain("SMS replies");
-    expect(phone).not.toContain("Secure & compliant");
-    expect(phone).not.toContain("ranked SMS replies");
-    expect(phone).toContain("Open spots filled this week");
-    expect(phone).toContain("Revenue recovered");
     expect(homepage).not.toContain("setScrollProgress");
-    expect(homepage).toContain(".style.setProperty(");
-    expect(homepage).toContain('"--lunera-progress"');
+    expect(homepage).not.toContain("Automatically confirmed");
+    expect(homepage).not.toContain("auto-confirmation");
+    expect(homepage).not.toContain("first reply wins");
   });
 
   it("keeps the Lunera landing dictionaries distinct across English and French", () => {
@@ -735,36 +748,31 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-faq-trigger:focus-visible");
   });
 
-  it("keeps hero social proof, CTA, and business marquee in an airy lower white flow", () => {
+  it("keeps the reference hero proof row and CTAs in the lower white flow", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
     const heroFunction = homepage.slice(
       homepage.indexOf("function Hero("),
-      homepage.indexOf("function HeroPhoneMockup(")
+      homepage.indexOf("function ReferenceHeroStage(")
     );
-    const lowerFlowIndex = heroFunction.indexOf("lunera-hero-lower-content");
-    const socialIndex = heroFunction.indexOf("<HeroSocialProof");
-    const ctaIndex = heroFunction.indexOf("<HeroCtaRow");
-    const marqueeIndex = heroFunction.indexOf("<CategoryStrip");
+    const fadeIndex = heroFunction.indexOf("reference-phone-fade");
+    const footerIndex = heroFunction.indexOf("reference-hero-footer");
+    const socialIndex = heroFunction.indexOf("<TrustRow");
+    const ctaIndex = heroFunction.indexOf("<HeroActions");
 
-    expect(lowerFlowIndex).toBeGreaterThan(-1);
-    expect(socialIndex).toBeGreaterThan(lowerFlowIndex);
+    expect(fadeIndex).toBeGreaterThan(-1);
+    expect(footerIndex).toBeGreaterThan(fadeIndex);
+    expect(socialIndex).toBeGreaterThan(footerIndex);
     expect(socialIndex).toBeLessThan(ctaIndex);
-    expect(ctaIndex).toBeLessThan(marqueeIndex);
-    expect(heroFunction).not.toContain("pb-10 pt-24");
+    expect(heroFunction).not.toContain("lunera-hero-lower-content");
 
-    expect(styles).toContain(".lunera-hero-lower-content");
-    expect(styles).toContain(".lunera-hero-lower-content::before");
-    expect(styles).toContain("min-height: clamp(66rem, 98vw, 76rem)");
-    expect(styles).toContain("margin-top: clamp(4.25rem, 7vw, 6.75rem)");
-    expect(styles).toContain("padding-bottom: clamp(6rem, 9vw, 8.5rem)");
-    expect(styles).toContain("rgba(255, 255, 255, 0.96) 58%");
-    expect(styles).toContain("margin-top: clamp(1.25rem, 2vw, 1.7rem)");
-    expect(styles).toContain("gap: clamp(0.85rem, 1.4vw, 1.15rem)");
-    expect(styles).toContain("margin-top: clamp(3.75rem, 5.8vw, 5.6rem)");
-    expect(styles).toContain("margin-bottom: clamp(1.25rem, 2vw, 2rem)");
-    expect(styles).toContain(".open-spot-category-marquee-track");
-    expect(styles).toContain("animation: none !important");
+    expect(styles).toContain(".reference-phone-fade");
+    expect(styles).toContain(".reference-hero-footer");
+    expect(styles).toContain(".reference-avatar-stack");
+    expect(styles).toContain(".reference-stars");
+    expect(styles).toContain(".reference-hero-actions");
+    expect(styles).toContain(".reference-cta-primary");
+    expect(styles).toContain(".reference-cta-secondary");
   });
 
   it("uses the premium integrated metrics showcase grid and card visuals", () => {
@@ -969,32 +977,21 @@ describe("public navigation", () => {
   it("keeps the mobile sign-in CTA inside the floating navbar", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
-    const compactHeaderStyles = styles.slice(styles.indexOf("@media (max-width: 520px)"));
+    const compactHeaderStyles = styles.slice(styles.indexOf("@media (max-width: 767px)"));
 
-    expect(homepage).toContain("w-[calc(100vw-1.5rem)]");
-    expect(compactHeaderStyles).toContain('.lunera-template > header a[href="/sign-in"]');
-    expect(compactHeaderStyles).toContain("position: static");
-    expect(compactHeaderStyles).not.toContain("position: fixed");
+    expect(homepage).toContain("reference-navbar");
+    expect(homepage).toContain("reference-mobile-menu");
+    expect(homepage).toContain('href={loginHref}');
+    expect(compactHeaderStyles).toContain(".reference-mobile-menu");
+    expect(compactHeaderStyles).toContain("display: block");
+    expect(compactHeaderStyles).toContain(".reference-nav-links");
+    expect(compactHeaderStyles).toContain("display: none");
     expect(styles).toContain("overflow-x: hidden");
   });
 
-  it("uses the requested category strip instead of fake brand logos", () => {
+  it("uses the requested reference hero proof and CTA copy instead of fake brand logos", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
-    const expectedBusinessTypes = [
-      "Barbers",
-      "Beauty Clinics",
-      "Hair Salons",
-      "Spas",
-      "Nail Studios",
-      "Massage Studios",
-      "Brows & Lashes",
-      "Med Spas",
-      "Wellness Clinics",
-      "Tattoo Studios",
-      "Physiotherapy Clinics",
-      "Aesthetic Clinics"
-    ];
     const oldPlaceholderTypes = [
       "Barbershops",
       "Massage Therapists",
@@ -1007,25 +1004,29 @@ describe("public navigation", () => {
       "Local Services"
     ];
 
-    for (const businessType of expectedBusinessTypes) {
-      expect(homepage).toContain(businessType);
-    }
-
     for (const businessType of oldPlaceholderTypes) {
       expect(homepage).not.toContain(businessType);
     }
 
-    expect(homepage).toContain("CategoryStrip");
-    expect(homepage).toContain("open-spot-category-marquee");
+    expect(homepage).toContain("Trusted by clinics, salons & studios");
+    expect(homepage).toContain("Adopte par des cliniques, salons et studios");
+    expect(homepage).toContain("Get started");
+    expect(homepage).toContain("Commencer");
+    expect(homepage).toContain("Book a call");
+    expect(homepage).toContain("Reserver un appel");
+    expect(homepage).toContain("reference-avatar-stack");
+    expect(homepage).toContain("reference-stars");
     expect(homepage).toContain("aria-hidden=\"true\"");
-    expect(homepage).toContain("Built for appointment-based teams");
+    expect(homepage).not.toContain("CategoryStrip");
+    expect(homepage).not.toContain("open-spot-category-marquee");
     expect(homepage).not.toContain('logos: ["Salons", "Barbers"');
     expect(homepage).not.toContain("40K+ users worldwide");
     expect(homepage).not.toContain("Codecraft");
-    expect(styles).toContain(".open-spot-category-marquee");
-    expect(styles).toContain("@keyframes open-spot-category-marquee");
-    expect(styles).toContain("animation: open-spot-category-marquee 38s linear infinite");
-    expect(styles).toContain("mask-image");
+    expect(styles).toContain(".reference-avatar-stack");
+    expect(styles).toContain(".reference-stars");
+    expect(styles).toContain(".reference-hero-actions");
+    expect(styles).toContain(".reference-cta-primary");
+    expect(styles).toContain(".reference-cta-secondary");
     expect(styles).toContain("prefers-reduced-motion: reduce");
   });
 
@@ -1033,15 +1034,15 @@ describe("public navigation", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
 
-    expect(homepage).toContain("/lunera-style/avatars/review-1.jpg");
-    expect(homepage).toContain("/lunera-style/avatars/review-2.jpg");
-    expect(homepage).toContain("/lunera-style/avatars/review-3.jpg");
+    expect(homepage).toContain("/testimonials/sophie-clinic-coordinator.webp");
+    expect(homepage).toContain("/testimonials/amelie-spa-receptionist.webp");
+    expect(homepage).toContain("/testimonials/karim-barber-manager.webp");
     expect(homepage).toContain("open-spot-social-avatar");
     expect(homepage).toContain("Five star social proof");
     expect(homepage).not.toContain('["SA", "MR", "JT", "AL"]');
-    expect(styles).toContain(".open-spot-social-avatar");
-    expect(styles).toContain("height: 2.52rem");
-    expect(styles).toContain("margin-left: -0.58rem");
+    expect(styles).toContain(".reference-avatar-stack img");
+    expect(styles).toContain("height: 52px");
+    expect(styles).toContain("margin-left: -12px");
   });
 
   it("links sign-in and signup pages to each other", () => {
