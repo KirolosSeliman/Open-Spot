@@ -94,7 +94,7 @@ export function DashboardShell({
       : t.dashboard.workspaceUnavailable;
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(79,125,243,0.12),transparent_28rem),#f7f9fd] text-[var(--foreground)]">
+    <div className="open-spot-dashboard-theme min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(79,125,243,0.12),transparent_28rem),#f7f9fd] text-[var(--foreground)]">
       <div className="mx-auto flex w-full max-w-[1540px] gap-6 px-3 py-3 lg:px-5">
         <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-white/10 bg-[var(--dark)] p-4 text-white shadow-[0_24px_80px_rgba(8,11,18,0.28)] lg:flex lg:flex-col">
           <Link

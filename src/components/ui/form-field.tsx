@@ -20,7 +20,7 @@ export function FormField({
   required = false
 }: FormFieldProps) {
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2" data-open-spot-field>
       <label className="text-sm font-black text-[var(--foreground)]" htmlFor={htmlFor}>
         {label}
         {required ? <span className="text-[var(--danger)]"> *</span> : null}
@@ -40,14 +40,14 @@ const fieldClasses =
   "min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--foreground)] shadow-sm outline-none transition placeholder:text-slate-400 focus:border-[var(--primary)] focus:ring-4 focus:ring-blue-100 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500";
 
 export function Input({ className, ...props }: InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(fieldClasses, className)} {...props} />;
+  return <input className={cn(fieldClasses, className)} data-open-spot-control {...props} />;
 }
 
 export function Select({
   className,
   ...props
 }: SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn(fieldClasses, className)} {...props} />;
+  return <select className={cn(fieldClasses, className)} data-open-spot-control {...props} />;
 }
 
 export function Textarea({
@@ -57,6 +57,7 @@ export function Textarea({
   return (
     <textarea
       className={cn(fieldClasses, "min-h-32 resize-y", className)}
+      data-open-spot-control
       {...props}
     />
   );

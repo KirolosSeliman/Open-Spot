@@ -27,7 +27,7 @@ export default async function PlatformAdminLayout({
   const admin = await requirePlatformAdmin();
 
   return (
-    <div className="min-h-screen bg-[#f8f5ee] text-[var(--foreground)]">
+    <div className="open-spot-dashboard-theme min-h-screen bg-[#f8f5ee] text-[var(--foreground)]">
       <header className="border-b border-[var(--line)] bg-white/88">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
