@@ -1018,7 +1018,7 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
 
 function TrustRow({ label }: { label: string }) {
   return (
-    <div className="reference-trust-row" data-lunera-reveal>
+    <div className="reference-trust-row">
       <div className="reference-avatar-stack">
         {socialProofAvatars.map((avatar) => (
           <span key={avatar.src}>
@@ -1046,7 +1046,7 @@ function TrustRow({ label }: { label: string }) {
 
 function HeroActions({ t }: { t: TemplateCopy }) {
   return (
-    <div className="reference-hero-actions" data-lunera-reveal>
+    <div className="reference-hero-actions">
       <Link className="reference-cta-primary" href={getStartedHref}>
         {t.hero.primary}
       </Link>

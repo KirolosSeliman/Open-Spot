@@ -22,7 +22,9 @@ describe("public navigation", () => {
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
 
     expect(funnel).toContain("LuneraOpenSpotTemplate");
-    expect(funnel).toContain("getRequestLocale");
+    expect(funnel).toContain("getMarketingLocale");
+    expect(funnel).toContain("localeCookieName");
+    expect(funnel).toContain('selectedLocale ? normalizeLocale(selectedLocale) : "en"');
     expect(funnel).not.toContain("OpenSpotMetricsShowcase");
     expect(funnel).toContain("locale={locale}");
 

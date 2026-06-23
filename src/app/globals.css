@@ -1426,7 +1426,7 @@ select {
   isolation: isolate;
   min-height: 1254px;
   overflow-x: clip;
-  padding-top: 158px;
+  padding-top: 143px;
   position: relative;
 }
 
@@ -1500,12 +1500,12 @@ select {
   font-weight: 400;
   line-height: 1.48;
   margin: 30px auto 0;
-  max-width: 520px;
+  max-width: 480px;
 }
 
 .reference-hero-stage {
   height: 590px;
-  margin: 30px auto 0;
+  margin: 45px auto 0;
   max-width: 1030px;
   pointer-events: none;
   position: relative;
@@ -2111,13 +2111,14 @@ select {
   }
 
   .reference-hero-title {
-    font-size: clamp(42px, 11.5vw, 54px);
+    font-size: clamp(29px, 8vw, 32px);
+    max-width: 300px;
   }
 
   .reference-hero-subtitle {
     font-size: 16.5px;
     line-height: 1.55;
-    max-width: 345px;
+    max-width: 300px;
   }
 
   .reference-hero-stage {
@@ -2127,9 +2128,9 @@ select {
   }
 
   .reference-phone {
-    height: 500px;
+    height: 450px;
     top: 62px;
-    width: min(334px, calc(100vw - 42px));
+    width: min(294px, calc(100vw - 80px));
   }
 
   .reference-phone-screen {
