@@ -25,7 +25,6 @@ const openSpotCopy = {
     features: "Features",
     how: "How it works",
     pricing: "Pricing",
-    contact: "Contact",
     primary: "Log in"
   },
   dashboardTerms: {
@@ -202,9 +201,7 @@ const openSpotCopy = {
       "Custom rollout support"
     ],
     primaryCta: "Book a call",
-    secondaryCta: "Contact sales",
-    primaryHref: "/book-call",
-    secondaryHref: "/contact"
+    primaryHref: "/book-call"
   },
   testimonials: {
     title: "What local teams say about Open Spot.",
@@ -321,7 +318,6 @@ const openSpotCopy = {
     line: "Recover last-minute cancellations by SMS.",
     columns: [
       ["Product", "Features", "How it works", "Pricing"],
-      ["Company", "Contact", "Support"],
       ["Legal", "Privacy", "Terms", "SMS consent"]
     ]
   }
@@ -333,7 +329,6 @@ const openSpotFrCopy = {
     features: "Fonctionnalites",
     how: "Comment ca marche",
     pricing: "Prix",
-    contact: "Contact",
     primary: "Se connecter"
   },
   dashboardTerms: {
@@ -502,9 +497,7 @@ const openSpotFrCopy = {
       "Accompagnement de deploiement sur mesure"
     ],
     primaryCta: "Reserver un appel",
-    secondaryCta: "Contacter les ventes",
-    primaryHref: "/book-call",
-    secondaryHref: "/contact"
+    primaryHref: "/book-call"
   },
   testimonials: {
     title: "Ce que les equipes locales disent d'Open Spot.",
@@ -617,7 +610,6 @@ const openSpotFrCopy = {
     line: "Recuperez les annulations de derniere minute par SMS.",
     columns: [
       ["Produit", "Fonctionnalites", "Comment ca marche", "Prix"],
-      ["Entreprise", "Contact", "Support"],
       ["Legal", "Confidentialite", "Conditions", "Consentement SMS"]
     ]
   }
@@ -764,7 +756,6 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
           <NavLink href="#features">{t.nav.features}</NavLink>
           <NavLink href="#how-it-works">{t.nav.how}</NavLink>
           <NavLink href="#pricing">{t.nav.pricing}</NavLink>
-          <NavLink href="/contact">{t.nav.contact}</NavLink>
         </nav>
         <div className="flex shrink-0 items-center gap-2">
           <LanguageSwitcher
@@ -1687,13 +1678,6 @@ function PersonalizedPricingSection({ t }: { t: TemplateCopy }) {
               <PricingArrowIcon />
             </span>
           </Link>
-          <Link
-            aria-label="Contact sales about Open Spot pricing"
-            className="open-spot-pricing-secondary"
-            href={t.pricing.secondaryHref}
-          >
-            {t.pricing.secondaryCta}
-          </Link>
         </div>
       </div>
     </section>
@@ -1879,7 +1863,7 @@ function FinalCta({ t }: { t: TemplateCopy }) {
 function Footer({ t }: { t: TemplateCopy }) {
   return (
     <footer className="bg-[#050505] px-4 py-12 text-white">
-      <div className="mx-auto grid max-w-[72rem] gap-10 md:grid-cols-[1.45fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-[72rem] gap-10 md:grid-cols-[1.45fr_1fr_1fr]">
         <div>
           <Link className="inline-flex items-center gap-2.5 text-[1.05rem] font-black" href="/">
             <OpenSpotMark />
@@ -1928,8 +1912,6 @@ function footerHref(label: string) {
   if (normalized === "comment ca marche") return "#how-it-works";
   if (normalized === "pricing") return "#pricing";
   if (normalized === "prix") return "#pricing";
-  if (normalized === "contact") return "/contact";
-  if (normalized === "support") return "/contact";
   if (normalized === "privacy") return "/privacy";
   if (normalized === "confidentialite") return "/privacy";
   if (normalized === "terms") return "/terms";

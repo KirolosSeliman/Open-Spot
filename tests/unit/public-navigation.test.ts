@@ -221,7 +221,6 @@ describe("public navigation", () => {
     expect(homepage).toContain('features: "Features"');
     expect(homepage).toContain('how: "How it works"');
     expect(homepage).toContain('pricing: "Pricing"');
-    expect(homepage).toContain('contact: "Contact"');
     expect(homepage).toContain('primary: "Log in"');
     expect(homepage).toContain("Se connecter");
     expect(homepage).not.toContain("Get Early Access");
@@ -292,12 +291,12 @@ describe("public navigation", () => {
     expect(homepage).toContain("Low or high SMS volume");
     expect(homepage).toContain("Custom rollout support");
     expect(homepage).toContain('aria-label="Book a call about Open Spot pricing"');
-    expect(homepage).toContain('aria-label="Contact sales about Open Spot pricing"');
     expect(homepage).toContain('primaryHref: "/book-call"');
-    expect(homepage).toContain('secondaryHref: "/contact"');
     expect(homepage).toContain("href={t.pricing.primaryHref}");
-    expect(homepage).toContain("href={t.pricing.secondaryHref}");
     expect(homepage).toContain('href="/book-call"');
+    expect(homepage).not.toContain('href="/contact"');
+    expect(homepage).not.toContain('secondaryHref: "/contact"');
+    expect(homepage).not.toContain('aria-label="Contact sales about Open Spot pricing"');
     expect(homepage).toContain("function PersonalizedPricingSection(");
     expect(styles).toContain(".open-spot-personalized-pricing");
     expect(styles).toContain("scroll-margin-top: 7rem");

@@ -21,7 +21,6 @@
 - `/pricing`
 - `/how-it-works`
 - `/industries`
-- `/contact`
 - `/remplir-mes-annulations`
 - `/book-call/questions`
 - `/book-call/ready`
