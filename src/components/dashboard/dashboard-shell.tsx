@@ -128,9 +128,9 @@ export function DashboardShell({
                   isActiveDashboardRoute(pathname, item.href) ? "page" : undefined
                 }
                 className={cn(
-                  "rounded-2xl px-4 py-3 text-sm font-bold text-white/66 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
+                  "relative flex min-h-11 items-center rounded-2xl px-4 py-3 text-sm font-bold text-white/68 transition-colors hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--dark)]",
                   isActiveDashboardRoute(pathname, item.href) &&
-                    "bg-white text-[var(--dark)] shadow-[0_14px_30px_rgba(0,0,0,0.22)] hover:bg-white hover:text-[var(--dark)]"
+                    "bg-[rgba(47,120,255,0.14)] pl-5 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.16)] before:absolute before:left-2 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-[var(--primary)] hover:bg-[rgba(47,120,255,0.18)] hover:text-white"
                 )}
                 href={item.href}
                 key={item.href}
