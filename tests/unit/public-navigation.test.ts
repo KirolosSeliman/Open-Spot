@@ -1080,4 +1080,24 @@ describe("public navigation", () => {
     expect(source("src/app/sign-in/page.tsx")).toContain('href="/signup"');
     expect(source("src/app/signup/page.tsx")).toContain('href="/sign-in"');
   });
+
+  it("keeps the sign-in page focused on authentication without the promo control card", () => {
+    const signInPage = source("src/app/sign-in/page.tsx");
+
+    expect(signInPage).toContain("signInAction");
+    expect(signInPage).toContain('href="/signup"');
+    expect(signInPage).toContain('<FormField htmlFor="email"');
+    expect(signInPage).toContain('<Input id="email"');
+    expect(signInPage).toContain('<FormField htmlFor="password"');
+    expect(signInPage).toContain('<Button className="w-full" type="submit">');
+
+    expect(signInPage).not.toContain("panelTitle");
+    expect(signInPage).not.toContain("panelItems");
+    expect(signInPage).not.toContain("Votre commerce garde le contr");
+    expect(signInPage).not.toContain("Your business stays in control");
+    expect(signInPage).not.toContain("Replies ranked by time");
+    expect(signInPage).not.toContain("Clients consentants seulement");
+    expect(signInPage).not.toContain('variant="dark"');
+    expect(signInPage).not.toContain("bg-white/10");
+  });
 });
