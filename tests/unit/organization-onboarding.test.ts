@@ -270,6 +270,24 @@ describe("organization onboarding", () => {
         smsStatus: "pending_setup"
       }).blockingReasons
     ).toEqual(["Billing status is not paid.", "SMS status is not active."]);
+
+    for (const billingStatus of [
+      "unpaid",
+      "payment_link_sent",
+      "past_due",
+      "cancelled"
+    ]) {
+      expect(
+        evaluateOrganizationSmsReadiness({
+          onboardingStatus: "completed",
+          billingStatus,
+          smsStatus: "active"
+        })
+      ).toMatchObject({
+        canSendSms: false,
+        blockingReasons: ["Billing status is not paid."]
+      });
+    }
   });
 
   it("adds onboarding persistence without anonymous table access", () => {

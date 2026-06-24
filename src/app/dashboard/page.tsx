@@ -13,6 +13,11 @@ import {
 import { getDashboardCopy, intlLocale } from "@/lib/i18n/dashboard-copy";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getOnboardingStatusLabel } from "@/lib/organization/client-onboarding";
+import {
+  getBillingStatusLabel,
+  type ManualBillingStatus
+} from "@/lib/billing/manual-billing";
+import { loadManualBillingForOrganization } from "@/lib/billing/manual-billing-data";
 import { calculateAutomationOutcomeMetrics } from "@/lib/reports/metrics";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { loadOnboardingByOrganization } from "@/lib/organization/onboarding-records";
@@ -62,6 +67,78 @@ function getFallbackOverview(organizationName: string): DashboardOverview {
   };
 }
 
+function getBillingBannerCopy({
+  billingStatus,
+  onboardingCompleted,
+  locale
+}: {
+  billingStatus: string | null | undefined;
+  onboardingCompleted: boolean;
+  locale: "en" | "fr";
+}) {
+  const status = billingStatus as ManualBillingStatus | null | undefined;
+
+  if (status === "paid" && onboardingCompleted) {
+    return null;
+  }
+
+  const copy = {
+    fr: {
+      title: "Activation SMS en attente",
+      unpaid:
+        "Votre compte n’est pas encore activé. Le paiement doit être confirmé avant l’envoi de SMS.",
+      payment_link_sent:
+        "Votre paiement est en attente. L’envoi SMS sera activé après confirmation.",
+      past_due:
+        "Votre compte est en retard de paiement. L’envoi de nouveaux SMS est temporairement suspendu.",
+      cancelled:
+        "Votre compte est annulé. Contactez l’équipe Open Spot pour le réactiver.",
+      paidIncomplete:
+        "Paiement reçu. Complétez l’onboarding pour finaliser votre configuration.",
+      fallback:
+        "L’envoi SMS sera disponible lorsque la configuration, la facturation et l’activation SMS seront complétées."
+    },
+    en: {
+      title: "SMS activation pending",
+      unpaid:
+        "Your account is not active yet. Payment must be confirmed before SMS sending is enabled.",
+      payment_link_sent:
+        "Your payment is pending. SMS sending will be enabled after confirmation.",
+      past_due:
+        "Your account is past due. New SMS sending is temporarily paused.",
+      cancelled:
+        "Your account is cancelled. Contact the Open Spot team to reactivate it.",
+      paidIncomplete: "Payment received. Complete onboarding to finish your setup.",
+      fallback:
+        "SMS sending will be available once setup, billing, and SMS activation are complete."
+    }
+  }[locale];
+
+  if (status === "paid" && !onboardingCompleted) {
+    return {
+      title: copy.title,
+      body: copy.paidIncomplete
+    };
+  }
+
+  if (
+    status === "unpaid" ||
+    status === "payment_link_sent" ||
+    status === "past_due" ||
+    status === "cancelled"
+  ) {
+    return {
+      title: copy.title,
+      body: copy[status]
+    };
+  }
+
+  return {
+    title: copy.title,
+    body: copy.fallback
+  };
+}
+
 export default async function DashboardPage() {
   const [workspace, locale] = await Promise.all([
     getActiveOrganizationWorkspace(),
@@ -77,6 +154,17 @@ export default async function DashboardPage() {
           organizationId: workspace.organization.id
         }).catch(() => null)
       : null;
+  const billing =
+    workspace.status === "ready"
+      ? await loadManualBillingForOrganization(workspace.organization.id).catch(
+          () => null
+        )
+      : null;
+  const billingBanner = getBillingBannerCopy({
+    billingStatus: billing?.billingStatus ?? null,
+    onboardingCompleted: onboarding?.status === "completed",
+    locale
+  });
   const overview =
     workspace.status === "ready"
       ? await loadDashboardOverview({
@@ -126,27 +214,25 @@ export default async function DashboardPage() {
         title={copy.dashboard.title(overview.organizationName)}
       />
 
-      {workspace.status === "ready" && onboarding?.status !== "completed" ? (
+      {workspace.status === "ready" && billingBanner ? (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="font-black">
-                {locale === "fr"
-                  ? "Configuration SMS à compléter"
-                  : "SMS setup must be completed"}
-              </p>
-              <p className="mt-1 leading-6">
-                {locale === "fr"
-                  ? "Les envois SMS réels restent verrouillés tant que l’onboarding client, la facturation et l’activation SMS ne sont pas validés."
-                  : "Real SMS sends stay locked until client onboarding, billing, and SMS activation are approved."}
-              </p>
+              <p className="font-black">{billingBanner.title}</p>
+              <p className="mt-1 leading-6">{billingBanner.body}</p>
             </div>
             <span className="w-fit rounded-full bg-white px-4 py-2 text-xs font-black">
+              {billing
+                ? getBillingStatusLabel(billing.billingStatus, locale)
+                : locale === "fr"
+                  ? "Facturation à configurer"
+                  : "Billing not configured"}
+              {" · "}
               {onboarding
                 ? getOnboardingStatusLabel(onboarding.status, locale)
                 : locale === "fr"
-                  ? "Lien à générer"
-                  : "Link not generated"}
+                  ? "Onboarding à générer"
+                  : "Onboarding not generated"}
             </span>
           </div>
         </div>

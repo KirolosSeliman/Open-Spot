@@ -14,6 +14,7 @@ export type PlatformAdminAction =
   | "organization.archive"
   | "organization.unarchive"
   | "organization.update_billing_terms"
+  | "organization.manage_manual_billing"
   | "compliance.mark_reviewed"
   | "compliance.mark_resolved"
   | "manager_session.end"
@@ -41,7 +42,8 @@ export function canPerformPlatformAdminAction({
     action === "organization.reactivate" ||
     action === "organization.archive" ||
     action === "organization.unarchive" ||
-    action === "organization.update_billing_terms"
+    action === "organization.update_billing_terms" ||
+    action === "organization.manage_manual_billing"
   ) {
     return false;
   }

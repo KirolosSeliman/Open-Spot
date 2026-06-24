@@ -416,7 +416,7 @@ export const dashboardCopy = {
       recoveryPanel: {
         title: "Récupération après annulation SMS",
         description:
-          "Annulations SMS converties en ouvertures récupérables, sans confirmation automatique.",
+          "Annulations SMS converties en ouvertures récupérables, avec décision finale par votre équipe.",
         smsCancellations: [
           "Annulations SMS",
           "Annulations de rendez-vous détectées par réponse SMS."

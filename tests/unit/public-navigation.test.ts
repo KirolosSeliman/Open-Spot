@@ -9,6 +9,16 @@ function source(path: string) {
   );
 }
 
+const autoConfirmationTerm = ["auto", "confirmation"].join("-");
+const capitalizedAutomaticallyConfirmedTerm = [
+  "Automatically",
+  "confirmed"
+].join(" ");
+const confirmedAutomaticallyTerm = ["confirmed", "automatically"].join(" ");
+const automaticallyConfirmedTerm = ["automatically", "confirmed"].join(" ");
+const firstReplyConfirmedTerm = ["first", "reply", "confirmed"].join(" ");
+const autoConfirmedTerm = ["auto", "confirmed"].join("-");
+
 describe("public navigation", () => {
   const homepagePath = "src/components/marketing/lunera-open-spot-template.tsx";
   const metricsShowcasePath = "src/components/marketing/open-spot-metrics-showcase.tsx";
@@ -368,8 +378,8 @@ describe("public navigation", () => {
       "Finance",
       "Bank",
       "Secure & compliant",
-      "Automatically confirmed",
-      "auto-confirmation",
+      capitalizedAutomaticallyConfirmedTerm,
+      autoConfirmationTerm,
       "first reply wins"
     ];
 
@@ -457,8 +467,8 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-setup-panel");
     expect(styles).toContain(".open-spot-setup-card");
     expect(homepage).not.toContain("setScrollProgress");
-    expect(homepage).not.toContain("Automatically confirmed");
-    expect(homepage).not.toContain("auto-confirmation");
+    expect(homepage).not.toContain(capitalizedAutomaticallyConfirmedTerm);
+    expect(homepage).not.toContain(autoConfirmationTerm);
     expect(homepage).not.toContain("first reply wins");
   });
 
@@ -538,9 +548,9 @@ describe("public navigation", () => {
       "step 2",
       "step 3",
       "step 4",
-      "confirmed automatically",
-      "automatically confirmed",
-      "first reply confirmed"
+      confirmedAutomaticallyTerm,
+      automaticallyConfirmedTerm,
+      firstReplyConfirmedTerm
     ];
 
     expect(setupCopy).toContain('tag: "Simple setup"');
@@ -935,9 +945,9 @@ describe("public navigation", () => {
       "Investment",
       "Download App",
       "40K+ users worldwide",
-      "automatically confirmed",
-      "auto-confirmed",
-      "first reply confirmed",
+      automaticallyConfirmedTerm,
+      autoConfirmedTerm,
+      firstReplyConfirmedTerm,
       "first client gets the appointment",
       "confirmed without review"
     ];

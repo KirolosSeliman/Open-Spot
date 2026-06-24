@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { canBillingStatusSendSms } from "@/lib/billing/manual-billing";
 import { isClientOnboardingStatus } from "@/lib/organization/client-onboarding";
 import type { Database } from "@/types/database";
 
@@ -31,7 +32,7 @@ export function evaluateOrganizationSmsReadiness({
     reasons.push("Client onboarding is not completed.");
   }
 
-  if (billingStatus !== "paid") {
+  if (!canBillingStatusSendSms(billingStatus)) {
     reasons.push("Billing status is not paid.");
   }
 

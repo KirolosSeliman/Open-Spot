@@ -483,6 +483,21 @@ export type Database = {
           organization_id: string;
           billing_status: string;
           subscription_status: string;
+          plan_name: string;
+          billing_interval: string;
+          payment_method: string;
+          external_payment_url: string | null;
+          external_customer_reference: string | null;
+          last_payment_at: string | null;
+          current_period_start: string | null;
+          current_period_end: string | null;
+          next_payment_due_at: string | null;
+          cancelled_at: string | null;
+          internal_notes: string | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          stripe_payment_link_id: string | null;
+          stripe_invoice_id: string | null;
           base_plan_amount_cents: number;
           base_plan_currency: string;
           default_commission_percent: number;
@@ -501,6 +516,21 @@ export type Database = {
           organization_id: string;
           billing_status?: string;
           subscription_status?: string;
+          plan_name?: string;
+          billing_interval?: string;
+          payment_method?: string;
+          external_payment_url?: string | null;
+          external_customer_reference?: string | null;
+          last_payment_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          next_payment_due_at?: string | null;
+          cancelled_at?: string | null;
+          internal_notes?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          stripe_payment_link_id?: string | null;
+          stripe_invoice_id?: string | null;
           base_plan_amount_cents?: number;
           base_plan_currency?: string;
           default_commission_percent?: number;
@@ -519,6 +549,21 @@ export type Database = {
           organization_id?: string;
           billing_status?: string;
           subscription_status?: string;
+          plan_name?: string;
+          billing_interval?: string;
+          payment_method?: string;
+          external_payment_url?: string | null;
+          external_customer_reference?: string | null;
+          last_payment_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          next_payment_due_at?: string | null;
+          cancelled_at?: string | null;
+          internal_notes?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          stripe_payment_link_id?: string | null;
+          stripe_invoice_id?: string | null;
           base_plan_amount_cents?: number;
           base_plan_currency?: string;
           default_commission_percent?: number;
@@ -531,6 +576,48 @@ export type Database = {
           waitlist_public_enabled?: boolean;
           created_at?: string;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      billing_events: {
+        Row: {
+          id: string;
+          organization_id: string;
+          billing_id: string | null;
+          event_type: string;
+          old_status: string | null;
+          new_status: string | null;
+          amount_cents: number | null;
+          currency: string;
+          note: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          billing_id?: string | null;
+          event_type: string;
+          old_status?: string | null;
+          new_status?: string | null;
+          amount_cents?: number | null;
+          currency?: string;
+          note?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          billing_id?: string | null;
+          event_type?: string;
+          old_status?: string | null;
+          new_status?: string | null;
+          amount_cents?: number | null;
+          currency?: string;
+          note?: string | null;
+          created_by?: string | null;
+          created_at?: string;
         };
         Relationships: [];
       };
@@ -1756,6 +1843,35 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      admin_update_manual_billing_status: {
+        Args: {
+          target_organization_id: string;
+          target_billing_status: string;
+          target_event_type: string;
+          target_admin_id: string;
+          target_note?: string | null;
+        };
+        Returns: string;
+      };
+      admin_update_manual_billing_plan: {
+        Args: {
+          target_organization_id: string;
+          target_admin_id: string;
+          target_plan_name: string;
+          target_amount_cents: number;
+          target_currency: string;
+          target_billing_interval: string;
+          target_payment_method: string;
+          target_external_payment_url?: string | null;
+          target_external_customer_reference?: string | null;
+          target_internal_notes?: string | null;
+          target_stripe_customer_id?: string | null;
+          target_stripe_subscription_id?: string | null;
+          target_stripe_payment_link_id?: string | null;
+          target_stripe_invoice_id?: string | null;
+        };
+        Returns: string;
+      };
       create_organization_with_owner: {
         Args: {
           organization_name: string;

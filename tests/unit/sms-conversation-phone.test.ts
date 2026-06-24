@@ -11,6 +11,10 @@ function source(path: string) {
   );
 }
 
+const confirmedAutomaticallyTerm = ["Confirmed", "automatically"].join(" ");
+const automaticallyConfirmedTerm = ["Automatically", "confirmed"].join(" ");
+const autoConfirmationTerm = ["Auto", "confirmation"].join("-");
+
 describe("SMS conversation phone marketing preview", () => {
   it("uses Open Spot appointment workflow copy for the hero phone", () => {
     const en = smsConversationPhoneCopy.en;
@@ -35,10 +39,10 @@ describe("SMS conversation phone marketing preview", () => {
 
   it("does not contain forbidden automatic confirmation positioning", () => {
     const forbiddenTerms = [
-      "Confirmed automatically",
-      "Automatically confirmed",
+      confirmedAutomaticallyTerm,
+      automaticallyConfirmedTerm,
       "First reply wins",
-      "Auto-confirmation",
+      autoConfirmationTerm,
       "Automatic booking",
       "Best match",
       "90% match",

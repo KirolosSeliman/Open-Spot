@@ -216,6 +216,12 @@ export default async function AdminOrganizationDetailPage({
           >
             Onboarding
           </Link>
+          <Link
+            className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black transition hover:bg-[#f2f7f4]"
+            href={`/admin/organizations/${overview.organization.id}/billing`}
+          >
+            Billing
+          </Link>
         </div>
       </div>
 

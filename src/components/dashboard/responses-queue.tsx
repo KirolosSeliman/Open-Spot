@@ -141,7 +141,7 @@ export function ResponsesQueue({
               Confirmer ce client pour ce rendez-vous ?
             </h2>
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-              Aucun autre client ne sera confirmé automatiquement.
+              Votre équipe garde la décision finale pour chaque client.
             </p>
             <p className="mt-4 rounded-2xl bg-[#f6f7f2] p-4 text-sm font-semibold">
               Réponse exacte : “{confirming.rawBody}”

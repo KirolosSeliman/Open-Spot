@@ -180,7 +180,7 @@ export const dashboardCancellations: CancellationOpportunity[] = [
         id: "act_3",
         at: "2026-05-26T10:17:18-04:00",
         title: "Client confirmé manuellement",
-        detail: "Sarah Nguyen confirmée par Amélie. Aucun autre client confirmé automatiquement."
+        detail: "Sarah Nguyen confirmée par Amélie. La décision finale reste manuelle."
       }
     ]
   },
