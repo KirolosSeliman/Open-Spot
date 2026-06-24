@@ -193,11 +193,9 @@ async function markConversionFailed(
 }
 
 async function inviteOrLinkOwner({
-  request,
-  admin
+  request
 }: {
   request: BookCallRequestRow;
-  admin: AuthorizedPlatformAdmin;
 }): Promise<{
   userId: string;
   existingUser: boolean;
@@ -384,7 +382,7 @@ export async function convertCallRequestToClient({
   }
 
   try {
-    const ownerResolution = await inviteOrLinkOwner({ request, admin });
+    const ownerResolution = await inviteOrLinkOwner({ request });
 
     if (!ownerResolution.userId) {
       await markConversionFailed(
