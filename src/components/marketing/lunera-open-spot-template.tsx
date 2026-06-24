@@ -38,7 +38,7 @@ const openSpotCopy = {
     confirmClient: "Confirm client"
   },
   hero: {
-    title: ["Fill last-minute", "cancellations by SMS."],
+    title: ["Fill last-minute", "cancellations", "by SMS."],
     subtitle:
       "Open Spot alerts interested clients, collects replies, and lets your team choose who to confirm — without replacing your booking system.",
     socialProof: "Trusted by clinics, salons & studios",
@@ -809,12 +809,12 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
         animationFrame = 0;
 
         if (!mobile.matches) {
-          setFadeValues(0.2, 104, 0, 0, 1, 82);
+          setFadeValues(0.65, 145, 0, 0, 1, 118);
           return;
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(0.72, 176, 0.6, 0, 1, 150);
+          setFadeValues(0.82, 175, 0.5, 0, 1, 142);
           return;
         }
 
@@ -824,11 +824,11 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
         const rawProgress = (start - rect.top) / Math.max(1, start - end);
         const progress = Math.min(1, Math.max(0, rawProgress));
         const easedProgress = progress * progress * (3 - 2 * progress);
-        const opacity = 0.2 + easedProgress * 0.76;
-        const height = 96 + easedProgress * 138;
-        const phoneY = easedProgress * -22;
-        const phoneRatio = 1 - easedProgress * 0.02;
-        const maskHeight = 74 + easedProgress * 132;
+        const opacity = 0.65 + easedProgress * 0.35;
+        const height = 145 + easedProgress * 60;
+        const phoneY = easedProgress * -16;
+        const phoneRatio = 1 - easedProgress * 0.015;
+        const maskHeight = 118 + easedProgress * 54;
 
         setFadeValues(opacity, height, progress, phoneY, phoneRatio, maskHeight);
       });
@@ -947,6 +947,7 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
   return (
     <div
       className="lunera-template min-h-screen bg-white text-[#05070a]"
+      data-locale={locale}
       ref={rootRef}
       style={{ "--lunera-progress": 0 } as CSSProperties}
     >
