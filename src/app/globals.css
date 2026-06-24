@@ -7247,6 +7247,497 @@ select {
   }
 }
 
+.reference-mobile-logo-mark {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .lunera-template {
+    overflow-x: clip;
+  }
+
+  .reference-navbar.reference-navbar {
+    inset: auto 0 auto 0;
+    padding: 0;
+    pointer-events: none;
+    position: absolute;
+    top: clamp(12px, 3.82vw, 17px);
+    z-index: 10;
+  }
+
+  .reference-navbar .reference-navbar-shell,
+  .reference-navbar-shell.mx-auto {
+    background: #ffffff;
+    border-radius: 999px;
+    box-sizing: border-box;
+    box-shadow: 0 11px 26px rgba(74, 126, 172, 0.16);
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    height: clamp(41px, 10.76vw, 47px) !important;
+    max-width: 350px !important;
+    min-height: 0 !important;
+    padding: 5px 10px 5px 18px;
+    pointer-events: auto;
+    width: min(350px, calc(100vw - 82px)) !important;
+  }
+
+  .reference-brand-link {
+    align-items: center;
+    display: inline-flex;
+    font-size: clamp(14px, 3.7vw, 16px);
+    font-weight: 720;
+    gap: 9px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .reference-brand-link img {
+    display: none;
+  }
+
+  .reference-mobile-logo-mark {
+    align-items: center;
+    background: #2f78ff;
+    border-radius: 999px;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 22px;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: 22px;
+  }
+
+  .reference-mobile-logo-mark::before,
+  .reference-mobile-logo-mark::after,
+  .reference-mobile-logo-mark span {
+    background: rgba(255, 255, 255, 0.94);
+    border-radius: 999px;
+    content: "";
+    height: 2px;
+    left: 5px;
+    position: absolute;
+    transform: rotate(42deg);
+    width: 14px;
+  }
+
+  .reference-mobile-logo-mark::before {
+    top: 7px;
+  }
+
+  .reference-mobile-logo-mark span {
+    top: 10px;
+  }
+
+  .reference-mobile-logo-mark::after {
+    top: 13px;
+  }
+
+  .reference-nav-links,
+  .reference-mobile-menu,
+  .reference-navbar-actions > .hidden {
+    display: none;
+  }
+
+  .reference-navbar-actions {
+    min-width: 0;
+  }
+
+  .reference-login-link {
+    box-shadow: none;
+    font-size: 13px;
+    font-weight: 560;
+    height: 29px;
+    min-height: 29px !important;
+    min-width: 60px;
+    padding: 0 13px;
+  }
+
+  .reference-hero-section {
+    background:
+      radial-gradient(ellipse at 50% 38%, rgba(231, 244, 255, 0.96) 0%, rgba(216, 235, 251, 0.54) 45%, rgba(255, 255, 255, 0) 75%),
+      linear-gradient(180deg, #aad0f4 0%, #c6dff7 30%, #e7f2fc 66%, #ffffff 84%);
+    isolation: isolate;
+    min-height: 768px;
+    overflow-x: clip;
+    overflow-y: hidden;
+    padding: 92px 0 15px;
+    position: relative;
+    text-align: center;
+  }
+
+  .reference-hero-copy {
+    margin: 0 auto;
+    max-width: 320px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .reference-hero-title {
+    color: #050505;
+    font-size: clamp(30px, 7.87vw, 34px);
+    font-weight: 760;
+    letter-spacing: -1.2px;
+    line-height: 39px;
+    margin: 0 auto;
+    max-width: 320px;
+  }
+
+  .reference-hero-title span {
+    display: block;
+  }
+
+  .reference-hero-subtitle {
+    color: #4f6478;
+    font-size: 13px;
+    font-weight: 400;
+    letter-spacing: -0.1px;
+    line-height: 18px;
+    margin: 5px auto 0;
+    max-width: 260px;
+  }
+
+  .reference-hero-stage {
+    --mobile-phone-fade-height: 95px;
+    --mobile-phone-fade-opacity: 1;
+    --mobile-phone-fade-progress: 0;
+    --mobile-phone-mask-height: 82px;
+    --mobile-phone-mask-mid-height: 40px;
+    --mobile-phone-scale: 1;
+    --mobile-phone-y: 0px;
+    height: 319px;
+    margin: 6px auto 0;
+    max-width: 432px;
+    position: relative;
+    width: 100%;
+    z-index: 2;
+  }
+
+  .reference-floating-pill,
+  .reference-floating-card {
+    display: none;
+  }
+
+  .reference-phone {
+    background: linear-gradient(105deg, #050609 0%, #242832 39%, #090a0d 67%, #737a84 100%);
+    border-radius: 31px;
+    box-shadow:
+      0 18px 36px rgba(18, 40, 64, 0.2),
+      0 6px 14px rgba(4, 10, 18, 0.24),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      inset 0 0 0 4px #050609;
+    height: 400px;
+    margin: 0 auto;
+    max-height: none;
+    max-width: none;
+    overflow: visible;
+    padding: 5px;
+    position: relative;
+    top: 0;
+    transform: none;
+    width: clamp(176px, 44.44vw, 192px);
+    z-index: 2;
+    -webkit-mask-image: none;
+    mask-image: none;
+    will-change: auto;
+  }
+
+  .reference-phone::before {
+    background: linear-gradient(115deg, rgba(255, 255, 255, 0.2), transparent 32%);
+    border-radius: inherit;
+    height: 45%;
+    inset: 1px 4px auto;
+  }
+
+  .reference-phone::after {
+    bottom: 68px;
+    opacity: 0.72;
+    right: -4px;
+    top: 62px;
+    width: 5px;
+  }
+
+  .reference-phone-side-button {
+    height: 52px;
+    right: -4px;
+    top: 188px;
+    width: 3px;
+  }
+
+  .reference-phone-screen {
+    background: linear-gradient(180deg, rgba(247, 252, 255, 0.96) 0%, #ffffff 34%), #ffffff;
+    border-radius: 27px;
+    height: 100%;
+    overflow: hidden;
+    padding: 28px 14px 10px;
+    position: relative;
+  }
+
+  .reference-dynamic-island {
+    border-radius: 999px;
+    height: 13px;
+    left: 50%;
+    top: 7.5px;
+    transform: translateX(-50%);
+    width: 47px;
+  }
+
+  .reference-dynamic-island span {
+    height: 8px;
+    right: 6px;
+    top: 2.5px;
+    width: 8px;
+  }
+
+  .reference-phone-app-header {
+    grid-template-columns: 12px 1fr 12px;
+    margin: 0 0 8px;
+  }
+
+  .reference-phone-app-header svg {
+    height: 10px;
+    width: 10px;
+  }
+
+  .reference-phone-app-header strong {
+    font-size: 12px;
+    font-weight: 720;
+    line-height: 14px;
+  }
+
+  .reference-detected-card {
+    align-items: center;
+    border-radius: 9px;
+    gap: 8px;
+    min-height: 52px;
+    padding: 7px;
+  }
+
+  .reference-detected-icon {
+    height: 29px;
+    width: 29px;
+  }
+
+  .reference-detected-icon svg {
+    height: 12px;
+    width: 12px;
+  }
+
+  .reference-detected-card strong {
+    font-size: 8.5px;
+    line-height: 11px;
+    margin-bottom: 2px;
+  }
+
+  .reference-detected-card p {
+    font-size: 7px;
+    line-height: 9px;
+  }
+
+  .reference-sms-card {
+    border-radius: 9px;
+    margin-top: 7px;
+    height: 88px;
+    min-height: 88px;
+    padding: 6px 7px 4px;
+  }
+
+  .reference-sms-card > strong {
+    font-size: 7px;
+    line-height: 9px;
+    margin-bottom: 5px;
+  }
+
+  .reference-sms-message {
+    border-radius: 7px;
+    font-size: 6.7px;
+    line-height: 9px;
+    min-height: 42px;
+    padding: 7px;
+  }
+
+  .reference-sms-actions {
+    gap: 5px;
+    margin-top: 4px;
+  }
+
+  .reference-mini-icon {
+    height: 10px;
+    width: 10px;
+  }
+
+  .reference-mini-icon svg {
+    height: 7px;
+    width: 7px;
+  }
+
+  .reference-sms-counter {
+    font-size: 5.5px;
+    margin-left: auto;
+  }
+
+  .reference-send-pill {
+    border-radius: 8px;
+    font-size: 5.8px;
+    height: 15px;
+    width: 26px;
+  }
+
+  .reference-reply-card {
+    border-radius: 9px;
+    margin-top: 8px;
+    padding: 8px 7px 6px;
+  }
+
+  .reference-reply-heading {
+    margin-bottom: 7px;
+  }
+
+  .reference-reply-heading strong {
+    font-size: 7px;
+    line-height: 9px;
+  }
+
+  .reference-reply-heading span {
+    font-size: 6px;
+    height: 12px;
+    min-width: 13px;
+  }
+
+  .reference-reply-list {
+    gap: 6px;
+  }
+
+  .reference-reply-item {
+    gap: 4px;
+    grid-template-columns: 17px minmax(38px, 1fr) auto auto auto;
+  }
+
+  .reference-reply-item img {
+    height: 17px;
+    width: 17px;
+  }
+
+  .reference-reply-item strong {
+    font-size: 6.5px;
+    line-height: 8px;
+  }
+
+  .reference-yes-badge {
+    font-size: 5px;
+    padding: 1px 3px;
+  }
+
+  .reference-reply-time {
+    display: inline;
+    font-size: 5px;
+  }
+
+  .reference-confirm-pill {
+    border-radius: 9px;
+    font-size: 5.6px;
+    height: 17px;
+    max-width: none;
+    padding: 0 7px;
+  }
+
+  .reference-mobile-phone-fade {
+    background:
+      radial-gradient(ellipse at 5% 76%, rgba(255, 255, 255, 0.98) 0 36px, rgba(255, 255, 255, 0.72) 58px, rgba(255, 255, 255, 0) 92px),
+      radial-gradient(ellipse at 95% 76%, rgba(255, 255, 255, 0.98) 0 40px, rgba(255, 255, 255, 0.72) 62px, rgba(255, 255, 255, 0) 96px),
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.24) 44%, rgba(255, 255, 255, 0.92) 60%, #ffffff 78%);
+    bottom: -90px;
+    display: block;
+    height: 200px;
+    left: 50%;
+    opacity: 1;
+    pointer-events: none;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 100vw;
+    z-index: 3;
+  }
+
+  .reference-hero-footer {
+    margin: 15px auto 0;
+    max-width: 290px;
+    position: relative;
+    width: 290px;
+    z-index: 4;
+  }
+
+  .reference-trust-row {
+    align-items: center;
+    display: grid;
+    grid-template-columns: 109px 108px;
+    gap: 15px;
+    justify-content: center;
+    max-width: none;
+    width: 232px;
+  }
+
+  .reference-avatar-stack {
+    justify-content: flex-start;
+  }
+
+  .reference-avatar-stack span {
+    border-width: 2px;
+    height: 36px;
+    margin-left: -7px;
+    width: 36px;
+  }
+
+  .reference-avatar-stack span:first-child {
+    margin-left: 0;
+  }
+
+  .reference-trust-row > div:last-child {
+    max-width: 108px;
+  }
+
+  .reference-stars {
+    gap: 5px;
+  }
+
+  .reference-stars svg {
+    height: 10px;
+    width: 10px;
+  }
+
+  .reference-trust-row p {
+    font-size: 11px;
+    line-height: 14px;
+    margin: 6px 0 0;
+    max-width: 108px;
+  }
+
+  .reference-hero-actions {
+    gap: 3px;
+    margin: 11px auto 0;
+    width: 238px;
+  }
+
+  .reference-cta-primary,
+  .reference-cta-secondary {
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 560;
+    height: 35px;
+    width: 238px;
+  }
+
+  .reference-cta-primary {
+    box-shadow: 0 9px 18px rgba(47, 120, 255, 0.25);
+  }
+
+  .reference-cta-secondary {
+    border: 1px solid rgba(226, 232, 240, 0.7);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+    height: 34px;
+  }
+}
+
 .open-spot-dashboard-theme {
   --dashboard-background: #f7f9fd;
   --dashboard-surface: rgba(255, 255, 255, 0.92);

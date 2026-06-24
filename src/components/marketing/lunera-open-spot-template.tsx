@@ -684,15 +684,15 @@ type TemplateCopy = (typeof copy)[Locale];
 const socialProofAvatars = [
   {
     alt: "Appointment team member",
-    src: "/lunera-style/avatars/review-1.jpg"
+    src: "/testimonials/sophie-clinic-coordinator.webp"
   },
   {
     alt: "Salon team member",
-    src: "/lunera-style/avatars/review-2.jpg"
+    src: "/testimonials/karim-barber-manager.webp"
   },
   {
     alt: "Clinic team member",
-    src: "/lunera-style/avatars/review-3.jpg"
+    src: "/testimonials/maya-salon-owner.webp"
   }
 ] as const;
 
@@ -972,11 +972,14 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
   return (
     <header className="reference-navbar fixed inset-x-0 top-1 z-50 px-3">
-      <div className="reference-navbar-shell mx-auto">
+      <div className="reference-navbar-shell mx-auto" data-reference-part="mobile-navbar">
         <Link
           className="reference-brand-link"
           href="/"
         >
+          <span className="reference-mobile-logo-mark" aria-hidden="true">
+            <span />
+          </span>
           <OpenSpotLogo size="sm" variant="lockup" />
         </Link>
         <nav aria-label="Main navigation" className="reference-nav-links">
@@ -1034,14 +1037,14 @@ function Hero({ t }: { locale: Locale; t: TemplateCopy }) {
       <div className="reference-hero-cloud reference-hero-cloud-left" aria-hidden="true" />
       <div className="reference-hero-cloud reference-hero-cloud-right" aria-hidden="true" />
       <div className="reference-hero-copy">
-        <h1 className="reference-hero-title" data-lunera-reveal>
+        <h1 className="reference-hero-title" data-lunera-reveal data-reference-part="mobile-title">
           {t.hero.title.map((line) => (
             <span key={line}>
               {line}
             </span>
           ))}
         </h1>
-        <p className="reference-hero-subtitle" data-lunera-reveal>
+        <p className="reference-hero-subtitle" data-lunera-reveal data-reference-part="mobile-subtitle">
           {t.hero.subtitle}
         </p>
       </div>
@@ -1119,10 +1122,10 @@ function MetricCard({
 
 function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] }) {
   return (
-    <div className="reference-phone">
+    <div className="reference-phone" data-reference-part="mobile-phone">
       <div className="reference-phone-side-button" />
       <div className="reference-phone-screen">
-        <div className="reference-dynamic-island">
+        <div className="reference-dynamic-island" data-reference-part="dynamic-island">
           <span />
         </div>
         <div className="reference-phone-app-header">
@@ -1130,7 +1133,7 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
           <strong>{phone.title}</strong>
           <GearIcon />
         </div>
-        <div className="reference-detected-card">
+        <div className="reference-detected-card" data-reference-part="cancellation-card">
           <span className="reference-detected-icon">
             <BellIcon />
           </span>
@@ -1140,9 +1143,9 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
             <p>{phone.cancellationService}</p>
           </div>
         </div>
-        <div className="reference-sms-card">
+        <div className="reference-sms-card" data-reference-part="sms-card">
           <strong>{phone.smsTitle}</strong>
-          <div className="reference-sms-message">
+          <div className="reference-sms-message" data-reference-part="message-box">
             {phone.smsMessage.map((line) => (
               <span key={line}>{line}</span>
             ))}
@@ -1155,10 +1158,10 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
               <GearIcon />
             </span>
             <span className="reference-sms-counter">{phone.smsCounter}</span>
-            <span className="reference-send-pill">{phone.send}</span>
+            <span className="reference-send-pill" data-reference-part="send-button">{phone.send}</span>
           </div>
         </div>
-        <div className="reference-reply-card">
+        <div className="reference-reply-card" data-reference-part="reply-queue">
           <div className="reference-reply-heading">
             <strong>{phone.replyQueue}</strong>
             <span>{phone.replyCount}</span>
@@ -1182,7 +1185,7 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
 
 function TrustRow({ label }: { label: string }) {
   return (
-    <div className="reference-trust-row">
+    <div className="reference-trust-row" data-reference-part="social-proof">
       <div className="reference-avatar-stack">
         {socialProofAvatars.map((avatar) => (
           <span key={avatar.src}>
@@ -1190,6 +1193,7 @@ function TrustRow({ label }: { label: string }) {
               alt={avatar.alt}
               className="open-spot-social-avatar"
               height={52}
+              loading="eager"
               src={avatar.src}
               width={52}
             />
@@ -1211,10 +1215,10 @@ function TrustRow({ label }: { label: string }) {
 function HeroActions({ t }: { t: TemplateCopy }) {
   return (
     <div className="reference-hero-actions">
-      <Link className="reference-cta-primary" href={getStartedHref}>
+      <Link className="reference-cta-primary" href={getStartedHref} data-reference-part="get-started">
         {t.hero.primary}
       </Link>
-      <Link className="reference-cta-secondary" href={bookCallHref}>
+      <Link className="reference-cta-secondary" href={bookCallHref} data-reference-part="book-call">
         {t.hero.secondary}
       </Link>
     </div>
