@@ -1209,7 +1209,7 @@ describe("public navigation", () => {
 
   it("links sign-in and signup pages to each other", () => {
     expect(source("src/app/sign-in/page.tsx")).toContain('href="/signup"');
-    expect(source("src/app/signup/page.tsx")).toContain('href="/sign-in"');
+    expect(source("src/app/signup/page.tsx")).toContain('redirect(`/sign-in');
   });
 
   it("keeps the sign-in page focused on authentication without the promo control card", () => {

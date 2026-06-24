@@ -34,6 +34,17 @@ function request(overrides: Partial<BookCallRequestRow>): BookCallRequestRow {
     created_at: "2026-06-20T12:00:00.000Z",
     updated_at: "2026-06-20T12:00:00.000Z",
     contacted_at: null,
+    conversion_status: "not_started",
+    organization_id: null,
+    owner_user_id: null,
+    conversion_started_at: null,
+    converted_at: null,
+    converted_by: null,
+    invitation_status: null,
+    invited_at: null,
+    last_invitation_attempt_at: null,
+    conversion_error_code: null,
+    conversion_error_message: null,
     ...overrides
   };
 }
@@ -45,7 +56,8 @@ describe("book call admin", () => {
       "contacted",
       "qualified",
       "closed",
-      "spam"
+      "spam",
+      "converted"
     ]);
     expect(validateBookCallRequestStatus("qualified")).toBe("qualified");
     expect(validateBookCallRequestStatus("call_booked")).toBeNull();

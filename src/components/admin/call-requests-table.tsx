@@ -1,4 +1,5 @@
 import { updateBookCallRequestAction } from "@/app/admin/call-requests/actions";
+import { BusinessNameLink } from "@/components/admin/business-name-link";
 import {
   EmptyState,
   TableShell,
@@ -17,7 +18,8 @@ const statusLabels: Record<BookCallRequestStatus, string> = {
   contacted: "Contacte",
   qualified: "Qualifie",
   closed: "Ferme",
-  spam: "Spam"
+  spam: "Spam",
+  converted: "Converti"
 };
 
 function formatDate(value: string | null) {
@@ -128,7 +130,7 @@ function RequestSummary({ request }: { request: BookCallRequestRow }) {
     <div className="grid gap-2 text-sm leading-6 text-[var(--muted)]">
       <p>
         <span className="font-black text-[var(--foreground)]">Commerce:</span>{" "}
-        {request.business_name}
+        <BusinessNameLink request={request} />
       </p>
       <p>
         <span className="font-black text-[var(--foreground)]">Type:</span>{" "}
@@ -153,7 +155,7 @@ function RequestCard({ request }: { request: BookCallRequestRow }) {
         <div>
           <h2 className="text-lg font-black">{request.full_name}</h2>
           <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
-            {request.business_name}
+            <BusinessNameLink request={request} />
           </p>
         </div>
         <StatusPill status={request.status} />

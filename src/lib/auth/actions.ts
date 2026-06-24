@@ -87,34 +87,11 @@ export async function signInAction(formData: FormData) {
   );
 }
 
-export async function signUpAction(formData: FormData) {
-  if (!isSupabaseConfigured()) {
-    authErrorRedirect("/signup", "Supabase is not configured locally.");
-  }
-
-  const email = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
-  const password = String(formData.get("password") ?? "");
-
-  if (!email || password.length < 8) {
-    authErrorRedirect(
-      "/signup",
-      "A valid email and password of at least 8 characters are required."
-    );
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signUp({
-    email,
-    password
-  });
-
-  if (error) {
-    authErrorRedirect("/signup", error.message);
-  }
-
-  redirect("/onboarding");
+export async function signUpAction(_formData: FormData) {
+  authErrorRedirect(
+    "/signup",
+    "Public signup is disabled. Accounts are created by invitation only."
+  );
 }
 
 export async function signOutAction() {

@@ -3,7 +3,8 @@ export const bookCallRequestStatuses = [
   "contacted",
   "qualified",
   "closed",
-  "spam"
+  "spam",
+  "converted"
 ] as const;
 
 export type BookCallRequestStatus = (typeof bookCallRequestStatuses)[number];

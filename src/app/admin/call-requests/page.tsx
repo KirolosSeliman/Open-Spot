@@ -18,7 +18,8 @@ const statusLabels = {
   contacted: "Contacte",
   qualified: "Qualifie",
   closed: "Ferme",
-  spam: "Spam"
+  spam: "Spam",
+  converted: "Converti"
 } as const;
 
 function firstParam(
