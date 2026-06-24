@@ -788,10 +788,16 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
     const fadeStage = stage;
     let animationFrame = 0;
 
-    function setFadeValues(opacity: number, height: number, progress: number) {
+    function setFadeValues(opacity: number, height: number, progress: number, phoneY: number, phoneRatio: number, maskHeight: number) {
+      const maskMidHeight = maskHeight * 0.48;
+
       fadeStage.style.setProperty("--mobile-phone-fade-opacity", opacity.toFixed(3));
       fadeStage.style.setProperty("--mobile-phone-fade-height", `${height.toFixed(1)}px`);
       fadeStage.style.setProperty("--mobile-phone-fade-progress", progress.toFixed(3));
+      fadeStage.style.setProperty("--mobile-phone-y", `${phoneY.toFixed(1)}px`);
+      fadeStage.style.setProperty("--mobile-phone-scale", phoneRatio.toFixed(3));
+      fadeStage.style.setProperty("--mobile-phone-mask-height", `${maskHeight.toFixed(1)}px`);
+      fadeStage.style.setProperty("--mobile-phone-mask-mid-height", `${maskMidHeight.toFixed(1)}px`);
     }
 
     function updatePhoneFade() {
@@ -803,25 +809,28 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
         animationFrame = 0;
 
         if (!mobile.matches) {
-          setFadeValues(0.2, 118, 0);
+          setFadeValues(0.2, 104, 0, 0, 1, 82);
           return;
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(0.75, 184, 0.65);
+          setFadeValues(0.72, 176, 0.6, 0, 1, 150);
           return;
         }
 
         const rect = fadeStage.getBoundingClientRect();
-        const start = window.innerHeight * 0.62;
-        const end = window.innerHeight * 0.12;
+        const start = window.innerHeight * 0.66;
+        const end = window.innerHeight * 0.18;
         const rawProgress = (start - rect.top) / Math.max(1, start - end);
         const progress = Math.min(1, Math.max(0, rawProgress));
-        const easedProgress = 1 - Math.pow(1 - progress, 2);
-        const opacity = 0.22 + easedProgress * 0.78;
-        const height = 112 + easedProgress * 138;
+        const easedProgress = progress * progress * (3 - 2 * progress);
+        const opacity = 0.2 + easedProgress * 0.76;
+        const height = 96 + easedProgress * 138;
+        const phoneY = easedProgress * -22;
+        const phoneRatio = 1 - easedProgress * 0.02;
+        const maskHeight = 74 + easedProgress * 132;
 
-        setFadeValues(opacity, height, progress);
+        setFadeValues(opacity, height, progress, phoneY, phoneRatio, maskHeight);
       });
     }
 

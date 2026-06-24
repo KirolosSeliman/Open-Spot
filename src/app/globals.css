@@ -6882,32 +6882,38 @@ select {
     --mobile-phone-fade-height: 118px;
     --mobile-phone-fade-opacity: 0.22;
     --mobile-phone-fade-progress: 0;
+    --mobile-phone-mask-height: 82px;
+    --mobile-phone-mask-mid-height: 39px;
+    --mobile-phone-scale: 1;
+    --mobile-phone-y: 0px;
     display: flex;
     height: auto;
     justify-content: center;
-    margin: 2.5rem auto 0;
+    margin: clamp(2.35rem, 10vw, 2.9rem) auto 0;
     max-width: 350px;
     overflow: visible;
     width: 100%;
   }
 
   .reference-mobile-phone-fade {
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.58) 34%, rgba(255, 255, 255, 0.92) 68%, #ffffff 100%),
-      radial-gradient(ellipse at 50% 92%, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.86) 44%, rgba(255, 255, 255, 0) 72%);
-    border-bottom-left-radius: 999px;
-    border-bottom-right-radius: 999px;
-    bottom: -8px;
+    background: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.28) 28%,
+      rgba(255, 255, 255, 0.76) 66%,
+      #ffffff 100%
+    );
+    bottom: -2px;
     display: block;
     height: var(--mobile-phone-fade-height);
     left: 50%;
     opacity: var(--mobile-phone-fade-opacity);
     pointer-events: none;
     position: absolute;
-    transform: translate3d(-50%, calc(var(--mobile-phone-fade-progress) * -16px), 0);
-    width: min(88vw, 352px);
+    transform: translate3d(-50%, calc(var(--mobile-phone-fade-progress) * -8px), 0);
+    width: min(78vw, 324px);
     will-change: opacity, transform;
-    z-index: 24;
+    z-index: 20;
   }
 
   .reference-floating-pill,
@@ -6929,14 +6935,32 @@ select {
     left: auto;
     margin: 0 auto;
     max-height: 570px;
-    max-width: 312px;
+    max-width: 322px;
     overflow: visible;
     padding: clamp(0.66rem, 2.9vw, 0.86rem);
     position: relative;
     top: auto;
-    transform: none;
-    width: min(76vw, 312px);
-    z-index: 2;
+    transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale));
+    transform-origin: 50% 35%;
+    width: min(80vw, 322px);
+    z-index: 10;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 calc(100% - var(--mobile-phone-mask-height)),
+      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 calc(100% - var(--mobile-phone-mask-height)),
+      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0) 100%
+    );
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    will-change: transform;
   }
 
   .reference-phone::before {
@@ -7103,12 +7127,13 @@ select {
 
   .reference-hero-footer {
     left: auto;
-    margin: 1.8rem auto 0;
+    margin: clamp(2.35rem, 9vw, 3.1rem) auto 0;
     max-width: 350px;
     position: relative;
     right: auto;
     top: auto;
     width: 100%;
+    z-index: 30;
   }
 
   .reference-trust-row {
@@ -7159,9 +7184,13 @@ select {
 
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
   .reference-hero-stage {
-    --mobile-phone-fade-height: 184px;
-    --mobile-phone-fade-opacity: 0.75;
-    --mobile-phone-fade-progress: 0.65;
+    --mobile-phone-fade-height: 176px;
+    --mobile-phone-fade-opacity: 0.72;
+    --mobile-phone-fade-progress: 0.6;
+    --mobile-phone-mask-height: 150px;
+    --mobile-phone-mask-mid-height: 72px;
+    --mobile-phone-scale: 1;
+    --mobile-phone-y: 0px;
   }
 }
 
