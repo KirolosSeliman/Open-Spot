@@ -1244,12 +1244,14 @@ select {
   border-radius: 999px;
   box-shadow: 0 18px 44px rgba(40, 93, 133, 0.14);
   display: flex;
+  gap: clamp(14px, 2vw, 24px);
   height: 75px;
   justify-content: space-between;
-  max-width: 762px;
-  padding: 10px 15px 10px 20px;
+  max-width: min(1040px, calc(100vw - 32px));
+  min-width: 0;
+  padding: 10px 16px 10px 20px;
   pointer-events: auto;
-  width: min(762px, calc(100vw - 32px));
+  width: min(1040px, calc(100vw - 32px));
 }
 
 .reference-brand-link {
@@ -1261,23 +1263,28 @@ select {
   font-weight: 760;
   gap: 12px;
   line-height: 1;
+  min-width: 0;
 }
 
 .reference-nav-links {
   align-items: center;
   display: flex;
-  gap: 25px;
-  margin-left: auto;
-  margin-right: 28px;
+  flex: 1 1 auto;
+  gap: clamp(16px, 2.1vw, 27px);
+  justify-content: center;
+  margin-inline: auto;
+  min-width: 0;
 }
 
 .reference-nav-link {
   border-radius: 999px;
   color: #050505;
-  font-size: 16px;
+  flex-shrink: 0;
+  font-size: clamp(14px, 1.12vw, 16px);
   font-weight: 560;
   line-height: 1;
   padding: 10px 0;
+  white-space: nowrap;
   transition:
     color 160ms ease,
     transform 160ms ease;
@@ -1291,7 +1298,9 @@ select {
 .reference-navbar-actions {
   align-items: center;
   display: flex;
-  gap: 10px;
+  flex: 0 0 auto;
+  gap: 12px;
+  min-width: max-content;
 }
 
 .reference-login-link {
@@ -1301,12 +1310,15 @@ select {
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
   color: #ffffff;
   display: inline-flex;
+  flex-shrink: 0;
   font-size: 16px;
   font-weight: 620;
   height: 47px;
   justify-content: center;
   line-height: 1;
-  width: 92px;
+  min-width: 118px;
+  padding-inline: 20px;
+  white-space: nowrap;
 }
 
 .reference-mobile-menu {
@@ -1367,7 +1379,7 @@ select {
   isolation: isolate;
   min-height: 1254px;
   overflow-x: clip;
-  padding-top: 143px;
+  padding-top: 158px;
   position: relative;
 }
 
@@ -1756,27 +1768,38 @@ select {
   font-size: 15px;
   font-weight: 560;
   gap: 9px;
-  height: 44px;
+  line-height: 1.18;
+  max-width: min(20rem, calc(100vw - 32px));
+  min-height: 44px;
+  min-width: 0;
   justify-content: center;
-  padding: 0 18px;
-  white-space: nowrap;
+  padding: 10px 18px;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .reference-floating-pill svg {
+  flex: 0 0 auto;
   height: 22px;
   width: 22px;
 }
 
+.reference-floating-pill span {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .reference-pill-alert {
-  left: 116px;
+  left: 74px;
   top: 163px;
-  width: 184px;
+  width: min(20rem, 30vw);
 }
 
 .reference-pill-confirm {
-  right: 128px;
+  right: 94px;
   top: 366px;
-  width: 182px;
+  width: min(16.25rem, 25vw);
 }
 
 .reference-floating-card {
@@ -1785,7 +1808,9 @@ select {
   border-radius: 26px;
   box-shadow: 0 20px 48px rgba(80, 112, 140, 0.14);
   display: flex;
+  gap: 18px;
   justify-content: space-between;
+  min-width: 0;
   padding: 28px 27px;
 }
 
@@ -1935,7 +1960,7 @@ select {
 @media (max-width: 1199px) {
   .reference-hero-section {
     min-height: 1180px;
-    padding-top: 130px;
+    padding-top: 144px;
   }
 
   .reference-hero-title {
@@ -1960,11 +1985,11 @@ select {
   }
 
   .reference-pill-alert {
-    left: 54px;
+    left: 14px;
   }
 
   .reference-pill-confirm {
-    right: 68px;
+    right: 20px;
   }
 
   .reference-hero-footer {
@@ -1992,11 +2017,13 @@ select {
 
   .reference-login-link {
     height: 44px;
-    width: 84px;
+    min-width: 112px;
+    padding-inline: 17px;
   }
 
   .reference-hero-section {
     min-height: 1160px;
+    padding-top: 126px;
   }
 
   .reference-hero-subtitle {
@@ -2030,13 +2057,15 @@ select {
   }
 
   .reference-pill-alert {
-    left: 16px;
+    left: 0;
     top: 210px;
+    width: min(19rem, 41vw);
   }
 
   .reference-pill-confirm {
-    right: 18px;
+    right: 0;
     top: 410px;
+    width: min(16rem, 36vw);
   }
 
   .reference-phone-fade {
@@ -2052,7 +2081,7 @@ select {
   .reference-hero-section {
     min-height: 1220px;
     padding-inline: 16px;
-    padding-top: 112px;
+    padding-top: 124px;
   }
 
   .reference-hero-title {
@@ -2119,20 +2148,24 @@ select {
 
   .reference-floating-pill {
     font-size: 12.5px;
-    height: 39px;
-    padding-inline: 12px;
+    min-height: 39px;
+    padding: 9px 12px;
+  }
+
+  .reference-floating-pill span {
+    max-width: 100%;
   }
 
   .reference-pill-alert {
     left: 0;
     top: 12px;
-    width: 168px;
+    width: min(100%, 13.5rem);
   }
 
   .reference-pill-confirm {
     right: 0;
     top: 592px;
-    width: 178px;
+    width: min(100%, 13.5rem);
   }
 
   .reference-floating-card {
@@ -2208,7 +2241,8 @@ select {
   }
 
   .reference-login-link {
-    width: 78px;
+    min-width: 104px;
+    padding-inline: 14px;
   }
 
   .reference-card-label {

@@ -991,6 +991,35 @@ describe("public navigation", () => {
     expect(styles).toContain("overflow-x: hidden");
   });
 
+  it("prevents French navbar and hero phone badge text from overflowing", () => {
+    const styles = source("src/app/globals.css");
+    const navbarStyles = styles.slice(
+      styles.indexOf(".reference-navbar-shell"),
+      styles.indexOf(".reference-mobile-menu")
+    );
+    const floatingStyles = styles.slice(
+      styles.indexOf(".reference-floating-pill"),
+      styles.indexOf(".reference-phone-fade")
+    );
+    const mobileStyles = styles.slice(styles.indexOf("@media (max-width: 767px)"));
+
+    expect(navbarStyles).toContain("max-width: min(1040px, calc(100vw - 32px))");
+    expect(navbarStyles).toContain("min-width: 0");
+    expect(navbarStyles).toContain("flex-shrink: 0");
+    expect(navbarStyles).not.toContain("width: 92px");
+    expect(navbarStyles).not.toContain("width: 84px");
+
+    expect(floatingStyles).toContain("white-space: normal");
+    expect(floatingStyles).toContain("overflow-wrap: anywhere");
+    expect(floatingStyles).toContain("min-width: 0");
+    expect(floatingStyles).toContain("max-width:");
+    expect(floatingStyles).not.toContain("white-space: nowrap");
+
+    expect(mobileStyles).toContain(".reference-floating-pill span");
+    expect(mobileStyles).toContain("max-width: 100%");
+    expect(mobileStyles).toContain("width: min(100%, 13.5rem)");
+  });
+
   it("uses the requested reference hero proof and CTA copy instead of fake brand logos", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
