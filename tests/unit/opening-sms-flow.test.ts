@@ -99,6 +99,8 @@ describe("opening SMS flow", () => {
     expect(newCancellationPage).toContain("smsBlockingReasons");
     expect(dashboardActions).toContain("checkSmsDeliveryPersistenceReadiness");
     expect(dashboardActions).toContain("smsPersistence.blockingReasons.join");
+    expect(dashboardActions).toContain("loadOrganizationSmsReadiness");
+    expect(dashboardActions).toContain("organizationSmsReadiness.canSendSms");
   });
 
   it("records an audit log when an opening prepares an eligible audience", () => {

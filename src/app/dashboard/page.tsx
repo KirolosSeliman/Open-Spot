@@ -12,8 +12,10 @@ import {
 } from "@/lib/dashboard/real-data";
 import { getDashboardCopy, intlLocale } from "@/lib/i18n/dashboard-copy";
 import { getRequestLocale } from "@/lib/i18n/locale";
+import { getOnboardingStatusLabel } from "@/lib/organization/client-onboarding";
 import { calculateAutomationOutcomeMetrics } from "@/lib/reports/metrics";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
+import { loadOnboardingByOrganization } from "@/lib/organization/onboarding-records";
 
 function formatCurrency(cents: number, locale: string) {
   return new Intl.NumberFormat(locale, {
@@ -69,6 +71,12 @@ export default async function DashboardPage() {
   const numberFormatter = new Intl.NumberFormat(intlLocale(locale));
   const organizationName =
     workspace.status === "ready" ? workspace.organization.name : "Open Spot";
+  const onboarding =
+    workspace.status === "ready"
+      ? await loadOnboardingByOrganization({
+          organizationId: workspace.organization.id
+        }).catch(() => null)
+      : null;
   const overview =
     workspace.status === "ready"
       ? await loadDashboardOverview({
@@ -117,6 +125,32 @@ export default async function DashboardPage() {
         description={copy.dashboard.description(organizationName)}
         title={copy.dashboard.title(overview.organizationName)}
       />
+
+      {workspace.status === "ready" && onboarding?.status !== "completed" ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="font-black">
+                {locale === "fr"
+                  ? "Configuration SMS à compléter"
+                  : "SMS setup must be completed"}
+              </p>
+              <p className="mt-1 leading-6">
+                {locale === "fr"
+                  ? "Les envois SMS réels restent verrouillés tant que l’onboarding client, la facturation et l’activation SMS ne sont pas validés."
+                  : "Real SMS sends stay locked until client onboarding, billing, and SMS activation are approved."}
+              </p>
+            </div>
+            <span className="w-fit rounded-full bg-white px-4 py-2 text-xs font-black">
+              {onboarding
+                ? getOnboardingStatusLabel(onboarding.status, locale)
+                : locale === "fr"
+                  ? "Lien à générer"
+                  : "Link not generated"}
+            </span>
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard
