@@ -776,9 +776,101 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
     };
   }, []);
 
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const section = document.querySelector<HTMLElement>(".open-spot-how-section");
+    const copyBlock = document.querySelector<HTMLElement>(".open-spot-how-copy");
+    const frames = Array.from(
+      document.querySelectorAll<HTMLElement>(".open-spot-how-card-frame")
+    );
+
+    if (!section || !copyBlock || frames.length === 0) {
+      return;
+    }
+
+    const stackSection = section;
+    const stackCopy = copyBlock;
+    let animationFrame = 0;
+
+    function clearStack() {
+      stackCopy.style.transform = "";
+      frames.forEach((frame) => {
+        frame.style.transform = "";
+      });
+    }
+
+    function currentTranslateY(element: HTMLElement) {
+      const transform = window.getComputedStyle(element).transform;
+
+      if (!transform || transform === "none") {
+        return 0;
+      }
+
+      return new DOMMatrixReadOnly(transform).m42;
+    }
+
+    function updateStack() {
+      if (animationFrame) {
+        return;
+      }
+
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0;
+
+        if (reduceMotion.matches || !desktop.matches) {
+          clearStack();
+          return;
+        }
+
+        const sectionRect = stackSection.getBoundingClientRect();
+        const copyRect = stackCopy.getBoundingClientRect();
+        const copyNormalTop = copyRect.top - currentTranslateY(stackCopy);
+        const baseTop = Math.min(132, Math.max(104, window.innerHeight * 0.15));
+        const copyMaxTranslate = sectionRect.bottom - baseTop - stackCopy.offsetHeight;
+        const copyTranslateY = Math.max(0, Math.min(baseTop - copyNormalTop, copyMaxTranslate));
+
+        stackCopy.style.transform = copyTranslateY > 0
+          ? `translate3d(0, ${copyTranslateY.toFixed(2)}px, 0)`
+          : "";
+
+        frames.forEach((frame, index) => {
+          const frameRect = frame.getBoundingClientRect();
+          const targetTop = baseTop + index * 14;
+          const normalTop = frameRect.top - currentTranslateY(frame);
+          const maxTranslate = sectionRect.bottom - targetTop - frame.offsetHeight;
+          const translateY = Math.max(0, Math.min(targetTop - normalTop, maxTranslate));
+
+          frame.style.transform = translateY > 0
+            ? `translate3d(0, ${translateY.toFixed(2)}px, 0)`
+            : "";
+        });
+      });
+    }
+
+    updateStack();
+    window.addEventListener("scroll", updateStack, { passive: true });
+    window.addEventListener("resize", updateStack);
+    reduceMotion.addEventListener("change", updateStack);
+    desktop.addEventListener("change", updateStack);
+
+    return () => {
+      window.removeEventListener("scroll", updateStack);
+      window.removeEventListener("resize", updateStack);
+      reduceMotion.removeEventListener("change", updateStack);
+      desktop.removeEventListener("change", updateStack);
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
+
+      clearStack();
+    };
+  }, [locale]);
+
   return (
     <div
-      className="lunera-template min-h-screen overflow-hidden bg-white text-[#05070a]"
+      className="lunera-template min-h-screen bg-white text-[#05070a]"
       ref={rootRef}
       style={{ "--lunera-progress": 0 } as CSSProperties}
     >
@@ -1251,7 +1343,11 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
         </div>
         <div className="open-spot-how-cards">
           {t.how.steps.map((step, index) => (
-            <article className="open-spot-how-card" data-lunera-reveal key={step.number}>
+            <div
+              className={cn("open-spot-how-card-frame", `open-spot-how-card-frame--${index + 1}`)}
+              key={step.number}
+            >
+              <article className="open-spot-how-card" data-lunera-reveal>
               <div className="open-spot-how-card-header">
                 <div className="open-spot-how-icon" aria-hidden="true">
                   <StepIcon index={index} />
@@ -1268,7 +1364,8 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
               <span className="open-spot-how-step-number">
                 {step.number}
               </span>
-            </article>
+              </article>
+            </div>
           ))}
         </div>
       </div>

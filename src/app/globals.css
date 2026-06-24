@@ -1230,7 +1230,7 @@ select {
 
 .lunera-template {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow: visible;
   --lunera-progress: 0;
 }
 
@@ -4154,6 +4154,10 @@ select {
   width: 100%;
 }
 
+.open-spot-how-card-frame {
+  display: block;
+}
+
 .open-spot-how-card {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(255, 255, 255, 0.95)),
@@ -4472,6 +4476,43 @@ select {
 }
 
 @media (min-width: 1024px) {
+  .open-spot-how-section {
+    overflow: visible;
+  }
+
+  .open-spot-how-shell {
+    min-height: calc(100vh + 44rem);
+  }
+
+  .open-spot-how-copy {
+    position: relative;
+    top: auto;
+    will-change: transform;
+  }
+
+  .open-spot-how-cards {
+    display: block;
+    min-height: calc(45rem + 72vh);
+    padding-bottom: clamp(12rem, 30vh, 18rem);
+  }
+
+  .open-spot-how-card-frame {
+    margin-bottom: clamp(10rem, 34vh, 19rem);
+    position: relative;
+    top: auto;
+    will-change: transform;
+    z-index: 10;
+  }
+
+  .open-spot-how-card-frame--2 {
+    z-index: 20;
+  }
+
+  .open-spot-how-card-frame--3 {
+    margin-bottom: 0;
+    z-index: 30;
+  }
+
   .open-spot-metrics-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
@@ -5765,6 +5806,17 @@ select {
   .open-spot-testimonial-shine {
     display: none;
   }
+
+  .open-spot-how-copy,
+  .open-spot-how-card-frame {
+    position: static !important;
+    top: auto !important;
+  }
+
+  .open-spot-how-card-frame {
+    margin-bottom: 0 !important;
+    will-change: auto !important;
+  }
 }
 
 @media (min-width: 768px) {
@@ -5828,6 +5880,13 @@ select {
   .open-spot-how-cards {
     gap: 1rem;
     max-width: 100%;
+  }
+
+  .open-spot-how-card-frame {
+    margin-bottom: 0;
+    position: static;
+    top: auto;
+    will-change: auto;
   }
 
   .open-spot-how-card {

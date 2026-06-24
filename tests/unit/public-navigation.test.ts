@@ -838,6 +838,8 @@ describe("public navigation", () => {
     expect(howSection).toContain("open-spot-how-title-nowrap");
     expect(howSection).not.toContain("border-l-4");
     expect(howSection).not.toContain("border-[#141414]");
+    expect(howSection).toContain("open-spot-how-card-frame");
+    expect(howSection).toContain("open-spot-how-card-frame--${index + 1}");
     expect(howSection).toContain("open-spot-how-card");
     expect(howSection).toContain("open-spot-how-icon");
     expect(howSection).toContain("open-spot-how-step-number");
@@ -849,6 +851,15 @@ describe("public navigation", () => {
     expect(homepage).toContain("confirm the appointment manually");
     expect(styles).toContain(".open-spot-how-shell");
     expect(styles).toContain("grid-template-columns: minmax(17rem, 0.85fr) minmax(0, 1.35fr)");
+    expect(styles).toContain(".open-spot-how-card-frame");
+    expect(homepage).toContain('window.matchMedia("(min-width: 1024px)")');
+    expect(homepage).toContain("window.requestAnimationFrame");
+    expect(homepage).toContain("translate3d(0, ${translateY.toFixed(2)}px, 0)");
+    expect(styles).toContain("will-change: transform");
+    expect(styles).toContain(".open-spot-how-card-frame--2");
+    expect(styles).toContain("z-index: 20");
+    expect(styles).toContain(".open-spot-how-card-frame--3");
+    expect(styles).toContain("z-index: 30");
     expect(styles).toContain(".open-spot-how-card");
     expect(styles).toContain("height: 15rem");
     expect(styles).toContain(".open-spot-how-step-number");
@@ -856,6 +867,8 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-how-card:hover");
     expect(styles).toContain("0 28px 90px rgba(37, 99, 235, 0.12)");
     expect(styles).toContain(".open-spot-how-card:hover .open-spot-how-mockup");
+    expect(styles).toContain(".open-spot-how-copy,\n  .open-spot-how-card-frame");
+    expect(styles).toContain("position: static !important");
   });
 
   it("centers the confirmation client initials inside the avatar circle", () => {
