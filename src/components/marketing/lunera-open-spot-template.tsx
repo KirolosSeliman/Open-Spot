@@ -346,7 +346,7 @@ const openSpotCopy = {
   footer: {
     line: "Recover last-minute cancellations by SMS.",
     columns: [
-      ["Product", "Features", "How it works", "Pricing"],
+      ["Product", "Features", "How it works", "Pricing", "FAQ"],
       ["Legal", "Privacy", "Terms", "SMS consent"]
     ]
   }
@@ -668,7 +668,7 @@ const openSpotFrCopy = {
   footer: {
     line: "Récupérez les annulations de dernière minute par SMS.",
     columns: [
-      ["Produit", "Fonctionnalités", "Comment ça marche", "Prix"],
+      ["Produit", "Fonctionnalités", "Comment ça marche", "Prix", "FAQ"],
       ["Légal", "Confidentialité", "Conditions", "Consentement SMS"]
     ]
   }
@@ -2143,6 +2143,7 @@ function footerHref(label: string) {
   if (normalized === "comment ca marche") return "#how-it-works";
   if (normalized === "pricing") return "#pricing";
   if (normalized === "prix") return "#pricing";
+  if (normalized === "faq") return "#faq";
   if (normalized === "privacy") return "/privacy";
   if (normalized === "confidentialite") return "/privacy";
   if (normalized === "terms") return "/terms";

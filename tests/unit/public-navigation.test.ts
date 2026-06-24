@@ -750,6 +750,23 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-faq-trigger:focus-visible");
   });
 
+  it("links the footer Product column to the existing FAQ anchor with scroll offset", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+
+    expect(homepage).toContain('["Product", "Features", "How it works", "Pricing", "FAQ"]');
+    expect(homepage).toContain('["Produit", "Fonctionnalités", "Comment ça marche", "Prix", "FAQ"]');
+    expect(homepage).toContain('if (normalized === "faq") return "#faq";');
+    expect(homepage).toContain('<section className="open-spot-faq-section" id="faq">');
+
+    const faqSectionStyles = styles.slice(
+      styles.indexOf(".open-spot-faq-section"),
+      styles.indexOf(".open-spot-faq-shell")
+    );
+
+    expect(faqSectionStyles).toContain("scroll-margin-top: 7rem");
+  });
+
   it("keeps the reference hero proof row and CTAs in the lower white flow", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
