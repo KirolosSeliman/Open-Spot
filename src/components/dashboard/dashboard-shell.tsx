@@ -13,12 +13,18 @@ import type { Locale } from "@/lib/i18n/types";
 import type { OrganizationWorkspace } from "@/lib/organization/current";
 import { cn } from "@/lib/utils/cn";
 
+type DashboardNavItem = {
+  activeMatch?: "exact" | "nested";
+  href: string;
+  label: string;
+};
+
 function getDesktopNav(locale: Locale) {
   const t = dictionaries[locale];
 
   return [
     { href: "/dashboard", label: t.navigation.dashboard },
-    { href: "/dashboard/new-cancellation", label: t.openings.newCancellation, core: true },
+    { href: "/dashboard/new-cancellation", label: t.openings.newCancellation, activeMatch: "exact" },
     { href: "/dashboard/responses", label: t.responses.responses },
     { href: "/dashboard/appointments", label: t.dashboard.appointments },
     { href: "/dashboard/cancellations", label: t.dashboard.cancellations },
@@ -31,7 +37,7 @@ function getDesktopNav(locale: Locale) {
     { href: "/dashboard/team", label: t.dashboard.team },
     { href: "/dashboard/billing", label: t.dashboard.billing },
     { href: "/dashboard/settings", label: t.settings.settings }
-  ];
+  ] satisfies DashboardNavItem[];
 }
 
 function getMobileNav(locale: Locale) {
@@ -39,20 +45,20 @@ function getMobileNav(locale: Locale) {
 
   return [
     { href: "/dashboard", label: t.dashboard.overview },
-    { href: "/dashboard/new-cancellation", label: t.openings.newCancellation, core: true },
+    { href: "/dashboard/new-cancellation", label: t.openings.newCancellation, activeMatch: "exact" },
     { href: "/dashboard/responses", label: t.responses.responses },
     { href: "/dashboard/appointments", label: t.dashboard.appointmentsShort },
     { href: "/dashboard/clients", label: t.customers.customers },
     { href: "/dashboard/settings", label: t.settings.settings }
-  ];
+  ] satisfies DashboardNavItem[];
 }
 
-function isActiveDashboardRoute(pathname: string, href: string) {
-  if (href === "/dashboard") {
-    return pathname === href;
+function isActiveDashboardRoute(pathname: string, item: DashboardNavItem) {
+  if (item.href === "/dashboard" || item.activeMatch === "exact") {
+    return pathname === item.href;
   }
 
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
 export function DashboardShell({
@@ -129,22 +135,24 @@ export function DashboardShell({
             }
             className="mt-5 grid gap-1 overflow-y-auto pr-1"
           >
-            {desktopNavItems.map((item) => (
-              <Link
-                aria-current={
-                  isActiveDashboardRoute(pathname, item.href) ? "page" : undefined
-                }
-                className={cn(
-                  "relative flex min-h-11 items-center rounded-2xl px-4 py-3 text-sm font-bold text-white/68 transition-colors hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--dark)]",
-                  isActiveDashboardRoute(pathname, item.href) &&
-                    "bg-[rgba(47,120,255,0.14)] pl-5 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.16)] before:absolute before:left-2 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-[var(--primary)] hover:bg-[rgba(47,120,255,0.18)] hover:text-white"
-                )}
-                href={item.href}
-                key={item.href}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {desktopNavItems.map((item) => {
+              const isActive = isActiveDashboardRoute(pathname, item);
+
+              return (
+                <Link
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "relative flex min-h-11 items-center rounded-2xl px-4 py-3 text-sm font-bold text-white/68 transition-colors hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--dark)]",
+                    isActive &&
+                      "bg-[rgba(47,120,255,0.14)] pl-5 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.16)] before:absolute before:left-2 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-[var(--primary)] hover:bg-[rgba(47,120,255,0.18)] hover:text-white"
+                  )}
+                  href={item.href}
+                  key={item.href}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="mt-auto grid gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
             <div>
@@ -250,22 +258,23 @@ export function DashboardShell({
         }
         className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-[var(--line)] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.18)] backdrop-blur lg:hidden"
       >
-        {mobileNavItems.map((item) => (
-          <Link
-            aria-current={
-              isActiveDashboardRoute(pathname, item.href) ? "page" : undefined
-            }
-            className={cn(
-              "flex min-h-12 items-center justify-center rounded-2xl px-1 text-center text-[0.65rem] font-black leading-tight text-[var(--muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
-              isActiveDashboardRoute(pathname, item.href) &&
-                "bg-[var(--primary)] text-white"
-            )}
-            href={item.href}
-            key={item.href}
-          >
-            {item.label}
-          </Link>
-        ))}
+        {mobileNavItems.map((item) => {
+          const isActive = isActiveDashboardRoute(pathname, item);
+
+          return (
+            <Link
+              aria-current={isActive ? "page" : undefined}
+              className={cn(
+                "flex min-h-12 items-center justify-center rounded-2xl px-1 text-center text-[0.65rem] font-black leading-tight text-[var(--muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
+                isActive && "bg-[var(--primary)] text-white"
+              )}
+              href={item.href}
+              key={item.href}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
       </nav>
     </div>
   );
