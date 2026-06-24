@@ -187,7 +187,7 @@ export type Database = {
           cancellation_volume: string | null;
           preferred_time_message: string | null;
           consent_sms_email: boolean;
-          status: "new" | "contacted" | "qualified" | "closed" | "spam";
+          status: "new" | "contacted" | "qualified" | "closed" | "spam" | "converted";
           source_path: string;
           source_url: string | null;
           user_agent: string | null;
@@ -195,6 +195,17 @@ export type Database = {
           created_at: string;
           updated_at: string;
           contacted_at: string | null;
+          conversion_status: string;
+          organization_id: string | null;
+          owner_user_id: string | null;
+          conversion_started_at: string | null;
+          converted_at: string | null;
+          converted_by: string | null;
+          invitation_status: string | null;
+          invited_at: string | null;
+          last_invitation_attempt_at: string | null;
+          conversion_error_code: string | null;
+          conversion_error_message: string | null;
         };
         Insert: {
           id?: string;
@@ -208,7 +219,7 @@ export type Database = {
           cancellation_volume?: string | null;
           preferred_time_message?: string | null;
           consent_sms_email?: boolean;
-          status?: "new" | "contacted" | "qualified" | "closed" | "spam";
+          status?: "new" | "contacted" | "qualified" | "closed" | "spam" | "converted";
           source_path?: string;
           source_url?: string | null;
           user_agent?: string | null;
@@ -216,6 +227,17 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           contacted_at?: string | null;
+          conversion_status?: string;
+          organization_id?: string | null;
+          owner_user_id?: string | null;
+          conversion_started_at?: string | null;
+          converted_at?: string | null;
+          converted_by?: string | null;
+          invitation_status?: string | null;
+          invited_at?: string | null;
+          last_invitation_attempt_at?: string | null;
+          conversion_error_code?: string | null;
+          conversion_error_message?: string | null;
         };
         Update: {
           id?: string;
@@ -229,7 +251,7 @@ export type Database = {
           cancellation_volume?: string | null;
           preferred_time_message?: string | null;
           consent_sms_email?: boolean;
-          status?: "new" | "contacted" | "qualified" | "closed" | "spam";
+          status?: "new" | "contacted" | "qualified" | "closed" | "spam" | "converted";
           source_path?: string;
           source_url?: string | null;
           user_agent?: string | null;
@@ -237,6 +259,17 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
           contacted_at?: string | null;
+          conversion_status?: string;
+          organization_id?: string | null;
+          owner_user_id?: string | null;
+          conversion_started_at?: string | null;
+          converted_at?: string | null;
+          converted_by?: string | null;
+          invitation_status?: string | null;
+          invited_at?: string | null;
+          last_invitation_attempt_at?: string | null;
+          conversion_error_code?: string | null;
+          conversion_error_message?: string | null;
         };
         Relationships: [];
       };
@@ -798,6 +831,9 @@ export type Database = {
           role: Database["public"]["Enums"]["organization_role"];
           status: string;
           created_at: string;
+          invited_at: string | null;
+          joined_at: string | null;
+          created_by: string | null;
         };
         Insert: {
           id?: string;
@@ -807,6 +843,9 @@ export type Database = {
           role?: Database["public"]["Enums"]["organization_role"];
           status?: string;
           created_at?: string;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          created_by?: string | null;
         };
         Update: {
           id?: string;
@@ -816,6 +855,9 @@ export type Database = {
           role?: Database["public"]["Enums"]["organization_role"];
           status?: string;
           created_at?: string;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          created_by?: string | null;
         };
         Relationships: [];
       };
@@ -830,6 +872,7 @@ export type Database = {
           default_language: Database["public"]["Enums"]["supported_language"];
           created_at: string;
           updated_at: string;
+          source_request_id: string | null;
         };
         Insert: {
           id?: string;
@@ -841,6 +884,7 @@ export type Database = {
           default_language?: Database["public"]["Enums"]["supported_language"];
           created_at?: string;
           updated_at?: string;
+          source_request_id?: string | null;
         };
         Update: {
           id?: string;
@@ -852,6 +896,7 @@ export type Database = {
           default_language?: Database["public"]["Enums"]["supported_language"];
           created_at?: string;
           updated_at?: string;
+          source_request_id?: string | null;
         };
         Relationships: [];
       };
@@ -1871,6 +1916,28 @@ export type Database = {
           target_stripe_invoice_id?: string | null;
         };
         Returns: string;
+      };
+      admin_bootstrap_organization_from_call_request: {
+        Args: {
+          p_request_id: string;
+          p_owner_user_id: string;
+          p_organization_name: string;
+          p_organization_slug: string;
+          p_organization_email: string;
+          p_organization_phone: string;
+          p_organization_timezone: string;
+          p_organization_default_language: Database["public"]["Enums"]["supported_language"];
+          p_business_type: string;
+          p_booking_system: string;
+          p_created_by: string;
+        };
+        Returns: string;
+      };
+      claim_book_call_request_conversion: {
+        Args: {
+          p_request_id: string;
+        };
+        Returns: Json;
       };
       create_organization_with_owner: {
         Args: {
