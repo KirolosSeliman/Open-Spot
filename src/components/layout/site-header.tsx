@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { OpenSpotLogo } from "@/components/brand/open-spot-logo";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { signOutAction } from "@/lib/auth/actions";
 import { isSupabaseConfigured } from "@/lib/env/config";
@@ -36,7 +37,7 @@ export async function SiteHeader() {
               className="rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
               href="/"
             >
-              Open Spot
+              <OpenSpotLogo size="sm" variant="lockup" />
             </Link>
 
             <nav

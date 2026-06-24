@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent, PointerEvent, ReactNode } from "react";
 
+import { OpenSpotLogo } from "@/components/brand/open-spot-logo";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { BookingFlowSection } from "@/components/marketing/booking-flow-section";
 import { OpenSpotMetricsShowcase } from "@/components/marketing/open-spot-metrics-showcase";
@@ -807,8 +808,7 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
           className="reference-brand-link"
           href="/"
         >
-          <OpenSpotMark />
-          <span>Open Spot</span>
+          <OpenSpotLogo size="sm" variant="lockup" />
         </Link>
         <nav aria-label="Main navigation" className="reference-nav-links">
           <NavLink href="#features">{t.nav.features}</NavLink>
@@ -841,15 +841,6 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
         </div>
       </div>
     </header>
-  );
-}
-
-function OpenSpotMark() {
-  return (
-    <span aria-hidden="true" className="lunera-brand-mark">
-      <span className="lunera-brand-stroke lunera-brand-stroke-top" />
-      <span className="lunera-brand-stroke lunera-brand-stroke-bottom" />
-    </span>
   );
 }
 
@@ -2107,8 +2098,7 @@ function Footer({ t }: { t: TemplateCopy }) {
       <div className="mx-auto grid max-w-[72rem] gap-10 md:grid-cols-[1.45fr_1fr_1fr]">
         <div>
           <Link className="inline-flex items-center gap-2.5 text-[1.05rem] font-black" href="/">
-            <OpenSpotMark />
-            <span>Open Spot</span>
+            <OpenSpotLogo size="sm" variant="lockup" />
           </Link>
           <p className="mt-5 max-w-sm text-sm font-medium leading-7 text-white/55">
             {t.footer.line}

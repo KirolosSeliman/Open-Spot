@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { OpenSpotLogo } from "@/components/brand/open-spot-logo";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { exitManagerModeAction } from "@/lib/admin/manager-mode-actions";
 import { signOutAction } from "@/lib/auth/actions";
@@ -107,15 +107,14 @@ export function DashboardShell({
             className="flex items-center gap-3 rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/"
           >
-            <Image
-              alt=""
-              className="h-10 w-10 rounded-2xl"
-              height={96}
-              src="/brand/open-spot-icon.svg"
-              width={96}
-            />
             <div>
-              <p className="text-lg font-black">Open Spot</p>
+              <OpenSpotLogo
+                markClassName="h-11 w-11"
+                priority
+                size="lg"
+                textClassName="text-lg"
+                variant="lockup"
+              />
               <p className="mt-1 text-xs font-semibold text-[var(--dark-muted)]">
                 {t.dashboard.recoverySms}
               </p>
@@ -180,14 +179,7 @@ export function DashboardShell({
                 className="flex items-center gap-2 rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
                 href="/"
               >
-                <Image
-                  alt=""
-                  className="h-8 w-8 rounded-xl"
-                  height={96}
-                  src="/brand/open-spot-icon.svg"
-                  width={96}
-                />
-                <span>Open Spot</span>
+                <OpenSpotLogo priority size="sm" variant="lockup" />
               </Link>
               <Link
                 className="rounded-full bg-[var(--primary)] px-3 py-2 text-xs font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
