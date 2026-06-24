@@ -778,6 +778,73 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobile = window.matchMedia("(max-width: 767px)");
+    const stage = document.querySelector<HTMLElement>(".reference-hero-stage");
+
+    if (!stage) {
+      return;
+    }
+
+    const fadeStage = stage;
+    let animationFrame = 0;
+
+    function setFadeValues(opacity: number, height: number, progress: number) {
+      fadeStage.style.setProperty("--mobile-phone-fade-opacity", opacity.toFixed(3));
+      fadeStage.style.setProperty("--mobile-phone-fade-height", `${height.toFixed(1)}px`);
+      fadeStage.style.setProperty("--mobile-phone-fade-progress", progress.toFixed(3));
+    }
+
+    function updatePhoneFade() {
+      if (animationFrame) {
+        return;
+      }
+
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0;
+
+        if (!mobile.matches) {
+          setFadeValues(0.2, 118, 0);
+          return;
+        }
+
+        if (reduceMotion.matches) {
+          setFadeValues(0.75, 184, 0.65);
+          return;
+        }
+
+        const rect = fadeStage.getBoundingClientRect();
+        const start = window.innerHeight * 0.62;
+        const end = window.innerHeight * 0.12;
+        const rawProgress = (start - rect.top) / Math.max(1, start - end);
+        const progress = Math.min(1, Math.max(0, rawProgress));
+        const easedProgress = 1 - Math.pow(1 - progress, 2);
+        const opacity = 0.22 + easedProgress * 0.78;
+        const height = 112 + easedProgress * 138;
+
+        setFadeValues(opacity, height, progress);
+      });
+    }
+
+    updatePhoneFade();
+    window.addEventListener("scroll", updatePhoneFade, { passive: true });
+    window.addEventListener("resize", updatePhoneFade);
+    reduceMotion.addEventListener("change", updatePhoneFade);
+    mobile.addEventListener("change", updatePhoneFade);
+
+    return () => {
+      window.removeEventListener("scroll", updatePhoneFade);
+      window.removeEventListener("resize", updatePhoneFade);
+      reduceMotion.removeEventListener("change", updatePhoneFade);
+      mobile.removeEventListener("change", updatePhoneFade);
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
+    };
+  }, [locale]);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const desktop = window.matchMedia("(min-width: 1024px)");
     const section = document.querySelector<HTMLElement>(".open-spot-how-section");
     const copyBlock = document.querySelector<HTMLElement>(".open-spot-how-copy");
@@ -996,6 +1063,7 @@ function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
       />
       <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
       <PhoneProductMockup phone={t.hero.phone} />
+      <div className="reference-mobile-phone-fade" aria-hidden="true" />
     </div>
   );
 }
