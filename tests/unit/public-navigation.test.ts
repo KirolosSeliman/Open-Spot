@@ -841,6 +841,37 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-how-card:hover .open-spot-how-mockup");
   });
 
+  it("centers the confirmation client initials inside the avatar circle", () => {
+    const homepage = source(homepagePath);
+    const styles = source("src/app/globals.css");
+    const stepMiniUi = homepage.slice(
+      homepage.indexOf("function StepMiniUi("),
+      homepage.indexOf("function RevenueCalculatorSection(")
+    );
+    const confirmAvatarStyles = styles.slice(
+      styles.indexOf(".open-spot-how-confirm-avatar"),
+      styles.indexOf(".open-spot-how-confirm-button")
+    );
+
+    expect(stepMiniUi).toContain("open-spot-how-confirm-avatar");
+    expect(stepMiniUi).toContain("SM");
+    expect(stepMiniUi).toContain("Sarah M.");
+    expect(stepMiniUi).toContain("t.how.mockups.confirm");
+
+    expect(confirmAvatarStyles).toContain("align-items: center");
+    expect(confirmAvatarStyles).toContain("justify-content: center");
+    expect(confirmAvatarStyles).toContain("border-radius: 999px");
+    expect(confirmAvatarStyles).toContain("height: 2.32rem");
+    expect(confirmAvatarStyles).toContain("width: 2.32rem");
+    expect(confirmAvatarStyles).toContain("line-height: 1");
+    expect(confirmAvatarStyles).toContain("flex-shrink: 0");
+    expect(styles).toContain(".open-spot-how-confirm-person .open-spot-how-confirm-avatar");
+    expect(confirmAvatarStyles).not.toContain("position: absolute");
+    expect(confirmAvatarStyles).not.toContain("top:");
+    expect(confirmAvatarStyles).not.toContain("left:");
+    expect(confirmAvatarStyles).not.toContain("margin-");
+  });
+
   it("replaces the workflow preview with an interactive premium revenue calculator", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");

@@ -4392,11 +4392,17 @@ select {
   border-radius: 999px;
   color: rgba(71, 85, 105, 0.84);
   display: flex;
+  flex-shrink: 0;
   font-size: 0.86rem;
   font-weight: 900;
   height: 2.32rem;
   justify-content: center;
+  line-height: 1;
   width: 2.32rem;
+}
+
+.open-spot-how-confirm-person .open-spot-how-confirm-avatar {
+  display: flex;
 }
 
 .open-spot-how-confirm-button {
