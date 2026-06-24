@@ -6,7 +6,7 @@ function source(path: string) {
   return readFileSync(
     fileURLToPath(new URL(`../../${path}`, import.meta.url)),
     "utf8"
-  );
+  ).replace(/\r\n/g, "\n");
 }
 
 const autoConfirmationTerm = ["auto", "confirmation"].join("-");
