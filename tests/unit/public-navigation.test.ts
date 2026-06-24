@@ -1051,6 +1051,44 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("width: min(100%, 13.5rem)");
   });
 
+  it("keeps the landing hero mobile layout in a clean vertical flow", () => {
+    const styles = source("src/app/globals.css");
+    const mobileStyles = styles.slice(styles.indexOf("@media (max-width: 767px)"));
+
+    expect(mobileStyles).toContain(".reference-navbar {");
+    expect(mobileStyles).toContain("top: 12px");
+    expect(mobileStyles).toContain(".reference-navbar-shell {");
+    expect(mobileStyles).toContain("background: rgba(255, 255, 255, 0.96)");
+    expect(mobileStyles).toContain("height: 68px");
+
+    expect(mobileStyles).toContain(".reference-hero-section {");
+    expect(mobileStyles).toContain("min-height: 0");
+    expect(mobileStyles).toContain("padding-top: 112px");
+
+    expect(mobileStyles).toContain(".reference-hero-stage {");
+    expect(mobileStyles).toContain("display: grid");
+    expect(mobileStyles).toContain("height: auto");
+    expect(mobileStyles).toContain("overflow: visible");
+
+    expect(mobileStyles).toContain(".reference-phone {");
+    expect(mobileStyles).toContain("position: relative");
+    expect(mobileStyles).toContain("transform: none");
+    expect(mobileStyles).toContain("width: min(82vw, 330px)");
+
+    expect(mobileStyles).toContain(".reference-floating-pill,");
+    expect(mobileStyles).toContain(".reference-floating-card {");
+    expect(mobileStyles).toContain("position: relative");
+    expect(mobileStyles).toContain("inset: auto");
+
+    expect(mobileStyles).toContain(".reference-hero-footer {");
+    expect(mobileStyles).toContain("position: relative");
+    expect(mobileStyles).toContain("top: auto");
+
+    expect(mobileStyles).toContain(".reference-hero-actions {");
+    expect(mobileStyles).toContain("flex-direction: column");
+    expect(mobileStyles).toContain("width: min(350px, 100%)");
+  });
+
   it("uses a long blue-to-white gradient before the Why Open Spot section", () => {
     const styles = source("src/app/globals.css");
     const bookingFlowStyles = styles.slice(
