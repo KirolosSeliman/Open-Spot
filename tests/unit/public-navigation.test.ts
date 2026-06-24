@@ -1020,6 +1020,20 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("width: min(100%, 13.5rem)");
   });
 
+  it("uses a long blue-to-white gradient before the Why Open Spot section", () => {
+    const styles = source("src/app/globals.css");
+    const bookingFlowStyles = styles.slice(
+      styles.indexOf(".open-spot-booking-flow-section"),
+      styles.indexOf(".open-spot-booking-flow-dome")
+    );
+
+    expect(bookingFlowStyles).toContain("#eef6ff 0%");
+    expect(bookingFlowStyles).toContain("#f8fbff 34%");
+    expect(bookingFlowStyles).toContain("#ffffff 76%");
+    expect(bookingFlowStyles).toContain("#fbfdff 100%");
+    expect(bookingFlowStyles).not.toContain("#ffffff 45%");
+  });
+
   it("uses the requested reference hero proof and CTA copy instead of fake brand logos", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");

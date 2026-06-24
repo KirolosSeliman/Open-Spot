@@ -598,8 +598,8 @@ select {
 
 .open-spot-booking-flow-section {
   background:
-    radial-gradient(circle at 50% 0%, rgba(47, 120, 255, 0.035), transparent 34rem),
-    linear-gradient(180deg, #fbfdff 0%, #ffffff 45%, #fbfdff 100%);
+    radial-gradient(circle at 50% 0%, rgba(47, 120, 255, 0.04), transparent 36rem),
+    linear-gradient(180deg, #eef6ff 0%, #f8fbff 34%, #ffffff 76%, #fbfdff 100%);
   min-height: clamp(760px, 73vw, 900px);
 }
 
