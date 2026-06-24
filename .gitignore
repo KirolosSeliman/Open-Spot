@@ -1,5 +1,10 @@
 .next/
+**/.next/
 node_modules/
+.codex-worktrees/
+out/
+dist/
+build/
 coverage/
 .env
 .env*.local
