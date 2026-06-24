@@ -8,6 +8,15 @@ import {
   decideWorkspaceRedirect,
   normalizeOrganizationSlug
 } from "@/lib/organization/onboarding";
+import {
+  parseOnboardingFormData,
+  onboardingServicesToJson
+} from "@/lib/organization/client-onboarding";
+import {
+  generateOnboardingToken,
+  hashOnboardingToken
+} from "@/lib/organization/onboarding-tokens";
+import { evaluateOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 
 describe("organization onboarding", () => {
   it("normalizes slugs to match the database constraint", () => {
@@ -142,5 +151,161 @@ describe("organization onboarding", () => {
     );
 
     expect(currentOrganizationSource).toContain('.eq("status", "active")');
+  });
+
+  it("hashes onboarding tokens without storing the raw value", () => {
+    const token = generateOnboardingToken();
+    const hash = hashOnboardingToken(token);
+
+    expect(token).not.toBe(hash);
+    expect(hash).toMatch(/^[a-f0-9]{64}$/);
+    expect(hashOnboardingToken(token)).toBe(hash);
+  });
+
+  it("validates client onboarding data before final submission", () => {
+    const formData = new FormData();
+
+    formData.set("businessName", "Lunera Studio");
+    formData.set("businessType", "Salon");
+    formData.set("publicContactEmail", "hello@example.com");
+    formData.set("publicContactPhone", "514-555-0100");
+    formData.set("responsibleName", "Sophie Tremblay");
+    formData.set("responsibleRole", "Owner");
+    formData.set("responsibleEmail", "sophie@example.com");
+    formData.set("service_0_name", "Facial");
+    formData.set("service_0_duration", "60");
+    formData.set("service_0_value", "120");
+    formData.set("averageAppointmentValue", "120");
+    formData.set("currency", "CAD");
+    formData.set("smsLanguage", "fr");
+    formData.set("smsTone", "warm");
+    formData.set("smsQuietHoursStart", "20:00");
+    formData.set("smsQuietHoursEnd", "08:00");
+    formData.set("consentStatementAccepted", "on");
+    formData.set("consentResponsibleName", "Sophie Tremblay");
+
+    expect(parseOnboardingFormData(formData, { requireConsent: true })).toEqual({
+      ok: true,
+      value: expect.objectContaining({
+        businessName: "Lunera Studio",
+        publicContactPhone: "+15145550100",
+        averageAppointmentValueCents: 12000,
+        services: [
+          {
+            name: "Facial",
+            durationMinutes: 60,
+            valueCents: 12000
+          }
+        ],
+        consentStatementAccepted: true
+      })
+    });
+
+    expect(
+      onboardingServicesToJson([
+        {
+          name: "Facial",
+          durationMinutes: 60,
+          valueCents: 12000
+        }
+      ])
+    ).toEqual([
+      {
+        name: "Facial",
+        durationMinutes: 60,
+        valueCents: 12000
+      }
+    ]);
+  });
+
+  it("rejects final onboarding submission without SMS compliance consent", () => {
+    const formData = new FormData();
+    formData.set("businessName", "Lunera Studio");
+    formData.set("businessType", "Salon");
+    formData.set("responsibleName", "Sophie Tremblay");
+    formData.set("responsibleRole", "Owner");
+    formData.set("responsibleEmail", "sophie@example.com");
+    formData.set("service_0_name", "Facial");
+    formData.set("service_0_duration", "60");
+    formData.set("service_0_value", "120");
+    formData.set("averageAppointmentValue", "120");
+
+    const result = parseOnboardingFormData(formData, { requireConsent: true });
+
+    expect(result.ok).toBe(false);
+    if (!result.ok) {
+      expect(result.errors).toContain(
+        "SMS compliance consent must be accepted before submission."
+      );
+    }
+  });
+
+  it("keeps the SMS gate closed until onboarding, billing, and SMS status are all ready", () => {
+    expect(
+      evaluateOrganizationSmsReadiness({
+        onboardingStatus: "completed",
+        billingStatus: "paid",
+        smsStatus: "active"
+      })
+    ).toMatchObject({
+      canSendSms: true,
+      blockingReasons: []
+    });
+
+    expect(
+      evaluateOrganizationSmsReadiness({
+        onboardingStatus: "submitted",
+        billingStatus: "paid",
+        smsStatus: "active"
+      })
+    ).toMatchObject({
+      canSendSms: false,
+      blockingReasons: ["Client onboarding is not completed."]
+    });
+
+    expect(
+      evaluateOrganizationSmsReadiness({
+        onboardingStatus: "completed",
+        billingStatus: "trial",
+        smsStatus: "pending_setup"
+      }).blockingReasons
+    ).toEqual(["Billing status is not paid.", "SMS status is not active."]);
+
+    for (const billingStatus of [
+      "unpaid",
+      "payment_link_sent",
+      "past_due",
+      "cancelled"
+    ]) {
+      expect(
+        evaluateOrganizationSmsReadiness({
+          onboardingStatus: "completed",
+          billingStatus,
+          smsStatus: "active"
+        })
+      ).toMatchObject({
+        canSendSms: false,
+        blockingReasons: ["Billing status is not paid."]
+      });
+    }
+  });
+
+  it("adds onboarding persistence without anonymous table access", () => {
+    const migration = readFileSync(
+      join(
+        process.cwd(),
+        "supabase",
+        "migrations",
+        "20260624110000_client_onboarding_and_sms_gate.sql"
+      ),
+      "utf8"
+    );
+
+    expect(migration).toContain(
+      "create table if not exists public.organization_onboarding_submissions"
+    );
+    expect(migration).toContain("token_hash");
+    expect(migration).toContain("revoke all privileges");
+    expect(migration).toContain("add column if not exists sms_status");
   });
 });

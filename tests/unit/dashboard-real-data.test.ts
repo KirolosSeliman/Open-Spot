@@ -70,7 +70,7 @@ describe("real dashboard data", () => {
         appointmentsTomorrow: 0,
         appointmentsNext7Days: 0,
         appointmentsConfirmed: 0,
-        appointmentsPendingConfirmation: 0,
+        appointmentsAwaitingConfirmation: 0,
         appointmentsCancelledBySms: 0,
         appointmentsNoResponse: 0,
         appointmentsNoShow: 0,

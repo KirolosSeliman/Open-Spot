@@ -14,6 +14,7 @@ import {
   formatOpeningOfferStatus,
   formatOpeningStatus
 } from "@/lib/dashboard/status-labels";
+import { getRequestLocale } from "@/lib/i18n/locale";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
 import {
@@ -106,10 +107,11 @@ export default async function CancellationDetailPage({
   const { id } = await params;
   const { error, sendError, validationError, confirmationSmsWarning, notice } =
     await searchParams;
-  const [{ opening, service, offers, deliveryHistoryWarning }, workspace] =
+  const [{ opening, service, offers, deliveryHistoryWarning }, workspace, uiLocale] =
     await Promise.all([
       loadOpeningDetail(id),
-      getActiveOrganizationWorkspace()
+      getActiveOrganizationWorkspace(),
+      getRequestLocale()
     ]);
 
   if (!opening) {
@@ -147,16 +149,28 @@ export default async function CancellationDetailPage({
     );
   const sendStatusMessage =
     selectedOffers.length > 0
-      ? "A respondent has been manually selected."
+      ? uiLocale === "fr"
+        ? "Un client a été sélectionné manuellement."
+        : "A respondent has been manually selected."
       : rejectedOffers.length > 0 && pendingOffers.length === 0
-        ? "Validation is complete for this opening."
+        ? uiLocale === "fr"
+          ? "La validation est terminée pour ce créneau."
+          : "Validation is complete for this opening."
         : respondedOffers.length > 0
-          ? "Waiting for customer replies and merchant validation."
+          ? uiLocale === "fr"
+            ? "En attente des réponses clients et de la validation marchande."
+            : "Waiting for customer replies and merchant validation."
           : allOffersSentOrBeyond
-            ? "SMS alert already sent to eligible clients."
+            ? uiLocale === "fr"
+              ? "L’alerte SMS a déjà été envoyée aux clients admissibles."
+              : "The SMS alert has already been sent to eligible customers."
             : pendingOffers.length > 0
-              ? "Pending eligible clients are ready for SMS sending."
-              : "No eligible pending SMS offers are available.";
+              ? uiLocale === "fr"
+                ? "Des clients admissibles sont prêts pour l’envoi SMS."
+                : "Eligible customers are ready for SMS sending."
+              : uiLocale === "fr"
+                ? "Aucune offre SMS admissible en attente n’est disponible."
+                : "No eligible pending SMS offers are available.";
   const smsPreview = generateOpeningSmsMessage({
     businessName,
     serviceName,
@@ -170,7 +184,11 @@ export default async function CancellationDetailPage({
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description={`Details reels du creneau. ${getOpeningAlertModeCopy(smsStatus)} Validation manuelle obligatoire.`}
+        description={
+          uiLocale === "fr"
+            ? `Détails réels du créneau. ${getOpeningAlertModeCopy(smsStatus, uiLocale)} Validation manuelle obligatoire.`
+            : `Real opening details. ${getOpeningAlertModeCopy(smsStatus, uiLocale)} Manual validation is required.`
+        }
         title={opening.title}
       />
       {sendError ? (
@@ -269,7 +287,7 @@ export default async function CancellationDetailPage({
                   className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                   type="submit"
                 >
-                  {getOpeningAlertButtonLabel(smsStatus)}
+                  {getOpeningAlertButtonLabel(smsStatus, uiLocale)}
                 </button>
               </form>
             ) : (

@@ -30,6 +30,16 @@ type ImportPageProps = {
   }>;
 };
 
+function formatConsentStatus(status: string) {
+  const labels: Record<string, string> = {
+    needs_consent: "Consentement requis",
+    opted_in: "Consentement confirmé",
+    opted_out: "Désinscrit"
+  };
+
+  return labels[status] ?? status;
+}
+
 export default async function ImportPage({ searchParams }: ImportPageProps) {
   const {
     error,
@@ -49,7 +59,7 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Import CSV avec validation et preview avant toute ecriture."
+        description="Import CSV avec validation et aperçu avant toute écriture."
         title="Import clients"
       />
       {error ? (
@@ -70,28 +80,28 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
       ) : null}
       <Panel title="Import / export">
         <div className="mb-4 rounded-2xl border border-[var(--line)] bg-slate-50 p-3 text-sm text-[var(--muted)]">
-          No CSV file? Use the{" "}
+          Pas de fichier CSV ? Utilisez l’import rapide par{" "}
           <Link
             className="font-black text-[var(--primary)] underline"
             href="/dashboard/import/paste"
           >
-            quick copy-paste import
+            copier-coller
           </Link>
           .
         </div>
         <ImportExportPanel initialCsv={decodedPreview} />
       </Panel>
       {validation ? (
-        <Panel title="Import result summary">
+        <Panel title="Résumé de l’import">
           <dl className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["Total rows", validation.summary.totalRows],
-              ["Valid rows", validation.summary.validRows],
-              ["Duplicates", validation.summary.duplicateRows],
-              ["Invalid phones", validation.summary.invalidPhoneRows],
-              ["Needs consent", validation.summary.needsConsentRows],
-              ["Opted in", validation.summary.optedInRows],
-              ["Opted out", validation.summary.optedOutRows]
+              ["Lignes totales", validation.summary.totalRows],
+              ["Lignes valides", validation.summary.validRows],
+              ["Doublons", validation.summary.duplicateRows],
+              ["Téléphones invalides", validation.summary.invalidPhoneRows],
+              ["Consentement requis", validation.summary.needsConsentRows],
+              ["Consentement confirmé", validation.summary.optedInRows],
+              ["Désinscrits", validation.summary.optedOutRows]
             ].map(([label, value]) => (
               <div
                 className="rounded-2xl border border-[var(--line)] bg-slate-50 p-3"
@@ -107,10 +117,10 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
           <TableShell>
             <thead>
               <tr>
-                <th className={tableHeadClass}>Name</th>
-                <th className={tableHeadClass}>Phone</th>
-                <th className={tableHeadClass}>Consent</th>
-                <th className={tableHeadClass}>Status</th>
+                <th className={tableHeadClass}>Nom</th>
+                <th className={tableHeadClass}>Téléphone</th>
+                <th className={tableHeadClass}>Consentement</th>
+                <th className={tableHeadClass}>Statut</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--line)] bg-white">
@@ -118,7 +128,9 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
                 <tr key={`${row.input.phone}-${index}`}>
                   <td className={tableCellClass}>{row.input.fullName}</td>
                   <td className={tableCellClass}>{row.phoneE164 ?? row.input.phone}</td>
-                  <td className={tableCellClass}>{row.consentStatus}</td>
+                  <td className={tableCellClass}>
+                    {formatConsentStatus(row.consentStatus)}
+                  </td>
                   <td className={tableCellClass}>
                     <StatusBadge>{row.status}</StatusBadge>
                     {row.errors.length > 0 ? (
@@ -138,15 +150,15 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
               className="rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
               type="submit"
             >
-              Confirm import
+              Confirmer l’import
             </button>
           </form>
         </Panel>
       ) : (
-        <Panel title="How it works">
+        <Panel title="Fonctionnement">
           <EmptyState
-            description="Collez un CSV avec au minimum name et phone. Les consentements absents deviennent needs_consent."
-            title="Aucune preview pour le moment."
+            description="Collez un CSV avec au minimum un nom et un téléphone. Les consentements absents restent en consentement requis."
+            title="Aucun aperçu pour le moment."
           />
         </Panel>
       )}

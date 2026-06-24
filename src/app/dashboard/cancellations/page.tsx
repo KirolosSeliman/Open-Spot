@@ -37,7 +37,7 @@ export default async function CancellationsPage() {
             Nouvelle annulation
           </Link>
         }
-        description="Historique reel des opportunites d'annulation de cette organisation. Les reponses ne confirment jamais automatiquement un client."
+        description="Historique réel des opportunités d’annulation de cette organisation. Les réponses ne confirment jamais automatiquement un client."
         title="Annulations"
       />
       <Panel title="Historique">
@@ -45,11 +45,11 @@ export default async function CancellationsPage() {
           <TableShell>
             <thead>
               <tr>
-                <th className={tableHeadClass}>Title</th>
-                <th className={tableHeadClass}>Start</th>
-                <th className={tableHeadClass}>End</th>
-                <th className={tableHeadClass}>Status</th>
-                <th className={tableHeadClass}>Estimated value</th>
+                <th className={tableHeadClass}>Titre</th>
+                <th className={tableHeadClass}>Début</th>
+                <th className={tableHeadClass}>Fin</th>
+                <th className={tableHeadClass}>Statut</th>
+                <th className={tableHeadClass}>Valeur estimée</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--line)] bg-white">
@@ -81,7 +81,7 @@ export default async function CancellationsPage() {
           </TableShell>
         ) : (
           <EmptyState
-            description="Creez une premiere annulation pour suivre les clients contactes, les reponses recues et la decision de confirmation."
+            description="Créez une première annulation pour suivre les clients contactés, les réponses reçues et la décision de confirmation."
             title="Aucune annulation pour le moment."
           />
         )}

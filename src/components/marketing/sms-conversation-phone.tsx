@@ -11,10 +11,45 @@ type FloatingBadge = {
   tone: "dark" | "green";
 };
 
+type PhoneMetricCard = {
+  eyebrow: string;
+  title: string;
+  value: string;
+};
+
+type PhoneReply = {
+  initials: string;
+  message: string;
+  name: string;
+  status: string;
+  tone: "green" | "blue" | "neutral";
+};
+
 type SmsConversationPhoneCopy = {
+  accessibilityLabel: string;
   businessName: string;
-  statusTime: string;
+  cancellation: {
+    service: string;
+    time: string;
+    title: string;
+  };
+  controls: {
+    createOpening: string;
+    menu: string;
+  };
   floatingBadges: FloatingBadge[];
+  metrics: {
+    filled: PhoneMetricCard;
+    revenue: PhoneMetricCard;
+  };
+  replies: {
+    confirm: string;
+    count: string;
+    items: PhoneReply[];
+    title: string;
+    viewAll: string;
+  };
+  statusTime: string;
 };
 
 type PhoneMotion = {
@@ -23,36 +58,139 @@ type PhoneMotion = {
   translateY: number;
 };
 
-const phoneCopy = {
-  businessName: "Open Spot",
-  statusTime: "4:31",
-  floatingBadges: [
-    { label: "Consent checked", tone: "dark" },
-    { label: "Reply received", tone: "green" }
-  ]
-} as const satisfies SmsConversationPhoneCopy;
-
 export const smsConversationPhoneCopy = {
-  fr: phoneCopy,
-  en: phoneCopy
+  en: {
+    accessibilityLabel: "Open Spot SMS reply queue and manual merchant confirmation preview",
+    businessName: "Open Spot",
+    statusTime: "9:41",
+    floatingBadges: [
+      { label: "Manual review", tone: "dark" },
+      { label: "SMS replies", tone: "dark" }
+    ],
+    metrics: {
+      filled: {
+        eyebrow: "Open spots filled this week",
+        title: "18",
+        value: "+64% from last week"
+      },
+      revenue: {
+        eyebrow: "Revenue recovered",
+        title: "$2,340",
+        value: "+28%"
+      }
+    },
+    cancellation: {
+      title: "New cancellation",
+      service: "60-min Massage with Alex",
+      time: "Today, 10:30 AM"
+    },
+    controls: {
+      menu: "Menu",
+      createOpening: "Create opening"
+    },
+    replies: {
+      title: "Waitlist replies",
+      count: "7",
+      items: [
+        {
+          initials: "SM",
+          name: "Sarah M.",
+          message: "I can come in",
+          status: "Reply received",
+          tone: "green"
+        },
+        {
+          initials: "MR",
+          name: "Mike R.",
+          message: "Yes, I'm available",
+          status: "Available",
+          tone: "blue"
+        },
+        {
+          initials: "JT",
+          name: "Jessica T.",
+          message: "Interested",
+          status: "To confirm",
+          tone: "neutral"
+        }
+      ],
+      confirm: "Confirm Sarah M.",
+      viewAll: "View all replies"
+    }
+  },
+  fr: {
+    accessibilityLabel:
+      "Apercu Open Spot d'une file de reponses SMS et d'une confirmation manuelle par le commerce",
+    businessName: "Open Spot",
+    statusTime: "9:41",
+    floatingBadges: [
+      { label: "Revision manuelle", tone: "dark" },
+      { label: "Reponses SMS", tone: "dark" }
+    ],
+    metrics: {
+      filled: {
+        eyebrow: "Creneaux remplis cette semaine",
+        title: "18",
+        value: "+64% vs semaine derniere"
+      },
+      revenue: {
+        eyebrow: "Revenu recupere",
+        title: "2 340 $",
+        value: "+28%"
+      }
+    },
+    cancellation: {
+      title: "Nouvelle annulation",
+      service: "Massage 60 min avec Alex",
+      time: "Aujourd'hui, 10 h 30"
+    },
+    controls: {
+      menu: "Menu",
+      createOpening: "Creer un creneau"
+    },
+    replies: {
+      title: "Reponses de la liste",
+      count: "7",
+      items: [
+        {
+          initials: "SM",
+          name: "Sarah M.",
+          message: "Je peux venir",
+          status: "Reponse recue",
+          tone: "green"
+        },
+        {
+          initials: "MR",
+          name: "Mike R.",
+          message: "Oui, je suis disponible",
+          status: "Disponible",
+          tone: "blue"
+        },
+        {
+          initials: "JT",
+          name: "Jessica T.",
+          message: "Interessee",
+          status: "A confirmer",
+          tone: "neutral"
+        }
+      ],
+      confirm: "Confirmer Sarah M.",
+      viewAll: "Voir toutes les reponses"
+    }
+  }
 } as const satisfies Record<Locale, SmsConversationPhoneCopy>;
 
 const initialMotion: PhoneMotion = {
-  opacity: 0.98,
-  scale: 0.94,
-  translateY: 58
+  opacity: 0.94,
+  scale: 0.965,
+  translateY: 42
 };
 
 const settledMotion: PhoneMotion = {
   opacity: 1,
   scale: 1,
-  translateY: 48
+  translateY: 0
 };
-
-const responses = [
-  ["MC", "Maria C.", "I can do that!", "4:32 PM"],
-  ["JL", "James L.", "Yes, I'm available.", "4:35 PM"]
-] as const;
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
@@ -85,7 +223,7 @@ function applyPhoneMotion(node: HTMLElement, progress: number) {
 
 export function SmsConversationPhone({ locale }: { locale: Locale }) {
   const copy = smsConversationPhoneCopy[locale];
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -181,42 +319,43 @@ export function SmsConversationPhone({ locale }: { locale: Locale }) {
   } as CSSProperties;
 
   return (
-    <div
-      aria-label={`${copy.businessName} opening dashboard preview with SMS replies and manual merchant confirmation`}
-      className="lunera-phone-scene"
+    <figure
+      aria-label={copy.accessibilityLabel}
+      className="lunera-phone-scene m-0"
       ref={rootRef}
-      role="img"
       style={phoneSceneStyle}
     >
-      <HeroMetricCard
-        className="left-[6%] top-[44%] hidden md:block"
-        eyebrow="Open slot created"
-        title="4:30 PM"
-        value="Haircut + brushing"
-      />
-      <HeroMetricCard
-        className="right-[8%] top-[50%] hidden md:block"
-        eyebrow="2 replies"
-        title="Ready to fill."
-        value="Manual review"
-      />
-      {copy.floatingBadges.map((badge, index) => (
-        <FloatingSmsBadge badge={badge} index={index} key={badge.label} />
-      ))}
+      <div aria-hidden="true" className="contents">
+        <HeroMetricCard
+          className="left-[7%] top-[59%] hidden lg:block"
+          eyebrow={copy.metrics.filled.eyebrow}
+          title={copy.metrics.filled.title}
+          value={copy.metrics.filled.value}
+        />
+        <HeroMetricCard
+          className="right-[9%] top-[34%] hidden lg:block"
+          eyebrow={copy.metrics.revenue.eyebrow}
+          title={copy.metrics.revenue.title}
+          value={copy.metrics.revenue.value}
+        />
+        {copy.floatingBadges.map((badge, index) => (
+          <FloatingSmsBadge badge={badge} index={index} key={badge.label} />
+        ))}
 
-      <div className="lunera-phone-motion">
-        <div className="lunera-phone-object lunera-phone-natural-mask">
-          <div className="lunera-phone-side-rail" />
-          <div className="lunera-phone-body">
-            <div className="lunera-phone-glass">
-              <div className="lunera-phone-screen lunera-phone-screen-overlay">
-                <OpenSpotPhoneScreen copy={copy} />
+        <div className="lunera-phone-motion">
+          <div className="lunera-phone-object lunera-phone-natural-mask">
+            <div className="lunera-phone-side-rail" />
+            <div className="lunera-phone-body">
+              <div className="lunera-phone-glass">
+                <div className="lunera-phone-screen lunera-phone-screen-overlay">
+                  <OpenSpotPhoneScreen copy={copy} />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </figure>
   );
 }
 
@@ -224,78 +363,94 @@ function OpenSpotPhoneScreen({ copy }: { copy: SmsConversationPhoneCopy }) {
   return (
     <>
       <div className="lunera-phone-dynamic-island" />
-      <div className="flex items-center justify-between px-5 pb-3 pt-5 text-[0.68rem] font-black text-slate-950">
+      <div className="flex items-center justify-between px-5 pb-2 pt-5 text-[0.68rem] font-black text-slate-950">
         <span>{copy.statusTime}</span>
         <div className="flex items-center gap-1.5" aria-hidden="true">
-          <span className="h-2 w-3 rounded-sm border-t-2 border-r-2 border-slate-950/75" />
+          <span className="h-2 w-3 rounded-sm border-r-2 border-t-2 border-slate-950/75" />
           <span className="h-2.5 w-4 rounded-sm border border-slate-950/70" />
           <span className="h-2.5 w-1 rounded-sm bg-slate-950/80" />
         </div>
       </div>
 
       <div className="lunera-phone-app-header flex items-center justify-between px-5 pt-7">
-        <button
-          aria-label="Back"
+        <span
+          aria-label={copy.controls.menu}
           className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-xl font-light text-slate-800"
-          type="button"
+          role="img"
         >
-          {"<"}
-        </button>
-        <p className="lunera-phone-app-title text-xl font-semibold text-[#11131a]">Open Spots</p>
-        <button
-          aria-label="Create opening"
+          =
+        </span>
+        <p className="lunera-phone-app-title text-xl font-bold text-[#11131a]">Open Spot</p>
+        <span
+          aria-label={copy.controls.createOpening}
           className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-2xl font-light text-slate-800"
-          type="button"
+          role="img"
         >
           +
-        </button>
+        </span>
       </div>
 
-      <div className="lunera-open-slot-card mx-5 mt-6 rounded-[1.45rem] bg-[#555c72] p-5 text-white shadow-[0_18px_40px_rgba(42,51,74,0.24)]">
-        <div className="flex items-start justify-between">
+      <div className="mx-5 mt-5 rounded-[1.45rem] border border-slate-100 bg-white p-4 shadow-[0_16px_38px_rgba(15,23,42,0.08)]">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-semibold text-white/65">Open slot</p>
-            <p className="lunera-phone-time mt-3 text-3xl font-light tracking-normal">4:30 PM</p>
+            <p className="text-sm font-black text-[#11131a]">{copy.cancellation.title}</p>
+            <p className="mt-1 text-xs font-bold text-slate-500">
+              {copy.cancellation.service}
+            </p>
           </div>
-          <span className="rounded-full bg-white/18 px-3 py-1 text-xs font-black">
-            Open
+          <span className="rounded-full bg-[#eef4ff] px-2.5 py-1 text-[0.62rem] font-black text-[#3478ff]">
+            {copy.cancellation.time}
           </span>
         </div>
-        <p className="lunera-phone-service mt-5 text-base font-semibold">Haircut + brushing</p>
-        <div className="lunera-phone-card-meta mt-5 grid grid-cols-2 gap-3 text-xs">
-          <div>
-            <p className="text-white/45">Replies</p>
-            <p className="mt-1 font-semibold">2 replies</p>
-          </div>
-          <div>
-            <p className="text-white/45">Status</p>
-            <p className="mt-1 font-semibold">Manual review</p>
-          </div>
-        </div>
       </div>
 
-      <div className="lunera-phone-replies px-5 pt-6">
-        <p className="text-base font-semibold text-[#11131a]">Client replies</p>
-        <div className="mt-3 divide-y divide-slate-100">
-          {responses.map(([initials, name, message, time], index) => (
+      <div className="lunera-phone-replies px-5 pt-5">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-black text-[#11131a]">{copy.replies.title}</p>
+          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-500">
+            {copy.replies.count}
+          </span>
+        </div>
+        <div className="mt-3 divide-y divide-slate-100 rounded-[1.2rem] border border-slate-100 bg-white px-3 shadow-[0_12px_35px_rgba(15,23,42,0.06)]">
+          {copy.replies.items.map((reply, index) => (
             <div
               className={cn(
                 "lunera-reply-row flex items-center gap-3 py-3",
-                index === 1 && "opacity-35"
+                index === 2 && "opacity-75"
               )}
-              key={name}
+              key={reply.name}
             >
-              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#687083] text-[0.66rem] font-semibold text-white">
-                {initials}
+              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#eef2ff] text-[0.66rem] font-black text-[#3478ff]">
+                {reply.initials}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-slate-950">{name}</p>
-                <p className="mt-0.5 text-[0.68rem] font-medium text-slate-500">{message}</p>
+                <p className="text-xs font-black text-slate-950">{reply.name}</p>
+                <p className="mt-0.5 truncate text-[0.68rem] font-medium text-slate-500">
+                  {reply.message}
+                </p>
               </div>
-              <span className="text-[0.65rem] font-medium text-slate-400">{time}</span>
+              <span
+                className={cn(
+                  "rounded-full px-2 py-1 text-[0.6rem] font-black",
+                  reply.tone === "green" && "bg-[#ecfdf3] text-[#16a34a]",
+                  reply.tone === "blue" && "bg-[#f4f7ff] text-[#3478ff]",
+                  reply.tone === "neutral" && "bg-slate-100 text-slate-500"
+                )}
+              >
+                {reply.status}
+              </span>
             </div>
           ))}
         </div>
+        <button
+          className="mt-4 min-h-11 w-full rounded-[0.9rem] bg-[#3478ff] text-sm font-black text-white shadow-[0_14px_30px_rgba(52,120,255,0.28)]"
+          type="button"
+        >
+          {copy.replies.confirm}
+        </button>
+        <p className="mt-3 text-center text-xs font-black text-[#3478ff]">
+          {copy.replies.viewAll}
+        </p>
       </div>
     </>
   );
@@ -320,22 +475,16 @@ function HeroMetricCard({
       )}
     >
       <p className="text-xs font-black text-slate-400">{eyebrow}</p>
-      <p className="mt-2 text-2xl font-semibold leading-tight text-[#06080d]">{title}</p>
-      <p className="mt-2 text-xs font-bold leading-5 text-slate-500">{value}</p>
+      <p className="mt-2 text-3xl font-black leading-tight text-[#06080d]">{title}</p>
+      <p className="mt-2 text-xs font-black leading-5 text-[#22c55e]">{value}</p>
     </div>
   );
 }
 
-function FloatingSmsBadge({
-  badge,
-  index
-}: {
-  badge: FloatingBadge;
-  index: number;
-}) {
+function FloatingSmsBadge({ badge, index }: { badge: FloatingBadge; index: number }) {
   const positions = [
-    "left-[16%] top-[28%] hidden md:block",
-    "right-[13%] top-[33%] hidden md:block"
+    "left-[9%] top-[40%] hidden lg:block",
+    "right-[11%] top-[72%] hidden lg:block"
   ];
 
   const toneClass = {
@@ -346,7 +495,7 @@ function FloatingSmsBadge({
   return (
     <div
       className={cn(
-        "lunera-floating-card absolute z-[32] max-w-[11.5rem] rounded-full border px-3.5 py-1.5 text-xs font-black shadow-[0_18px_46px_rgba(15,23,42,0.13)]",
+        "lunera-floating-card absolute z-[32] max-w-[12.5rem] rounded-full border px-3.5 py-1.5 text-xs font-black shadow-[0_18px_46px_rgba(15,23,42,0.13)]",
         toneClass,
         positions[index]
       )}

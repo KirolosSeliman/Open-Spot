@@ -10,17 +10,20 @@ import {
   buildOpeningResponsesResetHref,
   filterOpeningResponseGroups,
   loadAppointmentResponseCalendar,
-  loadServices,
   loadOpeningResponseGroups,
+  loadServices,
   normalizeOpeningResponsesFilters,
   type AppointmentResponseCalendarItem,
-  type OpeningResponsesFilters,
-  type OpeningResponseCustomer
+  type OpeningResponseCustomer,
+  type OpeningResponsesFilters
 } from "@/lib/dashboard/operations-data";
 import {
   formatOpeningOfferStatus,
   formatOpeningStatus
 } from "@/lib/dashboard/status-labels";
+import { getDashboardCopy, intlLocale } from "@/lib/i18n/dashboard-copy";
+import { getRequestLocale } from "@/lib/i18n/locale";
+import type { Locale } from "@/lib/i18n/types";
 import type { InboundSmsClassification } from "@/lib/sms/inbound";
 
 type ResponsesPageProps = {
@@ -32,112 +35,104 @@ type ResponsesPageProps = {
   }>;
 };
 
-const tabs = [
-  {
-    label: "Alertes créneaux libres",
-    value: "openings"
-  },
-  {
-    label: "Confirmations rendez-vous",
-    value: "appointments"
-  }
-];
-
-const openingRangeOptions: Array<{
-  label: string;
-  value: OpeningResponsesFilters["range"];
-}> = [
-  { label: "Cette semaine", value: "this_week" },
-  { label: "2 semaines", value: "two_weeks" },
-  { label: "1 mois", value: "one_month" },
-  { label: "3 mois", value: "three_months" },
-  { label: "Tout", value: "all" }
-];
-
-function formatDateTime(value: string | null) {
+function formatDateTime(value: string | null, locale: Locale) {
   if (!value) {
-    return "Date inconnue";
+    return getDashboardCopy(locale).common.dateUnknown;
   }
 
-  return new Intl.DateTimeFormat("fr-CA", {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     dateStyle: "medium",
     timeStyle: "short"
   }).format(new Date(value));
 }
 
-function formatTime(value: string | null) {
+function formatTime(value: string | null, locale: Locale) {
   if (!value) {
-    return "Heure inconnue";
+    return getDashboardCopy(locale).common.timeUnknown;
   }
 
-  return new Intl.DateTimeFormat("fr-CA", {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     timeStyle: "short"
   }).format(new Date(value));
 }
 
-function formatClassification(classification: InboundSmsClassification) {
+function formatClassification(
+  classification: InboundSmsClassification,
+  locale: Locale
+) {
+  const labels = getDashboardCopy(locale).responses.classifications;
+
   switch (classification) {
     case "appointment_confirm":
-      return "Confirme par client";
+      return labels.appointment_confirm;
     case "appointment_cancel":
-      return "Annule par client";
+      return labels.appointment_cancel;
     case "opt_out":
-      return "Desabonnement";
+      return labels.opt_out;
     case "waitlist_positive":
-      return "Réponse positive";
+      return labels.waitlist_positive;
     default:
-      return "Inconnu / autre";
+      return labels.unknown;
   }
 }
 
-function formatAppointmentStatus(status: string | null) {
+function formatAppointmentStatus(status: string | null, locale: Locale) {
+  const labels = getDashboardCopy(locale).responses.appointmentStatuses;
+
   switch (status) {
     case "scheduled":
-      return "Planifie";
+      return labels.scheduled;
     case "cancelled":
-      return "Annule";
+      return labels.cancelled;
     default:
-      return status ?? "Statut inconnu";
+      return status ?? labels.unknown;
   }
 }
 
-function formatConfirmationStatus(status: string | null) {
+function formatConfirmationStatus(status: string | null, locale: Locale) {
+  const labels = getDashboardCopy(locale).responses.confirmationStatuses;
+
   switch (status) {
     case "confirmed_by_client":
-      return "Confirme par client";
+      return labels.confirmed_by_client;
     case "cancelled_by_client":
-      return "Annule par client";
+      return labels.cancelled_by_client;
     case "pending":
-      return "En attente";
+      return labels.pending;
     case "not_requested":
-      return "Non demande";
+      return labels.not_requested;
     default:
-      return status ?? "Confirmation inconnue";
+      return status ?? labels.unknown;
   }
 }
 
-function formatOpeningReplyStatus(customer: OpeningResponseCustomer) {
+function formatOpeningReplyStatus(
+  customer: OpeningResponseCustomer,
+  locale: Locale
+) {
+  const labels = getDashboardCopy(locale).responses.replyStatuses;
+
   if (customer.offerStatus === "selected") {
-    return "Confirmé manuellement";
+    return labels.selected;
   }
 
   if (customer.offerStatus === "rejected") {
-    return "Non retenu";
+    return labels.rejected;
   }
 
   if (customer.replyClassification === "opt_out") {
-    return "Desabonne";
+    return labels.opt_out;
   }
 
   if (customer.replyClassification === "waitlist_positive") {
-    return "Réponse positive";
+    return labels.waitlist_positive;
   }
 
   if (customer.replyClassification === "unknown") {
-    return "Réponse inconnue/autre";
+    return labels.unknown;
   }
 
-  return "SMS envoyé, pas encore répondu";
+  return labels.no_reply;
 }
 
 function TabLink({
@@ -178,19 +173,33 @@ function buildOpeningsHref(filters: OpeningResponsesFilters) {
 }
 
 function OpeningResponsesFiltersForm({
+  filteredCount,
   filters,
+  locale,
   services,
-  totalCount,
-  filteredCount
+  totalCount
 }: {
+  filteredCount: number;
   filters: OpeningResponsesFilters;
+  locale: Locale;
   services: Array<{
     id: string;
     name: string;
   }>;
   totalCount: number;
-  filteredCount: number;
 }) {
+  const copy = getDashboardCopy(locale);
+  const openingRangeOptions: Array<{
+    label: string;
+    value: OpeningResponsesFilters["range"];
+  }> = [
+    { label: copy.responses.ranges.this_week, value: "this_week" },
+    { label: copy.responses.ranges.two_weeks, value: "two_weeks" },
+    { label: copy.responses.ranges.one_month, value: "one_month" },
+    { label: copy.responses.ranges.three_months, value: "three_months" },
+    { label: copy.responses.ranges.all, value: "all" }
+  ];
+
   return (
     <form
       className="mb-5 grid gap-3 rounded-[1.5rem] border border-[var(--line)] bg-slate-50 p-4 lg:grid-cols-[1fr_1fr_1.4fr_auto]"
@@ -198,7 +207,7 @@ function OpeningResponsesFiltersForm({
     >
       <input name="tab" type="hidden" value="openings" />
       <label className="grid gap-2 text-sm font-bold">
-        Période du créneau
+        {copy.responses.filters.period}
         <select
           className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.range}
@@ -212,14 +221,14 @@ function OpeningResponsesFiltersForm({
         </select>
       </label>
       <label className="grid gap-2 text-sm font-bold">
-        Service
+        {copy.common.service}
         <select
           className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.serviceId}
           name="serviceId"
         >
-          <option value="all">Tous les services</option>
-          <option value="none">Service non précisé</option>
+          <option value="all">{copy.responses.filters.allServices}</option>
+          <option value="none">{copy.common.serviceNotSpecified}</option>
           {services.map((service) => (
             <option key={service.id} value={service.id}>
               {service.name}
@@ -228,16 +237,16 @@ function OpeningResponsesFiltersForm({
         </select>
       </label>
       <label className="grid gap-2 text-sm font-bold">
-        Recherche
+        {copy.common.search}
         <input
+          aria-label={copy.responses.filters.searchAria}
+          autoComplete="off"
           className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-white px-3"
           defaultValue={filters.q}
-          aria-label="Rechercher dans les alertes de créneaux libres"
-          autoComplete="off"
           inputMode="search"
           maxLength={80}
           name="q"
-          placeholder="Titre, client, téléphone, SMS..."
+          placeholder={copy.responses.filters.searchPlaceholder}
           type="search"
         />
       </label>
@@ -246,74 +255,77 @@ function OpeningResponsesFiltersForm({
           className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
           type="submit"
         >
-          Filtrer
+          {copy.common.filter}
         </button>
         <Link
           className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--foreground)]"
           href={buildOpeningResponsesResetHref()}
         >
-          Réinitialiser
+          {copy.common.reset}
         </Link>
       </div>
       <div className="grid gap-1 text-xs font-bold text-[var(--muted)] lg:col-span-4">
-        <p>
-          {filteredCount} annulation{filteredCount > 1 ? "s" : ""} affichée
-          {filteredCount > 1 ? "s" : ""} sur {totalCount}.
-        </p>
-        {filters.q ? <p>Recherche : “{filters.q}”</p> : null}
+        <p>{copy.responses.filters.displayed(filteredCount, totalCount)}</p>
+        {filters.q ? <p>{copy.responses.filters.search(filters.q)}</p> : null}
       </div>
     </form>
   );
 }
 
 function AppointmentResponseCard({
-  item
+  item,
+  locale
 }: {
   item: AppointmentResponseCalendarItem;
+  locale: Locale;
 }) {
+  const copy = getDashboardCopy(locale);
+
   return (
     <article className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="font-black">{item.customerName}</p>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            {item.customerPhone || "Telephone inconnu"}
+            {item.customerPhone || copy.common.phoneUnknown}
           </p>
         </div>
-        <StatusBadge>{formatClassification(item.classification)}</StatusBadge>
+        <StatusBadge>{formatClassification(item.classification, locale)}</StatusBadge>
       </div>
       <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <dt className="text-xs font-black uppercase text-[var(--muted)]">
-            Rendez-vous
+            {copy.appointments.title}
           </dt>
           <dd className="mt-1 font-bold">
             {item.appointmentStartsAt
-              ? formatTime(item.appointmentStartsAt)
-              : "Date du rendez-vous inconnue"}
+              ? formatTime(item.appointmentStartsAt, locale)
+              : copy.common.dateUnknown}
           </dd>
         </div>
         <div>
           <dt className="text-xs font-black uppercase text-[var(--muted)]">
-            Service
+            {copy.common.service}
           </dt>
           <dd className="mt-1 font-bold">
-            {item.serviceName ?? "Service non précisé"}
+            {item.serviceName ?? copy.common.serviceNotSpecified}
           </dd>
         </div>
         <div>
           <dt className="text-xs font-black uppercase text-[var(--muted)]">
-            Recu
+            {copy.responses.labels.received}
           </dt>
           <dd className="mt-1 font-bold">
-            {formatDateTime(item.inboundReceivedAt)}
+            {formatDateTime(item.inboundReceivedAt, locale)}
           </dd>
         </div>
       </dl>
       <div className="mt-3 flex flex-wrap gap-2">
-        <StatusBadge>{formatAppointmentStatus(item.appointmentStatus)}</StatusBadge>
         <StatusBadge>
-          {formatConfirmationStatus(item.confirmationStatus)}
+          {formatAppointmentStatus(item.appointmentStatus, locale)}
+        </StatusBadge>
+        <StatusBadge>
+          {formatConfirmationStatus(item.confirmationStatus, locale)}
         </StatusBadge>
       </div>
       <p className="mt-3 rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6">
@@ -326,7 +338,8 @@ function AppointmentResponseCard({
 export default async function ResponsesPage({
   searchParams
 }: ResponsesPageProps) {
-  const params = await searchParams;
+  const [params, locale] = await Promise.all([searchParams, getRequestLocale()]);
+  const copy = getDashboardCopy(locale);
   const activeTab = params.tab === "appointments" ? "appointments" : "openings";
   const openingFilters = normalizeOpeningResponsesFilters(params);
   const [appointmentGroups, openingGroups, services] = await Promise.all([
@@ -338,12 +351,22 @@ export default async function ResponsesPage({
     openingGroups,
     openingFilters
   );
+  const tabs = [
+    {
+      label: copy.responses.tabs.openings,
+      value: "openings"
+    },
+    {
+      label: copy.responses.tabs.appointments,
+      value: "appointments"
+    }
+  ];
 
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Suivez les réponses SMS par contexte exact: rendez-vous existants ou alertes de créneaux libres."
-        title="Réponses"
+        description={copy.responses.description}
+        title={copy.responses.title}
       />
 
       <div className="flex flex-wrap gap-2">
@@ -363,8 +386,8 @@ export default async function ResponsesPage({
 
       {activeTab === "appointments" ? (
         <Panel
-          description="Les réponses OUI/NON aux rappels sont regroupées par date de rendez-vous."
-          title="Confirmations rendez-vous"
+          description={copy.responses.appointmentPanel.description}
+          title={copy.responses.appointmentPanel.title}
         >
           {appointmentGroups.length > 0 ? (
             <div className="grid gap-5">
@@ -373,13 +396,16 @@ export default async function ResponsesPage({
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
                     <h2 className="text-lg font-black">{group.dateLabel}</h2>
                     <p className="text-sm font-bold text-[var(--muted)]">
-                      {group.items.length} réponse
-                      {group.items.length > 1 ? "s" : ""}
+                      {group.items.length} {copy.responses.counts.responses}
                     </p>
                   </div>
                   <div className="grid gap-3">
                     {group.items.map((item) => (
-                      <AppointmentResponseCard item={item} key={item.id} />
+                      <AppointmentResponseCard
+                        item={item}
+                        key={item.id}
+                        locale={locale}
+                      />
                     ))}
                   </div>
                 </section>
@@ -387,25 +413,26 @@ export default async function ResponsesPage({
             </div>
           ) : (
             <EmptyState
-              description="Les réponses OUI/NON aux rappels apparaîtront ici."
-              title="Aucune réponse de confirmation de rendez-vous reçue."
+              description={copy.responses.appointmentPanel.emptyDescription}
+              title={copy.responses.appointmentPanel.emptyTitle}
             />
           )}
           <Link
             className="mt-4 inline-flex text-sm font-black text-[var(--primary)]"
             href="/dashboard/appointments"
           >
-            Voir les rendez-vous
+            {copy.responses.appointmentPanel.link}
           </Link>
         </Panel>
       ) : (
         <Panel
-          description="Chaque annulation garde sa propre liste de réponses. Un OUI ne confirme jamais automatiquement un client."
-          title="Alertes créneaux libres"
+          description={copy.responses.openingsPanel.description}
+          title={copy.responses.openingsPanel.title}
         >
           <OpeningResponsesFiltersForm
             filteredCount={filteredOpeningGroups.length}
             filters={openingFilters}
+            locale={locale}
             services={services.map((service) => ({
               id: service.id,
               name: service.name
@@ -426,15 +453,17 @@ export default async function ResponsesPage({
                           {group.openingTitle}
                         </h2>
                         <StatusBadge>
-                          {formatOpeningStatus(group.openingStatus, "fr")}
+                          {formatOpeningStatus(group.openingStatus, locale)}
                         </StatusBadge>
                       </div>
                       <p className="mt-2 text-sm font-bold text-[var(--muted)]">
-                        {formatDateTime(group.startTime)}
-                        {group.endTime ? ` - ${formatTime(group.endTime)}` : ""}
+                        {formatDateTime(group.startTime, locale)}
+                        {group.endTime
+                          ? ` - ${formatTime(group.endTime, locale)}`
+                          : ""}
                       </p>
                       <p className="mt-1 text-sm font-bold text-[var(--muted)]">
-                        {group.serviceName ?? "Service non précisé"}
+                        {group.serviceName ?? copy.common.serviceNotSpecified}
                         {group.offerLabel ? ` - ${group.offerLabel}` : ""}
                       </p>
                     </div>
@@ -442,22 +471,22 @@ export default async function ResponsesPage({
                       className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-sm font-black text-[var(--foreground)]"
                       href={`/dashboard/cancellations/${group.openingId}`}
                     >
-                      Voir / valider cette annulation
+                      {copy.responses.openingsPanel.view}
                     </Link>
                   </div>
 
                   <div className="mt-4 grid gap-2 text-xs font-black text-[var(--muted)] sm:grid-cols-4">
                     <span className="rounded-full bg-white px-3 py-2">
-                      {group.responseCount} réponses
+                      {group.responseCount} {copy.responses.counts.responses}
                     </span>
                     <span className="rounded-full bg-white px-3 py-2">
-                      {group.positiveCount} positifs
+                      {group.positiveCount} {copy.responses.counts.positives}
                     </span>
                     <span className="rounded-full bg-white px-3 py-2">
-                      {group.noReplyCount} sans réponse
+                      {group.noReplyCount} {copy.responses.counts.noReply}
                     </span>
                     <span className="rounded-full bg-white px-3 py-2">
-                      {group.sentCount} SMS envoyés
+                      {group.sentCount} {copy.responses.counts.smsSent}
                     </span>
                   </div>
 
@@ -473,27 +502,31 @@ export default async function ResponsesPage({
                               {customer.customerName}
                             </p>
                             <p className="mt-1 text-sm text-[var(--muted)]">
-                              {customer.customerPhone || "Telephone inconnu"}
+                              {customer.customerPhone || copy.common.phoneUnknown}
                             </p>
                           </div>
                           <StatusBadge>
-                            {formatOpeningReplyStatus(customer)}
+                            {formatOpeningReplyStatus(customer, locale)}
                           </StatusBadge>
                         </div>
                         <div className="mt-3 flex flex-wrap gap-2 text-xs font-black text-[var(--muted)]">
                           {customer.responseRank ? (
                             <span className="rounded-full bg-[#f4faf7] px-2 py-1">
-                              Rang #{customer.responseRank}
+                              {copy.responses.labels.rank} #{customer.responseRank}
                             </span>
                           ) : null}
                           <span className="rounded-full bg-[#f4faf7] px-2 py-1">
-                            Offre: {formatOpeningOfferStatus(customer.offerStatus, "fr")}
+                            {copy.responses.labels.offer}:{" "}
+                            {formatOpeningOfferStatus(
+                              customer.offerStatus,
+                              locale
+                            )}
                           </span>
                           {customer.replyClassification ===
                             "waitlist_positive" &&
                           customer.offerStatus !== "selected" ? (
                             <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-1 text-amber-800">
-                              En attente de validation manuelle
+                              {copy.responses.labels.awaitingManualValidation}
                             </span>
                           ) : null}
                         </div>
@@ -505,10 +538,11 @@ export default async function ResponsesPage({
                         {customer.lastInboundReceivedAt ??
                         customer.respondedAt ? (
                           <p className="mt-2 text-xs font-bold text-[var(--muted)]">
-                            Recu:{" "}
+                            {copy.responses.labels.received}:{" "}
                             {formatDateTime(
                               customer.lastInboundReceivedAt ??
-                                customer.respondedAt
+                                customer.respondedAt,
+                              locale
                             )}
                           </p>
                         ) : null}
@@ -523,13 +557,13 @@ export default async function ResponsesPage({
               <EmptyState
                 description={
                   openingGroups.length > 0
-                    ? "Essayez une recherche plus large ou réinitialisez les filtres."
-                    : "Créez une nouvelle annulation pour envoyer une alerte SMS aux clients admissibles."
+                    ? copy.responses.openingsPanel.emptyFilteredDescription
+                    : copy.responses.openingsPanel.emptyDescription
                 }
                 title={
                   openingGroups.length > 0
-                    ? "Aucun créneau ne correspond à ces filtres."
-                    : "Aucune alerte de créneau libre pour le moment."
+                    ? copy.responses.openingsPanel.emptyFilteredTitle
+                    : copy.responses.openingsPanel.emptyTitle
                 }
               />
               {openingGroups.length > 0 ? (
@@ -537,7 +571,7 @@ export default async function ResponsesPage({
                   className="justify-self-center rounded-full border border-[var(--line)] bg-white px-5 py-3 text-sm font-black text-[var(--foreground)]"
                   href={buildOpeningResponsesResetHref()}
                 >
-                  Réinitialiser
+                  {copy.common.reset}
                 </Link>
               ) : null}
             </div>

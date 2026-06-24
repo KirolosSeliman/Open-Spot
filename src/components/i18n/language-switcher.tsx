@@ -26,9 +26,13 @@ export function LanguageSwitcher({
       return initialLocale;
     }
 
-    return normalizeLocale(
-      window.localStorage.getItem(localeCookieName) ?? initialLocale
-    );
+    try {
+      return normalizeLocale(
+        window.localStorage.getItem(localeCookieName) ?? initialLocale
+      );
+    } catch {
+      return initialLocale;
+    }
   });
 
   function selectLocale(nextLocale: Locale) {

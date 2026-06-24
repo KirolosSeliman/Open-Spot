@@ -44,6 +44,7 @@ export function Button({
         variantClasses[variant],
         className
       )}
+      data-open-spot-button={variant}
       disabled={disabled || isLoading}
       {...props}
     >
@@ -69,6 +70,7 @@ export function ButtonLink({
         variantClasses[variant],
         className
       )}
+      data-open-spot-button={variant}
       {...props}
     />
   );

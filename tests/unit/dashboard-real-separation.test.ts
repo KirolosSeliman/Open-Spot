@@ -3,6 +3,8 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
+import { dashboardCopy } from "@/lib/i18n/dashboard-copy";
+
 function getFiles(root: string): string[] {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
     const path = join(root, entry.name);
@@ -52,11 +54,22 @@ describe("real dashboard and demo dashboard separation", () => {
       "utf8"
     );
 
-    expect(dashboardPage).toContain("Votre espace est pret.");
-    expect(dashboardPage).toContain("Commencez par ajouter vos services et vos clients.");
-    expect(dashboardPage).toContain("Ajouter vos services");
-    expect(dashboardPage).toContain("Ajouter vos clients");
-    expect(dashboardPage).toContain("Creer votre premiere annulation");
+    expect(dashboardPage).toContain("getRequestLocale");
+    expect(dashboardPage).toContain("getDashboardCopy");
+    expect(dashboardPage).toContain("copy.dashboard.setup.items");
+    expect(dashboardCopy.fr.dashboard.description("Open Spot")).toContain(
+      "Votre espace est prêt."
+    );
+    expect(dashboardCopy.fr.dashboard.setup.description).toBe(
+      "Commencez par ajouter vos services et vos clients."
+    );
+    expect(dashboardCopy.fr.dashboard.setup.items).toEqual(
+      expect.arrayContaining([
+        expect.arrayContaining(["Ajouter vos services"]),
+        expect.arrayContaining(["Ajouter vos clients"]),
+        expect.arrayContaining(["Créer votre première annulation"])
+      ])
+    );
   });
 
   it("loads separated response dashboards from organization-scoped data", () => {
@@ -78,7 +91,10 @@ describe("real dashboard and demo dashboard separation", () => {
     expect(responsesPage).toContain('name="q"');
     expect(responsesPage).toContain("appointments");
     expect(responsesPage).toContain("openings");
-    expect(responsesPage).toContain("Voir / valider cette annulation");
+    expect(responsesPage).toContain("copy.responses.openingsPanel.view");
+    expect(dashboardCopy.fr.responses.openingsPanel.view).toBe(
+      "Voir / valider cette annulation"
+    );
     expect(operationsData).toContain(
       "export async function loadAppointmentResponseCalendar"
     );

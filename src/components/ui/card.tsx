@@ -23,6 +23,7 @@ export function Card({ className, variant = "default", ...props }: CardProps) {
         cardVariants[variant],
         className
       )}
+      data-open-spot-card={variant}
       {...props}
     />
   );

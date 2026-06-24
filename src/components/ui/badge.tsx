@@ -25,6 +25,7 @@ export function Badge({ className, tone = "default", ...props }: BadgeProps) {
         toneClasses[tone],
         className
       )}
+      data-open-spot-badge={tone}
       {...props}
     />
   );

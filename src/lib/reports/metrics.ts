@@ -137,7 +137,7 @@ export function calculateAutomationOutcomeMetrics({
     appointmentsConfirmed: appointments.filter(
       (appointment) => appointment.status === "confirmed"
     ).length,
-    appointmentsPendingConfirmation: appointments.filter(
+    appointmentsAwaitingConfirmation: appointments.filter(
       (appointment) => appointment.confirmationStatus === "pending"
     ).length,
     appointmentsCancelledBySms: countUnique(

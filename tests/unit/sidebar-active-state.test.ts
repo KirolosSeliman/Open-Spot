@@ -13,9 +13,19 @@ const shellSource = readFileSync(
 describe("dashboard sidebar active state", () => {
   it("derives active navigation from the current pathname", () => {
     expect(shellSource).toContain("usePathname");
-    expect(shellSource).toContain("isActiveDashboardRoute(pathname, item.href)");
+    expect(shellSource).toContain("isActiveDashboardRoute(pathname, item)");
     expect(shellSource).toContain('aria-current=');
     expect(shellSource).not.toContain('item.core &&');
+  });
+
+  it("keeps the secondary New cancellation item visually normal unless its exact route is active", () => {
+    expect(shellSource).toContain(
+      '{ href: "/dashboard/new-cancellation", label: t.openings.newCancellation, activeMatch: "exact" }'
+    );
+    expect(shellSource).not.toContain(
+      '{ href: "/dashboard/new-cancellation", label: t.openings.newCancellation, core: true }'
+    );
+    expect(shellSource).toContain('item.activeMatch === "exact"');
   });
 
   it("contains route entries for all merchant dashboard sections", () => {

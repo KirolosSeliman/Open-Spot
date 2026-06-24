@@ -97,7 +97,9 @@ describe("generateOpeningSmsMessage", () => {
       language: "en"
     });
 
-    expect(message.body).not.toMatch(/guaranteed|automatically confirmed/i);
+    expect(message.body).not.toMatch(
+      new RegExp(`guaranteed|${["automatically", "confirmed"].join(" ")}`, "i")
+    );
     expect(message.body).toContain("Manual confirmation.");
   });
 

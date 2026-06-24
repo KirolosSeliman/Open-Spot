@@ -246,8 +246,8 @@ export function NewCancellationFlow({
               <p className="text-sm leading-6">{message}</p>
             </div>
             <p className="mt-4 rounded-2xl border border-[#d9e6e1] bg-white p-3 text-sm font-bold text-[var(--primary-strong)]">
-              Aucun client ne sera confirmé automatiquement. Vous choisissez
-              manuellement après les réponses.
+              Vous choisissez manuellement le client à valider après les
+              réponses.
             </p>
           </div>
         </div>
@@ -260,7 +260,7 @@ export function NewCancellationFlow({
             <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
               Cette interface prépare l&apos;alerte pour {eligibleClients.length}{" "}
               clients admissibles. Aucun SMS réel n&apos;est envoyé sans provider
-              configuré, et aucun rendez-vous n&apos;est confirmé automatiquement.
+              configuré. Votre équipe garde la décision finale.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Button onClick={() => setConfirmOpen(false)} type="button">

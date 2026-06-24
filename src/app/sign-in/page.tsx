@@ -25,9 +25,7 @@ const signInCopy = {
     password: "Mot de passe",
     submit: "Connexion",
     noAccount: "Pas encore de compte ?",
-    createAccount: "Créer un compte",
-    panelTitle: "Votre commerce garde le contrôle",
-    panelItems: ["Réponses classées par heure", "Validation manuelle", "Clients consentants seulement"]
+    createAccount: "Créer un compte"
   },
   en: {
     eyebrow: "Sign in",
@@ -38,9 +36,7 @@ const signInCopy = {
     password: "Password",
     submit: "Sign in",
     noAccount: "No account yet?",
-    createAccount: "Create account",
-    panelTitle: "Your business stays in control",
-    panelItems: ["Replies ranked by time", "Manual validation", "Opted-in customers only"]
+    createAccount: "Create account"
   }
 } as const;
 
@@ -57,16 +53,6 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           <p className="os-kicker">{t.eyebrow}</p>
           <h1 className="os-page-title mt-5">{t.title}</h1>
           <p className="os-body-large mt-6">{t.description}</p>
-          <Card className="mt-8 bg-[var(--dark)] p-6 text-white" variant="dark">
-            <h2 className="text-2xl font-black">{t.panelTitle}</h2>
-            <div className="mt-5 grid gap-3">
-              {t.panelItems.map((item) => (
-                <div className="rounded-2xl bg-white/10 px-4 py-3 text-sm font-bold" key={item}>
-                  {item}
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
 
         <Card className="p-5 sm:p-7">

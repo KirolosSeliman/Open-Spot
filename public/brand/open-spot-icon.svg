@@ -1,5 +1,3 @@
-<svg width="96" height="96" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Open Spot icon">
-  <rect width="96" height="96" rx="28" fill="#4F7DF3"/>
-  <path d="M62 30C57.8 26.8 52.7 25 47 25C33.2 25 22 36.2 22 50C22 63.8 33.2 75 47 75C60.8 75 72 63.8 72 50" stroke="white" stroke-width="9" stroke-linecap="round"/>
-  <path d="M55 48H76" stroke="white" stroke-width="9" stroke-linecap="round"/>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Open Spot icon">
+  <image href="/brand/open-spot-logo-mark.png" width="256" height="256" preserveAspectRatio="xMidYMid meet"/>
 </svg>

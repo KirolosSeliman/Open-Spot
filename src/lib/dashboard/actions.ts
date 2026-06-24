@@ -35,6 +35,7 @@ import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
 import { sendConsentRequestSms } from "@/lib/sms/consent-request";
 import { createSmsProvider } from "@/lib/sms/factory";
+import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 import {
   generateOpeningConfirmationSmsMessage,
   generateOpeningSmsMessage
@@ -1690,6 +1691,15 @@ async function sendOpeningSmsAlerts({
     throw new Error(
       smsStatus.blockingReasons.join(" ") || "SMS provider is not ready."
     );
+  }
+
+  const organizationSmsReadiness = await loadOrganizationSmsReadiness(
+    supabase,
+    organization.id
+  );
+
+  if (!organizationSmsReadiness.canSendSms) {
+    throw new Error(organizationSmsReadiness.blockingReasons.join(" "));
   }
 
   const smsPersistence = await checkSmsDeliveryPersistenceReadiness();

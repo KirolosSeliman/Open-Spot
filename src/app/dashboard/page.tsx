@@ -10,41 +10,20 @@ import {
   loadDashboardOverview,
   type DashboardOverview
 } from "@/lib/dashboard/real-data";
+import { getDashboardCopy, intlLocale } from "@/lib/i18n/dashboard-copy";
+import { getRequestLocale } from "@/lib/i18n/locale";
+import { getOnboardingStatusLabel } from "@/lib/organization/client-onboarding";
+import {
+  getBillingStatusLabel,
+  type ManualBillingStatus
+} from "@/lib/billing/manual-billing";
+import { loadManualBillingForOrganization } from "@/lib/billing/manual-billing-data";
 import { calculateAutomationOutcomeMetrics } from "@/lib/reports/metrics";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
+import { loadOnboardingByOrganization } from "@/lib/organization/onboarding-records";
 
-const setupItems = [
-  {
-    href: "/dashboard/services",
-    label: "Ajouter vos services",
-    description: "Definissez les prestations qui pourront remplir une annulation."
-  },
-  {
-    href: "/dashboard/clients",
-    label: "Ajouter vos clients",
-    description: "Importez ou ajoutez des clients avec leur statut de consentement."
-  },
-  {
-    href: "/dashboard/waitlist",
-    label: "Creer votre liste d'attente",
-    description: "Classez les clients interesses par service et disponibilite."
-  },
-  {
-    href: "/dashboard/new-cancellation",
-    label: "Creer votre premiere annulation",
-    description: "Preparez une opportunite sans envoyer de SMS reel."
-  },
-  {
-    href: "/dashboard/messages",
-    label: "Simuler une alerte SMS",
-    description: "Verifiez le message avant toute integration provider."
-  }
-];
-
-const numberFormatter = new Intl.NumberFormat("fr-CA");
-
-function formatCurrency(cents: number) {
-  return new Intl.NumberFormat("fr-CA", {
+function formatCurrency(cents: number, locale: string) {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "CAD"
   }).format(cents / 100);
@@ -88,10 +67,104 @@ function getFallbackOverview(organizationName: string): DashboardOverview {
   };
 }
 
+function getBillingBannerCopy({
+  billingStatus,
+  onboardingCompleted,
+  locale
+}: {
+  billingStatus: string | null | undefined;
+  onboardingCompleted: boolean;
+  locale: "en" | "fr";
+}) {
+  const status = billingStatus as ManualBillingStatus | null | undefined;
+
+  if (status === "paid" && onboardingCompleted) {
+    return null;
+  }
+
+  const copy = {
+    fr: {
+      title: "Activation SMS en attente",
+      unpaid:
+        "Votre compte n’est pas encore activé. Le paiement doit être confirmé avant l’envoi de SMS.",
+      payment_link_sent:
+        "Votre paiement est en attente. L’envoi SMS sera activé après confirmation.",
+      past_due:
+        "Votre compte est en retard de paiement. L’envoi de nouveaux SMS est temporairement suspendu.",
+      cancelled:
+        "Votre compte est annulé. Contactez l’équipe Open Spot pour le réactiver.",
+      paidIncomplete:
+        "Paiement reçu. Complétez l’onboarding pour finaliser votre configuration.",
+      fallback:
+        "L’envoi SMS sera disponible lorsque la configuration, la facturation et l’activation SMS seront complétées."
+    },
+    en: {
+      title: "SMS activation pending",
+      unpaid:
+        "Your account is not active yet. Payment must be confirmed before SMS sending is enabled.",
+      payment_link_sent:
+        "Your payment is pending. SMS sending will be enabled after confirmation.",
+      past_due:
+        "Your account is past due. New SMS sending is temporarily paused.",
+      cancelled:
+        "Your account is cancelled. Contact the Open Spot team to reactivate it.",
+      paidIncomplete: "Payment received. Complete onboarding to finish your setup.",
+      fallback:
+        "SMS sending will be available once setup, billing, and SMS activation are complete."
+    }
+  }[locale];
+
+  if (status === "paid" && !onboardingCompleted) {
+    return {
+      title: copy.title,
+      body: copy.paidIncomplete
+    };
+  }
+
+  if (
+    status === "unpaid" ||
+    status === "payment_link_sent" ||
+    status === "past_due" ||
+    status === "cancelled"
+  ) {
+    return {
+      title: copy.title,
+      body: copy[status]
+    };
+  }
+
+  return {
+    title: copy.title,
+    body: copy.fallback
+  };
+}
+
 export default async function DashboardPage() {
-  const workspace = await getActiveOrganizationWorkspace();
+  const [workspace, locale] = await Promise.all([
+    getActiveOrganizationWorkspace(),
+    getRequestLocale()
+  ]);
+  const copy = getDashboardCopy(locale);
+  const numberFormatter = new Intl.NumberFormat(intlLocale(locale));
   const organizationName =
     workspace.status === "ready" ? workspace.organization.name : "Open Spot";
+  const onboarding =
+    workspace.status === "ready"
+      ? await loadOnboardingByOrganization({
+          organizationId: workspace.organization.id
+        }).catch(() => null)
+      : null;
+  const billing =
+    workspace.status === "ready"
+      ? await loadManualBillingForOrganization(workspace.organization.id).catch(
+          () => null
+        )
+      : null;
+  const billingBanner = getBillingBannerCopy({
+    billingStatus: billing?.billingStatus ?? null,
+    onboardingCompleted: onboarding?.status === "completed",
+    locale
+  });
   const overview =
     workspace.status === "ready"
       ? await loadDashboardOverview({
@@ -102,27 +175,27 @@ export default async function DashboardPage() {
   const actionItems = [
     {
       href: "/dashboard/responses",
-      label: "Rendez-vous sans reponse",
+      label: copy.dashboard.actions.appointmentsNeedingFollowUp[0],
       value: overview.actionItems.appointmentsNeedingFollowUp,
-      description: "Clients sans reponse apres demande de confirmation."
+      description: copy.dashboard.actions.appointmentsNeedingFollowUp[1]
     },
     {
       href: "/dashboard/appointments",
-      label: "Rappels echoues",
+      label: copy.dashboard.actions.failedReminderSends[0],
       value: overview.actionItems.failedReminderSends,
-      description: "Rappels 24 h qui demandent une verification manuelle."
+      description: copy.dashboard.actions.failedReminderSends[1]
     },
     {
       href: "/dashboard/cancellations",
-      label: "Annulations a valider",
+      label: copy.dashboard.actions.cancellationsAwaitingAction[0],
       value: overview.actionItems.cancellationsAwaitingAction,
-      description: "Ouvertures de recuperation non finalisees."
+      description: copy.dashboard.actions.cancellationsAwaitingAction[1]
     },
     {
       href: "/dashboard/responses",
-      label: "Reponses waitlist a valider",
+      label: copy.dashboard.actions.waitlistRespondentsAwaitingValidation[0],
       value: overview.actionItems.waitlistRespondentsAwaitingValidation,
-      description: "Reponses client qui attendent une decision marchande."
+      description: copy.dashboard.actions.waitlistRespondentsAwaitingValidation[1]
     }
   ];
 
@@ -134,44 +207,68 @@ export default async function DashboardPage() {
             className="inline-flex min-h-12 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_16px_32px_rgba(79,125,243,0.22)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
             href="/dashboard/new-cancellation"
           >
-            Nouvelle annulation
+            {copy.dashboard.newCancellation}
           </Link>
         }
-        description={`Votre espace est pret. ${organizationName} utilise maintenant vos donnees reelles et vos etats operationnels.`}
-        title={`Tableau de bord de ${overview.organizationName}`}
+        description={copy.dashboard.description(organizationName)}
+        title={copy.dashboard.title(overview.organizationName)}
       />
+
+      {workspace.status === "ready" && billingBanner ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 shadow-sm">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="font-black">{billingBanner.title}</p>
+              <p className="mt-1 leading-6">{billingBanner.body}</p>
+            </div>
+            <span className="w-fit rounded-full bg-white px-4 py-2 text-xs font-black">
+              {billing
+                ? getBillingStatusLabel(billing.billingStatus, locale)
+                : locale === "fr"
+                  ? "Facturation à configurer"
+                  : "Billing not configured"}
+              {" · "}
+              {onboarding
+                ? getOnboardingStatusLabel(onboarding.status, locale)
+                : locale === "fr"
+                  ? "Onboarding à générer"
+                  : "Onboarding not generated"}
+            </span>
+          </div>
+        </div>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <MetricCard
-          detail="Clients reels rattaches a cette organisation."
-          label="Clients"
+          detail={copy.dashboard.metrics.customers[1]}
+          label={copy.dashboard.metrics.customers[0]}
           value={String(overview.customersCount)}
         />
         <MetricCard
-          detail="Services reels configures dans votre espace."
-          label="Services"
+          detail={copy.dashboard.metrics.services[1]}
+          label={copy.dashboard.metrics.services[0]}
           value={String(overview.servicesCount)}
         />
         <MetricCard
-          detail="Entrees reelles de liste d'attente."
-          label="Liste d'attente"
+          detail={copy.dashboard.metrics.waitlist[1]}
+          label={copy.dashboard.metrics.waitlist[0]}
           value={String(overview.waitlistEntriesCount)}
         />
         <MetricCard
-          detail="Opportunites d'annulation enregistrees."
-          label="Annulations ouvertes"
+          detail={copy.dashboard.metrics.openCancellations[1]}
+          label={copy.dashboard.metrics.openCancellations[0]}
           value={String(overview.openingsCount)}
           tone="amber"
         />
         <MetricCard
-          detail="Messages sortants enregistres pour cette organisation."
-          label="SMS envoyes"
+          detail={copy.dashboard.metrics.smsSent[1]}
+          label={copy.dashboard.metrics.smsSent[0]}
           value={String(overview.smsSentCount)}
           tone="violet"
         />
         <MetricCard
-          detail="Confirmations manuelles seulement."
-          label="Rendez-vous recuperes"
+          detail={copy.dashboard.metrics.recoveredAppointments[1]}
+          label={copy.dashboard.metrics.recoveredAppointments[0]}
           value={String(overview.recoveredBookingsCount)}
           tone="green"
         />
@@ -179,44 +276,44 @@ export default async function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <MetricCard
-          detail="Offres avec reponse client en attente de decision manuelle."
-          label="Reponses en attente"
+          detail={copy.dashboard.metrics.pendingResponses[1]}
+          label={copy.dashboard.metrics.pendingResponses[0]}
           value={String(overview.pendingRepliesCount)}
           tone="amber"
         />
         <MetricCard
-          detail="Somme des bookings confirmes ou completes."
-          label="Revenus estimes recuperes"
-          value={formatCurrency(overview.recoveredRevenueCents)}
+          detail={copy.dashboard.metrics.recoveredRevenue[1]}
+          label={copy.dashboard.metrics.recoveredRevenue[0]}
+          value={formatCurrency(overview.recoveredRevenueCents, intlLocale(locale))}
           tone="green"
         />
       </div>
 
       <Panel
-        description="Rappels 24 h et reponses clients reliees aux rendez-vous existants."
-        title="Rappels et confirmations"
+        description={copy.dashboard.remindersPanel.description}
+        title={copy.dashboard.remindersPanel.title}
       >
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
-            detail="Rendez-vous prevus dans les 7 prochains jours."
-            label="Prochains 7 jours"
+            detail={copy.dashboard.remindersPanel.next7Days[1]}
+            label={copy.dashboard.remindersPanel.next7Days[0]}
             value={String(overview.automation.appointmentsNext7Days)}
           />
           <MetricCard
-            detail="Clients ayant confirme par SMS."
-            label="Confirmes"
+            detail={copy.dashboard.remindersPanel.confirmed[1]}
+            label={copy.dashboard.remindersPanel.confirmed[0]}
             value={String(overview.automation.appointmentsConfirmed)}
             tone="green"
           />
           <MetricCard
-            detail="Demandes OUI/NON sans reponse client."
-            label="En attente"
-            value={String(overview.automation.appointmentsPendingConfirmation)}
+            detail={copy.dashboard.remindersPanel.awaiting[1]}
+            label={copy.dashboard.remindersPanel.awaiting[0]}
+            value={String(overview.automation.appointmentsAwaitingConfirmation)}
             tone="amber"
           />
           <MetricCard
-            detail="Rappels qui necessitent une verification."
-            label="Rappels echoues"
+            detail={copy.dashboard.remindersPanel.failed[1]}
+            label={copy.dashboard.remindersPanel.failed[0]}
             value={String(overview.automation.remindersFailed)}
             tone="amber"
           />
@@ -224,31 +321,32 @@ export default async function DashboardPage() {
       </Panel>
 
       <Panel
-        description="Annulations SMS converties en ouvertures recuperables, sans confirmation automatique."
-        title="Recuperation apres annulation SMS"
+        description={copy.dashboard.recoveryPanel.description}
+        title={copy.dashboard.recoveryPanel.title}
       >
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <MetricCard
-            detail="Annulations de rendez-vous detectees par reponse SMS."
-            label="Annulations SMS"
+            detail={copy.dashboard.recoveryPanel.smsCancellations[1]}
+            label={copy.dashboard.recoveryPanel.smsCancellations[0]}
             value={String(overview.automation.appointmentsCancelledBySms)}
           />
           <MetricCard
-            detail="Ouvertures creees depuis une annulation SMS."
-            label="Ouvertures creees"
+            detail={copy.dashboard.recoveryPanel.openingsCreated[1]}
+            label={copy.dashboard.recoveryPanel.openingsCreated[0]}
             value={String(overview.automation.recoveryOpeningsCreated)}
           />
           <MetricCard
-            detail="Reponses de liste d'attente en attente ou traitees."
-            label="Reponses recovery"
+            detail={copy.dashboard.recoveryPanel.recoveryReplies[1]}
+            label={copy.dashboard.recoveryPanel.recoveryReplies[0]}
             value={String(overview.automation.recoveryRepliesReceived)}
             tone="amber"
           />
           <MetricCard
-            detail="Seulement les validations marchandes confirmees."
-            label="Recupere apres SMS"
+            detail={copy.dashboard.recoveryPanel.recoveredAfterSms[1]}
+            label={copy.dashboard.recoveryPanel.recoveredAfterSms[0]}
             value={formatCurrency(
-              overview.automation.recoveredAfterCancellationRevenueCents
+              overview.automation.recoveredAfterCancellationRevenueCents,
+              intlLocale(locale)
             )}
             tone="green"
           />
@@ -256,8 +354,8 @@ export default async function DashboardPage() {
       </Panel>
 
       <Panel
-        description="Files de travail basees sur les donnees reelles de cette organisation. Les confirmations restent manuelles."
-        title="Actions a traiter"
+        description={copy.dashboard.actions.description}
+        title={copy.dashboard.actions.title}
       >
         <div className="grid gap-3 md:grid-cols-2">
           {actionItems.map((item) => (
@@ -283,19 +381,19 @@ export default async function DashboardPage() {
       </Panel>
 
       <Panel
-        description="Commencez par ajouter vos services et vos clients."
-        title="Configuration initiale"
+        description={copy.dashboard.setup.description}
+        title={copy.dashboard.setup.title}
       >
         <div className="grid gap-3 md:grid-cols-2">
-          {setupItems.map((item) => (
+          {copy.dashboard.setup.items.map(([href, label, description]) => (
             <Link
               className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4 transition hover:-translate-y-0.5 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-              href={item.href}
-              key={item.href}
+              href={href}
+              key={href}
             >
-              <p className="font-black text-[var(--foreground)]">{item.label}</p>
+              <p className="font-black text-[var(--foreground)]">{label}</p>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                {item.description}
+                {description}
               </p>
             </Link>
           ))}
@@ -303,16 +401,16 @@ export default async function DashboardPage() {
       </Panel>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Panel title="Reponses recentes">
+        <Panel title={copy.dashboard.recentResponses[0]}>
           <EmptyState
-            description="Les reponses SMS reelles apparaitront ici apres l'envoi d'une alerte et la reception de reponses clients."
-            title="Aucune reponse pour le moment."
+            description={copy.dashboard.recentResponses[2]}
+            title={copy.dashboard.recentResponses[1]}
           />
         </Panel>
-        <Panel title="Annulations recentes">
+        <Panel title={copy.dashboard.recentCancellations[0]}>
           <EmptyState
-            description="Creez une premiere annulation pour suivre les clients contactes, les reponses recues et la decision finale."
-            title="Aucune annulation pour le moment."
+            description={copy.dashboard.recentCancellations[2]}
+            title={copy.dashboard.recentCancellations[1]}
           />
         </Panel>
       </div>
