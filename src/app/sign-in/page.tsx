@@ -1,16 +1,22 @@
 import Link from "next/link";
 
+import { AuthLinkErrorPanel } from "@/components/auth/auth-link-error-panel";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FormField, Input } from "@/components/ui/form-field";
+import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { signInAction } from "@/lib/auth/actions";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current";
 
 type SignInPageProps = {
   searchParams: Promise<{
+    auth_error?: string;
+    confirmed?: string;
+    email?: string;
     error?: string;
+    notice?: string;
     redirect?: string;
   }>;
 };
@@ -44,7 +50,16 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   await redirectAuthenticatedUserByWorkspace();
   const locale = await getRequestLocale();
   const t = signInCopy[locale];
-  const { error, redirect } = await searchParams;
+  const { auth_error, confirmed, email, error, notice, redirect } =
+    await searchParams;
+  const authErrorMessage = getAuthErrorMessage(auth_error);
+  const showResendPanel = Boolean(auth_error);
+  const successMessage =
+    confirmed === "1"
+      ? getAuthErrorMessage("confirmed")
+      : notice
+        ? decodeURIComponent(notice)
+        : null;
 
   return (
     <PageShell>
@@ -56,17 +71,28 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
         </div>
 
         <Card className="p-5 sm:p-7">
-          {error ? (
-            <p className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
-              {error}
+          {successMessage ? (
+            <p className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+              {successMessage}
             </p>
           ) : null}
+
+          {showResendPanel ? (
+            <AuthLinkErrorPanel defaultEmail={email ?? ""} />
+          ) : null}
+
+          {!showResendPanel && (authErrorMessage || error) ? (
+            <p className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
+              {authErrorMessage ?? error}
+            </p>
+          ) : null}
+
           <form action={signInAction} className="grid gap-5">
             {redirect ? (
               <input name="redirect" type="hidden" value={redirect} />
             ) : null}
             <FormField htmlFor="email" label={t.email} required>
-              <Input id="email" name="email" required type="email" />
+              <Input id="email" name="email" required type="email" defaultValue={email ?? ""} />
             </FormField>
             <FormField htmlFor="password" label={t.password} required>
               <Input
@@ -77,7 +103,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
                 type="password"
               />
             </FormField>
-            <Button className="w-full" type="submit">{t.submit}</Button>
+            <Button className="w-full" type="submit">
+              {t.submit}
+            </Button>
           </form>
           <p className="mt-6 text-sm leading-6 text-[var(--muted)]">
             {t.noAccount}{" "}

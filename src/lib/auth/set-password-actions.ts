@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 
+import { buildSignInAuthErrorRedirect } from "@/lib/auth/auth-errors";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function setPasswordError(message: string): never {
@@ -27,9 +28,7 @@ export async function setPasswordAction(formData: FormData) {
   } = await supabase.auth.getUser();
 
   if (userError || !user) {
-    setPasswordError(
-      "Ce lien d'acces est invalide ou a expire. Contactez l'administrateur pour recevoir un nouveau lien."
-    );
+    redirect(buildSignInAuthErrorRedirect("expired_or_invalid_link"));
   }
 
   const { error } = await supabase.auth.updateUser({ password });

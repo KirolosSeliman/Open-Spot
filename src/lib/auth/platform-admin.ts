@@ -80,27 +80,9 @@ export function isConfiguredPlatformAdminEmail(
   return getConfiguredPlatformAdminEmails(env).includes(normalizedEmail);
 }
 
-export function getSafeInternalRedirectPath(
-  redirectValue: string | null | undefined
-): string | null {
-  const value = redirectValue?.trim();
+import { getSafeInternalRedirectPath } from "@/lib/auth/safe-redirect";
 
-  if (!value || !value.startsWith("/") || value.startsWith("//")) {
-    return null;
-  }
-
-  try {
-    const url = new URL(value, "https://open-spot.local");
-
-    if (url.origin !== "https://open-spot.local") {
-      return null;
-    }
-
-    return `${url.pathname}${url.search}${url.hash}`;
-  } catch {
-    return null;
-  }
-}
+export { getSafeInternalRedirectPath };
 
 export function getPostSignInRedirectPath({
   email,
