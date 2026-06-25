@@ -871,6 +871,7 @@ describe("public navigation", () => {
     expect(styles).toContain("z-index: 20");
     expect(styles).toContain(".open-spot-how-card-frame--3");
     expect(styles).toContain("z-index: 30");
+    expect(styles).toContain(".open-spot-how-cards::after");
     expect(styles).toContain(".open-spot-how-card");
     expect(styles).toContain("height: 15rem");
     expect(styles).toContain(".open-spot-how-step-number");
