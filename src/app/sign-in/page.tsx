@@ -16,6 +16,7 @@ type SignInPageProps = {
     email?: string;
     error?: string;
     notice?: string;
+    password_created?: string;
     redirect?: string;
   }>;
 };
@@ -66,13 +67,15 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   await redirectAuthenticatedUserByWorkspace();
   const locale = await getRequestLocale();
   const t = signInCopy[locale];
-  const { auth_error, confirmed, email, error, notice, redirect } =
+  const { auth_error, confirmed, email, error, notice, password_created, redirect } =
     await searchParams;
   const authErrorMessage = getAuthErrorMessage(auth_error);
   const legacyLinkError = isAuthLinkErrorMessage(error);
   const linkErrorMessage = authErrorMessage ?? (legacyLinkError ? error : null);
   const successMessage =
-    confirmed === "1"
+    password_created === "1"
+      ? "Mot de passe créé avec succès. Vous pouvez maintenant vous connecter."
+      : confirmed === "1"
       ? getAuthErrorMessage("confirmed")
       : notice
         ? decodeURIComponent(notice)

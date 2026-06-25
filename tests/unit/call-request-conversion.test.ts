@@ -67,17 +67,19 @@ describe("call request client conversion", () => {
   it("ships approved client signup and invite password flow", () => {
     const signupPage = source("src/app/signup/page.tsx");
     const authActions = source("src/lib/auth/actions.ts");
-    const callbackRoute = source("src/app/auth/callback/route.ts");
+    const callbackHandler = source("src/components/auth/auth-callback-handler.tsx");
+    const setPasswordForm = source("src/components/auth/set-password-form.tsx");
     const setPasswordPage = source("src/app/auth/set-password/page.tsx");
     const conversionCard = source("src/components/admin/call-request-conversion-card.tsx");
 
     expect(signupPage).toContain("CreateAccountForm");
     expect(signupPage).toContain("Creez votre compte Open Spot");
     expect(authActions).toContain("Public signup is disabled");
-    expect(callbackRoute).toContain("exchangeCodeForSession");
-    expect(callbackRoute).toContain("getSafeInternalRedirectPath");
-    expect(setPasswordPage).toContain("setPasswordAction");
-    expect(setPasswordPage).toContain("Creez votre mot de passe");
+    expect(callbackHandler).toContain("exchangeCodeForSession");
+    expect(callbackHandler).toContain("getSafeInternalRedirectPath");
+    expect(setPasswordPage).toContain("SetPasswordForm");
+    expect(setPasswordForm).toContain("setPasswordAction");
+    expect(setPasswordForm).toContain("Créez votre mot de passe");
     expect(conversionCard).toContain("Renvoyer l'email");
   });
 

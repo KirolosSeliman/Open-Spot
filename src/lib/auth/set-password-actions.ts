@@ -14,7 +14,7 @@ export async function setPasswordAction(formData: FormData) {
   const confirmPassword = String(formData.get("confirmPassword") ?? "");
 
   if (password.length < 8) {
-    setPasswordError("Le mot de passe doit contenir au moins 8 caracteres.");
+    setPasswordError("Le mot de passe doit contenir au moins 8 caractères.");
   }
 
   if (password !== confirmPassword) {
@@ -47,5 +47,5 @@ export async function setPasswordAction(formData: FormData) {
     .eq("user_id", user.id)
     .eq("status", "invited");
 
-  redirect("/onboarding");
+  redirect("/sign-in?password_created=1");
 }
