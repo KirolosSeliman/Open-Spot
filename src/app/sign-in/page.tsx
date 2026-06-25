@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { SignInResendSection } from "@/components/auth/sign-in-resend-section";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -71,8 +70,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
     await searchParams;
   const authErrorMessage = getAuthErrorMessage(auth_error);
   const legacyLinkError = isAuthLinkErrorMessage(error);
-  const resendErrorMessage = authErrorMessage ?? (legacyLinkError ? error : null);
-  const openResendByDefault = Boolean(auth_error || legacyLinkError);
+  const linkErrorMessage = authErrorMessage ?? (legacyLinkError ? error : null);
   const successMessage =
     confirmed === "1"
       ? getAuthErrorMessage("confirmed")
@@ -96,13 +94,24 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             </p>
           ) : null}
 
-          <SignInResendSection
-            defaultEmail={email ?? ""}
-            defaultOpen={openResendByDefault}
-            errorMessage={resendErrorMessage}
-          />
+          {linkErrorMessage ? (
+            <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4">
+              <p className="text-sm font-black text-red-800">Lien expire ou invalide</p>
+              <p className="mt-2 text-sm font-bold text-red-700">{linkErrorMessage}</p>
+              <p className="mt-3 text-sm leading-6 text-red-700/90">
+                Contactez Open Spot ou utilisez la page{" "}
+                <Link
+                  className="font-black underline underline-offset-4"
+                  href="/signup"
+                >
+                  Creer un compte
+                </Link>{" "}
+                si votre commerce a deja ete accepte.
+              </p>
+            </div>
+          ) : null}
 
-          {!openResendByDefault && error && !legacyLinkError ? (
+          {!linkErrorMessage && error ? (
             <p className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
               {error}
             </p>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ResendOwnerInvitationButton } from "@/components/admin/resend-owner-invitation-button";
 import { Card } from "@/components/ui/card";
 import {
   archiveOrganizationAction,
@@ -310,6 +311,10 @@ export default async function AdminOrganizationDetailPage({
               <dd>{overview.organization.timezone ?? "Unknown"}</dd>
             </div>
           </dl>
+          <ResendOwnerInvitationButton
+            organizationId={overview.organization.id}
+            ownerEmail={overview.organization.ownerEmail}
+          />
         </div>
       </Card>
 
