@@ -191,8 +191,8 @@ const openSpotCopy = {
       },
       {
         number: "03",
-        title: "Confirm the Client",
-        text: "Choose the best fit and confirm the appointment manually."
+        title: "Confirm manually",
+        text: "Choose who to confirm. No appointment is validated automatically."
       }
     ],
     mockups: {
@@ -501,8 +501,8 @@ const openSpotFrCopy = {
       },
       {
         number: "03",
-        title: "Confirmer le client",
-        text: "Choisissez le meilleur client et confirmez le rendez-vous manuellement."
+        title: "Confirmer manuellement",
+        text: "Choisissez la personne à confirmer. Aucun rendez-vous n'est validé automatiquement."
       }
     ],
     mockups: {
@@ -849,98 +849,6 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
       if (animationFrame) {
         window.cancelAnimationFrame(animationFrame);
       }
-    };
-  }, [locale]);
-
-  useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const desktop = window.matchMedia("(min-width: 1024px)");
-    const section = document.querySelector<HTMLElement>(".open-spot-how-section");
-    const copyBlock = document.querySelector<HTMLElement>(".open-spot-how-copy");
-    const frames = Array.from(
-      document.querySelectorAll<HTMLElement>(".open-spot-how-card-frame")
-    );
-
-    if (!section || !copyBlock || frames.length === 0) {
-      return;
-    }
-
-    const stackSection = section;
-    const stackCopy = copyBlock;
-    let animationFrame = 0;
-
-    function clearStack() {
-      stackCopy.style.transform = "";
-      frames.forEach((frame) => {
-        frame.style.transform = "";
-      });
-    }
-
-    function currentTranslateY(element: HTMLElement) {
-      const transform = window.getComputedStyle(element).transform;
-
-      if (!transform || transform === "none") {
-        return 0;
-      }
-
-      return new DOMMatrixReadOnly(transform).m42;
-    }
-
-    function updateStack() {
-      if (animationFrame) {
-        return;
-      }
-
-      animationFrame = window.requestAnimationFrame(() => {
-        animationFrame = 0;
-
-        if (reduceMotion.matches || !desktop.matches) {
-          clearStack();
-          return;
-        }
-
-        const sectionRect = stackSection.getBoundingClientRect();
-        const copyRect = stackCopy.getBoundingClientRect();
-        const copyNormalTop = copyRect.top - currentTranslateY(stackCopy);
-        const baseTop = Math.min(132, Math.max(104, window.innerHeight * 0.15));
-        const copyMaxTranslate = sectionRect.bottom - baseTop - stackCopy.offsetHeight;
-        const copyTranslateY = Math.max(0, Math.min(baseTop - copyNormalTop, copyMaxTranslate));
-
-        stackCopy.style.transform = copyTranslateY > 0
-          ? `translate3d(0, ${copyTranslateY.toFixed(2)}px, 0)`
-          : "";
-
-        frames.forEach((frame, index) => {
-          const frameRect = frame.getBoundingClientRect();
-          const targetTop = baseTop + index * 14;
-          const normalTop = frameRect.top - currentTranslateY(frame);
-          const maxTranslate = sectionRect.bottom - targetTop - frame.offsetHeight;
-          const translateY = Math.max(0, Math.min(targetTop - normalTop, maxTranslate));
-
-          frame.style.transform = translateY > 0
-            ? `translate3d(0, ${translateY.toFixed(2)}px, 0)`
-            : "";
-        });
-      });
-    }
-
-    updateStack();
-    window.addEventListener("scroll", updateStack, { passive: true });
-    window.addEventListener("resize", updateStack);
-    reduceMotion.addEventListener("change", updateStack);
-    desktop.addEventListener("change", updateStack);
-
-    return () => {
-      window.removeEventListener("scroll", updateStack);
-      window.removeEventListener("resize", updateStack);
-      reduceMotion.removeEventListener("change", updateStack);
-      desktop.removeEventListener("change", updateStack);
-
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame);
-      }
-
-      clearStack();
     };
   }, [locale]);
 
@@ -1406,13 +1314,17 @@ function SetupSection({ t }: { t: TemplateCopy }) {
 
 function HowItWorks({ t }: { t: TemplateCopy }) {
   return (
-    <section className="open-spot-how-section bg-white px-4 py-20 sm:py-24" id="how-it-works">
+    <section
+      aria-labelledby="workflow-title"
+      className="open-spot-how-section bg-white px-4 py-20 sm:py-24"
+      id="how-it-works"
+    >
       <div className="open-spot-how-shell mx-auto grid">
         <div className="open-spot-how-copy" data-lunera-reveal>
           <span className="open-spot-how-pill">
             {t.how.tag}
           </span>
-          <h2 className="open-spot-how-title">
+          <h2 className="open-spot-how-title" id="workflow-title">
             {t.how.title.map((line) => (
               <span
                 className={cn("block", line.includes("confirmation") && "open-spot-how-title-nowrap")}
