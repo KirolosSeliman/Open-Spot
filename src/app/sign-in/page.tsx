@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { AuthLinkErrorPanel } from "@/components/auth/auth-link-error-panel";
+import { SignInResendSection } from "@/components/auth/sign-in-resend-section";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -46,6 +46,23 @@ const signInCopy = {
   }
 } as const;
 
+function isAuthLinkErrorMessage(message: string | null | undefined) {
+  if (!message) {
+    return false;
+  }
+
+  const normalized = message.toLowerCase();
+
+  return (
+    normalized.includes("lien") ||
+    normalized.includes("link") ||
+    normalized.includes("invalide") ||
+    normalized.includes("invalid") ||
+    normalized.includes("expire") ||
+    normalized.includes("expired")
+  );
+}
+
 export default async function SignInPage({ searchParams }: SignInPageProps) {
   await redirectAuthenticatedUserByWorkspace();
   const locale = await getRequestLocale();
@@ -53,7 +70,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const { auth_error, confirmed, email, error, notice, redirect } =
     await searchParams;
   const authErrorMessage = getAuthErrorMessage(auth_error);
-  const showResendPanel = Boolean(auth_error);
+  const legacyLinkError = isAuthLinkErrorMessage(error);
+  const resendErrorMessage = authErrorMessage ?? (legacyLinkError ? error : null);
+  const openResendByDefault = Boolean(auth_error || legacyLinkError);
   const successMessage =
     confirmed === "1"
       ? getAuthErrorMessage("confirmed")
@@ -77,13 +96,15 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             </p>
           ) : null}
 
-          {showResendPanel ? (
-            <AuthLinkErrorPanel defaultEmail={email ?? ""} />
-          ) : null}
+          <SignInResendSection
+            defaultEmail={email ?? ""}
+            defaultOpen={openResendByDefault}
+            errorMessage={resendErrorMessage}
+          />
 
-          {!showResendPanel && (authErrorMessage || error) ? (
+          {!openResendByDefault && error && !legacyLinkError ? (
             <p className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
-              {authErrorMessage ?? error}
+              {error}
             </p>
           ) : null}
 

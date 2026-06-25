@@ -27,6 +27,32 @@ function formatDate(value: string | null) {
   }).format(new Date(value));
 }
 
+function canShowResendInvitation(request: BookCallRequestRow) {
+  if (!isConversionComplete(request) || !request.email?.trim()) {
+    return false;
+  }
+
+  return Boolean(
+    request.organization_id &&
+      (request.invitation_status === "sent" ||
+        request.invitation_status === "failed" ||
+        request.invitation_status === "pending" ||
+        request.conversion_status === "invite_failed" ||
+        request.invitation_status === "not_required")
+  );
+}
+
+function getResendButtonLabel(request: BookCallRequestRow) {
+  if (
+    request.invitation_status === "sent" ||
+    request.last_invitation_attempt_at
+  ) {
+    return "Renvoyer l'email";
+  }
+
+  return "Envoyer l'invitation";
+}
+
 export function CallRequestConversionCard({
   request
 }: {
@@ -35,9 +61,11 @@ export function CallRequestConversionCard({
   const router = useRouter();
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [resendMessage, setResendMessage] = useState<string | null>(null);
+  const [resendTone, setResendTone] = useState<"success" | "error">("success");
   const [isResending, startResend] = useTransition();
   const converted = isConversionComplete(request);
   const canConvert = canConvertRequest(request);
+  const showResend = canShowResendInvitation(request);
 
   async function handleConvert() {
     const conversionResult = await convertCallRequestAction(request.id);
@@ -51,8 +79,12 @@ export function CallRequestConversionCard({
       const resendResult = await resendCallRequestInvitationAction(request.id);
 
       if (resendResult.status === "sent") {
-        setResendMessage(`Lien d'acces renvoye a ${resendResult.email}.`);
+        setResendTone("success");
+        setResendMessage(
+          "Email renvoye. Demandez au client de verifier sa boite de reception."
+        );
       } else {
+        setResendTone("error");
         setResendMessage(resendResult.errorMessage);
       }
 
@@ -102,6 +134,14 @@ export function CallRequestConversionCard({
                 {request.invitation_status ?? "inconnue"}
               </dd>
             </div>
+            {request.last_invitation_attempt_at ? (
+              <div className="sm:col-span-2">
+                <dt className="font-black text-[var(--foreground)]">Dernier renvoi</dt>
+                <dd className="mt-1 text-[var(--muted)]">
+                  {formatDate(request.last_invitation_attempt_at)}
+                </dd>
+              </div>
+            ) : null}
           </>
         ) : null}
       </dl>
@@ -142,7 +182,11 @@ export function CallRequestConversionCard({
       {resendMessage ? (
         <p
           aria-live="polite"
-          className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800"
+          className={`mt-4 rounded-2xl px-4 py-3 text-sm font-bold ${
+            resendTone === "success"
+              ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border border-red-200 bg-red-50 text-red-800"
+          }`}
           role="status"
         >
           {resendMessage}
@@ -181,28 +225,31 @@ export function CallRequestConversionCard({
           />
         ) : null}
 
+        {showResend ? (
+          <Button
+            className="w-full sm:w-auto"
+            disabled={isResending}
+            isLoading={isResending}
+            loadingText="Envoi en cours..."
+            onClick={handleResend}
+            type="button"
+            variant="primary"
+          >
+            {getResendButtonLabel(request)}
+          </Button>
+        ) : null}
+
         {converted && request.organization_id ? (
-          <ButtonLink href={`/admin/organizations/${request.organization_id}`} variant="secondary">
+          <ButtonLink
+            className="w-full sm:w-auto"
+            href={`/admin/organizations/${request.organization_id}`}
+            variant="secondary"
+          >
             Voir le client
           </ButtonLink>
         ) : null}
 
-        {converted &&
-        (request.invitation_status === "failed" ||
-          request.conversion_status === "invite_failed") ? (
-          <Button
-            disabled={isResending}
-            isLoading={isResending}
-            loadingText="Envoi..."
-            onClick={handleResend}
-            type="button"
-            variant="outline"
-          >
-            Renvoyer le lien d&apos;acces
-          </Button>
-        ) : null}
-
-        <ButtonLink href="/admin/call-requests" variant="outline">
+        <ButtonLink className="w-full sm:w-auto" href="/admin/call-requests" variant="outline">
           Retour aux demandes
         </ButtonLink>
       </div>

@@ -520,14 +520,90 @@ export async function resendCallRequestInvitation({
   }
 
   const email = request.email.trim().toLowerCase();
+
+  if (!email) {
+    return {
+      status: "failed",
+      errorCode: "missing_email",
+      errorMessage: "Aucun email d'invitation n'est associe a ce client."
+    };
+  }
+
+  if (
+    request.last_invitation_attempt_at &&
+    Date.now() - new Date(request.last_invitation_attempt_at).getTime() < 60_000
+  ) {
+    return {
+      status: "failed",
+      errorCode: "rate_limited",
+      errorMessage:
+        "Un email vient d'etre envoye. Reessayez dans une minute."
+    };
+  }
+
   const supabase = createSupabaseAdminClient();
   const existingUser = await findAuthUserByEmail(email);
 
   if (!existingUser) {
+    const redirectTo = buildInvitationRedirectUrl();
+    const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
+      redirectTo,
+      data: {
+        full_name: request.full_name,
+        business_name: request.business_name,
+        source: "call_request_conversion_resend"
+      }
+    });
+
+    if (error || !data.user) {
+      await supabase
+        .from("book_call_requests")
+        .update({
+          invitation_status: "failed",
+          last_invitation_attempt_at: new Date().toISOString(),
+          conversion_error_code: "invitation_resend_failed",
+          conversion_error_message: sanitizeErrorMessage(
+            error?.message ?? "Invitation impossible."
+          )
+        })
+        .eq("id", requestId);
+
+      return {
+        status: "failed",
+        errorCode: "invitation_resend_failed",
+        errorMessage: "Impossible de renvoyer l'email pour le moment."
+      };
+    }
+
+    const now = new Date().toISOString();
+    await supabase
+      .from("book_call_requests")
+      .update({
+        owner_user_id: data.user.id,
+        invitation_status: "sent",
+        invited_at: now,
+        last_invitation_attempt_at: now,
+        conversion_status: "completed",
+        conversion_error_code: null,
+        conversion_error_message: null
+      })
+      .eq("id", requestId);
+
+    await recordPlatformAdminAuditLog({
+      admin,
+      organizationId: request.organization_id,
+      action: "call_request.invitation_resent",
+      entityType: "book_call_requests",
+      entityId: request.id,
+      metadata: {
+        owner_user_id: data.user.id,
+        email
+      }
+    });
+
     return {
-      status: "failed",
-      errorCode: "user_not_found",
-      errorMessage: "Utilisateur proprietaire introuvable."
+      status: "sent",
+      email
     };
   }
 
@@ -560,7 +636,7 @@ export async function resendCallRequestInvitation({
     return {
       status: "failed",
       errorCode: "invitation_resend_failed",
-      errorMessage: sanitizeErrorMessage(sendResult.error.message)
+      errorMessage: "Impossible de renvoyer l'email pour le moment."
     };
   }
 
