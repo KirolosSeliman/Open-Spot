@@ -6,6 +6,12 @@ import { useState, useTransition } from "react";
 import { resendCompanyOwnerInvitationAction } from "@/lib/admin/owner-invitation-actions";
 import { Button } from "@/components/ui/button";
 
+const methodLabels = {
+  invite: "invitation",
+  recovery: "réinitialisation du mot de passe",
+  signup_resend: "confirmation de compte"
+} as const;
+
 export function ResendOwnerInvitationButton({
   disabled = false,
   organizationId,
@@ -17,6 +23,7 @@ export function ResendOwnerInvitationButton({
 }) {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
+  const [detail, setDetail] = useState<string | null>(null);
   const [tone, setTone] = useState<"success" | "error">("success");
   const [isPending, startTransition] = useTransition();
   const missingEmail = !ownerEmail?.trim();
@@ -24,22 +31,26 @@ export function ResendOwnerInvitationButton({
   function handleResend() {
     if (missingEmail) {
       setTone("error");
-      setMessage("Aucun courriel proprietaire n'est associe a cette compagnie.");
+      setDetail(null);
+      setMessage("Aucun courriel propriétaire n'est associé à cette compagnie.");
       return;
     }
 
     startTransition(async () => {
       setMessage(null);
+      setDetail(null);
+
       const result = await resendCompanyOwnerInvitationAction(organizationId);
 
-      if (result.status === "sent") {
+      if (result.ok) {
         setTone("success");
-        setMessage(
-          "Courriel renvoye. Demandez au proprietaire de verifier sa boite de reception."
+        setMessage(result.message);
+        setDetail(
+          `Envoyé à : ${result.sentTo}. Méthode : ${methodLabels[result.method]}.`
         );
       } else {
         setTone("error");
-        setMessage(result.errorMessage);
+        setMessage(result.message);
       }
 
       router.refresh();
@@ -49,13 +60,13 @@ export function ResendOwnerInvitationButton({
   return (
     <div className="mt-5 border-t border-[var(--line)] pt-5">
       <p className="text-xs font-black uppercase tracking-[0.12em] text-[var(--muted)]">
-        Invitation proprietaire
+        Invitation propriétaire
       </p>
       <Button
         className="mt-3 w-full sm:w-auto"
         disabled={disabled || isPending || missingEmail}
         isLoading={isPending}
-        loadingText="Envoi en cours..."
+        loadingText="Envoi en cours…"
         onClick={handleResend}
         type="button"
         variant="secondary"
@@ -63,7 +74,7 @@ export function ResendOwnerInvitationButton({
         Renvoyer le courriel
       </Button>
       {message ? (
-        <p
+        <div
           aria-live="polite"
           className={`mt-3 rounded-2xl px-4 py-3 text-sm font-bold ${
             tone === "success"
@@ -72,8 +83,9 @@ export function ResendOwnerInvitationButton({
           }`}
           role="status"
         >
-          {message}
-        </p>
+          <p>{message}</p>
+          {detail ? <p className="mt-2 text-xs font-semibold">{detail}</p> : null}
+        </div>
       ) : null}
     </div>
   );

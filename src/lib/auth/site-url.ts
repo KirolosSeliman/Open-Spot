@@ -1,11 +1,13 @@
 import { headers } from "next/headers";
 
 export function getConfiguredPublicSiteUrl() {
+  const vercelUrl = process.env.VERCEL_URL?.replace(/\/$/, "");
+
   return (
     process.env.NEXT_PUBLIC_SITE_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
     process.env.APP_BASE_URL ??
-    ""
+    (vercelUrl ? `https://${vercelUrl}` : "")
   ).replace(/\/$/, "");
 }
 

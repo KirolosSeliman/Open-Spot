@@ -3,18 +3,19 @@
 import { revalidatePath } from "next/cache";
 
 import { resendCompanyOwnerInvitation } from "@/lib/admin/owner-invitation";
-import type { ResendOwnerInvitationResult } from "@/lib/admin/owner-invitation";
+import type { ResendCompanyOwnerInvitationResult } from "@/lib/admin/owner-invitation";
 import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
 
 export async function resendCompanyOwnerInvitationAction(
   organizationId: string
-): Promise<ResendOwnerInvitationResult> {
+): Promise<ResendCompanyOwnerInvitationResult> {
   const access = await getCurrentPlatformAdminAccess();
 
   if (access.status !== "authorized") {
     return {
-      status: "failed",
-      errorMessage: "Vous n'avez pas l'autorisation de renvoyer ce courriel."
+      ok: false,
+      code: "unauthorized",
+      message: "Vous n'avez pas l'autorisation de renvoyer ce courriel."
     };
   }
 
