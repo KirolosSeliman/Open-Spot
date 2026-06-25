@@ -202,6 +202,13 @@ describe("SMS provider safety", () => {
     expect(ready.statusCallbackPathValid).toBe(true);
     expect(ready.statusCallbackDomainMatchesApp).toBe(true);
     expect(JSON.stringify(ready)).not.toContain("super-secret-token");
+    expect(getOpeningAlertModeCopy(ready)).toBe(
+      "Only customers who have opted in to SMS communications will be included in this alert."
+    );
+    expect(getOpeningAlertModeCopy(ready, "fr")).toBe(
+      "Seuls les clients ayant consenti aux communications SMS seront inclus dans cette alerte."
+    );
+    expect(getOpeningAlertModeCopy(ready)).not.toContain("Twilio mode");
   });
 
   it("reports Twilio delivery callback configuration problems safely", () => {

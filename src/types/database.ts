@@ -174,6 +174,105 @@ export type Database = {
         };
         Relationships: [];
       };
+      book_call_requests: {
+        Row: {
+          id: string;
+          locale: "fr" | "en";
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          business_type: string | null;
+          current_booking_system: string | null;
+          cancellation_volume: string | null;
+          preferred_time_message: string | null;
+          consent_sms_email: boolean;
+          status: "new" | "contacted" | "qualified" | "closed" | "spam" | "converted";
+          source_path: string;
+          source_url: string | null;
+          user_agent: string | null;
+          internal_notes: string | null;
+          created_at: string;
+          updated_at: string;
+          contacted_at: string | null;
+          conversion_status: string;
+          organization_id: string | null;
+          owner_user_id: string | null;
+          conversion_started_at: string | null;
+          converted_at: string | null;
+          converted_by: string | null;
+          invitation_status: string | null;
+          invited_at: string | null;
+          last_invitation_attempt_at: string | null;
+          conversion_error_code: string | null;
+          conversion_error_message: string | null;
+        };
+        Insert: {
+          id?: string;
+          locale?: "fr" | "en";
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          business_type?: string | null;
+          current_booking_system?: string | null;
+          cancellation_volume?: string | null;
+          preferred_time_message?: string | null;
+          consent_sms_email?: boolean;
+          status?: "new" | "contacted" | "qualified" | "closed" | "spam" | "converted";
+          source_path?: string;
+          source_url?: string | null;
+          user_agent?: string | null;
+          internal_notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          contacted_at?: string | null;
+          conversion_status?: string;
+          organization_id?: string | null;
+          owner_user_id?: string | null;
+          conversion_started_at?: string | null;
+          converted_at?: string | null;
+          converted_by?: string | null;
+          invitation_status?: string | null;
+          invited_at?: string | null;
+          last_invitation_attempt_at?: string | null;
+          conversion_error_code?: string | null;
+          conversion_error_message?: string | null;
+        };
+        Update: {
+          id?: string;
+          locale?: "fr" | "en";
+          full_name?: string;
+          business_name?: string;
+          email?: string;
+          phone?: string;
+          business_type?: string | null;
+          current_booking_system?: string | null;
+          cancellation_volume?: string | null;
+          preferred_time_message?: string | null;
+          consent_sms_email?: boolean;
+          status?: "new" | "contacted" | "qualified" | "closed" | "spam" | "converted";
+          source_path?: string;
+          source_url?: string | null;
+          user_agent?: string | null;
+          internal_notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          contacted_at?: string | null;
+          conversion_status?: string;
+          organization_id?: string | null;
+          owner_user_id?: string | null;
+          conversion_started_at?: string | null;
+          converted_at?: string | null;
+          converted_by?: string | null;
+          invitation_status?: string | null;
+          invited_at?: string | null;
+          last_invitation_attempt_at?: string | null;
+          conversion_error_code?: string | null;
+          conversion_error_message?: string | null;
+        };
+        Relationships: [];
+      };
       commission_records: {
         Row: {
           id: string;
@@ -417,6 +516,21 @@ export type Database = {
           organization_id: string;
           billing_status: string;
           subscription_status: string;
+          plan_name: string;
+          billing_interval: string;
+          payment_method: string;
+          external_payment_url: string | null;
+          external_customer_reference: string | null;
+          last_payment_at: string | null;
+          current_period_start: string | null;
+          current_period_end: string | null;
+          next_payment_due_at: string | null;
+          cancelled_at: string | null;
+          internal_notes: string | null;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          stripe_payment_link_id: string | null;
+          stripe_invoice_id: string | null;
           base_plan_amount_cents: number;
           base_plan_currency: string;
           default_commission_percent: number;
@@ -425,6 +539,7 @@ export type Database = {
           sms_monthly_limit: number;
           sms_sending_window_start: string;
           sms_sending_window_end: string;
+          sms_status: string;
           waitlist_public_enabled: boolean;
           created_at: string;
           updated_at: string;
@@ -434,6 +549,21 @@ export type Database = {
           organization_id: string;
           billing_status?: string;
           subscription_status?: string;
+          plan_name?: string;
+          billing_interval?: string;
+          payment_method?: string;
+          external_payment_url?: string | null;
+          external_customer_reference?: string | null;
+          last_payment_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          next_payment_due_at?: string | null;
+          cancelled_at?: string | null;
+          internal_notes?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          stripe_payment_link_id?: string | null;
+          stripe_invoice_id?: string | null;
           base_plan_amount_cents?: number;
           base_plan_currency?: string;
           default_commission_percent?: number;
@@ -442,6 +572,7 @@ export type Database = {
           sms_monthly_limit?: number;
           sms_sending_window_start?: string;
           sms_sending_window_end?: string;
+          sms_status?: string;
           waitlist_public_enabled?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -451,6 +582,21 @@ export type Database = {
           organization_id?: string;
           billing_status?: string;
           subscription_status?: string;
+          plan_name?: string;
+          billing_interval?: string;
+          payment_method?: string;
+          external_payment_url?: string | null;
+          external_customer_reference?: string | null;
+          last_payment_at?: string | null;
+          current_period_start?: string | null;
+          current_period_end?: string | null;
+          next_payment_due_at?: string | null;
+          cancelled_at?: string | null;
+          internal_notes?: string | null;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          stripe_payment_link_id?: string | null;
+          stripe_invoice_id?: string | null;
           base_plan_amount_cents?: number;
           base_plan_currency?: string;
           default_commission_percent?: number;
@@ -459,7 +605,164 @@ export type Database = {
           sms_monthly_limit?: number;
           sms_sending_window_start?: string;
           sms_sending_window_end?: string;
+          sms_status?: string;
           waitlist_public_enabled?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      billing_events: {
+        Row: {
+          id: string;
+          organization_id: string;
+          billing_id: string | null;
+          event_type: string;
+          old_status: string | null;
+          new_status: string | null;
+          amount_cents: number | null;
+          currency: string;
+          note: string | null;
+          created_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          billing_id?: string | null;
+          event_type: string;
+          old_status?: string | null;
+          new_status?: string | null;
+          amount_cents?: number | null;
+          currency?: string;
+          note?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          billing_id?: string | null;
+          event_type?: string;
+          old_status?: string | null;
+          new_status?: string | null;
+          amount_cents?: number | null;
+          currency?: string;
+          note?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      organization_onboarding_submissions: {
+        Row: {
+          id: string;
+          organization_id: string;
+          token_hash: string;
+          token_expires_at: string | null;
+          status: string;
+          business_name: string | null;
+          business_type: string | null;
+          booking_system: string | null;
+          business_address: string | null;
+          public_contact_email: string | null;
+          public_contact_phone: string | null;
+          responsible_name: string | null;
+          responsible_role: string | null;
+          responsible_email: string | null;
+          responsible_phone: string | null;
+          services: Json;
+          average_appointment_value_cents: number | null;
+          currency: string;
+          sms_language: Database["public"]["Enums"]["supported_language"];
+          sms_tone: string;
+          sms_sender_label: string | null;
+          sms_quiet_hours_start: string;
+          sms_quiet_hours_end: string;
+          client_notes: string | null;
+          consent_statement_accepted: boolean;
+          consent_responsible_name: string | null;
+          consent_accepted_at: string | null;
+          admin_notes: string | null;
+          requested_changes: string | null;
+          reviewed_by_platform_admin_id: string | null;
+          submitted_at: string | null;
+          reviewed_at: string | null;
+          completed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_id: string;
+          token_hash: string;
+          token_expires_at?: string | null;
+          status?: string;
+          business_name?: string | null;
+          business_type?: string | null;
+          booking_system?: string | null;
+          business_address?: string | null;
+          public_contact_email?: string | null;
+          public_contact_phone?: string | null;
+          responsible_name?: string | null;
+          responsible_role?: string | null;
+          responsible_email?: string | null;
+          responsible_phone?: string | null;
+          services?: Json;
+          average_appointment_value_cents?: number | null;
+          currency?: string;
+          sms_language?: Database["public"]["Enums"]["supported_language"];
+          sms_tone?: string;
+          sms_sender_label?: string | null;
+          sms_quiet_hours_start?: string;
+          sms_quiet_hours_end?: string;
+          client_notes?: string | null;
+          consent_statement_accepted?: boolean;
+          consent_responsible_name?: string | null;
+          consent_accepted_at?: string | null;
+          admin_notes?: string | null;
+          requested_changes?: string | null;
+          reviewed_by_platform_admin_id?: string | null;
+          submitted_at?: string | null;
+          reviewed_at?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          organization_id?: string;
+          token_hash?: string;
+          token_expires_at?: string | null;
+          status?: string;
+          business_name?: string | null;
+          business_type?: string | null;
+          booking_system?: string | null;
+          business_address?: string | null;
+          public_contact_email?: string | null;
+          public_contact_phone?: string | null;
+          responsible_name?: string | null;
+          responsible_role?: string | null;
+          responsible_email?: string | null;
+          responsible_phone?: string | null;
+          services?: Json;
+          average_appointment_value_cents?: number | null;
+          currency?: string;
+          sms_language?: Database["public"]["Enums"]["supported_language"];
+          sms_tone?: string;
+          sms_sender_label?: string | null;
+          sms_quiet_hours_start?: string;
+          sms_quiet_hours_end?: string;
+          client_notes?: string | null;
+          consent_statement_accepted?: boolean;
+          consent_responsible_name?: string | null;
+          consent_accepted_at?: string | null;
+          admin_notes?: string | null;
+          requested_changes?: string | null;
+          reviewed_by_platform_admin_id?: string | null;
+          submitted_at?: string | null;
+          reviewed_at?: string | null;
+          completed_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -528,6 +831,9 @@ export type Database = {
           role: Database["public"]["Enums"]["organization_role"];
           status: string;
           created_at: string;
+          invited_at: string | null;
+          joined_at: string | null;
+          created_by: string | null;
         };
         Insert: {
           id?: string;
@@ -537,6 +843,9 @@ export type Database = {
           role?: Database["public"]["Enums"]["organization_role"];
           status?: string;
           created_at?: string;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          created_by?: string | null;
         };
         Update: {
           id?: string;
@@ -546,6 +855,9 @@ export type Database = {
           role?: Database["public"]["Enums"]["organization_role"];
           status?: string;
           created_at?: string;
+          invited_at?: string | null;
+          joined_at?: string | null;
+          created_by?: string | null;
         };
         Relationships: [];
       };
@@ -560,6 +872,7 @@ export type Database = {
           default_language: Database["public"]["Enums"]["supported_language"];
           created_at: string;
           updated_at: string;
+          source_request_id: string | null;
         };
         Insert: {
           id?: string;
@@ -571,6 +884,7 @@ export type Database = {
           default_language?: Database["public"]["Enums"]["supported_language"];
           created_at?: string;
           updated_at?: string;
+          source_request_id?: string | null;
         };
         Update: {
           id?: string;
@@ -582,6 +896,7 @@ export type Database = {
           default_language?: Database["public"]["Enums"]["supported_language"];
           created_at?: string;
           updated_at?: string;
+          source_request_id?: string | null;
         };
         Relationships: [];
       };
@@ -1008,6 +1323,117 @@ export type Database = {
           filled_spot_percentage_bps?: number;
           notes?: string | null;
           updated_by_platform_admin_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      potential_clients: {
+        Row: {
+          id: string;
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          phone_normalized: string | null;
+          business_type: string;
+          preferred_contact_method: "sms" | "email" | "either";
+          message: string | null;
+          status:
+            | "new"
+            | "contacted"
+            | "call_booked"
+            | "qualified"
+            | "not_a_fit"
+            | "won"
+            | "lost"
+            | "archived";
+          source: string;
+          source_path: string | null;
+          consent_to_contact: boolean;
+          consent_text: string;
+          consented_at: string;
+          consent_ip: string | null;
+          consent_user_agent: string | null;
+          confirmation_email_sent_at: string | null;
+          confirmation_email_status: "pending" | "sent" | "failed" | "skipped" | null;
+          owner_notification_sent_at: string | null;
+          owner_notification_status: "pending" | "sent" | "failed" | "skipped" | null;
+          last_contacted_at: string | null;
+          last_contact_channel: "sms" | "email" | "phone" | "other" | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          phone_normalized?: string | null;
+          business_type: string;
+          preferred_contact_method: "sms" | "email" | "either";
+          message?: string | null;
+          status?:
+            | "new"
+            | "contacted"
+            | "call_booked"
+            | "qualified"
+            | "not_a_fit"
+            | "won"
+            | "lost"
+            | "archived";
+          source?: string;
+          source_path?: string | null;
+          consent_to_contact: boolean;
+          consent_text: string;
+          consented_at: string;
+          consent_ip?: string | null;
+          consent_user_agent?: string | null;
+          confirmation_email_sent_at?: string | null;
+          confirmation_email_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          owner_notification_sent_at?: string | null;
+          owner_notification_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          last_contacted_at?: string | null;
+          last_contact_channel?: "sms" | "email" | "phone" | "other" | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          full_name?: string;
+          business_name?: string;
+          email?: string;
+          phone?: string;
+          phone_normalized?: string | null;
+          business_type?: string;
+          preferred_contact_method?: "sms" | "email" | "either";
+          message?: string | null;
+          status?:
+            | "new"
+            | "contacted"
+            | "call_booked"
+            | "qualified"
+            | "not_a_fit"
+            | "won"
+            | "lost"
+            | "archived";
+          source?: string;
+          source_path?: string | null;
+          consent_to_contact?: boolean;
+          consent_text?: string;
+          consented_at?: string;
+          consent_ip?: string | null;
+          consent_user_agent?: string | null;
+          confirmation_email_sent_at?: string | null;
+          confirmation_email_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          owner_notification_sent_at?: string | null;
+          owner_notification_status?: "pending" | "sent" | "failed" | "skipped" | null;
+          last_contacted_at?: string | null;
+          last_contact_channel?: "sms" | "email" | "phone" | "other" | null;
+          notes?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -1462,6 +1888,57 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      admin_update_manual_billing_status: {
+        Args: {
+          target_organization_id: string;
+          target_billing_status: string;
+          target_event_type: string;
+          target_admin_id: string;
+          target_note?: string | null;
+        };
+        Returns: string;
+      };
+      admin_update_manual_billing_plan: {
+        Args: {
+          target_organization_id: string;
+          target_admin_id: string;
+          target_plan_name: string;
+          target_amount_cents: number;
+          target_currency: string;
+          target_billing_interval: string;
+          target_payment_method: string;
+          target_external_payment_url?: string | null;
+          target_external_customer_reference?: string | null;
+          target_internal_notes?: string | null;
+          target_stripe_customer_id?: string | null;
+          target_stripe_subscription_id?: string | null;
+          target_stripe_payment_link_id?: string | null;
+          target_stripe_invoice_id?: string | null;
+        };
+        Returns: string;
+      };
+      admin_bootstrap_organization_from_call_request: {
+        Args: {
+          p_request_id: string;
+          p_owner_user_id: string;
+          p_organization_name: string;
+          p_organization_slug: string;
+          p_organization_email: string;
+          p_organization_phone: string;
+          p_organization_timezone: string;
+          p_organization_default_language: Database["public"]["Enums"]["supported_language"];
+          p_business_type: string;
+          p_booking_system: string;
+          p_created_by: string;
+        };
+        Returns: string;
+      };
+      claim_book_call_request_conversion: {
+        Args: {
+          p_request_id: string;
+        };
+        Returns: Json;
+      };
       create_organization_with_owner: {
         Args: {
           organization_name: string;

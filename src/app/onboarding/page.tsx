@@ -1,8 +1,7 @@
 import { PageShell } from "@/components/layout/page-shell";
-import { PhoneInput } from "@/components/forms/phone-input";
-import { SectionHeading } from "@/components/marketing/section-heading";
-import { Button } from "@/components/ui/button";
+import { OrganizationOnboardingForm } from "@/components/onboarding/organization-onboarding-form";
 import { Card } from "@/components/ui/card";
+import { getRequestLocale } from "@/lib/i18n/locale";
 import { createOrganizationAction } from "@/lib/organization/actions";
 import { requireOrganizationOnboardingUser } from "@/lib/organization/current";
 
@@ -12,100 +11,56 @@ type OnboardingPageProps = {
   }>;
 };
 
+const onboardingCopy = {
+  fr: {
+    eyebrow: "Configuration",
+    title: "Configurez votre commerce.",
+    description:
+      "Cet espace possédera les services, clients, inscriptions à la liste d’attente, ouvertures, journaux SMS et rapports.",
+    checklistTitle: "À préserver dès le départ",
+    checklist: ["Nom public clair", "Langue par défaut", "Téléphone et email du commerce", "URL de liste d’attente stable"]
+  },
+  en: {
+    eyebrow: "Setup",
+    title: "Configure your business.",
+    description:
+      "This workspace owns services, customers, waitlist entries, openings, SMS logs, and reports.",
+    checklistTitle: "Preserve from day one",
+    checklist: ["Clear public name", "Default language", "Business phone and email", "Stable waitlist URL"]
+  }
+} as const;
+
 export default async function OnboardingPage({
   searchParams
 }: OnboardingPageProps) {
   await requireOrganizationOnboardingUser();
+  const locale = await getRequestLocale();
+  const t = onboardingCopy[locale];
   const { error } = await searchParams;
 
   return (
     <PageShell>
-      <section className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
-        <SectionHeading
-          description="Create the organization workspace that will own services, customers, waitlist entries, openings, SMS logs, and reports."
-          eyebrow="Organization onboarding"
-          title="Set up your merchant workspace."
-        />
-        <Card className="mt-8">
-          {error ? (
-            <p className="mb-4 rounded-md border border-[#f2b8b5] bg-[#fdebea] p-3 text-sm text-[#8a1f17]">
-              {error}
-            </p>
-          ) : null}
-          <form action={createOrganizationAction} className="grid gap-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="grid gap-2 text-sm font-semibold" htmlFor="name">
-                Business name
-                <input
-                  className="min-h-11 rounded-md border border-[var(--line)] px-3"
-                  id="name"
-                  name="name"
-                  required
-                />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold" htmlFor="slug">
-                Slug
-                <input
-                  className="min-h-11 rounded-md border border-[var(--line)] px-3"
-                  id="slug"
-                  name="slug"
-                  placeholder="auto-generated if empty"
-                />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold" htmlFor="email">
-                Business email
-                <input
-                  className="min-h-11 rounded-md border border-[var(--line)] px-3"
-                  id="email"
-                  name="email"
-                  type="email"
-                />
-              </label>
-              <label className="grid gap-2 text-sm font-semibold" htmlFor="phone">
-                Business phone
-                <PhoneInput
-                  className="min-h-11 rounded-md border border-[var(--line)] px-3"
-                  id="phone"
-                  name="phone"
-                />
-                <span className="text-xs font-normal text-[var(--muted)]">
-                  Le +1 sera ajoute automatiquement.
-                </span>
-              </label>
-              <label
-                className="grid gap-2 text-sm font-semibold"
-                htmlFor="timezone"
-              >
-                Timezone
-                <select
-                  className="min-h-11 rounded-md border border-[var(--line)] px-3"
-                  defaultValue="America/Toronto"
-                  id="timezone"
-                  name="timezone"
-                >
-                  <option value="America/Toronto">America/Toronto</option>
-                  <option value="America/Montreal">America/Montreal</option>
-                </select>
-              </label>
-              <label
-                className="grid gap-2 text-sm font-semibold"
-                htmlFor="defaultLanguage"
-              >
-                Default language
-                <select
-                  className="min-h-11 rounded-md border border-[var(--line)] px-3"
-                  defaultValue="fr"
-                  id="defaultLanguage"
-                  name="defaultLanguage"
-                >
-                  <option value="fr">Francais</option>
-                  <option value="en">English</option>
-                </select>
-              </label>
+      <section className="os-container-wide grid gap-8 py-12 sm:py-16 lg:grid-cols-[0.82fr_1.18fr] lg:items-start lg:py-24">
+        <div>
+          <p className="os-kicker">{t.eyebrow}</p>
+          <h1 className="os-page-title mt-5">{t.title}</h1>
+          <p className="os-body-large mt-6">{t.description}</p>
+          <Card className="mt-8 p-5">
+            <h2 className="text-xl font-black">{t.checklistTitle}</h2>
+            <div className="mt-5 grid gap-3">
+              {t.checklist.map((item) => (
+                <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700" key={item}>
+                  {item}
+                </div>
+              ))}
             </div>
-            <Button type="submit">Create organization</Button>
-          </form>
-        </Card>
+          </Card>
+        </div>
+        <OrganizationOnboardingForm
+          action={createOrganizationAction}
+          error={error}
+          locale={locale}
+        />
       </section>
     </PageShell>
   );

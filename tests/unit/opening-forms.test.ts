@@ -19,6 +19,7 @@ describe("opening creation form", () => {
         serviceId: "service_1",
         startTime: "2026-06-01T14:00",
         endTime: "2026-06-01T14:45",
+        estimatedValueCents: null,
         offerLabel: null,
         internalNote: null
       }

@@ -53,7 +53,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <label className="grid gap-2 text-sm font-bold md:col-span-2">
             Nom
             <input
-              className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
               name="name"
               required
             />
@@ -61,7 +61,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <label className="grid gap-2 text-sm font-bold">
             Durée (min)
             <input
-              className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
               min="1"
               name="durationMinutes"
               required
@@ -71,7 +71,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <label className="grid gap-2 text-sm font-bold">
             Prix
             <input
-              className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
               min="0"
               name="normalPrice"
               step="0.01"
@@ -81,12 +81,12 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           <label className="grid gap-2 text-sm font-bold md:col-span-4">
             Description
             <input
-              className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+              className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
               name="description"
             />
           </label>
           <button
-            className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+            className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
             type="submit"
           >
             Ajouter le service
@@ -123,7 +123,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                       <label className="grid gap-1 text-xs font-bold">
                         Nom
                         <input
-                          className="min-h-10 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
+                          className="min-h-10 rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
                           defaultValue={service.name}
                           name="name"
                           required
@@ -132,7 +132,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                       <label className="grid gap-1 text-xs font-bold">
                         Description
                         <input
-                          className="min-h-10 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
+                          className="min-h-10 rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
                           defaultValue={service.description ?? ""}
                           name="description"
                         />
@@ -143,7 +143,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                     <label className="grid gap-1 text-xs font-bold">
                       Durée (min)
                       <input
-                        className="min-h-10 w-24 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
+                        className="min-h-10 w-24 rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
                         defaultValue={service.duration_minutes}
                         form={`service-update-${service.id}`}
                         min="1"
@@ -157,7 +157,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                     <label className="grid gap-1 text-xs font-bold">
                       CAD
                       <input
-                        className="min-h-10 w-28 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
+                        className="min-h-10 w-28 rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
                         defaultValue={
                           service.normal_price_cents === null
                             ? ""
@@ -180,7 +180,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                   <td className={tableCellClass}>
                     <div className="flex flex-wrap gap-2">
                       <button
-                        className="min-h-10 rounded-full bg-[var(--primary)] px-4 text-xs font-black text-white"
+                        className="min-h-10 rounded-full bg-[var(--primary)] px-4 text-xs font-black text-white shadow-[0_10px_20px_rgba(79,125,243,0.18)] transition hover:bg-[var(--primary-strong)]"
                         form={`service-update-${service.id}`}
                         type="submit"
                       >

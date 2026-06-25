@@ -118,6 +118,10 @@ const appointmentStatusReminderFlagsPath = join(
   migrationDirectory,
   "20260531151706_appointment_status_and_reminder_flags.sql"
 );
+const manualBillingPath = join(
+  migrationDirectory,
+  "20260624123000_add_manual_billing.sql"
+);
 const allMigrationFiles = readdirSync(migrationDirectory)
   .filter((fileName) => fileName.endsWith(".sql"))
   .sort();
@@ -525,12 +529,11 @@ describe("phase 2 migration safety", () => {
     expect(sourceVariantMigration).not.toMatch(/\bdrop table\b/i);
     expect(sourceVariantMigration).not.toMatch(/\btruncate\b/i);
     expect(sourceVariantMigration).not.toMatch(/\bdelete\s+from\b/i);
-    const functionArguments = sourceVariantMigration.slice(
-      sourceVariantMigration.indexOf(
-        "create or replace function public.register_waitlist_signup"
-      ),
-      sourceVariantMigration.indexOf(")\nreturns uuid")
+    const signatureMatch = sourceVariantMigration.match(
+      /create or replace function public\.register_waitlist_signup\(([\s\S]*?)\)\s+returns uuid/i
     );
+    const functionArguments = signatureMatch?.[1] ?? "";
+
     expect(functionArguments).not.toContain("organization_id");
   });
 
@@ -943,5 +946,37 @@ describe("phase 2 migration safety", () => {
     expect(statusSql).not.toMatch(
       /\bdelete\s+from\s+public\.(?:appointments|scheduled_messages|appointment_events)\b/i
     );
+  });
+
+  it("adds manual billing without allowing merchant-side billing mutations", () => {
+    expect(existsSync(manualBillingPath)).toBe(true);
+
+    const billingSql = readFileSync(manualBillingPath, "utf8");
+
+    expect(billingSql).toContain("add column if not exists plan_name");
+    expect(billingSql).toContain("add column if not exists external_payment_url");
+    expect(billingSql).toContain("stripe_customer_id");
+    expect(billingSql).toContain(
+      "create table if not exists public.billing_events"
+    );
+    expect(billingSql).toContain(
+      "create or replace function public.admin_update_manual_billing_status"
+    );
+    expect(billingSql).toContain(
+      "create or replace function public.admin_update_manual_billing_plan"
+    );
+    expect(billingSql).toContain(
+      "revoke insert, update on public.organization_billing_settings from authenticated"
+    );
+    expect(billingSql).toContain(
+      "from public, anon, authenticated"
+    );
+    expect(billingSql).toContain("to service_role");
+    expect(billingSql).toContain(
+      'drop policy if exists "owners and managers can update billing settings"'
+    );
+    expect(billingSql).toContain("external_payment_url ~* '^https://");
+    expect(billingSql).not.toMatch(/\bdrop\s+table\b/i);
+    expect(billingSql).not.toMatch(/\btruncate\b/i);
   });
 });

@@ -6,12 +6,18 @@ const badgeClasses: Record<ConsentStatus, string> = {
   opted_out: "bg-[#fde2e2] text-[#9f1d1d]"
 };
 
+const badgeLabels: Record<ConsentStatus, string> = {
+  opted_in: "Consentement confirmé",
+  needs_consent: "Consentement requis",
+  opted_out: "Désinscrit"
+};
+
 export function ConsentBadge({ status }: { status: ConsentStatus }) {
   return (
     <span
       className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${badgeClasses[status]}`}
     >
-      {status.replace("_", " ")}
+      {badgeLabels[status]}
     </span>
   );
 }

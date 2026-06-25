@@ -15,6 +15,7 @@ export const metadata = {
 const adminNav = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/organizations", label: "Companies" },
+  { href: "/admin/call-requests", label: "Call Requests" },
   { href: "/admin/sms", label: "SMS" },
   { href: "/admin/replies", label: "Replies" },
   { href: "/admin/compliance", label: "Compliance" },
@@ -36,7 +37,7 @@ export default async function AdminLayout({
         };
 
   return (
-    <div className="min-h-screen bg-[#f7f5ef] text-[var(--foreground)]">
+    <div className="open-spot-dashboard-theme min-h-screen bg-[#f7f5ef] text-[var(--foreground)]">
       <div className="mx-auto flex w-full max-w-[1500px] gap-6 px-3 py-3 lg:px-5">
         <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-[var(--line)] bg-white/90 p-4 shadow-[0_24px_70px_rgba(36,54,66,0.08)] lg:flex lg:flex-col">
           <Link
@@ -100,9 +101,9 @@ export default async function AdminLayout({
                 </Link>
                 <Link
                   className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black"
-                  href="/admin/sms"
+                  href="/admin/call-requests"
                 >
-                  SMS
+                  Calls
                 </Link>
                 <Link
                   className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black"

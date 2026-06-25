@@ -16,7 +16,11 @@ export const serverOnlyEnvKeys = [
   "TWILIO_SOURCE_NUMBER",
   "TWILIO_STATUS_CALLBACK_URL",
   "CRON_SECRET",
-  "SIMULATOR_WEBHOOK_SECRET"
+  "SIMULATOR_WEBHOOK_SECRET",
+  "RESEND_API_KEY",
+  "SALES_FROM_EMAIL",
+  "SALES_REPLY_TO_EMAIL",
+  "SALES_OWNER_EMAIL"
 ] as const;
 
 export type SmsProvider = "simulator" | "plivo" | "twilio";

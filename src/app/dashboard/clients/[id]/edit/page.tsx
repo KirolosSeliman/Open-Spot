@@ -77,6 +77,17 @@ function formatDeletedAt(value: string | null) {
   }).format(new Date(value));
 }
 
+function formatConsentStatus(status: string | null | undefined) {
+  const labels: Record<string, string> = {
+    missing: "Consentement requis",
+    needs_consent: "Consentement requis",
+    opted_in: "Consentement confirmé",
+    opted_out: "Désinscrit"
+  };
+
+  return labels[status ?? ""] ?? status ?? "Consentement requis";
+}
+
 function Feedback({
   error,
   message,
@@ -179,7 +190,9 @@ export default async function EditClientPage({
               <div>
                 <dt className="font-bold text-[var(--muted)]">Consentement</dt>
                 <dd>
-                  <StatusBadge>{customer.consentStatus}</StatusBadge>
+                  <StatusBadge>
+                    {formatConsentStatus(customer.consentStatus)}
+                  </StatusBadge>
                 </dd>
               </div>
             </dl>
@@ -255,9 +268,9 @@ export default async function EditClientPage({
                 }
                 name="consentStatus"
               >
-                <option value="needs_consent">Needs consent</option>
-                <option value="opted_in">Opted in</option>
-                <option value="opted_out">Opted out</option>
+                <option value="needs_consent">Consentement requis</option>
+                <option value="opted_in">Consentement confirmé</option>
+                <option value="opted_out">Désinscrit</option>
               </select>
             </label>
             <label className="flex items-end gap-2 text-sm font-bold">

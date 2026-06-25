@@ -18,6 +18,8 @@ describe("environment configuration", () => {
     expect(serverOnlyEnvKeys).toContain("PLIVO_AUTH_TOKEN");
     expect(serverOnlyEnvKeys).toContain("TWILIO_AUTH_TOKEN");
     expect(serverOnlyEnvKeys).toContain("TWILIO_MESSAGING_SERVICE_SID");
+    expect(serverOnlyEnvKeys).toContain("RESEND_API_KEY");
+    expect(serverOnlyEnvKeys).toContain("SALES_OWNER_EMAIL");
     expect(clientEnvKeys).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(clientEnvKeys).not.toContain("ALLOW_REAL_SMS_SENDS");
     expect(clientEnvKeys).not.toContain("CRON_SECRET");
@@ -25,6 +27,8 @@ describe("environment configuration", () => {
     expect(clientEnvKeys).not.toContain("PLIVO_AUTH_TOKEN");
     expect(clientEnvKeys).not.toContain("TWILIO_AUTH_TOKEN");
     expect(clientEnvKeys).not.toContain("TWILIO_MESSAGING_SERVICE_SID");
+    expect(clientEnvKeys).not.toContain("RESEND_API_KEY");
+    expect(clientEnvKeys).not.toContain("SALES_OWNER_EMAIL");
   });
 
   it("documents Supabase env placeholders without public service-role naming", () => {
@@ -42,6 +46,10 @@ describe("environment configuration", () => {
     expect(envExample).toContain("TWILIO_MESSAGING_SERVICE_SID=");
     expect(envExample).toContain("TWILIO_SOURCE_NUMBER=");
     expect(envExample).toContain("TWILIO_STATUS_CALLBACK_URL=");
+    expect(envExample).toContain("RESEND_API_KEY=");
+    expect(envExample).toContain("SALES_FROM_EMAIL=");
+    expect(envExample).toContain("SALES_REPLY_TO_EMAIL=");
+    expect(envExample).toContain("SALES_OWNER_EMAIL=");
     expect(envExample).toContain(
       "APP_BASE_URL=https://your-production-domain.com"
     );

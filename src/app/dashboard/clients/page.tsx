@@ -48,6 +48,17 @@ function formatConsentRequestStatus(status: string | null | undefined) {
   return labels[status] ?? status;
 }
 
+function formatConsentStatus(status: string | null | undefined) {
+  const labels: Record<string, string> = {
+    missing: "Consentement requis",
+    needs_consent: "Consentement requis",
+    opted_in: "Consentement confirmé",
+    opted_out: "Désinscrit"
+  };
+
+  return labels[status ?? ""] ?? status ?? "Consentement requis";
+}
+
 function formatDeletedAt(value: string | null) {
   if (!value) {
     return "Date inconnue";
@@ -116,8 +127,8 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
         <Link
           className={`inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-black ${
             tab === "active"
-              ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-              : "border-[var(--line)] bg-white text-[var(--foreground)]"
+              ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
+              : "border-[var(--line)] bg-white text-[var(--foreground)] hover:bg-slate-50"
           }`}
           href="/dashboard/clients?tab=active"
         >
@@ -126,8 +137,8 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
         <Link
           className={`inline-flex min-h-10 items-center justify-center rounded-full border px-4 text-sm font-black ${
             tab === "deleted"
-              ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-              : "border-[var(--line)] bg-white text-[var(--foreground)]"
+              ? "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
+              : "border-[var(--line)] bg-white text-[var(--foreground)] hover:bg-slate-50"
           }`}
           href="/dashboard/clients?tab=deleted"
         >
@@ -141,7 +152,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Nom complet
               <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="fullName"
                 required
               />
@@ -155,7 +166,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Email
               <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="email"
                 type="email"
               />
@@ -163,7 +174,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold">
               Langue
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue="fr"
                 name="preferredLanguage"
               >
@@ -174,13 +185,13 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Consentement SMS
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 defaultValue="needs_consent"
                 name="consentStatus"
               >
-                <option value="needs_consent">Needs consent</option>
-                <option value="opted_in">Opted in</option>
-                <option value="opted_out">Opted out</option>
+                <option value="needs_consent">Consentement requis</option>
+                <option value="opted_in">Consentement confirmé</option>
+                <option value="opted_out">Désinscrit</option>
               </select>
               <span className="text-xs font-semibold leading-5 text-[var(--muted)]">
                 Une demande de consentement sera envoyée automatiquement par SMS.
@@ -194,7 +205,7 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Intérêt de service
               <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="serviceId"
               >
                 <option value="">Tous les services</option>
@@ -212,12 +223,12 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
               Notes
               <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
                 name="notes"
               />
             </label>
             <button
-              className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
+              className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
               type="submit"
             >
               Ajouter le client
@@ -264,7 +275,9 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                         {customer.preferred_language.toUpperCase()}
                       </td>
                       <td className={tableCellClass}>
-                        <StatusBadge>{customer.consentStatus}</StatusBadge>
+                        <StatusBadge>
+                          {formatConsentStatus(customer.consentStatus)}
+                        </StatusBadge>
                       </td>
                       <td className={tableCellClass}>
                         {formatConsentRequestStatus(
@@ -335,7 +348,9 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
                         {customer.deleted_reason ?? "Non précisée"}
                       </td>
                       <td className={tableCellClass}>
-                        <StatusBadge>{customer.consentStatus}</StatusBadge>
+                        <StatusBadge>
+                          {formatConsentStatus(customer.consentStatus)}
+                        </StatusBadge>
                       </td>
                       <td className={tableCellClass}>
                         <div className="flex flex-col gap-2 sm:flex-row">
@@ -389,3 +404,4 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
     </div>
   );
 }
+

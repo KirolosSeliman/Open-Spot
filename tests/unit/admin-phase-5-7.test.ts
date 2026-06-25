@@ -114,6 +114,23 @@ describe("admin phase 5 to 7 helpers", () => {
     ).toBe(true);
   });
 
+  it("surfaces failed scheduled reminders in the admin overview", () => {
+    const adminPage = readFileSync(
+      join(process.cwd(), "src", "app", "admin", "page.tsx"),
+      "utf8"
+    );
+    const adminOrganizations = readFileSync(
+      join(process.cwd(), "src", "lib", "admin", "organizations.ts"),
+      "utf8"
+    );
+
+    expect(adminOrganizations).toContain("failedScheduledMessagesCount");
+    expect(adminOrganizations).toContain('.from("scheduled_messages")');
+    expect(adminOrganizations).toContain('.eq("status", "failed")');
+    expect(adminPage).toContain("Failed reminders");
+    expect(adminPage).toContain("overview.failedScheduledMessagesCount");
+  });
+
   it("adds diagnostics, compliance, and controls tables safely", () => {
     const sql = readFileSync(migrationPath, "utf8");
 

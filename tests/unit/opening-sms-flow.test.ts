@@ -64,8 +64,10 @@ describe("opening SMS flow", () => {
     expect(cancellationDetailPage).toContain("pendingOffers.length > 0");
     expect(cancellationDetailPage).toContain("smsStatus.canSendOpeningAlerts");
     expect(cancellationDetailPage).toContain("deliveryHistoryWarning");
-    expect(cancellationDetailPage).toContain("SMS alert already sent to eligible clients.");
-    expect(cancellationDetailPage).toContain("SMS sending failed:");
+    expect(cancellationDetailPage).toContain(
+      "The SMS alert has already been sent to eligible customers."
+    );
+    expect(cancellationDetailPage).toContain("SMS sending failed");
     expect(cancellationDetailPage).not.toContain("Simulate reply");
     expect(cancellationDetailPage).not.toContain("simulateReplyAction");
   });
@@ -97,6 +99,8 @@ describe("opening SMS flow", () => {
     expect(newCancellationPage).toContain("smsBlockingReasons");
     expect(dashboardActions).toContain("checkSmsDeliveryPersistenceReadiness");
     expect(dashboardActions).toContain("smsPersistence.blockingReasons.join");
+    expect(dashboardActions).toContain("loadOrganizationSmsReadiness");
+    expect(dashboardActions).toContain("organizationSmsReadiness.canSendSms");
   });
 
   it("records an audit log when an opening prepares an eligible audience", () => {

@@ -1,4 +1,6 @@
 import { getSmsProvider, type SmsProvider } from "@/lib/env/config";
+import { dashboardCopy } from "@/lib/i18n/dashboard-copy";
+import type { Locale } from "@/lib/i18n/types";
 
 type EnvSource = Partial<Record<string, string | undefined>>;
 
@@ -141,32 +143,42 @@ export function getSmsRuntimeStatus(
   };
 }
 
-export function getOpeningAlertButtonLabel(status: SmsRuntimeStatus) {
+export function getOpeningAlertButtonLabel(
+  status: SmsRuntimeStatus,
+  locale: Locale = "en"
+) {
+  const copy = dashboardCopy[locale].smsRuntime;
+
   if (status.selectedProvider === "twilio" && status.canSendOpeningAlerts) {
-    return "Send SMS alert";
+    return copy.sendAlert;
   }
 
   if (status.selectedProvider === "simulator") {
-    return "Send SMS alert";
+    return copy.sendAlert;
   }
 
-  return "SMS unavailable";
+  return copy.unavailable;
 }
 
-export function getOpeningAlertModeCopy(status: SmsRuntimeStatus) {
+export function getOpeningAlertModeCopy(
+  status: SmsRuntimeStatus,
+  locale: Locale = "en"
+) {
+  const copy = dashboardCopy[locale].smsRuntime;
+
   if (status.selectedProvider === "twilio") {
     return status.canSendOpeningAlerts
-      ? "Twilio mode: real SMS will be sent to opted-in eligible clients."
-      : `Twilio mode is not ready: ${status.blockingReasons.join(" ")}`;
+      ? copy.ready
+      : copy.notReady(status.blockingReasons.join(" "));
   }
 
   if (status.selectedProvider === "plivo") {
-    return "Plivo is not implemented yet.";
+    return copy.plivoUnavailable;
   }
 
   if (!status.canSendOpeningAlerts) {
     return "SMS provider is not configured for production.";
   }
 
-  return "Simulation mode: no real SMS will be sent.";
+  return copy.simulation;
 }

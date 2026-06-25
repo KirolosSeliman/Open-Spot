@@ -1,11 +1,6 @@
 import Link from "next/link";
 
 import {
-  createAppointmentAction,
-  updateAppointmentAction
-} from "@/lib/dashboard/actions";
-import { loadAppointmentWorkspace } from "@/lib/dashboard/operations-data";
-import {
   DashboardPageHeader,
   EmptyState,
   Panel,
@@ -14,6 +9,14 @@ import {
   tableCellClass,
   tableHeadClass
 } from "@/components/dashboard/dashboard-ui";
+import {
+  createAppointmentAction,
+  updateAppointmentAction
+} from "@/lib/dashboard/actions";
+import { loadAppointmentWorkspace } from "@/lib/dashboard/operations-data";
+import { getDashboardCopy, intlLocale } from "@/lib/i18n/dashboard-copy";
+import { getRequestLocale } from "@/lib/i18n/locale";
+import type { Locale } from "@/lib/i18n/types";
 
 type AppointmentsPageProps = {
   searchParams: Promise<{
@@ -22,22 +25,6 @@ type AppointmentsPageProps = {
     status?: string;
   }>;
 };
-
-const rangeFilters = [
-  { label: "Tous", value: "all" },
-  { label: "Aujourd'hui", value: "today" },
-  { label: "Demain", value: "tomorrow" },
-  { label: "7 jours", value: "next_7_days" }
-];
-
-const statusFilters = [
-  { label: "Tous", value: "all" },
-  { label: "Planifiés", value: "scheduled" },
-  { label: "Confirmés", value: "confirmed" },
-  { label: "Annulés", value: "cancelled" },
-  { label: "Terminés", value: "completed" },
-  { label: "No-show", value: "no_show" }
-];
 
 function toDateTimeLocal(value: string | null) {
   if (!value) {
@@ -54,54 +41,44 @@ function toDateTimeLocal(value: string | null) {
   return offsetDate.toISOString().slice(0, 16);
 }
 
-function formatAppointmentTime(value: string) {
-  return new Intl.DateTimeFormat("fr-CA", {
+function formatAppointmentTime(value: string, locale: Locale) {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     dateStyle: "medium",
     timeStyle: "short"
   }).format(new Date(value));
 }
 
-function formatAppointmentStatus(status: string) {
-  if (status === "cancelled") {
-    return "Annulé";
-  }
-
-  if (status === "confirmed") {
-    return "Confirmé";
-  }
-
-  if (status === "completed") {
-    return "Terminé";
-  }
-
-  if (status === "no_show") {
-    return "No-show";
-  }
-
-  return "Planifié";
+function formatAppointmentStatus(status: string, locale: Locale) {
+  const statuses = getDashboardCopy(locale).appointments.statuses;
+  return statuses[status as keyof typeof statuses] ?? status;
 }
 
-function formatReminderState(appointment: {
-  reminder_24h_enabled: boolean;
-  reminder_status: string;
-}) {
+function formatReminderState(
+  appointment: {
+    reminder_24h_enabled: boolean;
+    reminder_status: string;
+  },
+  locale: Locale
+) {
+  const states = getDashboardCopy(locale).appointments.reminderStates;
+
   if (!appointment.reminder_24h_enabled) {
-    return "Rappel desactive";
+    return states.disabled;
   }
 
   if (appointment.reminder_status === "sent") {
-    return "Rappel envoye";
+    return states.sent;
   }
 
   if (appointment.reminder_status === "scheduled") {
-    return "Rappel 24 h actif";
+    return states.scheduled;
   }
 
   if (appointment.reminder_status === "failed") {
-    return "Rappel en erreur";
+    return states.failed;
   }
 
-  return "Rappel 24 h demande";
+  return states.requested;
 }
 
 function buildFilterHref({
@@ -128,7 +105,8 @@ function buildFilterHref({
 export default async function AppointmentsPage({
   searchParams
 }: AppointmentsPageProps) {
-  const params = await searchParams;
+  const [params, locale] = await Promise.all([searchParams, getRequestLocale()]);
+  const copy = getDashboardCopy(locale);
   const activeRange = params.range ?? "all";
   const activeStatus = params.status ?? "all";
   const { appointments, customers, services, settings, timezone } =
@@ -141,15 +119,29 @@ export default async function AppointmentsPage({
   );
   const activeServices = services.filter((service) => service.active);
   const reminderEnabled = Boolean(settings?.appointment_reminders_enabled);
+  const rangeFilters = [
+    { label: copy.appointments.ranges.all, value: "all" },
+    { label: copy.appointments.ranges.today, value: "today" },
+    { label: copy.appointments.ranges.tomorrow, value: "tomorrow" },
+    { label: copy.appointments.ranges.next_7_days, value: "next_7_days" }
+  ];
+  const statusFilters = [
+    { label: copy.appointments.statuses.all, value: "all" },
+    { label: copy.appointments.statuses.scheduled, value: "scheduled" },
+    { label: copy.appointments.statuses.confirmed, value: "confirmed" },
+    { label: copy.appointments.statuses.cancelled, value: "cancelled" },
+    { label: copy.appointments.statuses.completed, value: "completed" },
+    { label: copy.appointments.statuses.no_show, value: "no_show" }
+  ];
 
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Ajoutez les rendez-vous existants du commerce pour preparer les rappels 24 h et suivre les confirmations sans remplacer le systeme de reservation."
-        title="Rendez-vous"
+        description={copy.appointments.description}
+        title={copy.appointments.title}
       />
 
-      <Panel title="Ajouter un rendez-vous">
+      <Panel title={copy.appointments.addTitle}>
         {params.error ? (
           <p className="mb-4 rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
             {params.error}
@@ -160,13 +152,13 @@ export default async function AppointmentsPage({
           className="grid min-w-0 gap-4 lg:grid-cols-4"
         >
           <label className="grid min-w-0 gap-2 text-sm font-bold lg:col-span-2">
-            Client
+            {copy.common.customer}
             <select
               className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3"
               name="customerId"
               required
             >
-              <option value="">Choisir un client</option>
+              <option value="">{copy.appointments.chooseCustomer}</option>
               {activeCustomers.map((customer) => (
                 <option key={customer.id} value={customer.id}>
                   {customer.full_name} - {customer.phone_e164}
@@ -175,12 +167,12 @@ export default async function AppointmentsPage({
             </select>
           </label>
           <label className="grid min-w-0 gap-2 text-sm font-bold lg:col-span-2">
-            Service
+            {copy.common.service}
             <select
               className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3"
               name="serviceId"
             >
-              <option value="">Service non precise</option>
+              <option value="">{copy.common.serviceNotSpecified}</option>
               {activeServices.map((service) => (
                 <option key={service.id} value={service.id}>
                   {service.name}
@@ -190,7 +182,7 @@ export default async function AppointmentsPage({
           </label>
           <div className="grid min-w-0 gap-4 lg:col-span-2">
             <label className="grid min-w-0 gap-2 text-sm font-bold">
-              Debut
+              {copy.common.start}
               <input
                 className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3"
                 name="startsAt"
@@ -199,7 +191,7 @@ export default async function AppointmentsPage({
               />
             </label>
             <label className="grid min-w-0 gap-2 text-sm font-bold">
-              Fin
+              {copy.common.end}
               <input
                 className="min-h-11 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3"
                 name="endsAt"
@@ -213,7 +205,7 @@ export default async function AppointmentsPage({
             value={timezone ?? "America/Toronto"}
           />
           <label className="grid min-w-0 content-start gap-2 text-sm font-bold lg:col-span-2">
-            Notes
+            {copy.common.notes}
             <textarea
               className="min-h-24 w-full min-w-0 resize-y rounded-xl border border-[var(--line)] bg-white px-3 py-2"
               name="notes"
@@ -226,7 +218,7 @@ export default async function AppointmentsPage({
               name="sendReminder"
               type="checkbox"
             />
-            Rappel 24 h
+            {copy.appointments.reminder24h}
           </label>
           <label className="flex items-end gap-2 text-sm font-bold md:col-span-2">
             <input
@@ -236,23 +228,21 @@ export default async function AppointmentsPage({
               name="requestConfirmation"
               type="checkbox"
             />
-            Demander OUI/NON
+            {copy.appointments.askYesNo}
           </label>
           <button
             className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
             type="submit"
           >
-            Add appointment
+            {copy.appointments.submit}
           </button>
         </form>
         <p className="mt-3 text-xs font-semibold text-[var(--muted)]">
-          Le choix Rappel 24 h est enregistre sur le rendez-vous; si les
-          rappels sont actives et que le client est opt-in, Open Spot prepare
-          une ligne planifiee traitee par le moteur SMS serveur.
+          {copy.appointments.help}
         </p>
       </Panel>
 
-      <Panel title="Rendez-vous a venir">
+      <Panel title={copy.appointments.upcomingTitle}>
         <div className="mb-4 grid gap-3 lg:grid-cols-2">
           <div className="flex flex-wrap gap-2">
             {rangeFilters.map((filter) => (
@@ -296,10 +286,14 @@ export default async function AppointmentsPage({
           <TableShell>
             <thead>
               <tr>
-                <th className={tableHeadClass}>Client</th>
-                <th className={tableHeadClass}>Rendez-vous</th>
-                <th className={tableHeadClass}>Statuts</th>
-                <th className={tableHeadClass}>Modifier</th>
+                <th className={tableHeadClass}>{copy.common.customer}</th>
+                <th className={tableHeadClass}>
+                  {copy.appointments.table.appointment}
+                </th>
+                <th className={tableHeadClass}>
+                  {copy.appointments.table.statuses}
+                </th>
+                <th className={tableHeadClass}>{copy.appointments.table.edit}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--line)] bg-white">
@@ -311,12 +305,12 @@ export default async function AppointmentsPage({
                       {appointment.customerPhone}
                     </p>
                     <p className="mt-1 text-xs font-bold">
-                      {appointment.serviceName ?? "Service non precise"}
+                      {appointment.serviceName ?? copy.common.serviceNotSpecified}
                     </p>
                   </td>
                   <td className={tableCellClass}>
                     <p className="font-black">
-                      {formatAppointmentTime(appointment.starts_at)}
+                      {formatAppointmentTime(appointment.starts_at, locale)}
                     </p>
                     <p className="mt-1 text-xs text-[var(--muted)]">
                       {appointment.timezone}
@@ -325,9 +319,11 @@ export default async function AppointmentsPage({
                   <td className={tableCellClass}>
                     <div className="grid gap-2">
                       <StatusBadge>
-                        {formatAppointmentStatus(appointment.status)}
+                        {formatAppointmentStatus(appointment.status, locale)}
                       </StatusBadge>
-                      <StatusBadge>{formatReminderState(appointment)}</StatusBadge>
+                      <StatusBadge>
+                        {formatReminderState(appointment, locale)}
+                      </StatusBadge>
                     </div>
                   </td>
                   <td className={tableCellClass}>
@@ -346,13 +342,15 @@ export default async function AppointmentsPage({
                         value={appointment.customer_id}
                       />
                       <label className="grid gap-1 text-xs font-bold">
-                        Service
+                        {copy.common.service}
                         <select
                           className="min-h-10 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
                           defaultValue={appointment.service_id ?? ""}
                           name="serviceId"
                         >
-                          <option value="">Non precise</option>
+                          <option value="">
+                            {copy.common.serviceNotSpecified}
+                          </option>
                           {activeServices.map((service) => (
                             <option key={service.id} value={service.id}>
                               {service.name}
@@ -361,21 +359,31 @@ export default async function AppointmentsPage({
                         </select>
                       </label>
                       <label className="grid gap-1 text-xs font-bold">
-                        Statut
+                        {copy.common.status}
                         <select
                           className="min-h-10 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
                           defaultValue={appointment.status}
                           name="status"
                         >
-                          <option value="scheduled">Planifié</option>
-                          <option value="confirmed">Confirmé</option>
-                          <option value="cancelled">Annulé</option>
-                          <option value="completed">Terminé</option>
-                          <option value="no_show">No-show</option>
+                          <option value="scheduled">
+                            {copy.appointments.statuses.scheduled}
+                          </option>
+                          <option value="confirmed">
+                            {copy.appointments.statuses.confirmed}
+                          </option>
+                          <option value="cancelled">
+                            {copy.appointments.statuses.cancelled}
+                          </option>
+                          <option value="completed">
+                            {copy.appointments.statuses.completed}
+                          </option>
+                          <option value="no_show">
+                            {copy.appointments.statuses.no_show}
+                          </option>
                         </select>
                       </label>
                       <label className="grid gap-1 text-xs font-bold">
-                        Debut
+                        {copy.common.start}
                         <input
                           className="min-h-10 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
                           defaultValue={toDateTimeLocal(appointment.starts_at)}
@@ -385,7 +393,7 @@ export default async function AppointmentsPage({
                         />
                       </label>
                       <label className="grid gap-1 text-xs font-bold">
-                        Fin
+                        {copy.common.end}
                         <input
                           className="min-h-10 w-full min-w-0 rounded-xl border border-[var(--line)] bg-white px-3 text-sm"
                           defaultValue={toDateTimeLocal(appointment.ends_at)}
@@ -409,7 +417,7 @@ export default async function AppointmentsPage({
                           name="sendReminder"
                           type="checkbox"
                         />
-                        Rappel 24 h
+                        {copy.appointments.reminder24h}
                       </label>
                       <label className="flex items-center gap-2 text-xs font-bold">
                         <input
@@ -419,10 +427,10 @@ export default async function AppointmentsPage({
                           name="requestConfirmation"
                           type="checkbox"
                         />
-                        Demander OUI/NON
+                        {copy.appointments.askYesNo}
                       </label>
                       <label className="grid min-w-0 content-start gap-1 text-xs font-bold">
-                        Notes
+                        {copy.common.notes}
                         <textarea
                           className="min-h-20 w-full min-w-0 resize-y rounded-xl border border-[var(--line)] bg-white px-3 py-2 text-sm"
                           defaultValue={appointment.notes ?? ""}
@@ -434,7 +442,7 @@ export default async function AppointmentsPage({
                         className="min-h-10 rounded-full bg-[var(--primary)] px-4 text-xs font-black text-white"
                         type="submit"
                       >
-                        Save appointment
+                        {copy.appointments.save}
                       </button>
                     </form>
                   </td>
@@ -444,8 +452,8 @@ export default async function AppointmentsPage({
           </TableShell>
         ) : (
           <EmptyState
-            description="Ajoutez un rendez-vous existant pour preparer les prochains rappels SMS. Les envois reels resteront desactives jusqu'a la phase cron/provider."
-            title="Aucun rendez-vous trouve."
+            description={copy.appointments.emptyDescription}
+            title={copy.appointments.emptyTitle}
           />
         )}
       </Panel>

@@ -3,8 +3,12 @@ import {
   EmptyState,
   Panel
 } from "@/components/dashboard/dashboard-ui";
+import { Button } from "@/components/ui/button";
+import { FormField, Input, Select, Textarea } from "@/components/ui/form-field";
 import { createOpeningAction } from "@/lib/dashboard/actions";
 import { loadOpeningCreationData } from "@/lib/dashboard/operations-data";
+import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
+import { getRequestLocale } from "@/lib/i18n/locale";
 import {
   getOpeningAlertButtonLabel,
   getOpeningAlertModeCopy,
@@ -24,6 +28,8 @@ export default async function NewCancellationPage({
     searchParams,
     loadOpeningCreationData()
   ]);
+  const locale = await getRequestLocale();
+  const copy = getDashboardCopy(locale);
   const smsStatus = getSmsRuntimeStatus();
   const canSendSmsAlerts =
     smsStatus.canSendOpeningAlerts && data.smsPersistence.ready;
@@ -35,98 +41,81 @@ export default async function NewCancellationPage({
   return (
     <div className="grid gap-6">
       <DashboardPageHeader
-        description="Creez une opportunite d'annulation, preparez les clients admissibles et gardez la confirmation sous controle manuel."
-        title="Nouvelle annulation"
+        description={copy.newCancellation.description}
+        title={copy.newCancellation.title}
       />
       <div className="grid gap-6 lg:grid-cols-[1fr_0.75fr]">
-        <Panel title="Details du creneau">
+        <Panel title={copy.newCancellation.detailsTitle}>
           {error ? (
             <p className="mb-4 rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
               {error}
             </p>
           ) : null}
-          <form action={createOpeningAction} className="grid gap-4 md:grid-cols-2">
-            <label className="grid gap-2 text-sm font-bold md:col-span-2">
-              Title
-              <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
-                name="title"
-                required
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-bold">
-              Service
-              <select
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
-                name="serviceId"
-              >
-                <option value="">Any service</option>
+          <form action={createOpeningAction} className="grid gap-5 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <FormField htmlFor="title" label={copy.newCancellation.titleLabel} required>
+                <Input id="title" name="title" required />
+              </FormField>
+            </div>
+            <FormField htmlFor="serviceId" label={copy.common.service}>
+              <Select id="serviceId" name="serviceId">
+                <option value="">{copy.newCancellation.anyService}</option>
                 {data.services.map((service) => (
                   <option key={service.id} value={service.id}>
                     {service.name}
                   </option>
                 ))}
-              </select>
-            </label>
-            <label className="grid gap-2 text-sm font-bold">
-              Start
-              <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
-                name="startTime"
-                required
-                type="datetime-local"
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-bold">
-              End
-              <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
-                name="endTime"
-                required
-                type="datetime-local"
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-bold">
-              Estimated recovered value
-              <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+              </Select>
+            </FormField>
+            <FormField htmlFor="startTime" label={copy.common.start} required>
+              <Input id="startTime" name="startTime" required type="datetime-local" />
+            </FormField>
+            <FormField htmlFor="endTime" label={copy.common.end} required>
+              <Input id="endTime" name="endTime" required type="datetime-local" />
+            </FormField>
+            <FormField
+              htmlFor="estimatedValue"
+              label={copy.newCancellation.estimatedValue}
+            >
+              <Input
+                id="estimatedValue"
                 min="0"
                 name="estimatedValue"
                 placeholder="55.00"
                 step="0.01"
                 type="number"
               />
-            </label>
-            <label className="grid gap-2 text-sm font-bold">
-              Offer label
-              <input
-                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+            </FormField>
+            <FormField htmlFor="offerLabel" label={copy.newCancellation.offer}>
+              <Input
+                id="offerLabel"
                 name="offerLabel"
-                placeholder="15% today only"
+                placeholder={copy.newCancellation.offerPlaceholder}
               />
-            </label>
-            <label className="grid gap-2 text-sm font-bold md:col-span-2">
-              Internal note
-              <textarea
-                className="min-h-24 rounded-xl border border-[var(--line)] bg-white px-3 py-2"
-                name="internalNote"
-              />
-            </label>
-            <button
-              className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-60 md:col-span-2"
+            </FormField>
+            <div className="md:col-span-2">
+              <FormField
+                htmlFor="internalNote"
+                label={copy.newCancellation.internalNote}
+              >
+                <Textarea id="internalNote" name="internalNote" />
+              </FormField>
+            </div>
+            <Button
+              className="md:col-span-2"
               disabled={!canSendSmsAlerts}
               type="submit"
             >
-              {getOpeningAlertButtonLabel(smsStatus)}
-            </button>
+              {getOpeningAlertButtonLabel(smsStatus, locale)}
+            </Button>
           </form>
         </Panel>
-        <Panel title="Clients admissibles">
+        <Panel title={copy.newCancellation.eligibleCustomers}>
           {data.eligibleCustomers.length > 0 ? (
             <div className="grid gap-3">
               {data.eligibleCustomers.map((customer) => (
                 <div
-                  className="rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4"
+                  className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4"
                   key={customer.id}
                 >
                   <p className="font-black">{customer.full_name}</p>
@@ -138,12 +127,12 @@ export default async function NewCancellationPage({
             </div>
           ) : (
             <EmptyState
-              description="Ajoutez des clients opted_in a la liste d'attente avant de preparer une alerte."
-              title="Aucun client admissible."
+              description={copy.newCancellation.emptyEligibleDescription}
+              title={copy.newCancellation.emptyEligibleTitle}
             />
           )}
-          <p className="mt-4 rounded-2xl bg-[#edf8f3] p-4 text-sm font-bold leading-6 text-[var(--primary-strong)]">
-            {getOpeningAlertModeCopy(smsStatus)}
+          <p className="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm font-bold leading-6 text-blue-800">
+            {getOpeningAlertModeCopy(smsStatus, locale)}
           </p>
           {smsBlockingReasons.length > 0 ? (
             <ul className="mt-3 grid gap-2 text-sm font-bold text-[#8a1f17]">

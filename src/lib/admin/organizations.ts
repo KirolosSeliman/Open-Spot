@@ -155,6 +155,7 @@ export type AdminOverview = {
   admin: AuthorizedPlatformAdmin;
   visibleCompaniesCount: number;
   outboundSmsCount: number;
+  failedScheduledMessagesCount: number;
   estimatedSmsCostCents: number;
   filledSpotsCount: number;
 };
@@ -909,6 +910,28 @@ export async function loadAdminOverview({
     admin,
     timeRange: "30"
   });
+  const organizationIds = result.organizations.map((organization) => organization.id);
+  let failedScheduledMessagesCount = 0;
+
+  if (organizationIds.length > 0) {
+    const supabase = createSupabaseServiceClient();
+
+    if (!supabase) {
+      throw new Error("Admin service client is not configured.");
+    }
+
+    const { count, error } = await supabase
+      .from("scheduled_messages")
+      .select("id", { count: "exact", head: true })
+      .in("organization_id", organizationIds)
+      .eq("status", "failed");
+
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    failedScheduledMessagesCount = count ?? 0;
+  }
 
   return {
     admin,
@@ -917,6 +940,7 @@ export async function loadAdminOverview({
       (total, organization) => total + organization.outboundSmsCount,
       0
     ),
+    failedScheduledMessagesCount,
     estimatedSmsCostCents: result.organizations.reduce(
       (total, organization) => total + organization.estimatedSmsCostCents,
       0

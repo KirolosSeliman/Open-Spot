@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/dashboard/types";
+import type { Locale } from "@/lib/i18n/types";
 
 const openingStatusLabels: Record<Locale, Record<string, string>> = {
   fr: {
