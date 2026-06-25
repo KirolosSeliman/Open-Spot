@@ -4502,6 +4502,9 @@ select {
   }
 
   .open-spot-how-shell {
+    --how-stack-gap: 1.75rem;
+    --how-stack-top: 7.5rem;
+    --how-title-offset: 2.65rem;
     grid-template-columns: minmax(17rem, 0.42fr) minmax(0, 0.58fr);
     min-height: calc(100vh + 52rem);
   }
@@ -4510,7 +4513,7 @@ select {
     align-self: start;
     padding-top: 0;
     position: sticky;
-    top: 7.5rem;
+    top: var(--how-stack-top);
     z-index: 5;
   }
 
@@ -4520,6 +4523,7 @@ select {
     max-width: none;
     min-height: calc(48rem + 105vh);
     padding-bottom: 0;
+    padding-top: var(--how-title-offset);
     width: 100%;
   }
 
@@ -4538,12 +4542,12 @@ select {
   }
 
   .open-spot-how-card-frame--1 {
-    top: 7.5rem;
+    top: calc(var(--how-stack-top) + var(--how-title-offset));
     z-index: 10;
   }
 
   .open-spot-how-card-frame--2 {
-    top: calc(7.5rem + 1.75rem);
+    top: calc(var(--how-stack-top) + var(--how-title-offset) + var(--how-stack-gap));
     z-index: 20;
   }
 
@@ -4554,7 +4558,7 @@ select {
 
   .open-spot-how-card-frame--3 {
     margin-bottom: clamp(10rem, 36vh, 18rem);
-    top: calc(7.5rem + 3.5rem);
+    top: calc(var(--how-stack-top) + var(--how-title-offset) + var(--how-stack-gap) * 2);
     z-index: 30;
   }
 
@@ -5939,6 +5943,7 @@ select {
   .open-spot-how-cards {
     gap: 1rem;
     max-width: 100%;
+    padding-top: 0;
   }
 
   .open-spot-how-cards::after {

@@ -866,8 +866,9 @@ describe("public navigation", () => {
     expect(styles).toContain("grid-template-columns: minmax(17rem, 0.42fr) minmax(0, 0.58fr)");
     expect(styles).toContain(".open-spot-how-card-frame");
     expect(styles).toContain("position: sticky");
-    expect(styles).toContain(".open-spot-how-card-frame--1");
-    expect(styles).toContain("top: 7.5rem");
+    expect(styles).toContain("--how-stack-top");
+    expect(styles).toContain("--how-title-offset");
+    expect(styles).toContain("top: calc(var(--how-stack-top) + var(--how-title-offset))");
     expect(styles).toContain("z-index: 20");
     expect(styles).toContain(".open-spot-how-card-frame--3");
     expect(styles).toContain("z-index: 30");
