@@ -865,10 +865,11 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-how-shell");
     expect(styles).toContain("grid-template-columns: minmax(17rem, 0.42fr) minmax(0, 0.58fr)");
     expect(styles).toContain(".open-spot-how-card-frame");
-    expect(styles).toContain("position: sticky");
+    expect(homepage).toContain('window.matchMedia("(min-width: 1024px)")');
+    expect(homepage).toContain("window.requestAnimationFrame");
+    expect(homepage).toContain("translate3d(0, ${translateY.toFixed(2)}px, 0)");
+    expect(styles).toContain("will-change: transform");
     expect(styles).toContain(".open-spot-how-card-frame--1");
-    expect(styles).toContain("top: 7.5rem");
-    expect(styles).toContain(".open-spot-how-card-frame--2");
     expect(styles).toContain("z-index: 20");
     expect(styles).toContain(".open-spot-how-card-frame--3");
     expect(styles).toContain("z-index: 30");
@@ -1061,7 +1062,7 @@ describe("public navigation", () => {
     expect(compactHeaderStyles).toContain("display: none");
     expect(compactHeaderStyles).toContain(".reference-nav-links");
     expect(compactHeaderStyles).toContain("display: none");
-    expect(styles).toContain("overflow-x: hidden");
+    expect(styles).toContain("overflow-x: clip");
   });
 
   it("prevents French navbar and hero phone badge text from overflowing", () => {

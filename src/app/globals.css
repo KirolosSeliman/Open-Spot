@@ -34,7 +34,7 @@
 html {
   min-width: 320px;
   background: var(--background);
-  overflow-x: hidden;
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
@@ -48,7 +48,7 @@ body {
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {
@@ -76,7 +76,7 @@ select {
     radial-gradient(circle at 50% 0%, rgba(47, 120, 255, 0.035), transparent 34rem),
     linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
   color: #071126;
-  overflow-x: hidden;
+  overflow-x: clip;
   padding-bottom: clamp(5rem, 7vw, 6.5rem);
   padding-top: clamp(5rem, 7vw, 6.5rem);
 }
@@ -2598,6 +2598,23 @@ select {
   transform: translateY(0);
 }
 
+.is-reveal-ready .open-spot-how-section [data-lunera-reveal] {
+  opacity: 0;
+  transform: none;
+  transition: opacity 640ms ease;
+}
+
+.is-reveal-ready .open-spot-how-section [data-lunera-reveal].is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (min-width: 1024px) {
+  .is-reveal-ready .open-spot-how-section [data-lunera-reveal] {
+    opacity: 1;
+  }
+}
+
 .lunera-floating-card {
   backface-visibility: hidden;
   transform: translate3d(0, calc(var(--lunera-phone-progress, 0) * -18px), 0);
@@ -4492,8 +4509,9 @@ select {
   .open-spot-how-copy {
     align-self: start;
     padding-top: 0;
-    position: sticky;
-    top: 8rem;
+    position: relative;
+    top: auto;
+    will-change: transform;
     z-index: 5;
   }
 
@@ -4501,38 +4519,40 @@ select {
     display: flex;
     flex-direction: column;
     max-width: none;
-    min-height: calc(38rem + 72vh);
-    padding-bottom: clamp(8rem, 18vh, 12rem);
+    min-height: calc(40rem + 85vh);
+    padding-bottom: clamp(8rem, 16vh, 11rem);
     width: 100%;
   }
 
   .open-spot-how-card-frame {
-    margin-bottom: clamp(9rem, 32vh, 17rem);
-    position: sticky;
+    margin-bottom: clamp(8rem, 30vh, 16rem);
+    position: relative;
+    top: auto;
+    will-change: transform;
     z-index: 10;
   }
 
   .open-spot-how-card-frame--1 {
-    top: 7.5rem;
+    z-index: 10;
   }
 
   .open-spot-how-card-frame--2 {
-    top: 9.25rem;
     z-index: 20;
   }
 
   .open-spot-how-card-frame--2 .open-spot-how-card {
     transform: scale(0.985);
+    transform-origin: center top;
   }
 
   .open-spot-how-card-frame--3 {
     margin-bottom: 0;
-    top: 11rem;
     z-index: 30;
   }
 
   .open-spot-how-card-frame--3 .open-spot-how-card {
     transform: scale(0.97);
+    transform-origin: center top;
   }
 
   .open-spot-how-card-frame--2 .open-spot-how-card:hover,

@@ -1313,14 +1313,116 @@ function SetupSection({ t }: { t: TemplateCopy }) {
 }
 
 function HowItWorks({ t }: { t: TemplateCopy }) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const frameRefs = useRef<Array<HTMLDivElement | null>>([]);
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const section = sectionRef.current;
+    const copy = copyRef.current;
+    const frames = frameRefs.current.filter(
+      (frame): frame is HTMLDivElement => frame !== null
+    );
+
+    if (!section || !copy || frames.length === 0) {
+      return;
+    }
+
+    const stackSection = section;
+    const stackCopy = copy;
+    let animationFrame = 0;
+
+    function clearStack() {
+      stackCopy.style.transform = "";
+      frames.forEach((frame) => {
+        frame.style.transform = "";
+      });
+    }
+
+    function currentTranslateY(element: HTMLElement) {
+      const transform = window.getComputedStyle(element).transform;
+
+      if (!transform || transform === "none") {
+        return 0;
+      }
+
+      return new DOMMatrixReadOnly(transform).m42;
+    }
+
+    function updateStack() {
+      if (animationFrame) {
+        return;
+      }
+
+      animationFrame = window.requestAnimationFrame(() => {
+        animationFrame = 0;
+
+        if (reduceMotion.matches || !desktop.matches) {
+          clearStack();
+          return;
+        }
+
+        const sectionRect = stackSection.getBoundingClientRect();
+        const copyTop = 120;
+        const stackTop = 120;
+        const stackGap = 28;
+        const copyRect = stackCopy.getBoundingClientRect();
+        const copyNaturalTop = copyRect.top - currentTranslateY(stackCopy);
+        const copyMaxTranslate = sectionRect.bottom - copyTop - stackCopy.offsetHeight;
+        const copyTranslateY = Math.max(
+          0,
+          Math.min(copyTop - copyNaturalTop, copyMaxTranslate)
+        );
+
+        stackCopy.style.transform = copyTranslateY > 0
+          ? `translate3d(0, ${copyTranslateY.toFixed(2)}px, 0)`
+          : "";
+
+        frames.forEach((frame, index) => {
+          const frameRect = frame.getBoundingClientRect();
+          const targetTop = stackTop + index * stackGap;
+          const normalTop = frameRect.top - currentTranslateY(frame);
+          const maxTranslate = sectionRect.bottom - targetTop - frame.offsetHeight;
+          const translateY = Math.max(0, Math.min(targetTop - normalTop, maxTranslate));
+
+          frame.style.transform = translateY > 0
+            ? `translate3d(0, ${translateY.toFixed(2)}px, 0)`
+            : "";
+        });
+      });
+    }
+
+    updateStack();
+    window.addEventListener("scroll", updateStack, { passive: true });
+    window.addEventListener("resize", updateStack);
+    reduceMotion.addEventListener("change", updateStack);
+    desktop.addEventListener("change", updateStack);
+
+    return () => {
+      window.removeEventListener("scroll", updateStack);
+      window.removeEventListener("resize", updateStack);
+      reduceMotion.removeEventListener("change", updateStack);
+      desktop.removeEventListener("change", updateStack);
+
+      if (animationFrame) {
+        window.cancelAnimationFrame(animationFrame);
+      }
+
+      clearStack();
+    };
+  }, [t]);
+
   return (
     <section
       aria-labelledby="workflow-title"
       className="open-spot-how-section bg-white px-4 py-20 sm:py-24"
       id="how-it-works"
+      ref={sectionRef}
     >
       <div className="open-spot-how-shell mx-auto grid">
-        <div className="open-spot-how-copy" data-lunera-reveal>
+        <div className="open-spot-how-copy" ref={copyRef}>
           <span className="open-spot-how-pill">
             {t.how.tag}
           </span>
@@ -1340,6 +1442,9 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
             <div
               className={cn("open-spot-how-card-frame", `open-spot-how-card-frame--${index + 1}`)}
               key={step.number}
+              ref={(element) => {
+                frameRefs.current[index] = element;
+              }}
             >
               <article className="open-spot-how-card" data-lunera-reveal>
               <div className="open-spot-how-card-header">
