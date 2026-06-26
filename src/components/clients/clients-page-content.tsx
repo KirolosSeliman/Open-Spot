@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { PhoneNumberField } from "@/components/forms/phone-number-field";
 import {
@@ -304,10 +305,195 @@ function ClientActionsMenu({
   tab: ClientsTab;
 }) {
   const [open, setOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState<{ top: number; left: number }>({
+    top: 0,
+    left: 0
+  });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!open || !buttonRef.current) {
+      return;
+    }
+
+    function updatePosition() {
+      if (!buttonRef.current) {
+        return;
+      }
+
+      const rect = buttonRef.current.getBoundingClientRect();
+      const menuWidth = 192;
+      const left = Math.min(
+        Math.max(8, rect.right - menuWidth),
+        window.innerWidth - menuWidth - 8
+      );
+
+      setMenuStyle({
+        top: rect.bottom + 8,
+        left
+      });
+    }
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [open]);
+
+  const actionMenu =
+    mounted && open
+      ? createPortal(
+          <>
+            <button
+              aria-label="Fermer le menu"
+              className="fixed inset-0 z-[60] cursor-default bg-transparent"
+              onClick={() => setOpen(false)}
+              type="button"
+            />
+            <div
+              className="fixed z-[70] w-48 overflow-hidden rounded-xl border border-[#e2e8f0] bg-white py-1 shadow-[0_16px_40px_rgba(15,23,42,0.16)]"
+              ref={menuRef}
+              role="menu"
+              style={{ top: menuStyle.top, left: menuStyle.left }}
+            >
+              <Link
+                className="block px-4 py-2.5 text-sm font-semibold text-[#07142f] transition hover:bg-[#f8fafc]"
+                href={`/dashboard/clients/${customer.id}/edit`}
+                onClick={() => setOpen(false)}
+                role="menuitem"
+              >
+                {tab === "deleted" ? "Voir le client" : "Modifier"}
+              </Link>
+              {tab === "active" ? (
+                <button
+                  className="block w-full px-4 py-2.5 text-left text-sm font-semibold text-[#b91c1c] transition hover:bg-[#fef2f2]"
+                  onClick={() => {
+                    setOpen(false);
+                    setConfirmDelete(true);
+                  }}
+                  role="menuitem"
+                  type="button"
+                >
+                  Supprimer
+                </button>
+              ) : (
+                <form action={restoreCustomerAction}>
+                  <input name="customerId" type="hidden" value={customer.id} />
+                  <input
+                    name="returnTo"
+                    type="hidden"
+                    value="/dashboard/clients?tab=deleted"
+                  />
+                  <button
+                    className="block w-full px-4 py-2.5 text-left text-sm font-semibold text-[#2563ff] transition hover:bg-[#eef4ff]"
+                    role="menuitem"
+                    type="submit"
+                  >
+                    Restaurer
+                  </button>
+                </form>
+              )}
+            </div>
+          </>,
+          document.body
+        )
+      : null;
+
+  const deleteDialog =
+    mounted && confirmDelete
+      ? createPortal(
+          <>
+            <button
+              aria-label="Fermer la confirmation"
+              className="fixed inset-0 z-[80] bg-[#07142f]/30"
+              onClick={() => setConfirmDelete(false)}
+              type="button"
+            />
+            <div
+              className="fixed left-1/2 top-1/2 z-[90] w-[min(92vw,24rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-[#fecaca] bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.18)]"
+              role="dialog"
+            >
+              <h3 className="text-base font-black text-[#07142f]">
+                Supprimer {customer.full_name} ?
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-[#64748b]">
+                Cette action retire le client des listes actives et des futurs SMS.
+                L&apos;historique reste conservé.
+              </p>
+              <form action={deleteCustomerAction} className="mt-4 grid gap-3">
+                <input name="customerId" type="hidden" value={customer.id} />
+                <input
+                  name="returnTo"
+                  type="hidden"
+                  value="/dashboard/clients?tab=active"
+                />
+                <label className="grid gap-1.5 text-sm font-semibold text-[#07142f]">
+                  Raison
+                  <input
+                    className="h-10 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm"
+                    maxLength={500}
+                    minLength={3}
+                    name="reason"
+                    placeholder="Motif de suppression"
+                    required
+                  />
+                </label>
+                <label className="flex gap-2 text-sm leading-5 text-[#475569]">
+                  <input className="mt-1 shrink-0" name="confirm" required type="checkbox" />
+                  Je comprends que ce client ne recevra plus de SMS.
+                </label>
+                <div className="flex gap-2 pt-1">
+                  <button
+                    className="h-10 flex-1 rounded-full border border-[#e2e8f0] bg-white text-sm font-semibold text-[#475569]"
+                    onClick={() => setConfirmDelete(false)}
+                    type="button"
+                  >
+                    Annuler
+                  </button>
+                  <button
+                    className="h-10 flex-1 rounded-full bg-[#b91c1c] text-sm font-bold text-white"
+                    type="submit"
+                  >
+                    Confirmer
+                  </button>
+                </div>
+              </form>
+            </div>
+          </>,
+          document.body
+        )
+      : null;
 
   return (
-    <div className="relative">
+    <>
       <button
+        ref={buttonRef}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={`Actions pour ${customer.full_name}`}
@@ -319,87 +505,9 @@ function ClientActionsMenu({
           <path d="M10 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 4a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm0 4a2 2 0 1 1 0-4 2 2 0 0 1 0 4z" />
         </svg>
       </button>
-      {open ? (
-        <>
-          <button
-            aria-label="Fermer le menu"
-            className="fixed inset-0 z-10 cursor-default bg-transparent"
-            onClick={() => setOpen(false)}
-            type="button"
-          />
-          <div
-            className="absolute right-0 z-20 mt-2 w-56 overflow-hidden rounded-xl border border-[#e2e8f0] bg-white py-1 shadow-[0_16px_40px_rgba(15,23,42,0.12)]"
-            role="menu"
-          >
-            <Link
-              className="block px-4 py-2.5 text-sm font-semibold text-[#07142f] hover:bg-[#f8fafc]"
-              href={`/dashboard/clients/${customer.id}/edit`}
-              onClick={() => setOpen(false)}
-              role="menuitem"
-            >
-              {tab === "deleted" ? "Voir le client" : "Modifier"}
-            </Link>
-            {tab === "active" ? (
-              <details className="group">
-                <summary className="cursor-pointer px-4 py-2.5 text-sm font-semibold text-[#b91c1c] hover:bg-[#fef2f2]">
-                  Supprimer
-                </summary>
-                <form
-                  action={deleteCustomerAction}
-                  className="border-t border-[#fecaca] bg-[#fef2f2] p-3"
-                >
-                  <input name="customerId" type="hidden" value={customer.id} />
-                  <input
-                    name="returnTo"
-                    type="hidden"
-                    value="/dashboard/clients?tab=active"
-                  />
-                  <p className="mb-3 text-xs leading-5 text-[#991b1b]">
-                    Cette action retire le client des listes actives et des futurs
-                    SMS. L&apos;historique reste conservé.
-                  </p>
-                  <label className="mb-3 grid gap-1 text-xs font-semibold text-[#991b1b]">
-                    Raison
-                    <input
-                      className="min-h-9 rounded-lg border border-[#fecaca] bg-white px-3 text-[#07142f]"
-                      maxLength={500}
-                      minLength={3}
-                      name="reason"
-                      required
-                    />
-                  </label>
-                  <label className="mb-3 flex gap-2 text-xs font-semibold leading-5 text-[#991b1b]">
-                    <input name="confirm" required type="checkbox" />
-                    Je comprends que ce client ne recevra plus de SMS.
-                  </label>
-                  <button
-                    className="w-full rounded-lg bg-[#b91c1c] px-3 py-2 text-xs font-bold text-white"
-                    type="submit"
-                  >
-                    Confirmer la suppression
-                  </button>
-                </form>
-              </details>
-            ) : (
-              <form action={restoreCustomerAction} className="px-1 pb-1">
-                <input name="customerId" type="hidden" value={customer.id} />
-                <input
-                  name="returnTo"
-                  type="hidden"
-                  value="/dashboard/clients?tab=deleted"
-                />
-                <button
-                  className="block w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold text-[#2563ff] hover:bg-[#eef4ff]"
-                  type="submit"
-                >
-                  Restaurer
-                </button>
-              </form>
-            )}
-          </div>
-        </>
-      ) : null}
-    </div>
+      {actionMenu}
+      {deleteDialog}
+    </>
   );
 }
 
@@ -792,7 +900,7 @@ export function ClientsPageContent({
         ) : null}
       </section>
 
-      <section className="overflow-hidden rounded-[16px] border border-[#e2e8f0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+      <section className="rounded-[16px] border border-[#e2e8f0] bg-white shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
         <div className="flex items-center gap-3 border-b border-[#e2e8f0] px-5 py-4">
           <h2 className="text-lg font-black text-[#07142f]">
             {tab === "deleted" ? "Clients supprimés" : "Clients"}
@@ -805,7 +913,7 @@ export function ClientsPageContent({
 
         {paginatedCustomers.length > 0 ? (
           <>
-            <div className="overflow-x-auto">
+            <div className="w-full overflow-x-auto overscroll-x-contain [-ms-overflow-style:auto] [scrollbar-gutter:stable]">
               <table className="w-full min-w-[920px] table-fixed text-left text-sm">
                 <thead className="bg-[#f8fafc] text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748b]">
                   <tr>
