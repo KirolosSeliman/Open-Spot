@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { OpenSpotLogo } from "@/components/brand/open-spot-logo";
+import { DashboardNavIcon } from "@/components/dashboard/dashboard-nav-icons";
 import { SiteHeaderShell } from "@/components/layout/site-header-shell";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { exitManagerModeAction } from "@/lib/admin/manager-mode-actions";
@@ -62,6 +63,40 @@ function isActiveDashboardRoute(pathname: string, item: DashboardNavItem) {
   return pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
+function getUserDisplayName(workspace: OrganizationWorkspace) {
+  if (workspace.status !== "ready") {
+    return "Utilisateur";
+  }
+
+  const emailPrefix = workspace.user.email?.split("@")[0]?.trim();
+
+  if (emailPrefix) {
+    return emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+  }
+
+  return workspace.organization.name;
+}
+
+function getUserInitial(workspace: OrganizationWorkspace) {
+  return getUserDisplayName(workspace).charAt(0).toUpperCase();
+}
+
+function getRoleLabel(
+  role: "owner" | "manager" | "staff",
+  locale: Locale
+) {
+  if (locale === "fr") {
+    const labels = {
+      owner: "Propriétaire",
+      manager: "Gestionnaire",
+      staff: "Employé"
+    };
+    return labels[role];
+  }
+
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+
 export function DashboardShell({
   workspace,
   initialLocale = "fr",
@@ -93,47 +128,39 @@ export function DashboardShell({
   const mobileNavItems = isAdminManagerMode
     ? mobileNav.filter((item) => item.href !== "/dashboard/settings")
     : mobileNav;
-  const businessName =
-    workspace.status === "ready" ? workspace.organization.name : t.dashboard.previewWorkspace;
+  const userDisplayName = getUserDisplayName(workspace);
   const workspaceNote =
     workspace.status === "ready"
-      ? `${workspace.organization.role} - ${workspace.organization.timezone}`
+      ? `${getRoleLabel(workspace.organization.role, initialLocale)} • ${workspace.organization.timezone}`
       : t.dashboard.workspaceUnavailable;
 
   return (
-    <div className="open-spot-dashboard-theme min-h-screen bg-[radial-gradient(circle_at_18%_0%,rgba(79,125,243,0.12),transparent_28rem),#f7f9fd] text-[var(--foreground)]">
-      <div className="mx-auto flex w-full max-w-[1540px] gap-6 px-3 py-3 lg:px-5">
-        <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-white/10 bg-[var(--dark)] p-4 text-white shadow-[0_24px_80px_rgba(8,11,18,0.28)] lg:flex lg:flex-col">
+    <div className="open-spot-dashboard-theme min-h-screen bg-[#f4f7fb] text-[#07142f]">
+      <div className="mx-auto flex w-full max-w-[1600px] gap-0 lg:gap-0">
+        <aside className="sticky top-0 hidden h-screen w-[240px] shrink-0 flex-col border-r border-[#e2e8f0] bg-white px-4 py-5 lg:flex">
           <Link
-            className="flex items-center gap-3 rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="flex items-center gap-3 rounded-xl px-2 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
             href="/"
           >
-            <div>
-              <OpenSpotLogo
-                markClassName="h-11 w-11"
-                priority
-                size="lg"
-                textClassName="text-lg"
-                variant="lockup"
-              />
-              <p className="mt-1 text-xs font-semibold text-[var(--dark-muted)]">
-                {t.dashboard.recoverySms}
-              </p>
-            </div>
+            <OpenSpotLogo
+              markClassName="h-9 w-9"
+              priority
+              size="md"
+              textClassName="text-base font-black text-[#07142f]"
+              variant="lockup"
+            />
           </Link>
-          <Link
-            className="mt-5 rounded-2xl bg-[var(--primary)] px-4 py-3 text-center text-sm font-black text-white shadow-[0_16px_34px_rgba(79,125,243,0.28)] transition hover:bg-[var(--primary-strong)]"
-            href="/dashboard/new-cancellation"
-          >
-            {t.openings.newCancellation}
-          </Link>
+          <p className="mt-1 px-2 text-xs font-semibold text-[#64748b]">
+            {t.dashboard.recoverySms}
+          </p>
+
           <nav
             aria-label={
               initialLocale === "fr"
                 ? "Navigation du tableau de bord"
                 : "Dashboard navigation"
             }
-            className="mt-5 grid gap-1 overflow-y-auto pr-1"
+            className="mt-6 grid gap-0.5 overflow-y-auto pr-1"
           >
             {desktopNavItems.map((item) => {
               const isActive = isActiveDashboardRoute(pathname, item);
@@ -142,31 +169,58 @@ export function DashboardShell({
                 <Link
                   aria-current={isActive ? "page" : undefined}
                   className={cn(
-                    "relative flex min-h-11 items-center rounded-2xl px-4 py-3 text-sm font-bold text-white/68 transition-colors hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--dark)]",
-                    isActive &&
-                      "bg-[rgba(47,120,255,0.14)] pl-5 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08),0_10px_24px_rgba(0,0,0,0.16)] before:absolute before:left-2 before:top-1/2 before:h-5 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-[var(--primary)] hover:bg-[rgba(47,120,255,0.18)] hover:text-white"
+                    "flex min-h-10 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff] focus-visible:ring-offset-2",
+                    isActive
+                      ? "bg-[#eef4ff] text-[#2563ff]"
+                      : "text-[#475569] hover:bg-[#f8fafc] hover:text-[#07142f]"
                   )}
                   href={item.href}
                   key={item.href}
                 >
+                  <span
+                    className={cn(
+                      "shrink-0",
+                      isActive ? "text-[#2563ff]" : "text-[#94a3b8]"
+                    )}
+                  >
+                    <DashboardNavIcon href={item.href} />
+                  </span>
                   {item.label}
                 </Link>
               );
             })}
           </nav>
-          <div className="mt-auto grid gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
-            <div>
-              <p className="text-sm font-black">{businessName}</p>
-              <p className="mt-1 text-xs leading-5 text-[var(--dark-muted)]">
-                {workspaceNote}
-              </p>
+
+          <div className="mt-auto grid gap-3 border-t border-[#e2e8f0] pt-4">
+            <div className="flex items-center gap-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563ff] text-sm font-black text-white">
+                {getUserInitial(workspace)}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-bold text-[#07142f]">
+                  {userDisplayName}
+                </p>
+                <p className="mt-0.5 truncate text-xs text-[#64748b]">
+                  {workspaceNote}
+                </p>
+              </div>
             </div>
-            <LanguageSwitcher initialLocale={initialLocale} tone="dark" />
+            <LanguageSwitcher initialLocale={initialLocale} tone="light" />
             <form action={signOutAction}>
               <button
-                className="w-full rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                className="flex w-full min-h-10 items-center justify-center gap-2 rounded-xl border border-[#e2e8f0] bg-white px-4 py-2.5 text-sm font-semibold text-[#475569] transition hover:bg-[#f8fafc] hover:text-[#07142f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
                 type="submit"
               >
+                <svg
+                  aria-hidden="true"
+                  className="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.75"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
+                </svg>
                 {t.auth.signOut}
               </button>
             </form>
@@ -177,13 +231,13 @@ export function DashboardShell({
           <SiteHeaderShell className="lg:hidden">
             <div className="flex items-center justify-between gap-3">
               <Link
-                className="flex items-center gap-2 rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                className="flex items-center gap-2 rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
                 href="/"
               >
                 <OpenSpotLogo priority size="sm" variant="lockup" />
               </Link>
               <Link
-                className="rounded-full bg-[var(--primary)] px-3 py-2 text-xs font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)]"
+                className="rounded-full bg-[#2563ff] px-3 py-2 text-xs font-black text-white shadow-[0_8px_20px_rgba(37,99,255,0.22)]"
                 href="/dashboard/new-cancellation"
               >
                 {t.openings.newCancellation}
@@ -193,7 +247,7 @@ export function DashboardShell({
               </div>
               <form action={signOutAction}>
                 <button
-                  className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)]"
+                  className="rounded-full border border-[#e2e8f0] bg-white px-3 py-2 text-xs font-black text-[#07142f]"
                   type="submit"
                 >
                   {t.auth.signOut}
@@ -202,7 +256,7 @@ export function DashboardShell({
             </div>
           </SiteHeaderShell>
           {workspace.status === "ready" && workspace.adminManagerMode ? (
-            <div className="mb-4 rounded-2xl border border-[#d9b35f] bg-[#fff7df] p-4 text-sm shadow-sm">
+            <div className="mx-4 mb-4 mt-4 rounded-2xl border border-[#d9b35f] bg-[#fff7df] p-4 text-sm shadow-sm lg:mx-8">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <p className="font-bold text-[#5b4310]">
                   {initialLocale === "fr"
@@ -237,7 +291,7 @@ export function DashboardShell({
               </div>
             </div>
           ) : null}
-          <main className="mx-auto w-full max-w-6xl px-2 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-0 lg:pt-8 lg:py-8">
+          <main className="mx-auto w-full px-4 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-6 lg:px-8 lg:pb-8 lg:pt-8 lg:py-8">
             {children}
           </main>
         </div>
@@ -249,7 +303,7 @@ export function DashboardShell({
             ? "Navigation mobile du tableau de bord"
             : "Mobile dashboard navigation"
         }
-        className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-[var(--line)] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.18)] backdrop-blur lg:hidden"
+        className="fixed inset-x-3 bottom-3 z-30 grid grid-cols-6 gap-1 rounded-[1.5rem] border border-[#e2e8f0] bg-white/94 p-2 shadow-[0_18px_45px_rgba(36,54,66,0.12)] backdrop-blur lg:hidden"
       >
         {mobileNavItems.map((item) => {
           const isActive = isActiveDashboardRoute(pathname, item);
@@ -258,8 +312,8 @@ export function DashboardShell({
             <Link
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex min-h-12 items-center justify-center rounded-2xl px-1 text-center text-[0.65rem] font-black leading-tight text-[var(--muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]",
-                isActive && "bg-[var(--primary)] text-white"
+                "flex min-h-12 items-center justify-center rounded-2xl px-1 text-center text-[0.65rem] font-black leading-tight text-[#64748b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]",
+                isActive && "bg-[#2563ff] text-white"
               )}
               href={item.href}
               key={item.href}
