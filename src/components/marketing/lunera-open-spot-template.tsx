@@ -980,7 +980,9 @@ function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
         label={t.hero.repliesLabel}
       />
       <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
-      <PhoneProductMockup phone={t.hero.phone} />
+      <div className="reference-phone-viewport">
+        <PhoneProductMockup phone={t.hero.phone} />
+      </div>
       <div className="reference-mobile-phone-fade" aria-hidden="true" />
     </div>
   );
