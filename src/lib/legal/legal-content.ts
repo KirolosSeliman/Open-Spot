@@ -38,15 +38,15 @@ export const privacyPolicyPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "nom et prénom;",
-            "nom du commerce;",
-            "adresse courriel;",
-            "numéro de téléphone;",
-            "type de commerce;",
-            "système de rendez-vous utilisé;",
-            "volume approximatif d'annulations;",
-            "informations fournies dans un formulaire ou lors d'un appel;",
-            "préférences de communication;",
+            "nom et prénom",
+            "nom du commerce",
+            "adresse courriel",
+            "numéro de téléphone",
+            "type de commerce",
+            "système de rendez-vous utilisé",
+            "volume approximatif d'annulations",
+            "informations fournies dans un formulaire ou lors d'un appel",
+            "préférences de communication",
             "données techniques de base liées à l'utilisation du site, comme l'adresse IP, le type d'appareil, le navigateur et les pages consultées."
           ]
         },
@@ -67,11 +67,11 @@ export const privacyPolicyPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "répondre à une demande d'information ou d'appel;",
-            "communiquer avec vous au sujet d'Open Spot;",
-            "évaluer si Open Spot peut répondre aux besoins de votre commerce;",
-            "fournir, améliorer et sécuriser nos services;",
-            "envoyer des communications liées au service, lorsque vous y avez consenti;",
+            "répondre à une demande d'information ou d'appel",
+            "communiquer avec vous au sujet d'Open Spot",
+            "évaluer si Open Spot peut répondre aux besoins de votre commerce",
+            "fournir, améliorer et sécuriser nos services",
+            "envoyer des communications liées au service, lorsque vous y avez consenti",
             "respecter nos obligations légales et administratives."
           ]
         },
@@ -106,10 +106,10 @@ export const privacyPolicyPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "hébergement web;",
-            "outils de formulaire;",
-            "services d'envoi de courriels;",
-            "services d'envoi de SMS;",
+            "hébergement web",
+            "outils de formulaire",
+            "services d'envoi de courriels",
+            "services d'envoi de SMS",
             "outils d'analyse ou de sécurité."
           ]
         },
@@ -162,9 +162,9 @@ export const privacyPolicyPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "assurer le bon fonctionnement du site;",
-            "améliorer l'expérience utilisateur;",
-            "comprendre l'utilisation du site;",
+            "assurer le bon fonctionnement du site",
+            "améliorer l'expérience utilisateur",
+            "comprendre l'utilisation du site",
             "mesurer la performance de nos pages."
           ]
         },
@@ -185,10 +185,10 @@ export const privacyPolicyPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "l'accès aux renseignements personnels que nous détenons à votre sujet;",
-            "la correction de renseignements inexacts;",
-            "le retrait de votre consentement, lorsque le traitement repose sur celui-ci;",
-            "la suppression de certains renseignements, lorsque permis par la loi;",
+            "l'accès aux renseignements personnels que nous détenons à votre sujet",
+            "la correction de renseignements inexacts",
+            "le retrait de votre consentement, lorsque le traitement repose sur celui-ci",
+            "la suppression de certains renseignements, lorsque permis par la loi",
             "des informations sur la façon dont vos renseignements sont utilisés."
           ]
         },
@@ -246,9 +246,9 @@ export const smsConsentPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "une disponibilité de dernière minute;",
-            "une invitation à répondre si le client est intéressé;",
-            "une confirmation ou un suivi lié à une demande;",
+            "une disponibilité de dernière minute",
+            "une invitation à répondre si le client est intéressé",
+            "une confirmation ou un suivi lié à une demande",
             "des informations utiles concernant un rendez-vous ou une disponibilité."
           ]
         }
@@ -269,10 +269,10 @@ export const smsConsentPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "s'inscrit à une liste d'attente;",
-            "demande à être informé des disponibilités;",
-            "fournit son numéro de téléphone à cette fin;",
-            "confirme qu'il accepte de recevoir des alertes SMS;",
+            "s'inscrit à une liste d'attente",
+            "demande à être informé des disponibilités",
+            "fournit son numéro de téléphone à cette fin",
+            "confirme qu'il accepte de recevoir des alertes SMS",
             "entretient une relation commerciale existante permettant certains messages, lorsque permis par la loi."
           ]
         },
@@ -297,10 +297,10 @@ export const smsConsentPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "le nom du commerce;",
-            "la disponibilité proposée;",
-            "la date et l'heure du rendez-vous;",
-            "une instruction de réponse, par exemple répondre OUI ou YES;",
+            "le nom du commerce",
+            "la disponibilité proposée",
+            "la date et l'heure du rendez-vous",
+            "une instruction de réponse, par exemple répondre OUI ou YES",
             "une instruction de désabonnement, par exemple répondre STOP."
           ]
         }
@@ -385,11 +385,11 @@ export const smsConsentPage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "recueillir et conserver les consentements nécessaires;",
-            "respecter les demandes de désabonnement;",
-            "envoyer uniquement des messages pertinents;",
-            "identifier clairement le commerce dans les communications;",
-            "respecter les lois applicables en matière de SMS, de confidentialité et de communications électroniques;",
+            "recueillir et conserver les consentements nécessaires",
+            "respecter les demandes de désabonnement",
+            "envoyer uniquement des messages pertinents",
+            "identifier clairement le commerce dans les communications",
+            "respecter les lois applicables en matière de SMS, de confidentialité et de communications électroniques",
             "éviter l'envoi de messages trompeurs, excessifs ou non sollicités."
           ]
         }
@@ -461,11 +461,11 @@ export const termsOfUsePage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "utiliser le service pour envoyer des messages non sollicités;",
-            "contacter des personnes sans consentement approprié;",
-            "transmettre du contenu trompeur, offensant, illégal ou abusif;",
-            "tenter d'accéder à des systèmes, comptes ou données sans autorisation;",
-            "nuire au fonctionnement normal du site ou des services;",
+            "utiliser le service pour envoyer des messages non sollicités",
+            "contacter des personnes sans consentement approprié",
+            "transmettre du contenu trompeur, offensant, illégal ou abusif",
+            "tenter d'accéder à des systèmes, comptes ou données sans autorisation",
+            "nuire au fonctionnement normal du site ou des services",
             "utiliser Open Spot pour contourner des lois applicables en matière de confidentialité, de protection des consommateurs ou de communications électroniques."
           ]
         }
@@ -482,12 +482,12 @@ export const termsOfUsePage: LegalPageDefinition = {
         {
           type: "list",
           items: [
-            "vous assurer que vous avez le droit de contacter ces personnes;",
-            "obtenir les consentements requis;",
-            "respecter les demandes de désabonnement;",
-            "vérifier l'exactitude des informations envoyées;",
-            "confirmer manuellement les rendez-vous;",
-            "gérer les annulations, retards, absences et conflits de réservation;",
+            "vous assurer que vous avez le droit de contacter ces personnes",
+            "obtenir les consentements requis",
+            "respecter les demandes de désabonnement",
+            "vérifier l'exactitude des informations envoyées",
+            "confirmer manuellement les rendez-vous",
+            "gérer les annulations, retards, absences et conflits de réservation",
             "respecter les lois applicables à votre commerce."
           ]
         },
