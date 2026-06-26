@@ -23,7 +23,12 @@ export type ClientsInsightsData = {
     optedOut: number;
     total: number;
   };
-  growthSeries: Array<{ dateKey: string; label: string; count: number }>;
+  growthSeries: Array<{
+    dateKey: string;
+    label: string;
+    fullLabel: string;
+    count: number;
+  }>;
   publicLink: {
     ready: boolean;
     publicUrl: string | null;
@@ -59,6 +64,14 @@ function percentChange(current: number, previous: number) {
   return Math.round(((current - previous) / previous) * 100);
 }
 
+function formatFullLabel(date: Date) {
+  return new Intl.DateTimeFormat("fr-CA", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  }).format(date);
+}
+
 function buildGrowthSeries(
   timestamps: string[],
   days = 30
@@ -69,15 +82,15 @@ function buildGrowthSeries(
   for (let offset = days - 1; offset >= 0; offset -= 1) {
     const day = new Date(now);
     day.setDate(day.getDate() - offset);
-    const dateKey = getDateKey(day);
-    const count = timestamps.filter((value) => {
-      const created = new Date(value);
-      return getDateKey(created) === dateKey;
-    }).length;
+    const endOfDay = new Date(day);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const count = timestamps.filter((value) => new Date(value) <= endOfDay).length;
 
     series.push({
-      dateKey,
+      dateKey: getDateKey(day),
       label: formatShortLabel(day),
+      fullLabel: formatFullLabel(day),
       count
     });
   }
