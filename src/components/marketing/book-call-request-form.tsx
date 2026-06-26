@@ -22,16 +22,13 @@ const formCopy = {
       cancellationVolume: "Volume d’annulations",
       preferredTimeMessage: "Message / disponibilités préférées"
     },
-    placeholders: {
-      fullName: "Sarah Martin",
-      businessName: "Studio Élise",
-      email: "sarah@studioelise.com",
-      phone: "(514) 555-0198",
-      businessType: "Salon de coiffure",
-      currentBookingSystem: "Fresha, Google Calendar, Square, etc.",
-      cancellationVolume: "Ex: 3 à 8 annulations par semaine",
-      preferredTimeMessage:
-        "Indiquez vos disponibilités habituelles ou ce que vous voulez clarifier pendant l’appel."
+    selectPrompts: {
+      businessType: "Sélectionner un type de commerce",
+      currentBookingSystem: "Sélectionner votre système actuel",
+      cancellationVolume: "Sélectionner une option"
+    },
+    helpers: {
+      cancellationVolume: "Choisissez la fourchette qui correspond le mieux à votre réalité."
     },
     errors: {
       fullName: "Veuillez entrer votre nom complet.",
@@ -61,16 +58,13 @@ const formCopy = {
       cancellationVolume: "Cancellation volume",
       preferredTimeMessage: "Message / preferred time"
     },
-    placeholders: {
-      fullName: "Sarah Martin",
-      businessName: "Studio Elise",
-      email: "sarah@studioelise.com",
-      phone: "(514) 555-0198",
-      businessType: "Hair salon",
-      currentBookingSystem: "Fresha, Google Calendar, Square, etc.",
-      cancellationVolume: "Example: 3 to 8 cancellations per week",
-      preferredTimeMessage:
-        "Tell us when you are usually available or what you want help with."
+    selectPrompts: {
+      businessType: "Select a business type",
+      currentBookingSystem: "Select your current system",
+      cancellationVolume: "Select an option"
+    },
+    helpers: {
+      cancellationVolume: "Choose the range that best matches your situation."
     },
     errors: {
       fullName: "Please enter your full name.",
@@ -161,7 +155,8 @@ const fieldClasses =
 const selectClasses = cn(
   fieldClasses,
   "appearance-none bg-[length:16px] bg-[position:right_16px_center] bg-no-repeat pr-11",
-  "bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22%3E%3Cpath d=%22M6 9l6 6 6-6%22 stroke=%22%2394A3B8%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E')]"
+  "bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22%3E%3Cpath d=%22M6 9l6 6 6-6%22 stroke=%22%2394A3B8%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E')]",
+  "[&:has(option[value='']:checked)]:text-[#94A3B8]"
 );
 
 function getString(formData: FormData, key: string) {
@@ -248,6 +243,7 @@ type BookCallFieldProps = {
   children: ReactNode;
   className?: string;
   error?: string;
+  helperText?: string;
   htmlFor?: string;
   label: string;
   required?: boolean;
@@ -258,6 +254,7 @@ function BookCallField({
   children,
   className,
   error,
+  helperText,
   htmlFor,
   label,
   required = false,
@@ -278,6 +275,9 @@ function BookCallField({
         {label}
         {required ? <span className="text-[#DC2626]"> *</span> : null}
       </label>
+      {helperText ? (
+        <p className="text-[13px] font-medium leading-snug text-[#64748B]">{helperText}</p>
+      ) : null}
       {children}
       {error ? (
         <p className="text-xs font-semibold leading-5 text-[#DC2626]" role="alert">
@@ -392,7 +392,6 @@ export function BookCallRequestForm({
             id="fullName"
             maxLength={120}
             name="fullName"
-            placeholder={t.placeholders.fullName}
             type="text"
           />
         </BookCallField>
@@ -409,7 +408,6 @@ export function BookCallRequestForm({
             id="businessName"
             maxLength={160}
             name="businessName"
-            placeholder={t.placeholders.businessName}
             type="text"
           />
         </BookCallField>
@@ -421,7 +419,6 @@ export function BookCallRequestForm({
             id="email"
             maxLength={254}
             name="email"
-            placeholder={t.placeholders.email}
             type="email"
           />
         </BookCallField>
@@ -433,7 +430,6 @@ export function BookCallRequestForm({
             id="phone"
             maxLength={25}
             name="phone"
-            placeholder={t.placeholders.phone}
             type="tel"
           />
         </BookCallField>
@@ -444,7 +440,9 @@ export function BookCallRequestForm({
           label={t.labels.businessType}
         >
           <select className={selectClasses} id="businessType" name="businessType" defaultValue="">
-            <option value="">{t.placeholders.businessType}</option>
+            <option disabled value="">
+              {t.selectPrompts.businessType}
+            </option>
             {businessTypeOptions[locale].map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -464,7 +462,9 @@ export function BookCallRequestForm({
             name="currentBookingSystem"
             defaultValue=""
           >
-            <option value="">{t.placeholders.currentBookingSystem}</option>
+            <option disabled value="">
+              {t.selectPrompts.currentBookingSystem}
+            </option>
             {bookingSystemOptions[locale].map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -475,6 +475,7 @@ export function BookCallRequestForm({
 
         <BookCallField
           error={errors.cancellationVolume}
+          helperText={t.helpers.cancellationVolume}
           htmlFor="cancellationVolume"
           label={t.labels.cancellationVolume}
           span="full"
@@ -485,7 +486,9 @@ export function BookCallRequestForm({
             name="cancellationVolume"
             defaultValue=""
           >
-            <option value="">{t.placeholders.cancellationVolume}</option>
+            <option disabled value="">
+              {t.selectPrompts.cancellationVolume}
+            </option>
             {cancellationOptions[locale].map((option) => (
               <option key={option} value={option}>
                 {option}
@@ -508,7 +511,6 @@ export function BookCallRequestForm({
             id="preferredTimeMessage"
             maxLength={1000}
             name="preferredTimeMessage"
-            placeholder={t.placeholders.preferredTimeMessage}
           />
         </BookCallField>
       </div>
