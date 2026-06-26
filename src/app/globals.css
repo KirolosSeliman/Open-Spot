@@ -2585,7 +2585,7 @@ select {
   transform: none;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .is-reveal-ready .open-spot-how-section [data-lunera-reveal] {
     opacity: 1;
   }
@@ -4472,7 +4472,7 @@ select {
   transform: translateY(-2px);
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .open-spot-how-section {
     overflow: visible;
   }
@@ -4481,7 +4481,9 @@ select {
     --how-stack-gap: 1.75rem;
     --how-stack-top: 7.5rem;
     --how-title-offset: 2.65rem;
-    grid-template-columns: minmax(17rem, 0.42fr) minmax(0, 0.58fr);
+    gap: clamp(2.5rem, 4vw, 4rem);
+    grid-template-columns: minmax(15rem, 0.42fr) minmax(0, 0.58fr);
+    max-width: 72rem;
     min-height: calc(100svh + 52rem);
   }
 
@@ -4548,6 +4550,14 @@ select {
     transform: translateY(-6px) scale(1.01);
   }
 
+  .open-spot-how-section.is-js-stack .open-spot-how-copy,
+  .open-spot-how-section.is-js-stack .open-spot-how-card-frame {
+    position: relative;
+    top: auto;
+  }
+}
+
+@media (min-width: 1024px) {
   .open-spot-metrics-grid {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }

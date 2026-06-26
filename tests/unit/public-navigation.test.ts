@@ -830,6 +830,7 @@ describe("public navigation", () => {
 
   it("uses the premium How It Works reference layout and step cards", () => {
     const homepage = source(homepagePath);
+    const stackScroll = source("src/lib/marketing/use-workflow-stack-scroll.ts");
     const styles = source("src/app/globals.css");
     const howSection = homepage.slice(
       homepage.indexOf("function HowItWorks("),
@@ -863,9 +864,16 @@ describe("public navigation", () => {
     expect(howSection).toContain('aria-labelledby="workflow-title"');
     expect(howSection).toContain('id="workflow-title"');
     expect(styles).toContain(".open-spot-how-shell");
-    expect(styles).toContain("grid-template-columns: minmax(17rem, 0.42fr) minmax(0, 0.58fr)");
+    expect(styles).toContain("grid-template-columns: minmax(15rem, 0.42fr) minmax(0, 0.58fr)");
     expect(styles).toContain(".open-spot-how-card-frame");
     expect(styles).toContain("position: sticky");
+    expect(homepage).toContain("useWorkflowStackScroll");
+    expect(stackScroll).toContain('WORKFLOW_STACK_DESKTOP_QUERY = "(min-width: 768px)"');
+    expect(stackScroll).toContain("window.requestAnimationFrame");
+    expect(stackScroll).toContain("translate3d(0, ${translateY.toFixed(2)}px, 0)");
+    expect(stackScroll).toContain("is-js-stack");
+    expect(styles).toContain("@media (min-width: 768px)");
+    expect(styles).toContain(".open-spot-how-section.is-js-stack");
     expect(styles).toContain("--how-stack-top");
     expect(styles).toContain("--how-title-offset");
     expect(styles).toContain("top: calc(var(--how-stack-top) + var(--how-title-offset))");
