@@ -215,7 +215,8 @@ describe("dashboard operational forms", () => {
         email: "kirolos@example.com",
         preferredLanguage: "fr",
         notes: null,
-        consentStatus: "opted_in"
+        consentStatus: "opted_in",
+        serviceId: null
       }
     });
 

@@ -27,7 +27,7 @@ export type CustomerCreateInput = {
   serviceId: string | null;
 };
 
-export type CustomerUpdateInput = Omit<CustomerCreateInput, "serviceId"> & {
+export type CustomerUpdateInput = CustomerCreateInput & {
   customerId: string;
 };
 
@@ -294,6 +294,7 @@ export function buildCustomerUpdateInput(input: {
   hasConsentProof?: unknown;
   existingConsentStatus?: unknown;
   organizationId?: unknown;
+  serviceId?: unknown;
 }): FormResult<CustomerUpdateInput> {
   const errors: string[] = [];
   const customerId = String(input.customerId ?? "").trim();
@@ -305,8 +306,7 @@ export function buildCustomerUpdateInput(input: {
       input.hasConsentProof === "on" ||
       input.hasConsentProof === "true" ||
       input.hasConsentProof === true ||
-      (selectedConsentStatus === "opted_in" && hasExistingOptIn),
-    serviceId: null
+      (selectedConsentStatus === "opted_in" && hasExistingOptIn)
   });
 
   if (!customerId) {
@@ -334,7 +334,8 @@ export function buildCustomerUpdateInput(input: {
       email: customerInput.value.email,
       preferredLanguage: customerInput.value.preferredLanguage,
       notes: customerInput.value.notes,
-      consentStatus: customerInput.value.consentStatus
+      consentStatus: customerInput.value.consentStatus,
+      serviceId: customerInput.value.serviceId
     }
   };
 }

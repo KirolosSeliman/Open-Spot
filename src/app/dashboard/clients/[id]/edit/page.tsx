@@ -15,7 +15,7 @@ import {
   restoreCustomerAction,
   updateCustomerAction
 } from "@/lib/dashboard/actions";
-import { loadCustomerEditData } from "@/lib/dashboard/operations-data";
+import { loadCustomerEditData, loadServices } from "@/lib/dashboard/operations-data";
 import { isDeletedCustomer } from "@/lib/customers/soft-delete";
 
 type EditClientPageProps = {
@@ -125,7 +125,10 @@ export default async function EditClientPage({
   searchParams
 }: EditClientPageProps) {
   const [{ id }, feedback] = await Promise.all([params, searchParams]);
-  const customer = await loadCustomerEditData(id);
+  const [customer, services] = await Promise.all([
+    loadCustomerEditData(id),
+    loadServices()
+  ]);
 
   if (!customer) {
     notFound();
@@ -275,7 +278,25 @@ export default async function EditClientPage({
             </label>
             <label className="flex items-end gap-2 text-sm font-bold">
               <input name="hasConsentProof" type="checkbox" />
-              Proof
+              Preuve du consentement
+            </label>
+            <label className="grid gap-2 text-sm font-bold md:col-span-2">
+              Intérêt de service
+              <select
+                className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
+                defaultValue={customer.serviceId ?? ""}
+                name="serviceId"
+              >
+                <option value="">Tous les services</option>
+                {services.map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.name}
+                  </option>
+                ))}
+              </select>
+              <span className="text-xs font-semibold leading-5 text-[var(--muted)]">
+                Met à jour les alertes de créneaux libres associées à ce client.
+              </span>
             </label>
             <label className="grid gap-2 text-sm font-bold md:col-span-6">
               Notes

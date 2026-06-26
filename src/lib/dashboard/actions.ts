@@ -834,7 +834,8 @@ export async function updateCustomerAction(formData: FormData) {
     notes: formData.get("notes"),
     consentStatus: formData.get("consentStatus"),
     hasConsentProof: formData.get("hasConsentProof"),
-    existingConsentStatus: existingConsent?.status
+    existingConsentStatus: existingConsent?.status,
+    serviceId: formData.get("serviceId")
   });
 
   if (!input.ok) {
@@ -919,6 +920,22 @@ export async function updateCustomerAction(formData: FormData) {
     redirectWithError(redirectPath, genericClientSaveError);
   }
 
+  try {
+    await ensureCustomerAlertListEntry({
+      supabase,
+      organizationId: organization.id,
+      customerId: input.value.customerId,
+      serviceId: input.value.serviceId
+    });
+  } catch (error) {
+    const safeAlertListError =
+      error instanceof Error && error.message === "Selected service is not available."
+        ? error.message
+        : "Client saved, but waitlist service interest update failed. Please retry.";
+
+    redirectWithError(redirectPath, safeAlertListError);
+  }
+
   const { error: auditError } = await supabase.from("audit_logs").insert({
     organization_id: organization.id,
     action: "customer.updated",
@@ -935,7 +952,8 @@ export async function updateCustomerAction(formData: FormData) {
         preferred_language:
           existingCustomer.preferred_language !== input.value.preferredLanguage,
         notes: existingCustomer.notes !== input.value.notes,
-        consent_status: true
+        consent_status: true,
+        service_interest: input.value.serviceId ?? "all_services"
       }
     }
   });
