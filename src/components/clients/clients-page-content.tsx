@@ -205,6 +205,38 @@ function getConsentIcon(status: string) {
   return "◷";
 }
 
+function FilterSelect({
+  label,
+  onChange,
+  options,
+  placeholder,
+  value
+}: {
+  label: string;
+  onChange: (value: string) => void;
+  options: Array<{ label: string; value: string }>;
+  placeholder: string;
+  value: string;
+}) {
+  return (
+    <label className="grid min-w-0 gap-1.5">
+      <span className="truncate text-xs font-semibold text-[#64748b]">{label}</span>
+      <select
+        className="h-11 w-full min-w-0 truncate rounded-full border border-[#e2e8f0] bg-white px-3 text-sm text-[#07142f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+        onChange={(event) => onChange(event.target.value)}
+        value={value}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 function ClientNotice({
   error,
   message,
@@ -245,10 +277,10 @@ function ServiceInterestIcons({ names }: { names: string[] }) {
   const overflow = names.length - visible.length;
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1">
       {visible.map((name) => (
         <span
-          className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f8fafc] text-[10px] font-bold uppercase text-[#64748b]"
+          className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#e2e8f0] bg-[#f8fafc] text-[10px] font-bold uppercase text-[#64748b]"
           key={name}
           title={name}
         >
@@ -256,7 +288,7 @@ function ServiceInterestIcons({ names }: { names: string[] }) {
         </span>
       ))}
       {overflow > 0 ? (
-        <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-full bg-[#eef4ff] px-2 text-xs font-bold text-[#2563ff]">
+        <span className="inline-flex h-6 min-w-6 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] px-1.5 text-[10px] font-bold text-[#2563ff]">
           +{overflow}
         </span>
       ) : null}
@@ -418,12 +450,12 @@ function PaginationControls({
   }, [currentPage, totalPages]);
 
   return (
-    <div className="flex flex-col gap-4 border-t border-[#e2e8f0] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm text-[#64748b]">
+    <div className="flex flex-col gap-3 border-t border-[#e2e8f0] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <p className="shrink-0 text-sm text-[#64748b]">
         Affichage de {start} à {end} sur {totalCount} client
         {totalCount > 1 ? "s" : ""}
       </p>
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex min-w-0 flex-wrap items-center gap-1.5 sm:justify-end">
         <button
           aria-label="Page précédente"
           className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#e2e8f0] bg-white text-[#64748b] transition hover:bg-[#f8fafc] disabled:opacity-40"
@@ -464,10 +496,10 @@ function PaginationControls({
         >
           ›
         </button>
-        <label className="ml-2 flex items-center gap-2 text-sm text-[#64748b]">
+        <label className="ml-1 flex shrink-0 items-center gap-2 text-sm text-[#64748b]">
           <span className="sr-only">Nombre de lignes par page</span>
           <select
-            className="min-h-9 rounded-lg border border-[#e2e8f0] bg-white px-2 text-sm font-semibold text-[#07142f]"
+            className="h-9 max-w-[7.5rem] rounded-full border border-[#e2e8f0] bg-white px-2 text-sm font-semibold text-[#07142f]"
             onChange={(event) => onPageSizeChange(Number(event.target.value))}
             value={pageSize}
           >
@@ -633,13 +665,13 @@ export function ClientsPageContent({
       </div>
 
       <section className="rounded-[16px] border border-[#e2e8f0] bg-white p-4 shadow-[0_8px_30px_rgba(15,23,42,0.04)] sm:p-5">
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.4fr)_repeat(4,minmax(0,0.55fr))_auto] xl:items-center">
-          <label className="grid gap-2">
+        <div className="grid gap-3">
+          <label className="grid min-w-0 gap-1.5">
             <span className="sr-only">Rechercher un client</span>
-            <div className="relative">
+            <div className="relative min-w-0">
               <svg
                 aria-hidden="true"
-                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]"
+                className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
@@ -649,91 +681,93 @@ export function ClientsPageContent({
                 <path d="M20 20l-3.5-3.5" />
               </svg>
               <input
-                className="min-h-11 w-full rounded-xl border border-[#e2e8f0] bg-white py-2 pl-10 pr-3 text-sm text-[#07142f] placeholder:text-[#94a3b8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+                className="h-11 w-full min-w-0 rounded-full border border-[#e2e8f0] bg-white py-2 pl-11 pr-10 text-sm text-[#07142f] placeholder:text-[#94a3b8] focus-visible:border-[#2563ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff]/20"
                 onChange={(event) => updateFilter("search", event.target.value)}
                 placeholder="Rechercher un client (nom, téléphone, email...)"
                 type="search"
                 value={filters.search}
               />
+              {filters.search ? (
+                <button
+                  aria-label="Effacer la recherche"
+                  className="absolute right-3 top-1/2 inline-flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full text-[#94a3b8] hover:bg-[#f8fafc] hover:text-[#07142f]"
+                  onClick={() => updateFilter("search", "")}
+                  type="button"
+                >
+                  ×
+                </button>
+              ) : null}
             </div>
           </label>
 
-          <label className="grid gap-2 text-sm font-semibold text-[#475569]">
-            <span>Langue</span>
-            <select
-              className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm text-[#07142f]"
-              onChange={(event) => updateFilter("language", event.target.value)}
+          <div className="grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <FilterSelect
+              label="Langue"
+              onChange={(value) => updateFilter("language", value)}
+              options={[
+                { label: "FR", value: "fr" },
+                { label: "EN", value: "en" }
+              ]}
+              placeholder="Toutes"
               value={filters.language}
-            >
-              <option value="">Langue</option>
-              <option value="fr">FR</option>
-              <option value="en">EN</option>
-            </select>
-          </label>
-
-          <label className="grid gap-2 text-sm font-semibold text-[#475569]">
-            <span>Consentement SMS</span>
-            <select
-              className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm text-[#07142f]"
-              onChange={(event) => updateFilter("consent", event.target.value)}
+            />
+            <FilterSelect
+              label="Consentement SMS"
+              onChange={(value) => updateFilter("consent", value)}
+              options={[
+                { label: "Consentement", value: "opted_in" },
+                { label: "En attente", value: "needs_consent" },
+                { label: "Désinscrit", value: "opted_out" }
+              ]}
+              placeholder="Tous"
               value={filters.consent}
-            >
-              <option value="">Consentement SMS</option>
-              <option value="opted_in">Consentement</option>
-              <option value="needs_consent">En attente</option>
-              <option value="opted_out">Désinscrit</option>
-            </select>
-          </label>
-
-          <label className="grid gap-2 text-sm font-semibold text-[#475569]">
-            <span>Intérêt de service</span>
-            <select
-              className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm text-[#07142f]"
-              onChange={(event) => updateFilter("serviceId", event.target.value)}
+            />
+            <FilterSelect
+              label="Intérêt de service"
+              onChange={(value) => updateFilter("serviceId", value)}
+              options={[
+                { label: "Tous les services", value: "__general__" },
+                ...serviceFilterOptions.map((name) => ({
+                  label: name,
+                  value: name
+                }))
+              ]}
+              placeholder="Tous"
               value={filters.serviceId}
-            >
-              <option value="">Services d&apos;intérêt</option>
-              <option value="__general__">Tous les services</option>
-              {serviceFilterOptions.map((name) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="grid gap-2 text-sm font-semibold text-[#475569]">
-            <span>Statut</span>
-            <select
-              className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm text-[#07142f]"
-              onChange={(event) => updateFilter("status", event.target.value)}
+            />
+            <FilterSelect
+              label="Statut"
+              onChange={(value) => updateFilter("status", value)}
+              options={[
+                { label: "Actif", value: "actif" },
+                { label: "En attente", value: "en_attente" },
+                { label: "Inactif", value: "inactif" }
+              ]}
+              placeholder="Tous"
               value={filters.status}
-            >
-              <option value="">Statut</option>
-              <option value="actif">Actif</option>
-              <option value="en_attente">En attente</option>
-              <option value="inactif">Inactif</option>
-            </select>
-          </label>
+            />
+          </div>
 
-          <button
-            aria-expanded={showAdvancedFilters}
-            className="inline-flex min-h-11 items-center justify-center gap-2 self-end rounded-xl border border-[#e2e8f0] bg-white px-4 text-sm font-bold text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
-            onClick={() => setShowAdvancedFilters((current) => !current)}
-            type="button"
-          >
-            <svg
-              aria-hidden="true"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
+          <div className="flex justify-end">
+            <button
+              aria-expanded={showAdvancedFilters}
+              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm font-semibold text-[#475569] transition hover:bg-[#f8fafc] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+              onClick={() => setShowAdvancedFilters((current) => !current)}
+              type="button"
             >
-              <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M2 14h4M10 6h4M18 16h4" />
-            </svg>
-            Filtres
-          </button>
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4 shrink-0"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M2 14h4M10 6h4M18 16h4" />
+              </svg>
+              Filtres
+            </button>
+          </div>
         </div>
 
         {showAdvancedFilters ? (
@@ -772,28 +806,28 @@ export function ClientsPageContent({
         {paginatedCustomers.length > 0 ? (
           <>
             <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-[#f8fafc] text-xs font-bold uppercase tracking-[0.06em] text-[#64748b]">
+              <table className="w-full min-w-[920px] table-fixed text-left text-sm">
+                <thead className="bg-[#f8fafc] text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748b]">
                   <tr>
-                    <th className="px-5 py-3">Nom</th>
-                    <th className="px-5 py-3">Téléphone</th>
+                    <th className="w-[18%] px-4 py-3">Nom</th>
+                    <th className="w-[12%] px-4 py-3">Téléphone</th>
                     {tab === "active" ? (
                       <>
-                        <th className="px-5 py-3">Email</th>
-                        <th className="px-5 py-3">Langue</th>
-                        <th className="px-5 py-3">Consentement SMS</th>
-                        <th className="px-5 py-3">Services</th>
-                        <th className="px-5 py-3">Statut</th>
-                        <th className="px-5 py-3">Dernière activité</th>
+                        <th className="w-[14%] px-4 py-3">Email</th>
+                        <th className="w-[7%] px-4 py-3">Langue</th>
+                        <th className="w-[14%] px-4 py-3">Consentement SMS</th>
+                        <th className="w-[8%] px-4 py-3">Services</th>
+                        <th className="w-[9%] px-4 py-3">Statut</th>
+                        <th className="w-[12%] px-4 py-3">Dernière activité</th>
                       </>
                     ) : (
                       <>
-                        <th className="px-5 py-3">Supprimé le</th>
-                        <th className="px-5 py-3">Raison</th>
-                        <th className="px-5 py-3">Consentement SMS</th>
+                        <th className="w-[14%] px-4 py-3">Supprimé le</th>
+                        <th className="w-[18%] px-4 py-3">Raison</th>
+                        <th className="w-[14%] px-4 py-3">Consentement SMS</th>
                       </>
                     )}
-                    <th className="px-5 py-3 text-right">Actions</th>
+                    <th className="w-[6%] px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#e2e8f0]">
@@ -802,87 +836,96 @@ export function ClientsPageContent({
                     const consentRequest = formatConsentRequestStatus(
                       customer.latestConsentRequestStatus
                     );
+                    const consentTitle =
+                      consentRequest &&
+                      (customer.consentStatus === "needs_consent" ||
+                        customer.consentStatus === "missing")
+                        ? `Demande : ${consentRequest}`
+                        : undefined;
 
                     return (
-                      <tr className="hover:bg-[#fcfdff]" key={customer.id}>
-                        <td className="px-5 py-4">
-                          <div className="flex items-center gap-3">
-                            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-xs font-black text-[#2563ff]">
+                      <tr className="align-middle hover:bg-[#fcfdff]" key={customer.id}>
+                        <td className="px-4 py-3">
+                          <div className="flex min-w-0 items-center gap-2.5">
+                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[11px] font-black text-[#2563ff]">
                               {getInitials(customer.full_name)}
                             </span>
-                            <span className="font-bold text-[#07142f]">
+                            <span
+                              className="truncate font-bold text-[#07142f]"
+                              title={customer.full_name}
+                            >
                               {customer.full_name}
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-4 text-[#64748b]">
+                        <td className="truncate px-4 py-3 text-xs text-[#64748b]">
                           {formatPhoneForDisplay(customer.phone_e164)}
                         </td>
                         {tab === "active" ? (
                           <>
-                            <td className="px-5 py-4 text-[#64748b]">
+                            <td
+                              className="truncate px-4 py-3 text-xs text-[#64748b]"
+                              title={customer.email ?? undefined}
+                            >
                               {customer.email ?? "—"}
                             </td>
-                            <td className="px-5 py-4">
-                              <span className="inline-flex rounded-md bg-[#eef4ff] px-2 py-1 text-xs font-bold uppercase text-[#2563ff]">
+                            <td className="px-4 py-3">
+                              <span className="inline-flex rounded-full bg-[#eef4ff] px-2 py-0.5 text-[10px] font-bold uppercase text-[#2563ff]">
                                 {customer.preferred_language}
                               </span>
                             </td>
-                            <td className="px-5 py-4">
-                              <div className="grid gap-1">
-                                <span
-                                  className={cn(
-                                    "inline-flex w-fit items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
-                                    getConsentBadgeClass(customer.consentStatus)
-                                  )}
-                                >
-                                  <span aria-hidden="true">
-                                    {getConsentIcon(customer.consentStatus)}
-                                  </span>
+                            <td className="px-4 py-3">
+                              <span
+                                className={cn(
+                                  "inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap",
+                                  getConsentBadgeClass(customer.consentStatus)
+                                )}
+                                title={consentTitle}
+                              >
+                                <span aria-hidden="true">
+                                  {getConsentIcon(customer.consentStatus)}
+                                </span>
+                                <span className="truncate">
                                   {formatConsentStatus(customer.consentStatus)}
                                 </span>
-                                {consentRequest &&
-                                (customer.consentStatus === "needs_consent" ||
-                                  customer.consentStatus === "missing") ? (
-                                  <span className="text-xs text-[#64748b]">
-                                    Demande : {consentRequest}
-                                  </span>
-                                ) : null}
-                              </div>
+                              </span>
                             </td>
-                            <td className="px-5 py-4">
+                            <td className="px-4 py-3">
                               <ServiceInterestIcons
                                 names={customer.serviceInterestNames}
                               />
                             </td>
-                            <td className="px-5 py-4">
-                              <span className="inline-flex items-center gap-2 text-sm font-semibold text-[#07142f]">
+                            <td className="px-4 py-3">
+                              <span className="inline-flex max-w-full items-center gap-1.5 text-xs font-semibold whitespace-nowrap text-[#07142f]">
                                 <span
                                   aria-hidden="true"
                                   className={cn(
-                                    "h-2.5 w-2.5 rounded-full",
+                                    "h-2 w-2 shrink-0 rounded-full",
                                     getStatusDotClass(clientStatus)
                                   )}
                                 />
                                 {getStatusLabel(clientStatus)}
                               </span>
                             </td>
-                            <td className="px-5 py-4 text-[#64748b]">
+                            <td className="truncate px-4 py-3 text-xs whitespace-nowrap text-[#64748b]">
                               {formatLastActivity(customer.updated_at)}
                             </td>
                           </>
                         ) : (
                           <>
-                            <td className="px-5 py-4 text-[#64748b]">
+                            <td className="truncate px-4 py-3 text-xs text-[#64748b]">
                               {formatDeletedAt(customer.deleted_at)}
                             </td>
-                            <td className="px-5 py-4 text-[#64748b]">
+                            <td
+                              className="truncate px-4 py-3 text-xs text-[#64748b]"
+                              title={customer.deleted_reason ?? undefined}
+                            >
                               {customer.deleted_reason ?? "Non précisée"}
                             </td>
-                            <td className="px-5 py-4">
+                            <td className="px-4 py-3">
                               <span
                                 className={cn(
-                                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-bold",
+                                  "inline-flex max-w-full items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap",
                                   getConsentBadgeClass(customer.consentStatus)
                                 )}
                               >
@@ -891,7 +934,7 @@ export function ClientsPageContent({
                             </td>
                           </>
                         )}
-                        <td className="px-5 py-4 text-right">
+                        <td className="px-4 py-3 text-right">
                           <ClientActionsMenu customer={customer} tab={tab} />
                         </td>
                       </tr>
@@ -968,28 +1011,30 @@ export function ClientsPageContent({
           </div>
 
           <form action={createCustomerAction} className="grid gap-5">
-            <div className="grid gap-4 md:grid-cols-3">
-              <label className="grid gap-2 text-sm font-semibold text-[#07142f]">
+            <div className="grid gap-4 lg:grid-cols-3">
+              <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
                 Nom complet *
                 <input
-                  className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm"
+                  className="h-11 w-full min-w-0 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   name="fullName"
                   placeholder="Ex. : Alex Martin"
                   required
                 />
               </label>
-              <PhoneNumberField
-                className="text-[#07142f]"
-                id="manual-client-phone"
-                inputClassName="rounded-xl border-[#e2e8f0]"
-                label="Téléphone *"
-                required
-                selectClassName="rounded-xl border-[#e2e8f0]"
-              />
-              <label className="grid gap-2 text-sm font-semibold text-[#07142f]">
+              <div className="min-w-0 lg:col-span-1">
+                <PhoneNumberField
+                  className="min-w-0 text-[#07142f]"
+                  id="manual-client-phone"
+                  inputClassName="rounded-full border-[#e2e8f0]"
+                  label="Téléphone *"
+                  required
+                  selectClassName="rounded-full border-[#e2e8f0] text-sm"
+                />
+              </div>
+              <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
                 Email
                 <input
-                  className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm"
+                  className="h-11 w-full min-w-0 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   name="email"
                   placeholder="exemple@email.com"
                   type="email"
@@ -997,11 +1042,11 @@ export function ClientsPageContent({
               </label>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <label className="grid gap-2 text-sm font-semibold text-[#07142f]">
+            <div className="grid gap-4 lg:grid-cols-2">
+              <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
                 Langue
                 <select
-                  className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm"
+                  className="h-11 w-full rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   defaultValue="fr"
                   name="preferredLanguage"
                 >
@@ -1009,10 +1054,10 @@ export function ClientsPageContent({
                   <option value="en">English</option>
                 </select>
               </label>
-              <label className="grid gap-2 text-sm font-semibold text-[#07142f]">
+              <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
                 Consentement SMS *
                 <select
-                  className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm"
+                  className="h-11 w-full rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   defaultValue="needs_consent"
                   name="consentStatus"
                 >
@@ -1025,11 +1070,11 @@ export function ClientsPageContent({
                   si le statut est « Consentement requis ».
                 </span>
               </label>
-              <div className="grid gap-2 text-sm font-semibold text-[#07142f]">
+              <div className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
                 <span>Preuve du consentement</span>
-                <label className="flex min-h-11 items-start gap-2 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-3 text-sm font-normal text-[#475569]">
-                  <input className="mt-1" name="hasConsentProof" type="checkbox" />
-                  <span>
+                <label className="flex min-h-[88px] items-start gap-3 rounded-2xl border border-[#e2e8f0] bg-[#f8fafc] px-4 py-3 text-sm font-normal text-[#475569]">
+                  <input className="mt-1 shrink-0" name="hasConsentProof" type="checkbox" />
+                  <span className="min-w-0">
                     J&apos;ai obtenu une preuve du consentement
                     <span className="mt-1 block text-xs leading-5 text-[#64748b]">
                       Cochez cette case si vous avez une preuve explicite du
@@ -1038,10 +1083,10 @@ export function ClientsPageContent({
                   </span>
                 </label>
               </div>
-              <label className="grid gap-2 text-sm font-semibold text-[#07142f]">
+              <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
                 Intérêt de service *
                 <select
-                  className="min-h-11 rounded-xl border border-[#e2e8f0] bg-white px-3 text-sm"
+                  className="h-11 w-full rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   name="serviceId"
                 >
                   <option value="">Tous les services</option>
@@ -1058,10 +1103,10 @@ export function ClientsPageContent({
               </label>
             </div>
 
-            <label className="grid gap-2 text-sm font-semibold text-[#07142f]">
+            <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
               Notes
               <textarea
-                className="min-h-24 rounded-xl border border-[#e2e8f0] bg-white px-3 py-3 text-sm"
+                className="min-h-24 w-full rounded-2xl border border-[#e2e8f0] bg-white px-4 py-3 text-sm"
                 name="notes"
                 placeholder="Notes internes (facultatif)"
               />
@@ -1069,7 +1114,7 @@ export function ClientsPageContent({
 
             <div className="flex justify-end">
               <button
-                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#2563ff] px-6 text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,255,0.24)] transition hover:bg-[#1d4ed8] sm:w-auto"
+                className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#2563ff] px-6 text-sm font-bold text-white shadow-[0_10px_24px_rgba(37,99,255,0.24)] transition hover:bg-[#1d4ed8] sm:w-auto"
                 type="submit"
               >
                 <svg

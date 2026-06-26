@@ -3,11 +3,13 @@ import {
   loadServices,
   loadWaitlistView
 } from "@/lib/dashboard/operations-data";
+import { loadClientsInsightsData } from "@/lib/clients/insights-data";
 import { normalizeCustomerListTab } from "@/lib/customers/soft-delete";
 import {
   ClientsPageContent,
   type ClientRow
 } from "@/components/clients/clients-page-content";
+import { ClientsInsightsSection } from "@/components/clients/clients-insights-section";
 
 // Actions menu and edit route `/dashboard/clients/${customer.id}/edit` live in ClientsPageContent.
 
@@ -46,10 +48,11 @@ function buildServiceInterestsByCustomer(
 export default async function ClientsPage({ searchParams }: ClientsPageProps) {
   const params = await searchParams;
   const tab = normalizeCustomerListTab(params.tab);
-  const [customers, services, waitlistView] = await Promise.all([
+  const [customers, services, waitlistView, insights] = await Promise.all([
     loadCustomersWithConsent({ onlyDeleted: tab === "deleted" }),
     loadServices(),
-    loadWaitlistView()
+    loadWaitlistView(),
+    tab === "active" ? loadClientsInsightsData() : Promise.resolve(null)
   ]);
   const serviceInterestsByCustomer = buildServiceInterestsByCustomer(
     waitlistView.entries
@@ -62,16 +65,21 @@ export default async function ClientsPage({ searchParams }: ClientsPageProps) {
   }));
 
   return (
-    <ClientsPageContent
-      customers={clientRows}
-      notices={{
-        error: params.error,
-        message: params.message,
-        notice: params.notice,
-        warning: params.warning
-      }}
-      services={services}
-      tab={tab}
-    />
+    <div className="grid gap-6">
+      <ClientsPageContent
+        customers={clientRows}
+        notices={{
+          error: params.error,
+          message: params.message,
+          notice: params.notice,
+          warning: params.warning
+        }}
+        services={services}
+        tab={tab}
+      />
+      {tab === "active" && insights ? (
+        <ClientsInsightsSection insights={insights} />
+      ) : null}
+    </div>
   );
 }
