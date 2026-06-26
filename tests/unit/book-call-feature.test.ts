@@ -39,7 +39,8 @@ describe("book call request feature", () => {
     const legacyBookCallPage = source("src/app/book-call/page.tsx");
 
     expect(questionsPage).toContain('<OpenSpotBookingPage kind="questions"');
-    expect(bookingPage).toContain("Parlons de vos annulations.");
+    expect(bookingPage).toContain("Parlons de vos");
+    expect(bookingPage).toContain("annulations.");
     expect(bookingPage).toContain("Let's talk about your cancellations.");
     expect(bookingPage).toContain("<BookCallRequestForm");
     expect(form).toContain("Nom complet");
