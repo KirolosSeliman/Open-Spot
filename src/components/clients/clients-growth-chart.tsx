@@ -20,13 +20,41 @@ const CHART = {
   paddingLeft: 44
 };
 
-function getYAxisMax(maxCount: number) {
-  if (maxCount <= 0) {
-    return 500;
+function getNiceScale(maxValue: number, targetTicks = 5) {
+  if (maxValue <= 0) {
+    return { max: 5, step: 1, ticks: [0, 1, 2, 3, 4, 5] };
   }
 
-  const rounded = Math.ceil(maxCount / 100) * 100;
-  return Math.max(500, rounded);
+  const rawStep = maxValue / targetTicks;
+  const magnitude = 10 ** Math.floor(Math.log10(rawStep));
+  const normalized = rawStep / magnitude;
+
+  let niceStep: number;
+  if (normalized <= 1) {
+    niceStep = 1;
+  } else if (normalized <= 2) {
+    niceStep = 2;
+  } else if (normalized <= 5) {
+    niceStep = 5;
+  } else {
+    niceStep = 10;
+  }
+
+  const step = niceStep * magnitude;
+  const max = Math.ceil(maxValue / step) * step;
+  const tickCount = Math.round(max / step);
+
+  return {
+    max,
+    step,
+    ticks: Array.from({ length: tickCount + 1 }, (_, index) => index * step)
+  };
+}
+
+function formatTickLabel(value: number) {
+  return new Intl.NumberFormat("fr-CA", {
+    maximumFractionDigits: 0
+  }).format(value);
 }
 
 function buildSmoothLinePath(points: Array<{ x: number; y: number }>) {
@@ -100,13 +128,14 @@ export function ClientsGrowthChart({
     const plotBottom = CHART.height - CHART.paddingBottom;
     const plotWidth = plotRight - plotLeft;
     const plotHeight = plotBottom - plotTop;
-    const maxCount = getYAxisMax(Math.max(...series.map((point) => point.count), 0));
-    const yTicks = Array.from({ length: 6 }, (_, index) => (maxCount / 5) * index);
+    const dataMax = Math.max(...series.map((point) => point.count), 0);
+    const yScale = getNiceScale(dataMax);
+    const yTicks = yScale.ticks;
 
     const points: ChartPoint[] = series.map((point, index) => ({
       ...point,
       x: plotLeft + (index / Math.max(series.length - 1, 1)) * plotWidth,
-      y: plotBottom - (point.count / maxCount) * plotHeight
+      y: plotBottom - (point.count / yScale.max) * plotHeight
     }));
 
     const xTickIndexes = series
@@ -119,7 +148,7 @@ export function ClientsGrowthChart({
       plotRight,
       plotTop,
       plotWidth,
-      maxCount,
+      yScale,
       yTicks,
       points,
       xTickIndexes,
@@ -163,7 +192,8 @@ export function ClientsGrowthChart({
 
         {chart.yTicks.map((tick) => {
           const y =
-            chart.plotBottom - (tick / chart.maxCount) * (chart.plotBottom - chart.plotTop);
+            chart.plotBottom -
+            (tick / chart.yScale.max) * (chart.plotBottom - chart.plotTop);
 
           return (
             <g key={tick}>
@@ -182,7 +212,7 @@ export function ClientsGrowthChart({
                 x={chart.plotLeft - 10}
                 y={y + 4}
               >
-                {tick}
+                {formatTickLabel(tick)}
               </text>
             </g>
           );
