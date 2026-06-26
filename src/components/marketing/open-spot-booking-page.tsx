@@ -82,25 +82,6 @@ function PhoneIcon() {
   );
 }
 
-function ChevronRightIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="h-4 w-4 shrink-0 text-[#94A3B8]"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <path
-        d="M9 18l6-6-6-6"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-}
-
 function ContextIcon({ type }: { type: "chart" | "calendar" | "users" | "message" }) {
   const common = {
     className: "h-[17px] w-[17px]",
@@ -223,10 +204,9 @@ export function OpenSpotBookingPage({
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#EEF4FF]">
                       <ContextIcon type={item.icon} />
                     </span>
-                    <span className="flex-1 text-[15px] font-semibold leading-snug text-[#07142F]">
+                    <span className="min-w-0 flex-1 text-[15px] font-semibold leading-snug text-[#07142F]">
                       {item.label}
                     </span>
-                    <ChevronRightIcon />
                   </li>
                 ))}
               </ul>

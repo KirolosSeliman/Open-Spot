@@ -23,8 +23,8 @@ const formCopy = {
       preferredTimeMessage: "Message / disponibilités préférées"
     },
     selectPrompts: {
-      businessType: "Sélectionner un type de commerce",
-      currentBookingSystem: "Sélectionner votre système actuel",
+      businessType: "Choisir un type",
+      currentBookingSystem: "Choisir un système",
       cancellationVolume: "Sélectionner une option"
     },
     helpers: {
@@ -59,8 +59,8 @@ const formCopy = {
       preferredTimeMessage: "Message / preferred time"
     },
     selectPrompts: {
-      businessType: "Select a business type",
-      currentBookingSystem: "Select your current system",
+      businessType: "Choose a type",
+      currentBookingSystem: "Choose a system",
       cancellationVolume: "Select an option"
     },
     helpers: {
@@ -154,9 +154,14 @@ const fieldClasses =
 
 const selectClasses = cn(
   fieldClasses,
-  "appearance-none bg-[length:16px] bg-[position:right_16px_center] bg-no-repeat pr-11",
+  "min-w-0 appearance-none bg-[length:14px] bg-[position:right_12px_center] bg-no-repeat pr-9",
   "bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22%3E%3Cpath d=%22M6 9l6 6 6-6%22 stroke=%22%2394A3B8%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22/%3E%3C/svg%3E')]",
   "[&:has(option[value='']:checked)]:text-[#94A3B8]"
+);
+
+const selectCompactClasses = cn(
+  selectClasses,
+  "px-3 text-[13px] leading-tight tracking-[-0.01em] sm:px-3.5 sm:text-[14px]"
 );
 
 function getString(formData: FormData, key: string) {
@@ -263,7 +268,7 @@ function BookCallField({
   return (
     <div
       className={cn(
-        "grid gap-2",
+        "grid min-w-0 gap-2",
         span === "full" && "sm:col-span-2",
         className
       )}
@@ -379,7 +384,7 @@ export function BookCallRequestForm({
       noValidate
       onSubmit={onSubmit}
     >
-      <div className="grid gap-[26px] sm:grid-cols-2 sm:gap-x-7">
+      <div className="grid gap-[26px] sm:grid-cols-2 sm:gap-x-7 [&>*]:min-w-0">
         <BookCallField
           error={errors.fullName}
           htmlFor="fullName"
@@ -439,7 +444,7 @@ export function BookCallRequestForm({
           htmlFor="businessType"
           label={t.labels.businessType}
         >
-          <select className={selectClasses} id="businessType" name="businessType" defaultValue="">
+          <select className={selectCompactClasses} id="businessType" name="businessType" defaultValue="">
             <option disabled value="">
               {t.selectPrompts.businessType}
             </option>
@@ -457,7 +462,7 @@ export function BookCallRequestForm({
           label={t.labels.currentBookingSystem}
         >
           <select
-            className={selectClasses}
+            className={selectCompactClasses}
             id="currentBookingSystem"
             name="currentBookingSystem"
             defaultValue=""
