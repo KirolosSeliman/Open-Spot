@@ -2195,12 +2195,12 @@ function footerHref(label: string) {
   if (normalized === "pricing") return "#pricing";
   if (normalized === "prix") return "#pricing";
   if (normalized === "faq") return "#faq";
-  if (normalized === "privacy") return "/privacy";
-  if (normalized === "confidentialite") return "/privacy";
-  if (normalized === "terms") return "/terms";
-  if (normalized === "conditions") return "/terms";
-  if (normalized === "sms consent") return "/privacy";
-  if (normalized === "consentement sms") return "/privacy";
+  if (normalized === "privacy") return "/politique-confidentialite";
+  if (normalized === "confidentialite") return "/politique-confidentialite";
+  if (normalized === "terms") return "/conditions-utilisation";
+  if (normalized === "conditions") return "/conditions-utilisation";
+  if (normalized === "sms consent") return "/consentement-sms";
+  if (normalized === "consentement sms") return "/consentement-sms";
 
   return "/";
 }
