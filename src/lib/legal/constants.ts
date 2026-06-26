@@ -1,3 +1,9 @@
+export const LEGAL_ROUTES = {
+  privacy: "/politique-confidentialite",
+  smsConsent: "/consentement-sms",
+  terms: "/conditions-utilisation"
+} as const;
+
 /** Commercial name displayed on legal pages — not necessarily the incorporated legal entity name. */
 export const LEGAL_ENTITY_NAME = "Open Spot";
 

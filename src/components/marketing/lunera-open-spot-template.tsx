@@ -344,8 +344,23 @@ const openSpotCopy = {
   footer: {
     line: "Recover last-minute cancellations by SMS.",
     columns: [
-      ["Product", "Features", "How it works", "Pricing", "FAQ"],
-      ["Legal", "Privacy", "Terms", "SMS consent"]
+      {
+        title: "Product",
+        links: [
+          { label: "Features", href: "#features" },
+          { label: "How it works", href: "#how-it-works" },
+          { label: "Pricing", href: "#pricing" },
+          { label: "FAQ", href: "#faq" }
+        ]
+      },
+      {
+        title: "Legal",
+        links: [
+          { label: "Privacy", href: "/politique-confidentialite" },
+          { label: "Terms", href: "/conditions-utilisation" },
+          { label: "SMS consent", href: "/consentement-sms" }
+        ]
+      }
     ]
   }
 } as const;
@@ -666,8 +681,23 @@ const openSpotFrCopy = {
   footer: {
     line: "Récupérez les annulations de dernière minute par SMS.",
     columns: [
-      ["Produit", "Fonctionnalités", "Comment ça marche", "Prix", "FAQ"],
-      ["Légal", "Confidentialité", "Conditions", "Consentement SMS"]
+      {
+        title: "Produit",
+        links: [
+          { label: "Fonctionnalités", href: "#features" },
+          { label: "Comment ça marche", href: "#how-it-works" },
+          { label: "Prix", href: "#pricing" },
+          { label: "FAQ", href: "#faq" }
+        ]
+      },
+      {
+        title: "Légal",
+        links: [
+          { label: "Confidentialité", href: "/politique-confidentialite" },
+          { label: "Conditions", href: "/conditions-utilisation" },
+          { label: "Consentement SMS", href: "/consentement-sms" }
+        ]
+      }
     ]
   }
 } as const;
@@ -2158,51 +2188,38 @@ function Footer({ t }: { t: TemplateCopy }) {
             © 2026 Open Spot. All rights reserved.
           </p>
         </div>
-        {t.footer.columns.map(([title, ...links]) => (
-          <FooterColumn key={title} links={links} title={title} />
+        {t.footer.columns.map((column) => (
+          <FooterColumn column={column} key={column.title} />
         ))}
       </div>
     </footer>
   );
 }
 
-function FooterColumn({ links, title }: { links: readonly string[]; title: string }) {
+function FooterColumn({
+  column
+}: {
+  column: {
+    title: string;
+    links: readonly { label: string; href: string }[];
+  };
+}) {
   return (
     <div>
-      <h3 className="text-sm font-black text-white">{title}</h3>
+      <h3 className="text-sm font-black text-white">{column.title}</h3>
       <div className="mt-4 grid gap-3">
-        {links.map((label) => (
+        {column.links.map((link) => (
           <Link
             className="text-sm font-bold text-white/50 transition hover:text-white"
-            href={footerHref(label)}
-            key={label}
+            href={link.href}
+            key={link.label}
           >
-            {label}
+            {link.label}
           </Link>
         ))}
       </div>
     </div>
   );
-}
-
-function footerHref(label: string) {
-  const normalized = label.toLowerCase();
-
-  if (normalized === "features") return "#features";
-  if (normalized === "fonctionnalites") return "#features";
-  if (normalized === "how it works") return "#how-it-works";
-  if (normalized === "comment ca marche") return "#how-it-works";
-  if (normalized === "pricing") return "#pricing";
-  if (normalized === "prix") return "#pricing";
-  if (normalized === "faq") return "#faq";
-  if (normalized === "privacy") return "/politique-confidentialite";
-  if (normalized === "confidentialite") return "/politique-confidentialite";
-  if (normalized === "terms") return "/conditions-utilisation";
-  if (normalized === "conditions") return "/conditions-utilisation";
-  if (normalized === "sms consent") return "/consentement-sms";
-  if (normalized === "consentement sms") return "/consentement-sms";
-
-  return "/";
 }
 
 function SectionHeading({

@@ -766,9 +766,13 @@ describe("public navigation", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
 
-    expect(homepage).toContain('["Product", "Features", "How it works", "Pricing", "FAQ"]');
-    expect(homepage).toContain('["Produit", "Fonctionnalités", "Comment ça marche", "Prix", "FAQ"]');
-    expect(homepage).toContain('if (normalized === "faq") return "#faq";');
+    expect(homepage).toContain('{ label: "Features", href: "#features" }');
+    expect(homepage).toContain('{ label: "FAQ", href: "#faq" }');
+    expect(homepage).toContain('{ label: "Fonctionnalités", href: "#features" }');
+    expect(homepage).toContain('{ label: "Comment ça marche", href: "#how-it-works" }');
+    expect(homepage).toContain('{ label: "Confidentialité", href: "/politique-confidentialite" }');
+    expect(homepage).toContain('{ label: "Conditions", href: "/conditions-utilisation" }');
+    expect(homepage).toContain('{ label: "Consentement SMS", href: "/consentement-sms" }');
     expect(homepage).toContain('<section className="open-spot-faq-section" id="faq">');
 
     const faqSectionStyles = styles.slice(
