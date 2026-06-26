@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { SiteHeaderShell } from "@/components/layout/site-header-shell";
 import { signOutAction } from "@/lib/auth/actions";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
 
@@ -87,7 +88,7 @@ export default async function AdminLayout({
         </aside>
 
         <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-20 -mx-3 border-b border-[var(--line)] bg-[#f7f5ef]/92 px-3 py-3 backdrop-blur lg:hidden">
+          <SiteHeaderShell className="lg:hidden">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <Link className="text-base font-black" href="/admin">
                 Admin Open Spot
@@ -113,7 +114,7 @@ export default async function AdminLayout({
                 </Link>
               </div>
             </div>
-          </header>
+          </SiteHeaderShell>
           <main className="mx-auto w-full max-w-6xl px-2 py-6 sm:px-4 lg:px-0 lg:py-8">
             {children}
           </main>

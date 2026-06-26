@@ -33,6 +33,8 @@ describe("public navigation", () => {
 
     expect(funnel).toContain("LuneraOpenSpotTemplate");
     expect(funnel).toContain("getRequestLocale");
+    expect(funnel).toContain("SiteHeader");
+    expect(funnel).toContain("withExternalHeader");
     expect(funnel).not.toContain("getMarketingLocale");
     expect(funnel).not.toContain("localeCookieName");
     expect(funnel).not.toContain("OpenSpotMetricsShowcase");
@@ -226,22 +228,22 @@ describe("public navigation", () => {
     expect(styles).toContain("@media (max-width: 1023px)");
   });
 
-  it("keeps the homepage header minimal for Lunera-style parity", () => {
+  it("uses the shared public SiteHeader on the homepage funnel", () => {
     const homepage = source(homepagePath);
+    const funnel = source("src/components/marketing/open-spot-funnel.tsx");
+    const siteHeader = source("src/components/layout/site-header.tsx");
 
-    expect(homepage).toContain('const loginHref = "/sign-in"');
-    expect(homepage).toContain('features: "Features"');
-    expect(homepage).toContain('how: "How it works"');
-    expect(homepage).toContain('pricing: "Pricing"');
-    expect(homepage).toContain('contact: "Contact"');
-    expect(homepage).toContain('primary: "Log in"');
-    expect(homepage).toContain("Se connecter");
-    expect(homepage).not.toContain("Get Early Access");
+    expect(funnel).toContain("<SiteHeader />");
+    expect(funnel).toContain("withExternalHeader");
+    expect(homepage).not.toContain("FloatingNavbar");
+    expect(homepage).not.toContain("reference-navbar");
+    expect(siteHeader).toContain('href="/sign-in"');
+    expect(siteHeader).toContain('href="/signup"');
+    expect(siteHeader).toContain("LanguageSwitcher");
+    expect(siteHeader).toContain("howItWorks");
+    expect(siteHeader).toContain("whyOpenSpot");
     expect(homepage).toContain('const getStartedHref = "/signup"');
     expect(homepage).toContain('const bookCallHref = "/book-call"');
-    expect(homepage).toContain("const contactHref = bookCallHref");
-    expect(homepage).toContain("LanguageSwitcher");
-    expect(homepage).toContain('initialLocale={locale}');
     expect(homepage).not.toContain('login: "Connexion"');
     expect(homepage).not.toContain('resources: "Guides"');
     expect(homepage).not.toContain('tools: "Tools"');
@@ -1058,38 +1060,25 @@ describe("public navigation", () => {
     expect(styles).toContain("@media (max-width: 767px)");
   });
 
-  it("keeps the mobile sign-in CTA inside the floating navbar", () => {
-    const homepage = source(homepagePath);
+  it("keeps the mobile sign-in CTA in the shared public header", () => {
+    const funnel = source("src/components/marketing/open-spot-funnel.tsx");
+    const siteHeader = source("src/components/layout/site-header.tsx");
     const styles = source("src/app/globals.css");
-    const compactHeaderStyles = styles.slice(styles.indexOf("@media (max-width: 767px)"));
 
-    expect(homepage).toContain("reference-navbar");
-    expect(homepage).toContain("reference-mobile-menu");
-    expect(homepage).toContain('href={loginHref}');
-    expect(compactHeaderStyles).toContain(".reference-mobile-menu");
-    expect(compactHeaderStyles).toContain("display: none");
-    expect(compactHeaderStyles).toContain(".reference-nav-links");
-    expect(compactHeaderStyles).toContain("display: none");
+    expect(funnel).toContain("<SiteHeader />");
+    expect(siteHeader).toContain('href="/sign-in"');
+    expect(siteHeader).toContain('href="/signup"');
+    expect(siteHeader).toContain("LanguageSwitcher");
     expect(styles).toContain("overflow-x: clip");
   });
 
-  it("prevents French navbar and hero phone badge text from overflowing", () => {
+  it("prevents French hero phone badge text from overflowing", () => {
     const styles = source("src/app/globals.css");
-    const navbarStyles = styles.slice(
-      styles.indexOf(".reference-navbar-shell"),
-      styles.indexOf(".reference-mobile-menu")
-    );
     const floatingStyles = styles.slice(
       styles.indexOf(".reference-floating-pill"),
       styles.indexOf(".reference-phone-fade")
     );
     const mobileStyles = styles.slice(styles.indexOf("@media (max-width: 767px)"));
-
-    expect(navbarStyles).toContain("max-width: min(1040px, calc(100vw - 32px))");
-    expect(navbarStyles).toContain("min-width: 0");
-    expect(navbarStyles).toContain("flex-shrink: 0");
-    expect(navbarStyles).not.toContain("width: 92px");
-    expect(navbarStyles).not.toContain("width: 84px");
 
     expect(floatingStyles).toContain("white-space: normal");
     expect(floatingStyles).toContain("overflow-wrap: anywhere");

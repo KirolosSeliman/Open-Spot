@@ -80,8 +80,7 @@ export function SetPasswordForm() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--background)]">
-      <section className="os-container-wide py-12 sm:py-16 lg:py-24">
+    <section className="os-container-wide py-12 sm:py-16 lg:py-24">
         <Card className="mx-auto max-w-lg p-5 sm:p-7">
           <p className="os-kicker">Création du mot de passe</p>
           <h1 className="os-page-title mt-4">Créez votre mot de passe.</h1>
@@ -113,6 +112,5 @@ export function SetPasswordForm() {
           </form>
         </Card>
       </section>
-    </main>
   );
 }

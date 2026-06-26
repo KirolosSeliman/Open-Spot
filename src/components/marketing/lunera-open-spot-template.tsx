@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent, PointerEvent, ReactNode } from "react";
 
 import { OpenSpotLogo } from "@/components/brand/open-spot-logo";
-import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { BookingFlowSection } from "@/components/marketing/booking-flow-section";
 import { OpenSpotMetricsShowcase } from "@/components/marketing/open-spot-metrics-showcase";
 import type { Locale } from "@/lib/i18n/types";
@@ -19,10 +18,8 @@ import {
 import { useWorkflowStackScroll } from "@/lib/marketing/use-workflow-stack-scroll";
 import { cn } from "@/lib/utils/cn";
 
-const loginHref = "/sign-in";
 const getStartedHref = "/signup";
 const bookCallHref = "/book-call";
-const contactHref = bookCallHref;
 
 const openSpotCopy = {
   nav: {
@@ -697,7 +694,13 @@ const socialProofAvatars = [
   }
 ] as const;
 
-export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
+export function LuneraOpenSpotTemplate({
+  locale,
+  withExternalHeader = false
+}: {
+  locale: Locale;
+  withExternalHeader?: boolean;
+}) {
   const t = copy[locale];
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -855,12 +858,14 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
 
   return (
     <div
-      className="lunera-template min-h-screen bg-white text-[#05070a]"
+      className={cn(
+        "lunera-template min-h-screen bg-white text-[#05070a]",
+        withExternalHeader && "lunera-template--with-site-header"
+      )}
       data-locale={locale}
       ref={rootRef}
       style={{ "--lunera-progress": 0 } as CSSProperties}
     >
-      <FloatingNavbar locale={locale} t={t} />
       <main>
         <Hero locale={locale} t={t} />
         <OpenSpotMetricsShowcase locale={locale} />
@@ -875,61 +880,6 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
       </main>
       <Footer t={t} />
     </div>
-  );
-}
-
-function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
-  return (
-    <header className="reference-navbar fixed inset-x-0 top-1 z-50 px-3">
-      <div className="reference-navbar-shell mx-auto" data-reference-part="mobile-navbar">
-        <Link
-          className="reference-brand-link"
-          href="/"
-        >
-          <OpenSpotLogo priority size="sm" variant="lockup" />
-        </Link>
-        <nav aria-label="Main navigation" className="reference-nav-links">
-          <NavLink href="#features">{t.nav.features}</NavLink>
-          <NavLink href="#how-it-works">{t.nav.how}</NavLink>
-          <NavLink href="#pricing">{t.nav.pricing}</NavLink>
-          <NavLink href={contactHref}>{t.nav.contact}</NavLink>
-        </nav>
-        <div className="reference-navbar-actions">
-          <div className="hidden lg:block">
-            <LanguageSwitcher initialLocale={locale} />
-          </div>
-          <details className="reference-mobile-menu">
-            <summary aria-label="Open navigation menu">
-              <MenuIcon />
-            </summary>
-            <div className="reference-mobile-menu-panel">
-              <Link href="#features">{t.nav.features}</Link>
-              <Link href="#how-it-works">{t.nav.how}</Link>
-              <Link href="#pricing">{t.nav.pricing}</Link>
-              <Link href={contactHref}>{t.nav.contact}</Link>
-              <LanguageSwitcher initialLocale={locale} />
-            </div>
-          </details>
-          <Link
-            className="reference-login-link"
-            href={loginHref}
-          >
-            {t.nav.primary}
-          </Link>
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function NavLink({ children, href }: { children: ReactNode; href: string }) {
-  return (
-    <Link
-      className="reference-nav-link"
-      href={href}
-    >
-      {children}
-    </Link>
   );
 }
 

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 import { OpenSpotLogo } from "@/components/brand/open-spot-logo";
+import { SiteHeaderShell } from "@/components/layout/site-header-shell";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { exitManagerModeAction } from "@/lib/admin/manager-mode-actions";
 import { signOutAction } from "@/lib/auth/actions";
@@ -173,7 +174,7 @@ export function DashboardShell({
         </aside>
 
         <div className="min-w-0 flex-1 pb-24 lg:pb-0">
-          <header className="sticky top-0 z-20 -mx-3 border-b border-[var(--line)] bg-[#f7f9fd]/92 px-3 py-3 backdrop-blur lg:hidden">
+          <SiteHeaderShell className="lg:hidden">
             <div className="flex items-center justify-between gap-3">
               <Link
                 className="flex items-center gap-2 rounded-xl text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
@@ -199,7 +200,7 @@ export function DashboardShell({
                 </button>
               </form>
             </div>
-          </header>
+          </SiteHeaderShell>
           {workspace.status === "ready" && workspace.adminManagerMode ? (
             <div className="mb-4 rounded-2xl border border-[#d9b35f] bg-[#fff7df] p-4 text-sm shadow-sm">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">

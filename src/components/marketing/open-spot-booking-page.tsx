@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 
 import { BookCallRequestForm } from "@/components/marketing/book-call-request-form";
 import type { BookCallRequestLocale } from "@/lib/book-call/validation";
@@ -11,9 +10,7 @@ type BookingKind = "ready" | "questions";
 const bookingCopy = {
   fr: {
     nav: {
-      switchLabel: "FR / EN",
-      home: "Accueil",
-      call: "Demander un appel"
+      home: "Accueil"
     },
     eyebrow: "Appel Open Spot",
     title: "Parlons de vos annulations.",
@@ -34,9 +31,7 @@ const bookingCopy = {
   },
   en: {
     nav: {
-      switchLabel: "EN / FR",
-      home: "Home",
-      call: "Request a call"
+      home: "Home"
     },
     eyebrow: "Open Spot call",
     title: "Let's talk about your cancellations.",
@@ -57,35 +52,17 @@ const bookingCopy = {
   }
 } as const;
 
-export function OpenSpotBookingPage({ kind }: { kind: BookingKind }) {
-  const [locale, setLocale] = useState<BookCallRequestLocale>("fr");
-  const t = bookingCopy[locale];
+export function OpenSpotBookingPage({
+  kind,
+  initialLocale = "fr"
+}: {
+  kind: BookingKind;
+  initialLocale?: BookCallRequestLocale;
+}) {
+  const t = bookingCopy[initialLocale];
 
   return (
-    <>
-      <header className="border-b border-white/70 bg-[#fbfaf7]/90 backdrop-blur-xl">
-        <div className="mx-auto flex min-h-16 w-full max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-          <Link
-            className="rounded-md text-base font-black text-[#14262e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
-            href="/"
-          >
-            Open Spot
-          </Link>
-          <div className="flex items-center gap-2">
-            <button
-              className="rounded-full border border-[#d8e3df] bg-white px-3 py-2 text-xs font-bold text-[#254047] shadow-sm transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
-              onClick={() => setLocale((current) => (current === "fr" ? "en" : "fr"))}
-              type="button"
-            >
-              {t.nav.switchLabel}
-            </button>
-            <Link className="os-primary-cta min-h-10 px-4 py-2 text-sm" href="#request-call">
-              {t.nav.call}
-            </Link>
-          </div>
-        </div>
-      </header>
-      <main className="min-h-screen bg-[linear-gradient(180deg,#fbfaf7_0%,#f3f8f5_48%,#ffffff_100%)] text-[#14262e]">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#fbfaf7_0%,#f3f8f5_48%,#ffffff_100%)] text-[#14262e]">
         <section className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-start lg:py-16">
           <div className="pt-2">
             <Link
@@ -132,10 +109,9 @@ export function OpenSpotBookingPage({ kind }: { kind: BookingKind }) {
           </div>
 
           <div id="request-call">
-            <BookCallRequestForm locale={locale} />
+            <BookCallRequestForm locale={initialLocale} />
           </div>
         </section>
       </main>
-    </>
   );
 }

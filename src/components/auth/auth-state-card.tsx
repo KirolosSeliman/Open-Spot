@@ -19,23 +19,21 @@ export function AuthStateCard({
   title
 }: AuthStateCardProps) {
   return (
-    <main className="min-h-screen bg-[var(--background)]">
-      <section className="os-container-wide py-12 sm:py-16 lg:py-24">
-        <Card className="mx-auto max-w-lg p-5 sm:p-7">
-          <p className="os-kicker">{kicker}</p>
-          <h1 className="os-page-title mt-4">{title}</h1>
-          <p className="os-body-large mt-4">{description}</p>
-          {children}
-          {action === undefined ? (
-            <ButtonLink className="mt-6 w-full sm:w-auto" href="/sign-in" variant="primary">
-              Retour à la connexion
-            </ButtonLink>
-          ) : (
-            action
-          )}
-        </Card>
-      </section>
-    </main>
+    <section className="os-container-wide py-12 sm:py-16 lg:py-24">
+      <Card className="mx-auto max-w-lg p-5 sm:p-7">
+        <p className="os-kicker">{kicker}</p>
+        <h1 className="os-page-title mt-4">{title}</h1>
+        <p className="os-body-large mt-4">{description}</p>
+        {children}
+        {action === undefined ? (
+          <ButtonLink className="mt-6 w-full sm:w-auto" href="/sign-in" variant="primary">
+            Retour à la connexion
+          </ButtonLink>
+        ) : (
+          action
+        )}
+      </Card>
+    </section>
   );
 }
 

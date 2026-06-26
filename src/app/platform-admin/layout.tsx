@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { SiteHeaderShell } from "@/components/layout/site-header-shell";
 import { requirePlatformAdmin } from "@/lib/platform-admin/auth";
 
 export const metadata: Metadata = {
@@ -28,8 +29,8 @@ export default async function PlatformAdminLayout({
 
   return (
     <div className="open-spot-dashboard-theme min-h-screen bg-[#f8f5ee] text-[var(--foreground)]">
-      <header className="border-b border-[var(--line)] bg-white/88">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:px-8">
+      <SiteHeaderShell className="border-b-0">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--primary)]">
@@ -63,7 +64,7 @@ export default async function PlatformAdminLayout({
             ))}
           </nav>
         </div>
-      </header>
+      </SiteHeaderShell>
       <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {children}
       </main>

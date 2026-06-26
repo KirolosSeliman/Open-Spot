@@ -1400,6 +1400,10 @@ select {
   position: relative;
 }
 
+.lunera-template--with-site-header .reference-hero-section {
+  padding-top: clamp(2.5rem, 5vw, 4rem);
+}
+
 .reference-hero-cloud {
   background: rgba(255, 255, 255, 0.92);
   border-radius: 999px;
@@ -6558,6 +6562,10 @@ select {
     overflow: hidden;
     padding: clamp(5.85rem, 24vw, 7rem) 20px calc(3.25rem + env(safe-area-inset-bottom));
     position: relative;
+  }
+
+  .lunera-template--with-site-header .reference-hero-section {
+    padding-top: clamp(2rem, 6vw, 3rem);
   }
 
   .reference-hero-cloud,
