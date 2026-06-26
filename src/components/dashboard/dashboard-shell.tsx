@@ -71,7 +71,7 @@ function getUserDisplayName(workspace: OrganizationWorkspace) {
   const emailPrefix = workspace.user.email?.split("@")[0]?.trim();
 
   if (emailPrefix) {
-    return emailPrefix.charAt(0).toUpperCase() + emailPrefix.slice(1);
+    return emailPrefix;
   }
 
   return workspace.organization.name;
@@ -137,22 +137,24 @@ export function DashboardShell({
   return (
     <div className="open-spot-dashboard-theme min-h-screen bg-[#f4f7fb] text-[#07142f]">
       <div className="mx-auto flex w-full max-w-[1600px] gap-0 lg:gap-0">
-        <aside className="sticky top-0 hidden h-screen w-[240px] shrink-0 flex-col border-r border-[#e2e8f0] bg-white px-4 py-5 lg:flex">
-          <Link
-            className="flex items-center gap-3 rounded-xl px-2 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
-            href="/"
-          >
-            <OpenSpotLogo
-              markClassName="h-9 w-9"
-              priority
-              size="md"
-              textClassName="text-base font-black text-[#07142f]"
-              variant="lockup"
-            />
-          </Link>
-          <p className="mt-1 px-2 text-xs font-semibold text-[#64748b]">
-            {t.dashboard.recoverySms}
-          </p>
+        <aside className="sticky top-0 hidden h-screen w-[280px] shrink-0 flex-col border-r border-[#e2e8f0] bg-[#f8fafc] px-5 py-6 lg:flex">
+          <div className="shrink-0">
+            <Link
+              className="flex items-center gap-3 rounded-xl px-1 py-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+              href="/"
+            >
+              <OpenSpotLogo
+                markClassName="h-9 w-9"
+                priority
+                size="md"
+                textClassName="text-base font-black text-[#07142f]"
+                variant="lockup"
+              />
+            </Link>
+            <p className="mt-1.5 px-1 text-xs font-medium text-[#64748b]">
+              {t.dashboard.recoverySms}
+            </p>
+          </div>
 
           <nav
             aria-label={
@@ -160,43 +162,46 @@ export function DashboardShell({
                 ? "Navigation du tableau de bord"
                 : "Dashboard navigation"
             }
-            className="mt-6 grid gap-0.5 overflow-y-auto pr-1"
+            className="mt-5 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1"
           >
-            {desktopNavItems.map((item) => {
-              const isActive = isActiveDashboardRoute(pathname, item);
+            <div className="grid gap-1">
+              {desktopNavItems.map((item) => {
+                const isActive = isActiveDashboardRoute(pathname, item);
 
-              return (
-                <Link
-                  aria-current={isActive ? "page" : undefined}
-                  className={cn(
-                    "flex min-h-10 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff] focus-visible:ring-offset-2",
-                    isActive
-                      ? "bg-[#eef4ff] text-[#2563ff]"
-                      : "text-[#475569] hover:bg-[#f8fafc] hover:text-[#07142f]"
-                  )}
-                  href={item.href}
-                  key={item.href}
-                >
-                  <span
+                return (
+                  <Link
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "shrink-0",
-                      isActive ? "text-[#2563ff]" : "text-[#94a3b8]"
+                      "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold leading-tight transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff] focus-visible:ring-offset-2",
+                      isActive
+                        ? "bg-[#eef4ff] text-[#2563ff]"
+                        : "text-[#475569] hover:bg-white/80 hover:text-[#07142f]"
                     )}
+                    href={item.href}
+                    key={item.href}
+                    title={item.label}
                   >
-                    <DashboardNavIcon href={item.href} />
-                  </span>
-                  {item.label}
-                </Link>
-              );
-            })}
+                    <span
+                      className={cn(
+                        "shrink-0",
+                        isActive ? "text-[#2563ff]" : "text-[#94a3b8]"
+                      )}
+                    >
+                      <DashboardNavIcon href={item.href} />
+                    </span>
+                    <span className="min-w-0 truncate">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </nav>
 
-          <div className="mt-auto grid gap-3 border-t border-[#e2e8f0] pt-4">
-            <div className="flex items-center gap-3 rounded-xl border border-[#e2e8f0] bg-[#f8fafc] px-3 py-3">
+          <div className="mt-4 shrink-0 grid gap-2.5 border-t border-[#e2e8f0] pt-4">
+            <div className="flex items-center gap-3 rounded-2xl border border-[#e2e8f0] bg-white px-3 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#2563ff] text-sm font-black text-white">
                 {getUserInitial(workspace)}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-[#07142f]">
                   {userDisplayName}
                 </p>
@@ -205,15 +210,19 @@ export function DashboardShell({
                 </p>
               </div>
             </div>
-            <LanguageSwitcher initialLocale={initialLocale} tone="light" />
+            <LanguageSwitcher
+              initialLocale={initialLocale}
+              layout="sidebar"
+              tone="light"
+            />
             <form action={signOutAction}>
               <button
-                className="flex w-full min-h-10 items-center justify-center gap-2 rounded-xl border border-[#e2e8f0] bg-white px-4 py-2.5 text-sm font-semibold text-[#475569] transition hover:bg-[#f8fafc] hover:text-[#07142f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+                className="flex w-full min-h-11 items-center justify-center gap-2 rounded-2xl border border-[#e2e8f0] bg-white px-4 py-2.5 text-sm font-semibold text-[#475569] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:bg-[#f8fafc] hover:text-[#07142f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
                 type="submit"
               >
                 <svg
                   aria-hidden="true"
-                  className="h-4 w-4"
+                  className="h-4 w-4 shrink-0"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="1.75"
