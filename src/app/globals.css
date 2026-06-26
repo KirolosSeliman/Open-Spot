@@ -6549,101 +6549,74 @@ select {
   }
 
   .reference-hero-section {
-    align-items: center;
     background:
+      linear-gradient(180deg, rgba(116, 204, 244, 0.18) 0%, rgba(255, 255, 255, 0.08) 42%, rgba(255, 255, 255, 0) 68%),
+      url("/lunera-style/sky-clouds.png") center calc(100% + 1.5rem) / min(920px, 145vw) auto no-repeat,
       radial-gradient(ellipse at 50% 55%, rgba(255, 255, 255, 0.72) 0%, rgba(232, 246, 255, 0.44) 34%, transparent 57%),
       linear-gradient(180deg, #b4d7f3 0%, #cce7f8 34%, #edf7fd 67%, #ffffff 92%);
-    display: flex;
-    flex-direction: column;
-    isolation: isolate;
     min-height: auto;
-    overflow: visible;
-    padding: clamp(5.75rem, 24vw, 6.85rem) 16px calc(2.75rem + env(safe-area-inset-bottom));
+    overflow: hidden;
+    padding: clamp(5.85rem, 24vw, 7rem) 20px calc(3.25rem + env(safe-area-inset-bottom));
     position: relative;
   }
 
-  .reference-hero-cloud {
-    display: block;
-    filter: blur(16px);
-    height: clamp(5.75rem, 24vw, 7.25rem);
-    opacity: 0.94;
-    top: auto;
-    width: clamp(8.5rem, 36vw, 11.5rem);
-    z-index: 3;
-  }
-
-  .reference-hero-cloud::before {
-    height: clamp(3.75rem, 16vw, 4.75rem);
-    left: clamp(1.75rem, 7vw, 2.5rem);
-    top: -1.35rem;
-    width: clamp(4.75rem, 20vw, 6.25rem);
-  }
-
-  .reference-hero-cloud::after {
-    height: clamp(3.25rem, 14vw, 4.1rem);
-    right: -1.35rem;
-    top: 1.15rem;
-    width: clamp(4rem, 17vw, 5.25rem);
-  }
-
-  .reference-hero-cloud-left {
-    bottom: clamp(10.5rem, 44vw, 14.5rem);
-    left: clamp(-3.5rem, -12vw, -2rem);
-  }
-
-  .reference-hero-cloud-right {
-    bottom: clamp(9.75rem, 41vw, 13.5rem);
-    right: clamp(-3rem, -10vw, -1.5rem);
+  .reference-hero-cloud,
+  .reference-phone-fade {
+    display: none !important;
   }
 
   .reference-hero-copy {
-    flex: 0 0 auto;
-    max-width: min(22rem, calc(100% - 2rem));
-    order: 1;
+    margin-inline: auto;
+    max-width: min(19.5rem, calc(100% - 2rem));
     position: relative;
     text-align: center;
-    width: 100%;
     z-index: 8;
   }
 
   .reference-hero-title {
-    font-size: clamp(2.05rem, 8.8vw, 2.55rem);
+    font-size: clamp(2.32rem, 10.2vw, 2.78rem);
     font-weight: 820;
     letter-spacing: -0.045em;
     line-height: 1.08;
-    max-width: min(22rem, calc(100% - 2rem));
+    margin-inline: auto;
+    max-width: min(19.5rem, calc(100% - 2rem));
   }
 
   .lunera-template[data-locale="fr"] .reference-hero-title {
-    font-size: clamp(1.92rem, 8.2vw, 2.35rem);
+    font-size: clamp(2.14rem, 9vw, 2.48rem);
     line-height: 1.04;
-    max-width: min(23rem, calc(100% - 1.5rem));
+    max-width: min(20.5rem, calc(100% - 1.5rem));
   }
 
   .reference-hero-subtitle {
     color: #465666;
-    font-size: clamp(0.94rem, 4vw, 1.08rem);
+    font-size: clamp(0.92rem, 4.05vw, 1.06rem);
     font-weight: 400;
     line-height: 1.48;
-    margin-top: clamp(1.1rem, 4.8vw, 1.45rem);
-    max-width: min(20rem, calc(100% - 2rem));
+    margin: clamp(1.25rem, 5.5vw, 1.55rem) auto 0;
+    max-width: min(19.5rem, calc(100% - 2rem));
   }
 
   .lunera-template[data-locale="fr"] .reference-hero-subtitle {
-    font-size: clamp(0.88rem, 3.75vw, 1rem);
-    max-width: min(21rem, calc(100% - 1.5rem));
+    font-size: clamp(0.86rem, 3.7vw, 0.98rem);
+    line-height: 1.4;
+    max-width: min(20.25rem, calc(100% - 1.5rem));
   }
 
   .reference-hero-stage {
-    --phone-mobile-scale: min(1, calc((100vw - 2rem) / 24.5rem));
-    --phone-render-height: 36.875rem;
-    --phone-render-width: 24.5rem;
-    flex: 0 0 auto;
-    height: auto;
-    margin: clamp(1.35rem, 5.5vw, 1.85rem) auto 0;
-    max-width: min(24.5rem, calc(100% - 1rem));
-    min-height: 0;
-    order: 2;
+    --mobile-phone-fade-height: 145px;
+    --mobile-phone-fade-opacity: 0.65;
+    --mobile-phone-fade-progress: 0;
+    --mobile-phone-mask-height: 118px;
+    --mobile-phone-mask-mid-height: 57px;
+    --mobile-phone-scale: 1;
+    --mobile-phone-y: 0px;
+    align-items: flex-start;
+    display: flex;
+    height: clamp(16.45rem, 68vw, 18.2rem);
+    justify-content: center;
+    margin: clamp(1.4rem, 5.8vw, 1.9rem) auto 0;
+    max-width: min(390px, 100%);
     overflow: visible;
     position: relative;
     width: 100%;
@@ -6651,7 +6624,31 @@ select {
   }
 
   .lunera-template[data-locale="fr"] .reference-hero-stage {
-    margin-top: clamp(1.1rem, 4.5vw, 1.45rem);
+    margin-top: clamp(1.15rem, 4.8vw, 1.55rem);
+  }
+
+  .reference-mobile-phone-fade {
+    background:
+      radial-gradient(ellipse at 2% 74%, rgba(255, 255, 255, 0.98) 0 4.5rem, rgba(255, 255, 255, 0.68) 6.4rem, rgba(255, 255, 255, 0) 9rem),
+      radial-gradient(ellipse at 98% 76%, rgba(255, 255, 255, 0.98) 0 4.9rem, rgba(255, 255, 255, 0.7) 6.8rem, rgba(255, 255, 255, 0) 9.35rem),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.62) 32%,
+        rgba(255, 255, 255, 0.92) 67%,
+        #ffffff 100%
+      );
+    bottom: -0.55rem;
+    display: block !important;
+    height: var(--mobile-phone-fade-height);
+    left: 50%;
+    opacity: var(--mobile-phone-fade-opacity);
+    pointer-events: none;
+    position: absolute;
+    transform: translate3d(-50%, calc(var(--mobile-phone-fade-progress) * -5px), 0);
+    width: 100vw;
+    will-change: opacity, transform;
+    z-index: 20;
   }
 
   .reference-floating-pill,
@@ -6659,89 +6656,188 @@ select {
     display: none;
   }
 
-  .reference-phone-viewport {
-    align-items: flex-start;
-    display: flex;
-    height: calc(var(--phone-render-height) * var(--phone-mobile-scale));
-    justify-content: center;
-    margin-inline: auto;
-    overflow: visible;
-    position: relative;
-    width: calc(var(--phone-render-width) * var(--phone-mobile-scale));
-    z-index: 14;
-  }
-
-  .reference-phone-viewport .reference-phone {
-    flex: 0 0 auto;
-    height: var(--phone-render-height);
+  .reference-phone {
+    background:
+      linear-gradient(92deg, #06070a 0%, #252932 45%, #07080a 72%, #616873 100%);
+    border-radius: clamp(2.75rem, 11.5vw, 3.875rem);
+    box-shadow:
+      0 34px 75px rgba(20, 33, 45, 0.22),
+      0 10px 20px rgba(0, 0, 0, 0.2),
+      inset 0 0 0 2px rgba(255, 255, 255, 0.42),
+      inset 0 0 0 9px #08090c;
+    height: min(145vw, 566px);
     left: auto;
-    margin: 0;
-    max-width: none;
+    margin: 0 auto;
+    max-height: 566px;
+    max-width: 318px;
+    overflow: visible;
+    padding: clamp(0.65rem, 2.9vw, 0.875rem);
     position: relative;
     top: auto;
-    transform: scale(var(--phone-mobile-scale)) perspective(1500px) rotateY(-3deg) rotateZ(1.35deg);
-    transform-origin: top center;
-    width: var(--phone-render-width);
+    transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale)) perspective(1500px) rotateY(-3deg) rotateZ(1.35deg);
+    transform-origin: 50% 6%;
+    width: min(76vw, 306px);
+    z-index: 14;
     -webkit-mask-image: linear-gradient(
       to bottom,
       #000 0%,
-      #000 68%,
-      rgba(0, 0, 0, 0.82) 78%,
-      rgba(0, 0, 0, 0.35) 90%,
+      #000 calc(100% - var(--mobile-phone-mask-height)),
+      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
     mask-image: linear-gradient(
       to bottom,
       #000 0%,
-      #000 68%,
-      rgba(0, 0, 0, 0.82) 78%,
-      rgba(0, 0, 0, 0.35) 90%,
+      #000 calc(100% - var(--mobile-phone-mask-height)),
+      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
     will-change: transform;
   }
 
-  .reference-mobile-phone-fade {
-    background:
-      radial-gradient(ellipse at 2% 88%, rgba(255, 255, 255, 0.98) 0 3.5rem, rgba(255, 255, 255, 0.68) 5rem, rgba(255, 255, 255, 0) 7.5rem),
-      radial-gradient(ellipse at 98% 90%, rgba(255, 255, 255, 0.98) 0 3.75rem, rgba(255, 255, 255, 0.7) 5.25rem, rgba(255, 255, 255, 0) 7.75rem),
-      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.55) 42%, rgba(255, 255, 255, 0.94) 72%, #ffffff 100%);
-    bottom: calc(var(--phone-render-height) * var(--phone-mobile-scale) * -0.02);
-    display: block !important;
-    height: clamp(7.5rem, 32vw, 9.5rem);
-    left: 50%;
-    opacity: 0.96;
-    pointer-events: none;
-    position: absolute;
-    transform: translateX(-50%);
-    width: min(120%, 26rem);
-    z-index: 20;
+  .reference-phone::after {
+    bottom: 2.625rem;
+    opacity: 0.85;
+    right: -0.3125rem;
+    top: 2.375rem;
+    width: 1.125rem;
   }
 
-  .reference-phone-fade {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.68) 24%, rgba(255, 255, 255, 0.96) 48%, #ffffff 76%);
-    display: block !important;
-    flex: 0 0 auto;
-    height: clamp(4.5rem, 19vw, 6rem);
-    inset-inline: 0;
-    margin-top: clamp(-4.75rem, -20vw, -3.5rem);
-    order: 3;
-    pointer-events: none;
-    position: relative;
-    top: auto;
-    width: 100%;
-    z-index: 24;
+  .reference-phone-side-button {
+    height: 6.25rem;
+    right: -0.5rem;
+    top: 42%;
+    width: 0.5rem;
+  }
+
+  .reference-phone-screen {
+    background: #ffffff;
+    border-radius: 3rem;
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+    padding: clamp(2.5rem, 10.5vw, 2.75rem) clamp(0.85rem, 3.8vw, 1.05rem) 1.05rem;
+  }
+
+  .reference-dynamic-island {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+    height: 1.94rem;
+    left: calc(50% - 0.2rem);
+    top: 0.75rem;
+    transform: translateX(-50%);
+    width: 6rem;
+  }
+
+  .reference-dynamic-island span {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  .reference-phone-app-header {
+    grid-template-columns: 1.5rem 1fr 1.5rem;
+    margin-bottom: 1.125rem;
+  }
+
+  .reference-phone-app-header svg {
+    height: 1.3125rem;
+    width: 1.3125rem;
+  }
+
+  .reference-phone-logo img {
+    height: 1.35rem;
+    width: 1.35rem;
+  }
+
+  .reference-phone-logo .open-spot-logo-wordmark {
+    font-size: 0.98rem;
+  }
+
+  .reference-detected-card {
+    border-radius: 1.125rem;
+    gap: 1.125rem;
+    min-height: 5.875rem;
+    padding: 1rem;
+  }
+
+  .reference-detected-icon {
+    height: 3.375rem;
+    width: 3.375rem;
+  }
+
+  .reference-detected-card strong {
+    font-size: 1rem;
+  }
+
+  .reference-detected-card p {
+    font-size: 0.8125rem;
+  }
+
+  .reference-sms-card {
+    border-radius: 1.125rem;
+    margin-top: 0.875rem;
+    padding: 0.6875rem 0.75rem 0.5rem;
+  }
+
+  .reference-sms-card > strong {
+    font-size: 0.75rem;
+  }
+
+  .reference-sms-message {
+    border-radius: 0.625rem;
+    font-size: 0.8rem;
+    min-height: 5rem;
+    padding: 0.75rem;
+  }
+
+  .reference-send-pill {
+    font-size: 0.625rem;
+    height: 1.9375rem;
+    width: 3.125rem;
+  }
+
+  .reference-reply-card {
+    border-radius: 1.125rem;
+    margin-top: 0.625rem;
+    padding: 0.8125rem 0.75rem 0.625rem;
+  }
+
+  .reference-reply-heading strong {
+    font-size: 0.75rem;
+  }
+
+  .reference-reply-item {
+    grid-template-columns: 1.875rem minmax(3.5rem, 1fr) auto auto auto;
+  }
+
+  .reference-reply-item img {
+    height: 1.875rem;
+    width: 1.875rem;
+  }
+
+  .reference-reply-item strong {
+    font-size: 0.72rem;
+  }
+
+  .reference-yes-badge {
+    font-size: 0.625rem;
+  }
+
+  .reference-reply-time {
+    font-size: 0.625rem;
+  }
+
+  .reference-confirm-pill {
+    font-size: 0.625rem;
+    padding: 0.4375rem 0.625rem;
   }
 
   .reference-hero-footer {
     align-items: center;
     display: grid;
-    flex: 0 0 auto;
     justify-items: center;
     left: auto;
-    margin: clamp(0.35rem, 1.5vw, 0.75rem) auto 0;
-    max-width: min(24.5rem, calc(100% - 1rem));
-    order: 4;
+    margin: clamp(1.15rem, 4.8vw, 1.7rem) auto 0;
+    max-width: min(21.375rem, calc(100% - 2rem));
     position: relative;
     right: auto;
     top: auto !important;
@@ -6750,64 +6846,55 @@ select {
   }
 
   .reference-trust-row {
-    align-items: center;
     flex-direction: row;
-    gap: clamp(1rem, 4.5vw, 1.625rem);
+    gap: clamp(0.88rem, 4.8vw, 1.625rem);
     justify-content: center;
-    max-width: none;
+    max-width: min(21.375rem, calc(100% - 2rem));
     text-align: left;
   }
 
   .reference-trust-row > div:last-child {
-    flex: 0 1 auto;
-    max-width: none;
+    flex: 1 1 0;
+    max-width: 12.8rem;
     min-width: 0;
   }
 
   .reference-avatar-stack span {
     border-width: 3px;
-    height: clamp(2.75rem, 12vw, 3.25rem);
-    margin-left: clamp(-0.55rem, -2.4vw, -0.75rem);
-    width: clamp(2.75rem, 12vw, 3.25rem);
-  }
-
-  .reference-stars {
-    gap: 0.2rem;
-    justify-content: flex-start;
+    height: 3.25rem;
+    margin-left: -0.75rem;
+    width: 3.25rem;
   }
 
   .reference-stars svg {
-    height: clamp(0.95rem, 4.2vw, 1.05rem);
-    width: clamp(0.95rem, 4.2vw, 1.05rem);
+    height: 1.0625rem;
+    width: 1.0625rem;
   }
 
   .reference-trust-row p {
     color: #3f4f60;
-    font-size: clamp(0.82rem, 3.6vw, 0.97rem);
+    font-size: clamp(0.84rem, 3.8vw, 0.97rem);
     font-weight: 460;
-    line-height: 1.2;
-    margin-top: 0.4rem;
+    line-height: 1.18;
+    margin-top: 0.4375rem;
     white-space: normal;
   }
 
   .reference-hero-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: clamp(0.65rem, 3vw, 1.125rem);
+    flex-direction: column;
+    gap: 0.875rem;
     justify-content: center;
-    margin-top: clamp(1.5rem, 6.5vw, 2.3rem);
-    width: 100%;
+    margin-top: clamp(1.5rem, 6.5vw, 2.3125rem);
+    width: min(21.375rem, calc(100% - 2rem));
   }
 
   .reference-cta-primary,
   .reference-cta-secondary {
-    flex: 1 1 auto;
-    font-size: clamp(0.92rem, 4vw, 1.05rem);
+    font-size: 1.0625rem;
     font-weight: 620;
-    height: clamp(3rem, 13vw, 3.625rem);
-    min-width: min(9.5rem, calc(50% - 0.5rem));
-    padding-inline: clamp(1rem, 4vw, 1.35rem);
-    width: auto;
+    height: 3.625rem;
+    min-width: 0;
+    width: 100%;
   }
 
   .reference-cta-primary {
@@ -6820,6 +6907,18 @@ select {
 
   .open-spot-metrics-showcase-page {
     padding-top: 3.6rem;
+  }
+}
+
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .reference-hero-stage {
+    --mobile-phone-fade-height: 175px;
+    --mobile-phone-fade-opacity: 0.82;
+    --mobile-phone-fade-progress: 0.5;
+    --mobile-phone-mask-height: 142px;
+    --mobile-phone-mask-mid-height: 68px;
+    --mobile-phone-scale: 1;
+    --mobile-phone-y: 0px;
   }
 }
 

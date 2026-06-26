@@ -814,7 +814,24 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
           return;
         }
 
-        return;
+        if (reduceMotion.matches) {
+          setFadeValues(0.82, 175, 0.5, 0, 1, 142);
+          return;
+        }
+
+        const rect = fadeStage.getBoundingClientRect();
+        const start = window.innerHeight * 0.66;
+        const end = window.innerHeight * 0.18;
+        const rawProgress = (start - rect.top) / Math.max(1, start - end);
+        const progress = Math.min(1, Math.max(0, rawProgress));
+        const easedProgress = progress * progress * (3 - 2 * progress);
+        const opacity = 0.65 + easedProgress * 0.35;
+        const height = 145 + easedProgress * 60;
+        const phoneY = easedProgress * -16;
+        const phoneRatio = 1 - easedProgress * 0.015;
+        const maskHeight = 118 + easedProgress * 54;
+
+        setFadeValues(opacity, height, progress, phoneY, phoneRatio, maskHeight);
       });
     }
 
@@ -964,9 +981,7 @@ function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
         label={t.hero.repliesLabel}
       />
       <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
-      <div className="reference-phone-viewport">
-        <PhoneProductMockup phone={t.hero.phone} />
-      </div>
+      <PhoneProductMockup phone={t.hero.phone} />
       <div className="reference-mobile-phone-fade" aria-hidden="true" />
     </div>
   );
