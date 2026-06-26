@@ -134,7 +134,7 @@ describe("organization onboarding", () => {
         hasUser: true,
         hasOrganization: false
       })
-    ).toBe("/onboarding");
+    ).toBe("/sign-in?notice=no_workspace");
     expect(
       decideWorkspaceRedirect({
         isConfigured: true,
@@ -144,13 +144,13 @@ describe("organization onboarding", () => {
     ).toBe("allow");
   });
 
-  it("only treats active organization memberships as workspace access", () => {
+  it("only treats active or invited organization memberships as workspace access", () => {
     const currentOrganizationSource = readFileSync(
       join(process.cwd(), "src", "lib", "organization", "current.ts"),
       "utf8"
     );
 
-    expect(currentOrganizationSource).toContain('.eq("status", "active")');
+    expect(currentOrganizationSource).toContain('in("status", workspaceMemberStatuses)');
   });
 
   it("hashes onboarding tokens without storing the raw value", () => {

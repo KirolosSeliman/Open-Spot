@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ResendOwnerInvitationButton } from "@/components/admin/resend-owner-invitation-button";
+import { OrganizationBusinessInfoEditor } from "@/components/admin/organization-business-info-editor";
 import { Card } from "@/components/ui/card";
 import {
   archiveOrganizationAction,
@@ -20,6 +21,7 @@ import {
 import { startManagerModeAction } from "@/lib/admin/manager-mode-actions";
 import { parseAdminDateRange, formatAdminDateInput } from "@/lib/admin/date-range";
 import { loadOrganizationAdminControlsPanel } from "@/lib/admin/organization-controls";
+import { loadAdminOrganizationBusinessInfo } from "@/lib/admin/organization-business-info-data";
 import { loadAdminOrganizationOverview } from "@/lib/admin/organizations";
 import { formatEstimatedSmsCost } from "@/lib/admin/sms-cost";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
@@ -134,6 +136,11 @@ export default async function AdminOrganizationDetailPage({
   const managerModeError = getSingleSearchParam(
     resolvedSearchParams.managerModeError
   );
+  const businessInfoError = getSingleSearchParam(
+    resolvedSearchParams.businessInfoError
+  );
+  const businessInfoUpdated =
+    getSingleSearchParam(resolvedSearchParams.businessInfoUpdated) === "1";
   const access = await requireCurrentPlatformAdmin();
 
   if (access.status === "unconfigured") {
@@ -166,6 +173,7 @@ export default async function AdminOrganizationDetailPage({
     admin: access.admin,
     organizationId: id
   });
+  const businessInfo = await loadAdminOrganizationBusinessInfo(id);
 
   return (
     <section className="grid gap-6">
@@ -317,6 +325,17 @@ export default async function AdminOrganizationDetailPage({
           />
         </div>
       </Card>
+
+      {businessInfo ? (
+        <Card className="p-5 sm:p-7">
+          <OrganizationBusinessInfoEditor
+            businessInfo={businessInfo}
+            canEdit={controlsPanel.permissions.canUpdateBusinessInfo}
+            errorMessage={businessInfoError}
+            success={businessInfoUpdated}
+          />
+        </Card>
+      ) : null}
 
       <Card>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

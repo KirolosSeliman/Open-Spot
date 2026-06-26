@@ -11,6 +11,10 @@ import {
 import { recordPlatformAdminAuditLog } from "@/lib/admin/audit";
 import { normalizeBillingTermsInput } from "@/lib/admin/billing-terms";
 import {
+  loadAdminOrganizationBusinessInfo
+} from "@/lib/admin/organization-business-info-data";
+import { organizationBusinessInfoFromFormData } from "@/lib/admin/organization-business-info";
+import {
   getSafeInternalRedirectPath,
   requireCurrentPlatformAdmin
 } from "@/lib/auth/platform-admin";
@@ -630,4 +634,120 @@ export async function runOrganizationHealthCheckAction(formData: FormData) {
     action: "admin.organization.health_check_ran",
     metadata: payload
   });
+}
+
+export async function updateOrganizationBusinessInfoAction(formData: FormData) {
+  const organizationId = stringField(formData, "organizationId");
+  const returnTo =
+    getSafeReturnTo(formData, `/admin/organizations/${organizationId}`) ??
+    `/admin/organizations/${organizationId}`;
+  const parsed = organizationBusinessInfoFromFormData(formData);
+
+  if (!parsed.ok) {
+    redirect(
+      `${returnTo}?businessInfoError=${encodeURIComponent(parsed.errors.join(" "))}`
+    );
+  }
+
+  const { admin, supabase } = await requireAdminAction({
+    organizationId,
+    action: "organization.update_business_info"
+  });
+
+  const existing = await loadAdminOrganizationBusinessInfo(organizationId);
+
+  if (!existing) {
+    redirect(
+      `${returnTo}?businessInfoError=${encodeURIComponent("Impossible de mettre à jour la compagnie pour le moment.")}`
+    );
+  }
+
+  const value = parsed.value;
+  const normalizedPhone = value.phone || null;
+  const normalizedEmail = value.email || null;
+
+  const { error: organizationError } = await supabase
+    .from("organizations")
+    .update({
+      name: value.name,
+      slug: value.slug,
+      email: normalizedEmail,
+      phone: normalizedPhone,
+      timezone: value.timezone,
+      default_language: value.defaultLanguage,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", organizationId);
+
+  if (organizationError) {
+    if (organizationError.code === "23505") {
+      redirect(
+        `${returnTo}?businessInfoError=${encodeURIComponent("Ce slug est déjà utilisé.")}`
+      );
+    }
+
+    redirect(
+      `${returnTo}?businessInfoError=${encodeURIComponent("Impossible d'enregistrer les modifications.")}`
+    );
+  }
+
+  await supabase
+    .from("organization_settings")
+    .update({
+      default_language: value.defaultLanguage,
+      updated_at: new Date().toISOString()
+    })
+    .eq("organization_id", organizationId);
+
+  if (existing.hasOnboardingSubmission) {
+    await supabase
+      .from("organization_onboarding_submissions")
+      .update({
+        business_name: value.name,
+        business_type: value.businessType || null,
+        booking_system: value.bookingSystem || null,
+        business_address: value.businessAddress || null,
+        public_contact_email: normalizedEmail,
+        public_contact_phone: normalizedPhone,
+        responsible_name: value.contactName || null,
+        responsible_email: normalizedEmail,
+        responsible_phone: normalizedPhone,
+        admin_notes: value.internalNotes || null,
+        sms_language: value.defaultLanguage,
+        updated_at: new Date().toISOString()
+      })
+      .eq("organization_id", organizationId);
+  }
+
+  if (existing.sourceRequestId) {
+    await supabase
+      .from("book_call_requests")
+      .update({
+        business_name: value.name,
+        full_name: value.contactName || "",
+        email: normalizedEmail ?? "",
+        phone: value.phone,
+        business_type: value.businessType || null,
+        current_booking_system: value.bookingSystem || null,
+        cancellation_volume: value.cancellationVolume || null,
+        internal_notes: value.internalNotes || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", existing.sourceRequestId);
+  }
+
+  await recordPlatformAdminAuditLog({
+    admin,
+    organizationId,
+    action: "admin.organization.business_info_updated",
+    entityType: "organizations",
+    entityId: organizationId,
+    metadata: {
+      name: value.name,
+      slug: value.slug
+    }
+  });
+
+  revalidatePath(`/admin/organizations/${organizationId}`);
+  redirect(`${returnTo}?businessInfoUpdated=1`);
 }

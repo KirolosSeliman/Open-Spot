@@ -154,6 +154,11 @@ export async function loadOrganizationAdminControlsPanel({
         accessLevel,
         action: "organization.update_billing_terms"
       }),
+      canUpdateBusinessInfo: canPerformPlatformAdminAction({
+        adminRole: admin.role,
+        accessLevel,
+        action: "organization.update_business_info"
+      }),
       canEndManagerSessions: canPerformPlatformAdminAction({
         adminRole: admin.role,
         accessLevel,

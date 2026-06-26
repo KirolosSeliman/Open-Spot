@@ -14,6 +14,7 @@ export type PlatformAdminAction =
   | "organization.archive"
   | "organization.unarchive"
   | "organization.update_billing_terms"
+  | "organization.update_business_info"
   | "organization.manage_manual_billing"
   | "compliance.mark_reviewed"
   | "compliance.mark_resolved"
@@ -58,6 +59,7 @@ export function canPerformPlatformAdminAction({
       [
         "organization.update_support_status",
         "organization.update_admin_note",
+        "organization.update_business_info",
         "compliance.mark_reviewed",
         "compliance.mark_resolved",
         "manager_session.end",
@@ -69,6 +71,7 @@ export function canPerformPlatformAdminAction({
   if (adminRole === "account_admin") {
     return [
       "organization.update_admin_note",
+      "organization.update_business_info",
       "organization.run_health_check",
       "manager_session.end"
     ].includes(action);

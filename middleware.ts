@@ -84,19 +84,6 @@ export async function middleware(request: NextRequest) {
     return redirectTo(request, "/sign-in");
   }
 
-  if (matchesRoutePrefix(pathname, "/dashboard")) {
-    const { data: membership, error: membershipError } = await supabase
-      .from("organization_members")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .limit(1);
-
-    if (membershipError || !membership || membership.length === 0) {
-      return redirectTo(request, "/onboarding");
-    }
-  }
-
   return response;
 }
 

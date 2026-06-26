@@ -69,6 +69,12 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
   const t = signInCopy[locale];
   const { auth_error, confirmed, email, error, notice, password_created, redirect } =
     await searchParams;
+  const noWorkspaceNotice =
+    notice === "no_workspace"
+      ? "Votre accès commerce n'est pas encore activé. Contactez Open Spot si vous pensez qu'il s'agit d'une erreur."
+      : notice
+        ? decodeURIComponent(notice)
+        : null;
   const authErrorMessage = getAuthErrorMessage(auth_error);
   const legacyLinkError = isAuthLinkErrorMessage(error);
   const linkErrorMessage = authErrorMessage ?? (legacyLinkError ? error : null);
@@ -77,9 +83,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
       ? "Mot de passe créé avec succès. Vous pouvez maintenant vous connecter."
       : confirmed === "1"
       ? getAuthErrorMessage("confirmed")
-      : notice
-        ? decodeURIComponent(notice)
-        : null;
+      : null;
 
   return (
     <PageShell>
@@ -94,6 +98,12 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
           {successMessage ? (
             <p className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
               {successMessage}
+            </p>
+          ) : null}
+
+          {noWorkspaceNotice ? (
+            <p className="mb-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm font-bold text-amber-800">
+              {noWorkspaceNotice}
             </p>
           ) : null}
 

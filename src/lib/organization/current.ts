@@ -5,6 +5,7 @@ import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
 import { getActivePlatformAdminManagerMode } from "@/lib/admin/manager-mode";
 import { isSupabaseConfigured } from "@/lib/env/config";
 import { decideWorkspaceRedirect } from "@/lib/organization/onboarding";
+import { workspaceMemberStatuses } from "@/lib/organization/membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type ActiveOrganization = {
@@ -146,7 +147,7 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
     .from("organization_members")
     .select("organization_id, role")
     .eq("user_id", currentUser.id)
-    .eq("status", "active")
+    .in("status", workspaceMemberStatuses)
     // Temporary single-org mode still orders deterministically for old data and
     // future switcher work.
     .order("created_at", { ascending: true })
@@ -219,11 +220,46 @@ export async function getActiveOrganizationWorkspace(): Promise<OrganizationWork
   };
 }
 
-export async function redirectAuthenticatedUserByWorkspace() {
+export async function resolvePostAuthDestination() {
   if (!isSupabaseConfigured()) {
-    return;
+    return "/sign-in";
   }
 
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return "/sign-in";
+  }
+
+  const adminAccess = await getCurrentPlatformAdminAccess();
+
+  if (adminAccess.status === "authorized") {
+    return "/admin";
+  }
+
+  const { data: membership, error } = await supabase
+    .from("organization_members")
+    .select("id")
+    .eq("user_id", user.id)
+    .in("status", workspaceMemberStatuses)
+    .limit(1);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  if (membership && membership.length > 0) {
+    return "/dashboard";
+  }
+
+  return "/sign-in?notice=no_workspace";
+}
+
+export async function redirectAuthenticatedUserByWorkspace() {
+  const destination = await resolvePostAuthDestination();
   const supabase = await createSupabaseServerClient();
   const {
     data: { user }
@@ -233,35 +269,16 @@ export async function redirectAuthenticatedUserByWorkspace() {
     return;
   }
 
-  const adminAccess = await getCurrentPlatformAdminAccess();
-
-  if (adminAccess.status === "authorized") {
-    redirect("/admin");
+  if (destination.startsWith("/sign-in")) {
+    return;
   }
 
-  const { data: membership, error } = await supabase
-    .from("organization_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .limit(1);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (membership && membership.length > 0) {
-    redirect("/dashboard");
-  }
-
-  redirect("/onboarding");
+  redirect(destination);
 }
 
 export async function requireOrganizationOnboardingUser() {
   if (!isSupabaseConfigured()) {
-    return {
-      status: "unconfigured" as const
-    };
+    redirect("/sign-in");
   }
 
   const supabase = await createSupabaseServerClient();
@@ -273,26 +290,5 @@ export async function requireOrganizationOnboardingUser() {
     redirect("/sign-in");
   }
 
-  const { data: membership, error } = await supabase
-    .from("organization_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("status", "active")
-    .limit(1);
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (membership && membership.length > 0) {
-    redirect("/dashboard");
-  }
-
-  return {
-    status: "ready" as const,
-    user: {
-      id: user.id,
-      email: user.email
-    }
-  };
+  redirect(await resolvePostAuthDestination());
 }

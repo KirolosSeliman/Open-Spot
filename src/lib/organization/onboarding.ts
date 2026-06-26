@@ -114,7 +114,7 @@ export function decideWorkspaceRedirect({
   }
 
   if (!hasOrganization) {
-    return "/onboarding";
+    return "/sign-in?notice=no_workspace";
   }
 
   return "allow";
