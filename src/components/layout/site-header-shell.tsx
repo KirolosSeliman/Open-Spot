@@ -20,15 +20,8 @@ export function SiteHeaderShell({
         className
       )}
     >
-      <div className="mx-auto max-w-6xl">
-        <div
-          className={cn(
-            "rounded-[2rem] border border-[var(--line)] bg-white/90 px-3 py-3 shadow-[var(--card-shadow)] sm:px-4",
-            innerClassName
-          )}
-        >
-          {children}
-        </div>
+      <div className={cn("mx-auto max-w-6xl px-1 sm:px-2", innerClassName)}>
+        {children}
       </div>
     </header>
   );
