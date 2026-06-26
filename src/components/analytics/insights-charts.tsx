@@ -98,7 +98,7 @@ function ChartCard({
         </div>
         {headerRight}
       </div>
-      <div className="mt-4">{children}</div>
+      <div className="mt-4 min-h-[248px]">{children}</div>
     </article>
   );
 }
@@ -368,6 +368,9 @@ function GroupedBarChart({ series }: { series: InsightsDualSeriesPoint[] }) {
   );
 }
 
+const FUNNEL_COLORS = ["#dbeafe", "#bfdbfe", "#93c5fd", "#60a5fa"] as const;
+const FUNNEL_WIDTH_RATIOS = [1, 0.82, 0.64, 0.48] as const;
+
 function FunnelChart({
   steps,
   globalConversionRate
@@ -379,45 +382,104 @@ function FunnelChart({
     return <EmptyChartState message="Aucune annulation enregistrée pour cette période." />;
   }
 
-  const maxCount = Math.max(...steps.map((step) => step.count), 1);
+  const width = 360;
+  const stageHeight = 42;
+  const gap = 5;
+  const sidePad = 28;
+  const funnelMaxWidth = width - sidePad * 2;
+  const totalHeight = steps.length * stageHeight + (steps.length - 1) * gap;
 
   return (
-    <div className="grid gap-3">
-      {steps.map((step, index) => {
-        const width = `${Math.max(28, (step.count / maxCount) * 100)}%`;
+    <div className="flex min-h-[248px] flex-col justify-between">
+      <svg
+        aria-label="Entonnoir de performance du processus"
+        className="mx-auto h-auto w-full max-w-[360px]"
+        role="img"
+        viewBox={`0 0 ${width} ${totalHeight + 8}`}
+      >
+        {steps.map((step, index) => {
+          const y = index * (stageHeight + gap);
+          const topRatio = FUNNEL_WIDTH_RATIOS[index] ?? 0.4;
+          const bottomRatio =
+            FUNNEL_WIDTH_RATIOS[index + 1] ?? topRatio * 0.82;
+          const topWidth = funnelMaxWidth * topRatio;
+          const bottomWidth = funnelMaxWidth * bottomRatio;
+          const centerX = width / 2;
+          const points = [
+            [centerX - topWidth / 2, y],
+            [centerX + topWidth / 2, y],
+            [centerX + bottomWidth / 2, y + stageHeight],
+            [centerX - bottomWidth / 2, y + stageHeight]
+          ]
+            .map((point) => point.join(","))
+            .join(" ");
 
-        return (
-          <div className="grid gap-1" key={step.label}>
-            <div className="flex items-center justify-between gap-3 text-sm">
-              <span className="font-semibold text-[#07142f]">{step.label}</span>
-              <span className="font-black text-[#07142f]">{step.count}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <div
-                className="h-8 rounded-r-full bg-[#bfdbfe]"
-                style={{ width }}
+          return (
+            <g key={step.label}>
+              <polygon
+                fill={FUNNEL_COLORS[index] ?? FUNNEL_COLORS[3]}
+                points={points}
               />
+              <text
+                fill="#334155"
+                fontSize="11"
+                fontWeight="600"
+                textAnchor="start"
+                x={centerX - topWidth / 2 + 12}
+                y={y + stageHeight / 2 + 4}
+              >
+                {step.label}
+              </text>
+              <text
+                fill="#07142f"
+                fontSize="14"
+                fontWeight="800"
+                textAnchor="middle"
+                x={centerX}
+                y={y + stageHeight / 2 + 5}
+              >
+                {step.count}
+              </text>
               {step.rateLabel ? (
-                <span className="text-xs font-bold text-[#64748b]">
+                <text
+                  fill="#64748b"
+                  fontSize="11"
+                  fontWeight="700"
+                  textAnchor="start"
+                  x={centerX + topWidth / 2 + 12}
+                  y={y + stageHeight / 2 + 4}
+                >
                   {step.rateLabel}
-                </span>
+                </text>
               ) : null}
-            </div>
-            {index < steps.length - 1 ? (
-              <div className="ml-2 h-3 border-l border-dashed border-[#cbd5e1]" />
-            ) : null}
-          </div>
-        );
-      })}
-      <p className="pt-2 text-sm font-bold text-[#2563ff]">
-        Taux global de conversion{" "}
-        {globalConversionRate.toLocaleString("fr-CA", {
-          maximumFractionDigits: 1
+            </g>
+          );
         })}
-        %
+      </svg>
+      <p className="mt-3 text-center text-sm text-[#475569]">
+        Taux global de conversion{" "}
+        <span className="font-black text-[#2563ff]">
+          {globalConversionRate.toLocaleString("fr-CA", {
+            maximumFractionDigits: 1
+          })}
+          %
+        </span>
       </p>
     </div>
   );
+}
+
+function formatCompactPointsTrend(trend: InsightsTrend) {
+  if (trend.display === "—") {
+    return "—";
+  }
+
+  const match = trend.display.match(/([↑↓→])\s*([\d\s,\.]+)\s*pt/);
+  if (match) {
+    return `${match[1]} ${match[2].trim()} pt`;
+  }
+
+  return trend.display.split(" vs ")[0] ?? "—";
 }
 
 function ResponseDonutChart({
@@ -433,39 +495,80 @@ function ResponseDonutChart({
 }) {
   const total = Math.max(responses + noResponse, 1);
   const responsePct = (responses / total) * 100;
-  const gradient = `conic-gradient(#2563ff 0 ${responsePct}%, #e2e8f0 ${responsePct}% 100%)`;
+  const noResponsePct = 100 - responsePct;
+  const size = 168;
+  const strokeWidth = 20;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const responseArc = (responsePct / 100) * circumference;
+  const compactTrend = formatCompactPointsTrend(trend);
 
   return (
-    <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-center">
-      <div
-        className="relative grid h-40 w-40 shrink-0 place-items-center rounded-full"
-        style={{ background: gradient }}
-      >
-        <div className="grid h-28 w-28 place-items-center rounded-full bg-white text-center shadow-inner">
-          <span className="text-2xl font-black text-[#07142f]">
-            {rate.toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %
-          </span>
-          <TrendBadge trend={trend} />
+    <div className="flex min-h-[248px] flex-col items-center justify-center gap-6 sm:flex-row sm:items-center sm:gap-8">
+      <div className="relative shrink-0" style={{ height: size, width: size }}>
+        <svg
+          aria-hidden="true"
+          className="h-full w-full -rotate-90"
+          viewBox={`0 0 ${size} ${size}`}
+        >
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            fill="none"
+            r={radius}
+            stroke="#e2e8f0"
+            strokeWidth={strokeWidth}
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            fill="none"
+            r={radius}
+            stroke="#2563ff"
+            strokeDasharray={`${responseArc} ${circumference - responseArc}`}
+            strokeLinecap="round"
+            strokeWidth={strokeWidth}
+          />
+        </svg>
+        <div className="absolute inset-0 grid place-items-center text-center">
+          <div>
+            <p className="text-[1.65rem] font-black leading-none text-[#07142f]">
+              {rate.toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %
+            </p>
+            <p
+              className={cn(
+                "mt-1.5 text-xs font-bold",
+                trend.tone === "positive" && "text-[#15803d]",
+                trend.tone === "negative" && "text-[#b91c1c]",
+                trend.tone === "neutral" && "text-[#64748b]"
+              )}
+            >
+              {compactTrend}
+            </p>
+          </div>
         </div>
       </div>
-      <div className="grid min-w-0 flex-1 gap-3">
-        <div className="flex items-center justify-between gap-3">
+
+      <div className="grid w-full min-w-0 max-w-[220px] gap-4 sm:flex-1">
+        <div className="grid gap-1">
           <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#2563ff]" />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#2563ff]" />
             <span className="text-sm font-medium text-[#475569]">Réponses</span>
           </div>
-          <span className="text-sm font-bold text-[#07142f]">
-            {responses} ({responsePct.toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %)
-          </span>
+          <p className="pl-4 text-sm font-bold text-[#07142f]">
+            {responses} (
+            {responsePct.toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %)
+          </p>
         </div>
-        <div className="flex items-center justify-between gap-3">
+        <div className="grid gap-1">
           <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#e2e8f0]" />
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#e2e8f0]" />
             <span className="text-sm font-medium text-[#475569]">Sans réponse</span>
           </div>
-          <span className="text-sm font-bold text-[#07142f]">
-            {noResponse} ({(100 - responsePct).toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %)
-          </span>
+          <p className="pl-4 text-sm font-bold text-[#07142f]">
+            {noResponse} (
+            {noResponsePct.toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %)
+          </p>
         </div>
       </div>
     </div>
