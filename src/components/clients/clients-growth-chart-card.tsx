@@ -6,19 +6,20 @@ import { ClientsGrowthChart } from "@/components/clients/clients-growth-chart";
 import {
   buildGrowthSeries,
   GROWTH_CHART_PERIODS,
-  type GrowthChartPeriodDays
+  type GrowthChartPeriodDays,
+  type WaitlistEnrollment
 } from "@/lib/clients/growth-series";
 
 export function ClientsGrowthChartCard({
-  enrollmentTimestamps
+  enrollments
 }: {
-  enrollmentTimestamps: string[];
+  enrollments: WaitlistEnrollment[];
 }) {
   const [periodDays, setPeriodDays] = useState<GrowthChartPeriodDays>(30);
 
   const series = useMemo(
-    () => buildGrowthSeries(enrollmentTimestamps, periodDays),
-    [enrollmentTimestamps, periodDays]
+    () => buildGrowthSeries(enrollments, periodDays),
+    [enrollments, periodDays]
   );
 
   return (

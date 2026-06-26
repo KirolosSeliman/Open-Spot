@@ -4,7 +4,11 @@ import {
   loadCustomersWithConsent,
   loadWaitlistView
 } from "@/lib/dashboard/operations-data";
-import { buildGrowthSeries } from "@/lib/clients/growth-series";
+import {
+  buildGrowthSeries,
+  buildUniqueWaitlistEnrollments,
+  type WaitlistEnrollment
+} from "@/lib/clients/growth-series";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { getPublicAppOrigin } from "@/lib/url/public-origin";
 import { buildPublicWaitlistUrl } from "@/lib/waitlist/links";
@@ -30,7 +34,7 @@ export type ClientsInsightsData = {
     fullLabel: string;
     count: number;
   }>;
-  enrollmentTimestamps: string[];
+  enrollmentTimestamps: WaitlistEnrollment[];
   publicLink: {
     ready: boolean;
     publicUrl: string | null;
@@ -104,10 +108,10 @@ export async function loadClientsInsightsData(): Promise<ClientsInsightsData | n
   ).length;
   const optedOut = unsubscribes;
 
-  const enrollmentTimestamps = [
-    ...customers.map((customer) => customer.created_at),
-    ...waitlistView.entries.map((entry) => entry.created_at)
-  ];
+  const waitlistEnrollments = buildUniqueWaitlistEnrollments(
+    customers,
+    waitlistView.entries
+  );
 
   const publicOrigin = getPublicAppOrigin({ requestHeaders });
   const slug = workspace.organization.slug;
@@ -124,7 +128,7 @@ export async function loadClientsInsightsData(): Promise<ClientsInsightsData | n
 
   return {
     overview: {
-      totalEnrolled: waitlistView.entries.length,
+      totalEnrolled: waitlistEnrollments.length,
       activeOptIn: optedIn,
       newThisWeek,
       newThisWeekTrendPercent: percentChange(newThisWeek, newPreviousWeek),
@@ -140,8 +144,8 @@ export async function loadClientsInsightsData(): Promise<ClientsInsightsData | n
       optedOut,
       total: customers.length
     },
-    growthSeries: buildGrowthSeries(enrollmentTimestamps),
-    enrollmentTimestamps,
+    growthSeries: buildGrowthSeries(waitlistEnrollments),
+    enrollmentTimestamps: waitlistEnrollments,
     publicLink: {
       ready: Boolean(publicOrigin.isReady && publicUrl && qrUrl),
       publicUrl,
