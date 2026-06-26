@@ -809,12 +809,12 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
         animationFrame = 0;
 
         if (!mobile.matches) {
-          setFadeValues(0.65, 145, 0, 0, 1, 118);
+          setFadeValues(0.65, 145, 0, 0, 1, 88);
           return;
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(0.82, 175, 0.5, 0, 1, 142);
+          setFadeValues(0.82, 155, 0.5, 0, 1, 102);
           return;
         }
 
@@ -825,10 +825,10 @@ export function LuneraOpenSpotTemplate({ locale }: { locale: Locale }) {
         const progress = Math.min(1, Math.max(0, rawProgress));
         const easedProgress = progress * progress * (3 - 2 * progress);
         const opacity = 0.65 + easedProgress * 0.35;
-        const height = 145 + easedProgress * 60;
+        const height = 120 + easedProgress * 45;
         const phoneY = easedProgress * -16;
         const phoneRatio = 1 - easedProgress * 0.015;
-        const maskHeight = 118 + easedProgress * 54;
+        const maskHeight = 72 + easedProgress * 38;
 
         setFadeValues(opacity, height, progress, phoneY, phoneRatio, maskHeight);
       });
@@ -885,9 +885,6 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
           className="reference-brand-link"
           href="/"
         >
-          <span className="reference-mobile-logo-mark" aria-hidden="true">
-            <span />
-          </span>
           <OpenSpotLogo size="sm" variant="lockup" />
         </Link>
         <nav aria-label="Main navigation" className="reference-nav-links">
@@ -1031,14 +1028,16 @@ function MetricCard({
 function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] }) {
   return (
     <div className="reference-phone" data-reference-part="mobile-phone">
-      <div className="reference-phone-side-button" />
+      <div aria-hidden="true" className="reference-phone-side-rail" />
+      <div aria-hidden="true" className="reference-phone-side-button" />
       <div className="reference-phone-screen">
+        <div aria-hidden="true" className="reference-phone-glare" />
         <div className="reference-dynamic-island" data-reference-part="dynamic-island">
           <span />
         </div>
         <div className="reference-phone-app-header">
           <MenuIcon />
-          <strong>{phone.title}</strong>
+          <OpenSpotLogo className="reference-phone-logo" size="sm" variant="lockup" />
           <GearIcon />
         </div>
         <div className="reference-detected-card" data-reference-part="cancellation-card">
