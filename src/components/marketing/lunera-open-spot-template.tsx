@@ -885,7 +885,7 @@ function FloatingNavbar({ locale, t }: { locale: Locale; t: TemplateCopy }) {
           className="reference-brand-link"
           href="/"
         >
-          <OpenSpotLogo size="sm" variant="lockup" />
+          <OpenSpotLogo priority size="sm" variant="lockup" />
         </Link>
         <nav aria-label="Main navigation" className="reference-nav-links">
           <NavLink href="#features">{t.nav.features}</NavLink>
