@@ -39,6 +39,7 @@ type PhoneNumberFieldProps = {
   inputClassName?: string;
   selectClassName?: string;
   isLarge?: boolean;
+  placeholder?: string;
 };
 
 function formatForCountry(callingCode: string, value: string) {
@@ -59,12 +60,16 @@ export function PhoneNumberField({
   className,
   inputClassName,
   selectClassName,
-  isLarge = false
+  isLarge = false,
+  placeholder
 }: PhoneNumberFieldProps) {
   const [countryIso, setCountryIso] = useState(defaultCountryCode);
   const selectedCountry =
     phoneCountries.find((country) => country.code === countryIso) ??
     phoneCountries[0];
+  const phonePlaceholder =
+    placeholder ??
+    (selectedCountry.callingCode === "+1" ? "514-249-4425" : "Phone number");
   const [nationalNumber, setNationalNumber] = useState(() =>
     formatForCountry(selectedCountry.callingCode, defaultNationalNumber)
   );
@@ -121,11 +126,7 @@ export function PhoneNumberField({
           inputMode="tel"
           name={nationalName}
           onChange={handleNationalChange}
-          placeholder={
-            selectedCountry.callingCode === "+1"
-              ? "514-249-4425"
-              : "Phone number"
-          }
+          placeholder={phonePlaceholder}
           required={required}
           type="tel"
           value={nationalNumber}

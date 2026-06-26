@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from "react";
 
-import type { ClientsInsightsData } from "@/lib/clients/insights-data";
+import type { GrowthSeriesPoint } from "@/lib/clients/growth-series";
+import { getGrowthChartXTickInterval } from "@/lib/clients/growth-series";
 
-type GrowthPoint = ClientsInsightsData["growthSeries"][number];
+type GrowthPoint = GrowthSeriesPoint;
 
 type ChartPoint = GrowthPoint & {
   x: number;
@@ -117,7 +118,7 @@ function getNearestPointIndex(
 export function ClientsGrowthChart({
   series
 }: {
-  series: ClientsInsightsData["growthSeries"];
+  series: GrowthSeriesPoint[];
 }) {
   const [activeIndex, setActiveIndex] = useState(series.length - 1);
 
@@ -138,9 +139,12 @@ export function ClientsGrowthChart({
       y: plotBottom - (point.count / yScale.max) * plotHeight
     }));
 
+    const xTickInterval = getGrowthChartXTickInterval(series.length);
     const xTickIndexes = series
       .map((_, index) => index)
-      .filter((index) => index % 7 === 0 || index === series.length - 1);
+      .filter(
+        (index) => index % xTickInterval === 0 || index === series.length - 1
+      );
 
     return {
       plotBottom,

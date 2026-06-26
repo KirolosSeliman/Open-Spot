@@ -4,6 +4,7 @@ import {
   loadCustomersWithConsent,
   loadWaitlistView
 } from "@/lib/dashboard/operations-data";
+import { buildGrowthSeries } from "@/lib/clients/growth-series";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { getPublicAppOrigin } from "@/lib/url/public-origin";
 import { buildPublicWaitlistUrl } from "@/lib/waitlist/links";
@@ -29,6 +30,7 @@ export type ClientsInsightsData = {
     fullLabel: string;
     count: number;
   }>;
+  enrollmentTimestamps: string[];
   publicLink: {
     ready: boolean;
     publicUrl: string | null;
@@ -39,63 +41,12 @@ export type ClientsInsightsData = {
   lastUpdatedAt: string;
 };
 
-function startOfDay(date: Date) {
-  const value = new Date(date);
-  value.setHours(0, 0, 0, 0);
-  return value;
-}
-
-function getDateKey(date: Date) {
-  return date.toLocaleDateString("fr-CA");
-}
-
-function formatShortLabel(date: Date) {
-  return new Intl.DateTimeFormat("fr-CA", {
-    day: "numeric",
-    month: "short"
-  }).format(date);
-}
-
 function percentChange(current: number, previous: number) {
   if (previous === 0) {
     return current > 0 ? 100 : null;
   }
 
   return Math.round(((current - previous) / previous) * 100);
-}
-
-function formatFullLabel(date: Date) {
-  return new Intl.DateTimeFormat("fr-CA", {
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  }).format(date);
-}
-
-function buildGrowthSeries(
-  timestamps: string[],
-  days = 30
-): ClientsInsightsData["growthSeries"] {
-  const now = startOfDay(new Date());
-  const series: ClientsInsightsData["growthSeries"] = [];
-
-  for (let offset = days - 1; offset >= 0; offset -= 1) {
-    const day = new Date(now);
-    day.setDate(day.getDate() - offset);
-    const endOfDay = new Date(day);
-    endOfDay.setHours(23, 59, 59, 999);
-
-    const count = timestamps.filter((value) => new Date(value) <= endOfDay).length;
-
-    series.push({
-      dateKey: getDateKey(day),
-      label: formatShortLabel(day),
-      fullLabel: formatFullLabel(day),
-      count
-    });
-  }
-
-  return series;
 }
 
 export async function loadClientsInsightsData(): Promise<ClientsInsightsData | null> {
@@ -190,6 +141,7 @@ export async function loadClientsInsightsData(): Promise<ClientsInsightsData | n
       total: customers.length
     },
     growthSeries: buildGrowthSeries(enrollmentTimestamps),
+    enrollmentTimestamps,
     publicLink: {
       ready: Boolean(publicOrigin.isReady && publicUrl && qrUrl),
       publicUrl,

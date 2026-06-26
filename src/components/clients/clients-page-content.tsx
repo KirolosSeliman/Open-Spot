@@ -1125,7 +1125,6 @@ export function ClientsPageContent({
                 <input
                   className="h-11 w-full min-w-0 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   name="fullName"
-                  placeholder="Ex. : Alex Martin"
                   required
                 />
               </label>
@@ -1135,6 +1134,7 @@ export function ClientsPageContent({
                   id="manual-client-phone"
                   inputClassName="rounded-full border-[#e2e8f0]"
                   label="Téléphone *"
+                  placeholder=""
                   required
                   selectClassName="rounded-full border-[#e2e8f0] text-sm"
                 />
@@ -1144,7 +1144,6 @@ export function ClientsPageContent({
                 <input
                   className="h-11 w-full min-w-0 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   name="email"
-                  placeholder="exemple@email.com"
                   type="email"
                 />
               </label>
@@ -1216,7 +1215,6 @@ export function ClientsPageContent({
               <textarea
                 className="min-h-24 w-full rounded-2xl border border-[#e2e8f0] bg-white px-4 py-3 text-sm"
                 name="notes"
-                placeholder="Notes internes (facultatif)"
               />
             </label>
 
