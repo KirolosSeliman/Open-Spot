@@ -16,12 +16,19 @@ export function SiteHeaderShell({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 bg-[rgba(247,249,253,0.78)] px-3 py-3 backdrop-blur",
+        "pointer-events-none sticky top-0 z-40 px-3 py-3",
         className
       )}
     >
-      <div className={cn("mx-auto max-w-6xl px-1 sm:px-2", innerClassName)}>
-        {children}
+      <div className="pointer-events-auto mx-auto max-w-6xl">
+        <div
+          className={cn(
+            "rounded-[2rem] border border-[var(--line)] bg-white/90 px-3 py-3 shadow-[var(--card-shadow)] backdrop-blur sm:px-4",
+            innerClassName
+          )}
+        >
+          {children}
+        </div>
       </div>
     </header>
   );
