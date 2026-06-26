@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 
 import type { GrowthSeriesPoint } from "@/lib/clients/growth-series";
-import { getGrowthChartXTickInterval } from "@/lib/clients/growth-series";
+import {
+  getGrowthChartXTickIndexes,
+  getGrowthChartYScale
+} from "@/lib/clients/growth-series";
 
-type GrowthPoint = GrowthSeriesPoint;
-
-type ChartPoint = GrowthPoint & {
+type ChartPoint = GrowthSeriesPoint & {
   x: number;
   y: number;
 };
@@ -21,68 +22,20 @@ const CHART = {
   paddingLeft: 44
 };
 
-function getNiceScale(maxValue: number, targetTicks = 5) {
-  if (maxValue <= 0) {
-    return { max: 5, step: 1, ticks: [0, 1, 2, 3, 4, 5] };
-  }
-
-  const rawStep = maxValue / targetTicks;
-  const magnitude = 10 ** Math.floor(Math.log10(rawStep));
-  const normalized = rawStep / magnitude;
-
-  let niceStep: number;
-  if (normalized <= 1) {
-    niceStep = 1;
-  } else if (normalized <= 2) {
-    niceStep = 2;
-  } else if (normalized <= 5) {
-    niceStep = 5;
-  } else {
-    niceStep = 10;
-  }
-
-  const step = niceStep * magnitude;
-  const max = Math.ceil(maxValue / step) * step;
-  const tickCount = Math.round(max / step);
-
-  return {
-    max,
-    step,
-    ticks: Array.from({ length: tickCount + 1 }, (_, index) => index * step)
-  };
-}
-
 function formatTickLabel(value: number) {
   return new Intl.NumberFormat("fr-CA", {
     maximumFractionDigits: 0
   }).format(value);
 }
 
-function buildSmoothLinePath(points: Array<{ x: number; y: number }>) {
+function buildLinePath(points: Array<{ x: number; y: number }>) {
   if (points.length === 0) {
     return "";
   }
 
-  if (points.length === 1) {
-    return `M ${points[0].x} ${points[0].y}`;
-  }
-
-  let path = `M ${points[0].x} ${points[0].y}`;
-
-  for (let index = 0; index < points.length - 1; index += 1) {
-    const point0 = points[index - 1] ?? points[index];
-    const point1 = points[index];
-    const point2 = points[index + 1];
-    const point3 = points[index + 2] ?? point2;
-    const control1X = point1.x + (point2.x - point0.x) / 6;
-    const control1Y = point1.y + (point2.y - point0.y) / 6;
-    const control2X = point2.x - (point3.x - point1.x) / 6;
-    const control2Y = point2.y - (point3.y - point1.y) / 6;
-
-    path += ` C ${control1X} ${control1Y}, ${control2X} ${control2Y}, ${point2.x} ${point2.y}`;
-  }
-
-  return path;
+  return points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
 }
 
 function buildAreaPath(
@@ -93,7 +46,7 @@ function buildAreaPath(
     return "";
   }
 
-  const linePath = buildSmoothLinePath(points);
+  const linePath = buildLinePath(points);
   const lastPoint = points[points.length - 1];
   const firstPoint = points[0];
 
@@ -130,21 +83,13 @@ export function ClientsGrowthChart({
     const plotWidth = plotRight - plotLeft;
     const plotHeight = plotBottom - plotTop;
     const dataMax = Math.max(...series.map((point) => point.count), 0);
-    const yScale = getNiceScale(dataMax);
-    const yTicks = yScale.ticks;
+    const yScale = getGrowthChartYScale(dataMax);
 
     const points: ChartPoint[] = series.map((point, index) => ({
       ...point,
       x: plotLeft + (index / Math.max(series.length - 1, 1)) * plotWidth,
       y: plotBottom - (point.count / yScale.max) * plotHeight
     }));
-
-    const xTickInterval = getGrowthChartXTickInterval(series.length);
-    const xTickIndexes = series
-      .map((_, index) => index)
-      .filter(
-        (index) => index % xTickInterval === 0 || index === series.length - 1
-      );
 
     return {
       plotBottom,
@@ -153,10 +98,10 @@ export function ClientsGrowthChart({
       plotTop,
       plotWidth,
       yScale,
-      yTicks,
+      yTicks: yScale.ticks,
       points,
-      xTickIndexes,
-      linePath: buildSmoothLinePath(points),
+      xTickIndexes: getGrowthChartXTickIndexes(series.length),
+      linePath: buildLinePath(points),
       areaPath: buildAreaPath(points, plotBottom)
     };
   }, [series]);
@@ -192,6 +137,14 @@ export function ClientsGrowthChart({
             <stop offset="0%" stopColor="#2563ff" stopOpacity="0.28" />
             <stop offset="100%" stopColor="#2563ff" stopOpacity="0.02" />
           </linearGradient>
+          <clipPath id="clients-growth-plot">
+            <rect
+              height={chart.plotBottom - chart.plotTop}
+              width={chart.plotWidth}
+              x={chart.plotLeft}
+              y={chart.plotTop}
+            />
+          </clipPath>
         </defs>
 
         {chart.yTicks.map((tick) => {
@@ -222,15 +175,17 @@ export function ClientsGrowthChart({
           );
         })}
 
-        <path d={chart.areaPath} fill="url(#clients-growth-area)" />
-        <path
-          d={chart.linePath}
-          fill="none"
-          stroke="#2563ff"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2.5"
-        />
+        <g clipPath="url(#clients-growth-plot)">
+          <path d={chart.areaPath} fill="url(#clients-growth-area)" />
+          <path
+            d={chart.linePath}
+            fill="none"
+            stroke="#2563ff"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2.5"
+          />
+        </g>
 
         {chart.xTickIndexes.map((index) => {
           const point = chart.points[index];

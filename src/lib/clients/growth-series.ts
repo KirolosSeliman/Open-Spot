@@ -102,6 +102,85 @@ export function buildGrowthSeries(
   return series;
 }
 
+export function getGrowthChartYScale(maxValue: number) {
+  if (maxValue <= 0) {
+    return { max: 1, ticks: [0, 1] };
+  }
+
+  if (maxValue <= 5) {
+    return {
+      max: maxValue,
+      ticks: Array.from({ length: maxValue + 1 }, (_, index) => index)
+    };
+  }
+
+  if (maxValue <= 10) {
+    const max = Math.max(6, Math.ceil(maxValue / 2) * 2);
+    const step = max <= 6 ? 1 : 2;
+    const ticks: number[] = [];
+
+    for (let tick = 0; tick <= max; tick += step) {
+      ticks.push(tick);
+    }
+
+    return { max, ticks };
+  }
+
+  const roughStep = Math.ceil(maxValue / 5);
+  const step = getNiceIntegerStep(roughStep);
+  const max = Math.ceil(maxValue / step) * step;
+  const ticks = Array.from({ length: max / step + 1 }, (_, index) => index * step);
+
+  return { max, ticks };
+}
+
+function getNiceIntegerStep(value: number) {
+  const magnitude = 10 ** Math.floor(Math.log10(Math.max(value, 1)));
+  const normalized = value / magnitude;
+
+  if (normalized <= 1) {
+    return magnitude;
+  }
+
+  if (normalized <= 2) {
+    return 2 * magnitude;
+  }
+
+  if (normalized <= 5) {
+    return 5 * magnitude;
+  }
+
+  return 10 * magnitude;
+}
+
+export function getGrowthChartXTickIndexes(seriesLength: number) {
+  if (seriesLength <= 0) {
+    return [];
+  }
+
+  if (seriesLength === 1) {
+    return [0];
+  }
+
+  const targetLabelCount = 5;
+  const interval = Math.max(Math.floor(seriesLength / targetLabelCount), 1);
+  const indexes = [0];
+
+  for (let index = interval; index < seriesLength - 1; index += interval) {
+    indexes.push(index);
+  }
+
+  const lastIndex = seriesLength - 1;
+  const previousIndex = indexes[indexes.length - 1] ?? 0;
+  const minGapBeforeLast = Math.max(Math.ceil(interval / 2), 1);
+
+  if (lastIndex - previousIndex >= minGapBeforeLast) {
+    indexes.push(lastIndex);
+  }
+
+  return indexes;
+}
+
 export function getGrowthChartXTickInterval(seriesLength: number) {
   if (seriesLength <= 7) {
     return 1;

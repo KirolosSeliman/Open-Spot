@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildGrowthSeries,
-  buildUniqueWaitlistEnrollments
+  buildUniqueWaitlistEnrollments,
+  getGrowthChartXTickIndexes,
+  getGrowthChartYScale
 } from "@/lib/clients/growth-series";
 
 describe("buildUniqueWaitlistEnrollments", () => {
@@ -53,5 +55,39 @@ describe("buildGrowthSeries", () => {
     );
 
     expect(series.at(-1)?.count).toBe(2);
+  });
+});
+
+describe("getGrowthChartYScale", () => {
+  it("uses unique integer ticks for small datasets", () => {
+    expect(getGrowthChartYScale(2)).toEqual({
+      max: 2,
+      ticks: [0, 1, 2]
+    });
+  });
+
+  it("avoids duplicate labels caused by fractional steps", () => {
+    const scale = getGrowthChartYScale(2);
+    const labels = scale.ticks.map((tick) => Math.round(tick));
+
+    expect(new Set(labels).size).toBe(labels.length);
+  });
+
+  it("uses wider steps for larger datasets", () => {
+    expect(getGrowthChartYScale(432)).toEqual({
+      max: 500,
+      ticks: [0, 100, 200, 300, 400, 500]
+    });
+  });
+});
+
+describe("getGrowthChartXTickIndexes", () => {
+  it("spaces labels evenly without crowding the last day", () => {
+    const indexes = getGrowthChartXTickIndexes(30);
+
+    expect(indexes[0]).toBe(0);
+    expect(indexes).not.toEqual([0, 7, 14, 21, 28, 29]);
+    expect(indexes.at(-1)).toBe(29);
+    expect((indexes.at(-1) ?? 0) - (indexes.at(-2) ?? 0)).toBeGreaterThanOrEqual(3);
   });
 });
