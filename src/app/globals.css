@@ -1401,7 +1401,7 @@ select {
 }
 
 .lunera-template--with-site-header .reference-hero-section {
-  padding-top: clamp(2.5rem, 5vw, 4rem);
+  padding-top: clamp(5.5rem, 9vw, 7rem);
 }
 
 .reference-hero-cloud {
@@ -6565,7 +6565,7 @@ select {
   }
 
   .lunera-template--with-site-header .reference-hero-section {
-    padding-top: clamp(2rem, 6vw, 3rem);
+    padding-top: clamp(5.25rem, 18vw, 6.5rem);
   }
 
   .reference-hero-cloud,

@@ -115,7 +115,7 @@ export default async function AdminLayout({
               </div>
             </div>
           </SiteHeaderShell>
-          <main className="mx-auto w-full max-w-6xl px-2 py-6 sm:px-4 lg:px-0 lg:py-8">
+          <main className="mx-auto w-full max-w-6xl px-2 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-8 lg:pt-8">
             {children}
           </main>
         </div>

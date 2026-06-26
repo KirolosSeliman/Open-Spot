@@ -6,7 +6,7 @@ export function PageShell({ children }: { children: ReactNode }) {
   return (
     <>
       <SiteHeader />
-      <main>{children}</main>
+      <main className="pt-[calc(var(--header-height)+0.75rem)]">{children}</main>
     </>
   );
 }
