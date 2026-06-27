@@ -15,16 +15,18 @@ export function SubscriptionMetricCard({
   detail?: string | null;
 }) {
   return (
-    <article className="rounded-[20px] border border-[#dde5f0] bg-white p-6 shadow-[0_8px_30px_rgba(15,23,42,0.04)] sm:p-7">
-      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#eef4ff] text-[#2563ff]">
-        {icon}
+    <article className="rounded-[18px] border border-[#e2e8f0] bg-white p-7 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.04)]">
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[#2563eb]">
+          {icon}
+        </div>
+        <p className="text-sm font-medium leading-snug text-[#64748b]">{label}</p>
       </div>
-      <p className="mt-5 text-sm font-medium text-[#64748b]">{label}</p>
-      <p className="mt-2 text-3xl font-black tracking-tight text-[#07142f]">
+      <p className="mt-5 text-[2rem] font-black leading-none tracking-tight text-[#07142f]">
         {value}
       </p>
       {detail ? (
-        <p className="mt-2 text-sm leading-6 text-[#64748b]">{detail}</p>
+        <p className="mt-3 text-sm leading-6 text-[#64748b]">{detail}</p>
       ) : null}
     </article>
   );
@@ -40,32 +42,42 @@ export function SubscriptionTotalCard({
   icon: ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[20px] border border-[#dbeafe] bg-gradient-to-r from-[#f5f9ff] via-[#f8fbff] to-white p-6 shadow-[0_8px_30px_rgba(37,99,255,0.08)] sm:p-7">
+    <section className="relative min-h-[132px] overflow-hidden rounded-[18px] border border-[#dbeafe] bg-gradient-to-r from-[#f0f6ff] via-[#f7faff] to-white px-6 py-5 shadow-[0_8px_30px_rgba(37,99,235,0.08)] sm:px-7 sm:py-6">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-0 hidden h-full w-1/2 opacity-80 sm:block"
+        className="pointer-events-none absolute inset-y-0 right-0 w-[min(100%,22rem)] opacity-90"
       >
-        <svg className="h-full w-full" fill="none" preserveAspectRatio="none" viewBox="0 0 400 140">
+        <svg
+          className="h-full w-full"
+          fill="none"
+          preserveAspectRatio="none"
+          viewBox="0 0 352 132"
+        >
           <path
-            d="M40 110C120 70 180 120 260 90C320 68 360 96 400 84"
+            d="M24 98C88 62 144 108 208 82C256 62 304 92 352 78"
             stroke="#bfdbfe"
             strokeWidth="1.5"
           />
           <path
-            d="M20 96C100 56 180 104 260 72C320 52 360 88 400 76"
+            d="M0 112C72 84 144 118 216 92C272 72 320 104 352 90"
             stroke="#dbeafe"
             strokeWidth="1.5"
+          />
+          <path
+            d="M48 72C112 48 176 88 240 64C288 48 320 68 352 58"
+            stroke="#e0efff"
+            strokeWidth="1.25"
           />
         </svg>
       </div>
 
-      <div className="relative flex items-center gap-5">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[18px] border border-[#dbeafe] bg-white text-[#2563ff] shadow-[0_8px_24px_rgba(37,99,255,0.12)]">
+      <div className="relative flex h-full items-center gap-5">
+        <div className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-[16px] border border-[#dbeafe] bg-white text-[#2563eb] shadow-[0_10px_24px_rgba(37,99,235,0.12)]">
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-medium text-[#64748b]">{label}</p>
-          <p className="mt-1 break-words text-4xl font-black tracking-tight text-[#2563ff] sm:text-[2.65rem]">
+          <p className="text-sm font-medium text-[#50617d]">{label}</p>
+          <p className="mt-1 break-words text-[2.5rem] font-black leading-none tracking-tight text-[#2563eb] sm:text-[2.75rem]">
             {value}
           </p>
         </div>
@@ -93,26 +105,27 @@ export function SubscriptionBillingDetails({
   rows: DetailRow[];
 }) {
   return (
-    <section className="rounded-[20px] border border-[#dde5f0] bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)] sm:p-6">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <section className="rounded-[18px] border border-[#e2e8f0] bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.04)] sm:p-6">
+      <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <h2 className="text-lg font-black text-[#07142f]">{title}</h2>
         <div className="flex flex-wrap items-center gap-2">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#e2e8f0] bg-[#f8fafc] px-3 py-1.5 text-xs font-semibold text-[#475569]">
-            <SubscriptionCalendarIcon className="h-3.5 w-3.5 text-[#2563ff]" />
+            <SubscriptionCalendarIcon className="h-3.5 w-3.5 text-[#2563eb]" />
             {monthLabel}
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1.5 text-xs font-bold text-[#2563ff]">
-            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#2563ff]" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#bfdbfe] bg-[#eff6ff] px-3 py-1.5 text-xs font-bold text-[#2563eb]">
+            <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[#2563eb]" />
             {statusLabel}
           </span>
         </div>
       </div>
 
-      <div className="divide-y divide-[#e8eef5] rounded-[16px] border border-[#e8eef5]">
-        {rows.map((row) => (
+      <div className="overflow-hidden rounded-[14px] border border-[#e8eef5]">
+        {rows.map((row, index) => (
           <div
             className={cn(
               "flex items-center justify-between gap-4 px-4 py-4 sm:px-5",
+              index > 0 && "border-t border-[#e8eef5]",
               row.emphasis && "bg-[#f5f9ff]"
             )}
             key={row.label}
@@ -122,7 +135,7 @@ export function SubscriptionBillingDetails({
                 className={cn(
                   "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
                   row.emphasis
-                    ? "bg-[#eef4ff] text-[#2563ff]"
+                    ? "bg-[#eef4ff] text-[#2563eb]"
                     : "bg-[#f8fafc] text-[#64748b]"
                 )}
               >
@@ -131,7 +144,7 @@ export function SubscriptionBillingDetails({
               <span
                 className={cn(
                   "text-sm font-semibold",
-                  row.emphasis ? "text-[#2563ff]" : "text-[#07142f]"
+                  row.emphasis ? "text-[#2563eb]" : "text-[#07142f]"
                 )}
               >
                 {row.label}
@@ -139,8 +152,8 @@ export function SubscriptionBillingDetails({
             </div>
             <span
               className={cn(
-                "shrink-0 text-sm font-black sm:text-base",
-                row.emphasis ? "text-[#2563ff]" : "text-[#07142f]"
+                "shrink-0 text-right text-sm font-black sm:text-base",
+                row.emphasis ? "text-[#2563eb]" : "text-[#07142f]"
               )}
             >
               {row.value}
@@ -162,10 +175,10 @@ export function SubscriptionInfoBox({
   return (
     <aside className="rounded-[16px] border border-[#dbeafe] bg-[#f8fbff] p-4 sm:p-5">
       <div className="flex gap-3">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[#2563ff]">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[#2563eb]">
           {icon}
         </span>
-        <div className="space-y-1 text-sm leading-6 text-[#50617d]">
+        <div className="space-y-1.5 text-sm leading-6 text-[#50617d]">
           {lines.map((line) => (
             <p key={line}>{line}</p>
           ))}

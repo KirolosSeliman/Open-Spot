@@ -125,13 +125,6 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
         copy.notAvailable
       )
     : copy.notAvailable;
-  const nextDueDetail = billing
-    ? `${copy.periodEnd} : ${formatSubscriptionDate(
-        billing.currentPeriodEnd,
-        intlLocale,
-        copy.notAvailable
-      )}`
-    : null;
   const fixedFeeValue = formatMoney(totals.monthlyFixedFeeCents);
   const fixedFeeDetail = data.termsMissing
     ? copy.noFixedFee
@@ -142,7 +135,7 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
     <div className="overflow-hidden rounded-[22px] border border-[#dde5f0] bg-white shadow-[0_10px_40px_rgba(15,23,42,0.05)]">
       <SubscriptionPageHeader description={copy.description} title={copy.title} />
 
-      <div className="grid gap-6 p-5 sm:p-6 lg:p-8 xl:grid-cols-[250px_minmax(0,1fr)] xl:gap-8">
+      <div className="grid items-start gap-6 border-t border-[#eef2f7] px-5 py-6 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:grid-cols-[240px_minmax(0,1fr)] xl:gap-8">
         <div className="hidden xl:block">
           <SubscriptionMonthSelector
             months={data.monthOptions}
@@ -174,7 +167,7 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
             />
           ) : null}
 
-          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <SubscriptionMetricCard
               detail={fixedFeeDetail}
               icon={<SubscriptionCreditCardIcon className="h-5 w-5" />}
@@ -199,18 +192,6 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
               icon={<SubscriptionChartIcon className="h-5 w-5" />}
               label={copy.totalCommission}
               value={formatMoney(totals.totalCommissionCents)}
-            />
-            <SubscriptionMetricCard
-              detail={paymentStatusDetail}
-              icon={<SubscriptionStatusIcon className="h-5 w-5" />}
-              label={copy.paymentStatus}
-              value={paymentStatusValue}
-            />
-            <SubscriptionMetricCard
-              detail={nextDueDetail}
-              icon={<SubscriptionClockIcon className="h-5 w-5" />}
-              label={copy.nextDue}
-              value={nextDueValue}
             />
           </div>
 
@@ -242,6 +223,18 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
                 icon: <SubscriptionChartIcon className="h-4 w-4" />,
                 label: copy.totalCommission,
                 value: formatMoney(totals.totalCommissionCents)
+              },
+              {
+                icon: <SubscriptionStatusIcon className="h-4 w-4" />,
+                label: copy.paymentStatus,
+                value: paymentStatusDetail
+                  ? `${paymentStatusValue} · ${paymentStatusDetail}`
+                  : paymentStatusValue
+              },
+              {
+                icon: <SubscriptionClockIcon className="h-4 w-4" />,
+                label: copy.nextDue,
+                value: nextDueValue
               },
               {
                 icon: <SubscriptionWalletIcon className="h-4 w-4" />,
