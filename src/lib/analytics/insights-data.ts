@@ -12,6 +12,7 @@ import {
 } from "@/lib/analytics/metrics";
 import {
   getInsightsPeriodWindow,
+  getPreviousPeriodComparisonLabel,
   normalizeInsightsGranularity,
   normalizeInsightsPeriod
 } from "@/lib/analytics/periods";
@@ -275,7 +276,7 @@ export async function loadInsightsData({
     end: periodWindow.end
   });
 
-  const previousLabel = periodWindow.previousDateRangeLabel;
+  const previousLabel = getPreviousPeriodComparisonLabel(filters.period);
   const recoveredRevenueTrend = calculatePercentTrend(
     currentMetrics.recoveredRevenueCents,
     previousMetrics.recoveredRevenueCents,

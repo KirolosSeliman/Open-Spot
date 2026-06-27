@@ -132,7 +132,7 @@ function countInWindow<T>(
 export function calculatePercentTrend(
   current: number,
   previous: number,
-  previousLabel: string
+  comparisonLabel: string
 ): InsightsTrend {
   if (previous === 0 && current === 0) {
     return {
@@ -144,7 +144,7 @@ export function calculatePercentTrend(
 
   if (previous === 0) {
     return {
-      display: `↑ 100 % vs ${previousLabel}`,
+      display: `100 % de plus que ${comparisonLabel}`,
       tone: "positive",
       hasPreviousData: false
     };
@@ -152,14 +152,29 @@ export function calculatePercentTrend(
 
   const change = ((current - previous) / previous) * 100;
   const rounded = Math.round(change * 10) / 10;
-  const prefix = rounded > 0 ? "↑" : rounded < 0 ? "↓" : "→";
   const absolute = Math.abs(rounded).toLocaleString("fr-CA", {
     maximumFractionDigits: 1
   });
 
+  if (rounded === 0) {
+    return {
+      display: `Stable par rapport à ${comparisonLabel}`,
+      tone: "neutral",
+      hasPreviousData: true
+    };
+  }
+
+  if (rounded > 0) {
+    return {
+      display: `${absolute} % de plus que ${comparisonLabel}`,
+      tone: "positive",
+      hasPreviousData: true
+    };
+  }
+
   return {
-    display: `${prefix} ${absolute} % vs ${previousLabel}`,
-    tone: rounded > 0 ? "positive" : rounded < 0 ? "negative" : "neutral",
+    display: `${absolute} % de moins que ${comparisonLabel}`,
+    tone: "negative",
     hasPreviousData: true
   };
 }
@@ -167,26 +182,33 @@ export function calculatePercentTrend(
 export function calculatePointsTrend(
   currentRate: number,
   previousRate: number,
-  previousLabel: string
+  comparisonLabel: string
 ): InsightsTrend {
   const delta = Math.round((currentRate - previousRate) * 10) / 10;
 
   if (delta === 0) {
     return {
-      display: `→ 0 pt vs ${previousLabel}`,
+      display: `Stable par rapport à ${comparisonLabel}`,
       tone: "neutral",
       hasPreviousData: true
     };
   }
 
-  const prefix = delta > 0 ? "↑" : "↓";
   const absolute = Math.abs(delta).toLocaleString("fr-CA", {
     maximumFractionDigits: 1
   });
 
+  if (delta > 0) {
+    return {
+      display: `${absolute} pt de plus que ${comparisonLabel}`,
+      tone: "positive",
+      hasPreviousData: true
+    };
+  }
+
   return {
-    display: `${prefix} ${absolute} pt vs ${previousLabel}`,
-    tone: delta > 0 ? "positive" : "negative",
+    display: `${absolute} pt de moins que ${comparisonLabel}`,
+    tone: "negative",
     hasPreviousData: true
   };
 }
@@ -480,7 +502,7 @@ export function buildFunnel({
         })} %`
       },
       {
-        label: "Rendez-vous récupérés",
+        label: "rdv récupéré",
         count: recoveredAppointments,
         rateLabel: `${recoveredRate.toLocaleString("fr-CA", {
           maximumFractionDigits: 1

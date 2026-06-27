@@ -130,3 +130,22 @@ export function getPeriodDays(period: InsightsPeriod) {
   const option = INSIGHTS_PERIOD_OPTIONS.find((item) => item.value === period);
   return option?.days ?? 30;
 }
+
+export function getPreviousPeriodComparisonLabel(period: InsightsPeriod) {
+  switch (period) {
+    case "1w":
+      return "la semaine passée";
+    case "2w":
+      return "les 2 semaines passées";
+    case "1m":
+      return "le mois passé";
+    case "3m":
+      return "les 3 mois passés";
+    case "12m":
+      return "les 12 mois passés";
+    case "all":
+      return "la période précédente";
+    default:
+      return "la période précédente";
+  }
+}
