@@ -46,8 +46,8 @@ describe("platform SMS integration wiring", () => {
     );
 
     expect(route).toContain("sendBookCallConfirmationSms");
-    expect(route.indexOf('from("book_call_requests")')).toBeLessThan(
-      route.indexOf("sendBookCallConfirmationSms")
+    expect(route).toMatch(
+      /from\("book_call_requests"\)[\s\S]*sendBookCallConfirmationSms/
     );
     expect(route).toContain("confirmationSmsSent");
   });
