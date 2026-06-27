@@ -16,6 +16,13 @@ import type { OrganizationSmsTemplateRecord } from "@/lib/sms/organization-templ
 import { formatSmsCounterLabel } from "@/lib/sms/sms-counter";
 import { renderSmsTemplatePreview } from "@/lib/sms/template-renderer";
 import {
+  buildSmsTemplateSelectionOptions,
+  buildTemplateSelectionId,
+  formatTemplateSelectionLabel,
+  parseTemplateSelectionId,
+  type SmsTemplateSelectionOption
+} from "@/lib/sms/template-selection";
+import {
   getDefaultTemplateBody,
   getDefaultTemplateName,
   SMS_TEMPLATE_DEFINITIONS,
@@ -52,18 +59,6 @@ function Toast({ toast }: { toast: ToastState }) {
   );
 }
 
-function getSavedBody(
-  templates: OrganizationSmsTemplateRecord[],
-  templateKey: SmsTemplateKey,
-  language: SmsTemplateLanguage
-) {
-  return (
-    templates.find(
-      (template) =>
-        template.templateKey === templateKey && template.language === language
-    )?.body ?? null
-  );
-}
 
 export function SmsTemplateEditor({
   canEdit,
@@ -77,6 +72,9 @@ export function SmsTemplateEditor({
   const [templateKey, setTemplateKey] =
     useState<SmsTemplateKey>("opening_alert");
   const [language, setLanguage] = useState<SmsTemplateLanguage>("fr");
+  const [selectedTemplateId, setSelectedTemplateId] = useState(() =>
+    buildTemplateSelectionId("opening_alert", "fr")
+  );
   const [name, setName] = useState(() =>
     getDefaultTemplateName("opening_alert", "fr")
   );
@@ -101,14 +99,45 @@ export function SmsTemplateEditor({
       })),
     []
   );
+  const savedTemplateOptions = useMemo(
+    () => buildSmsTemplateSelectionOptions(templates),
+    [templates]
+  );
+  const savedTemplateOptionsForType = useMemo(
+    () =>
+      savedTemplateOptions.filter((option) => option.templateKey === templateKey),
+    [savedTemplateOptions, templateKey]
+  );
+
+  const applySelection = useCallback((option: SmsTemplateSelectionOption) => {
+    setSelectedTemplateId(option.id);
+    setTemplateKey(option.templateKey);
+    setLanguage(option.language);
+    setName(option.name);
+    setMessage(option.body);
+    setPreviewMessage(renderSmsTemplatePreview(option.body, option.language));
+    setWarnings([]);
+    setErrors([]);
+  }, []);
 
   const applyTemplateState = useCallback(
     (nextTemplateKey: SmsTemplateKey, nextLanguage: SmsTemplateLanguage) => {
-      const savedBody = getSavedBody(templates, nextTemplateKey, nextLanguage);
-      const nextBody =
-        savedBody ?? getDefaultTemplateBody(nextTemplateKey, nextLanguage);
-      const nextName = getDefaultTemplateName(nextTemplateKey, nextLanguage);
+      const option = savedTemplateOptions.find(
+        (candidate) =>
+          candidate.templateKey === nextTemplateKey &&
+          candidate.language === nextLanguage
+      );
 
+      if (option) {
+        applySelection(option);
+        return;
+      }
+
+      const nextBody = getDefaultTemplateBody(nextTemplateKey, nextLanguage);
+      const nextName = getDefaultTemplateName(nextTemplateKey, nextLanguage);
+      const nextId = buildTemplateSelectionId(nextTemplateKey, nextLanguage);
+
+      setSelectedTemplateId(nextId);
       setTemplateKey(nextTemplateKey);
       setLanguage(nextLanguage);
       setName(nextName);
@@ -117,7 +146,7 @@ export function SmsTemplateEditor({
       setWarnings([]);
       setErrors([]);
     },
-    [templates]
+    [applySelection, savedTemplateOptions]
   );
 
   useEffect(() => {
@@ -228,6 +257,7 @@ export function SmsTemplateEditor({
 
         return [...next, result.savedTemplate];
       });
+      setSelectedTemplateId(buildTemplateSelectionId(templateKey, language));
       setPreviewMessage(renderSmsTemplatePreview(result.savedBody, language));
       setWarnings(result.warnings);
       setToast({
@@ -250,13 +280,26 @@ export function SmsTemplateEditor({
               return (
                 <button
                   className={cn(
-                    "rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
+                    "rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff] focus-visible:ring-offset-2",
                     isActive
                       ? "bg-[#eef4ff] text-[#2563ff]"
                       : "border border-[#dde5f0] bg-white text-[#475569] hover:bg-[#f8fafc]"
                   )}
                   key={option.key}
-                  onClick={() => applyTemplateState(option.key, language)}
+                  onClick={() => {
+                    const preferred =
+                      savedTemplateOptionsForType.find(
+                        (candidate) => candidate.language === language
+                      ) ??
+                      savedTemplateOptionsForType[0];
+
+                    if (preferred) {
+                      applySelection(preferred);
+                      return;
+                    }
+
+                    applyTemplateState(option.key, language);
+                  }}
                   type="button"
                 >
                   {option.label}
@@ -266,6 +309,43 @@ export function SmsTemplateEditor({
           </div>
 
           <div className="grid gap-6">
+            <label className="grid gap-2">
+              <span className="text-sm font-semibold text-[#07142f]">
+                Template enregistré
+              </span>
+              <div className="relative">
+                <select
+                  className="min-h-12 w-full appearance-none rounded-xl border border-[#dde5f0] bg-white px-4 pr-10 text-sm text-[#07142f] shadow-[inset_0_1px_2px_rgba(15,23,42,0.03)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff]"
+                  onChange={(event) => {
+                    const parsed = parseTemplateSelectionId(event.target.value);
+                    const option = savedTemplateOptions.find(
+                      (candidate) => candidate.id === event.target.value
+                    );
+
+                    if (parsed && option) {
+                      applySelection(option);
+                    }
+                  }}
+                  value={selectedTemplateId}
+                >
+                  {savedTemplateOptions.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {formatTemplateSelectionLabel(option)}
+                    </option>
+                  ))}
+                </select>
+                <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#64748b]">
+                  ▾
+                </span>
+              </div>
+              <p className="text-xs leading-5 text-[#64748b]">
+                {savedTemplateOptions.find((option) => option.id === selectedTemplateId)
+                  ?.isSaved
+                  ? "Version personnalisée enregistrée pour votre commerce."
+                  : "Modèle par défaut Open Spot. Enregistrez pour créer votre version personnalisée."}
+              </p>
+            </label>
+
             <label className="grid gap-2">
               <span className="text-sm font-semibold text-[#07142f]">
                 Nom du template

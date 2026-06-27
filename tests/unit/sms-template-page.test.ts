@@ -52,3 +52,29 @@ describe("sms template utilities", () => {
     expect(validation.warnings).toContain("Variable inconnue : {unknown_variable}");
   });
 });
+
+describe("sms template selection", () => {
+  it("builds selectable saved and default templates", async () => {
+    const { buildSmsTemplateSelectionOptions, formatTemplateSelectionLabel } =
+      await import("@/lib/sms/template-selection");
+
+    const options = buildSmsTemplateSelectionOptions([
+      {
+        id: "saved-1",
+        templateKey: "opening_alert",
+        language: "fr",
+        body: "Message personnalisé",
+        isActive: true,
+        updatedAt: "2026-06-27T00:00:00.000Z"
+      }
+    ]);
+
+    expect(options).toHaveLength(4);
+    expect(
+      options.find(
+        (option) => option.templateKey === "opening_alert" && option.language === "fr"
+      )?.isSaved
+    ).toBe(true);
+    expect(formatTemplateSelectionLabel(options[0])).toContain("Alerte de créneau libre");
+  });
+});

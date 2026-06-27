@@ -14,12 +14,38 @@ function StatusBarIcon({
   return (
     <svg
       aria-hidden="true"
-      className={cn("h-3 w-3", className)}
+      className={cn("h-3.5 w-3.5", className)}
       fill="currentColor"
       viewBox="0 0 24 24"
     >
       {children}
     </svg>
+  );
+}
+
+function MessageBubble({ message }: { message: string }) {
+  return (
+    <div className="relative max-w-[88%]">
+      <div
+        className="relative rounded-[18px] rounded-bl-[4px] bg-[#e9e9eb] px-3.5 py-2.5 text-[15px] leading-[1.35] tracking-[-0.01em] text-black"
+        style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif' }}
+      >
+        {message.split("\n").map((line, index, lines) => (
+          <span key={`${index}-${line}`}>
+            {line}
+            {index < lines.length - 1 ? <br /> : null}
+          </span>
+        ))}
+      </div>
+      <div
+        aria-hidden="true"
+        className="absolute -bottom-[1px] left-[-5px] h-3 w-3 bg-[#e9e9eb]"
+        style={{
+          clipPath: "polygon(100% 0, 100% 100%, 0 100%)",
+          borderBottomLeftRadius: "4px"
+        }}
+      />
+    </div>
   );
 }
 
@@ -34,57 +60,95 @@ export function SmsPreviewPhone({
     <div
       aria-hidden="true"
       className={cn(
-        "mx-auto w-full max-w-[340px] rounded-[2rem] border border-[#d7dee8] bg-white p-3 shadow-[0_18px_40px_rgba(15,23,42,0.08)]",
+        "mx-auto w-full max-w-[320px] overflow-hidden rounded-[2.75rem] border-[5px] border-[#1f2937] bg-[#1f2937] shadow-[0_24px_50px_rgba(15,23,42,0.18)]",
         className
       )}
     >
-      <div className="overflow-hidden rounded-[1.6rem] border border-[#e2e8f0] bg-[#f8fafc]">
-        <div className="flex items-center justify-between px-4 pb-2 pt-3 text-[11px] font-semibold text-[#07142f]">
-          <span>9:41</span>
-          <div className="flex items-center gap-1 text-[#64748b]">
-            <StatusBarIcon>
-              <path d="M2 18h2v4H2v-4zm4-4h2v8H6v-8zm4-3h2v11h-2V11zm4-5h2v16h-2V6z" />
-            </StatusBarIcon>
-            <StatusBarIcon>
-              <path d="M4 8a8 8 0 0 1 16 0v1h-2V8a6 6 0 0 0-12 0v1H4V8zm0 3h16v9H4v-9z" />
-            </StatusBarIcon>
-            <StatusBarIcon>
-              <rect height="10" rx="2" width="18" x="3" y="7" />
-              <rect height="6" rx="1" width="12" x="5" y="9" />
-            </StatusBarIcon>
-          </div>
-        </div>
-
-        <div className="border-b border-[#e2e8f0] px-4 pb-3">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[#07142f]">
-            <span className="text-[#64748b]">‹</span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#cbd5e1] text-[#475569]">
-              <svg
-                aria-hidden="true"
-                className="h-4 w-4"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
-              </svg>
+      <div className="overflow-hidden rounded-[2.35rem] bg-white">
+        <div className="bg-white px-5 pb-1.5 pt-2.5">
+          <div className="mx-auto mb-2 h-6 w-28 rounded-full bg-black" />
+          <div className="flex items-center justify-between text-[13px] font-semibold text-black">
+            <span style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif' }}>
+              9:41
             </span>
-            <span>Open Spot</span>
-            <span className="text-[#94a3b8]">›</span>
+            <div className="flex items-center gap-1.5 text-black">
+              <StatusBarIcon>
+                <path d="M2 18h2v4H2v-4zm4-4h2v8H6v-8zm4-3h2v11h-2V11zm4-5h2v16h-2V6z" />
+              </StatusBarIcon>
+              <StatusBarIcon>
+                <path d="M1 8.5C1 5.46 4.13 3 8 3s7 2.46 7 5.5V9H1V8.5zM0 10h16v2H0v-2z" />
+              </StatusBarIcon>
+              <StatusBarIcon className="h-3.5 w-5">
+                <rect height="10" rx="2.5" width="22" x="1" y="5" />
+                <rect height="6" rx="1.5" width="14" x="3" y="7" fill="white" />
+              </StatusBarIcon>
+            </div>
           </div>
         </div>
 
-        <div className="px-4 py-5">
-          <p className="mb-4 text-center text-[11px] font-medium text-[#94a3b8]">
+        <div className="border-b border-[#d1d1d6] bg-[#f9f9f9]/80 px-3 pb-2.5 pt-1 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-[20px] font-light leading-none text-[#007aff]">‹</span>
+            <div className="flex min-w-0 flex-1 items-center gap-2">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#c7c7cc] text-white">
+                <svg
+                  aria-hidden="true"
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p
+                  className="truncate text-[13px] font-semibold text-black"
+                  style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif' }}
+                >
+                  Open Spot
+                </p>
+                <p className="truncate text-[11px] text-[#8e8e93]">›</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="min-h-[360px] bg-white px-3 py-4"
+          style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif' }}
+        >
+          <p className="mb-4 text-center text-[11px] font-medium text-[#8e8e93]">
             Aujourd&apos;hui 9:41
           </p>
-          <div className="max-w-[92%] rounded-[1.25rem] rounded-bl-md bg-[#e5e7eb] px-4 py-3 text-[13px] leading-6 text-[#07142f]">
-            {message.split("\n").map((line, index, lines) => (
-              <span key={`${index}-${line}`}>
-                {line}
-                {index < lines.length - 1 ? <br /> : null}
-              </span>
-            ))}
+          <MessageBubble message={message} />
+        </div>
+
+        <div className="border-t border-[#d1d1d6] bg-[#f9f9f9]/95 px-2.5 pb-2 pt-2 backdrop-blur-sm">
+          <div className="flex items-end gap-2">
+            <button
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e5e5ea] text-[#007aff]"
+              tabIndex={-1}
+              type="button"
+            >
+              <svg aria-hidden="true" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
+            <div className="min-h-9 flex-1 rounded-full border border-[#c7c7cc] bg-white px-3 py-2 text-[15px] text-[#c7c7cc]">
+              iMessage
+            </div>
+            <button
+              className="flex h-8 w-8 shrink-0 items-center justify-center text-[#007aff]"
+              tabIndex={-1}
+              type="button"
+            >
+              <svg aria-hidden="true" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                <path d="M20 12a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-2 0a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+            </button>
           </div>
+          <div className="mx-auto mt-2 h-1 w-28 rounded-full bg-black/80" />
         </div>
       </div>
     </div>
