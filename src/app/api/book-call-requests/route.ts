@@ -5,6 +5,7 @@ import {
   validateBookCallRequestInput,
   type BookCallRequestFieldErrors
 } from "@/lib/book-call/validation";
+import { sendBookCallConfirmationSms } from "@/lib/sms/book-call-confirmation";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 const MAX_PAYLOAD_BYTES = 12_000;
@@ -103,10 +104,24 @@ export async function POST(request: Request) {
     return serverError();
   }
 
+  const smsOutcome = await sendBookCallConfirmationSms({
+    requestId: data.id,
+    input: validation.value
+  });
+
+  if (!smsOutcome.sent && smsOutcome.warning !== "sms_skipped_no_consent") {
+    console.warn("Book call confirmation SMS was not sent", {
+      requestId: data.id,
+      warning: smsOutcome.warning
+    });
+  }
+
   return NextResponse.json(
     {
       ok: true,
-      requestId: data.id
+      requestId: data.id,
+      confirmationSmsSent: smsOutcome.sent,
+      confirmationSmsWarning: smsOutcome.sent ? null : smsOutcome.warning
     },
     { status: 201 }
   );

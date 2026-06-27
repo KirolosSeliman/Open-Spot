@@ -44,6 +44,10 @@ const formCopy = {
     submit: "Réserver un appel",
     submitting: "Envoi en cours...",
     success: "Demande reçue. Nous allons vous recontacter bientôt.",
+    successWithSms:
+      "Votre demande a été envoyée. Un SMS de confirmation vous a été envoyé.",
+    successWithoutSms:
+      "Votre demande a été envoyée. Nous n'avons pas pu envoyer le SMS de confirmation, mais nous avons bien reçu votre demande.",
     generalError:
       "Une erreur est survenue. Vérifiez vos informations et réessayez."
   },
@@ -80,6 +84,10 @@ const formCopy = {
     submit: "Book a call",
     submitting: "Sending request...",
     success: "Request received. We'll follow up soon.",
+    successWithSms:
+      "Your request was sent. A confirmation SMS has been sent to you.",
+    successWithoutSms:
+      "Your request was sent. We couldn't send the confirmation SMS, but we did receive your request.",
     generalError: "Something went wrong. Please check your information and try again."
   }
 } as const;
@@ -303,6 +311,7 @@ export function BookCallRequestForm({
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -350,6 +359,13 @@ export function BookCallRequestForm({
       }
 
       setSubmitted(true);
+      setSuccessMessage(
+        result.confirmationSmsSent === true
+          ? t.successWithSms
+          : result.confirmationSmsSent === false
+            ? t.successWithoutSms
+            : t.success
+      );
       setErrors({});
       setFormError("");
     } catch {
@@ -369,7 +385,7 @@ export function BookCallRequestForm({
           ✓
         </div>
         <h2 className="mt-5 text-2xl font-extrabold tracking-tight text-[#07142F]">
-          {t.success}
+          {successMessage || t.success}
         </h2>
         <p className="mt-3 text-sm font-medium leading-6 text-[#50617D]">
           {t.consentNote}

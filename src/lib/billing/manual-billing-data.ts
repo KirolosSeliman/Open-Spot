@@ -161,21 +161,34 @@ export async function loadManualBillingForAdmin({
 
   const billing = await ensureManualBillingRecord(organizationId);
   const supabase = requireServiceClient();
-  const { data, error } = await supabase
-    .from("billing_events")
-    .select("*")
-    .eq("organization_id", organizationId)
-    .order("created_at", { ascending: false })
-    .limit(25);
+  const [{ data: eventsData, error }, { data: organization, error: organizationError }] =
+    await Promise.all([
+      supabase
+        .from("billing_events")
+        .select("*")
+        .eq("organization_id", organizationId)
+        .order("created_at", { ascending: false })
+        .limit(25),
+      supabase
+        .from("organizations")
+        .select("id, name")
+        .eq("id", organizationId)
+        .maybeSingle()
+    ]);
 
   if (error) {
     throw new Error(error.message);
   }
 
+  if (organizationError) {
+    throw new Error(organizationError.message);
+  }
+
   return {
     billing,
-    events: (data ?? []).map(toEvent),
-    accessLevel
+    events: (eventsData ?? []).map(toEvent),
+    accessLevel,
+    organizationName: organization?.name ?? "Company"
   };
 }
 

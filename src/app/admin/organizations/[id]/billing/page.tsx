@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { BillingPaymentReminderButton } from "@/components/admin/billing-payment-reminder-button";
 import { PaymentLinkActions } from "@/components/admin/payment-link-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -21,6 +22,7 @@ import {
   getPaymentMethodLabel
 } from "@/lib/billing/manual-billing";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
+import { loadBillingPaymentReminderContext } from "@/lib/sms/billing-payment-reminder";
 
 type AdminOrganizationBillingPageProps = {
   params: Promise<{
@@ -29,6 +31,7 @@ type AdminOrganizationBillingPageProps = {
   searchParams?: Promise<{
     error?: string;
     saved?: string;
+    reminderSent?: string;
   }>;
 };
 
@@ -124,7 +127,13 @@ export default async function AdminOrganizationBillingPage({
     notFound();
   }
 
-  const { billing, events } = panel;
+  const { billing, events, organizationName } = panel;
+  const canManageBilling = access.admin.role === "super_admin";
+  const paymentReminder = await loadBillingPaymentReminderContext({
+    organizationId: id,
+    organizationName,
+    billing
+  });
 
   return (
     <section className="grid gap-6">
@@ -164,6 +173,11 @@ export default async function AdminOrganizationBillingPage({
       {query.saved ? (
         <Card className="border-emerald-200 bg-emerald-50 text-emerald-800">
           <p className="font-black">Billing changes saved.</p>
+        </Card>
+      ) : null}
+      {query.reminderSent ? (
+        <Card className="border-emerald-200 bg-emerald-50 text-emerald-800">
+          <p className="font-black">Rappel de paiement envoye.</p>
         </Card>
       ) : null}
 
@@ -211,6 +225,32 @@ export default async function AdminOrganizationBillingPage({
           </p>
           <div className="mt-4">
             <PaymentLinkActions url={billing.externalPaymentUrl} />
+          </div>
+          <div className="mt-6 border-t border-[var(--line)] pt-6">
+            <h3 className="text-sm font-black uppercase tracking-[0.12em] text-[var(--primary)]">
+              Rappel SMS
+            </h3>
+            <div className="mt-4">
+              {canManageBilling ? (
+                <BillingPaymentReminderButton
+                  amountDue={paymentReminder.amountDue}
+                  billingPeriod={paymentReminder.billingPeriod}
+                  canSend={paymentReminder.canSend}
+                  contactName={paymentReminder.contact?.contactName ?? null}
+                  contactPhone={paymentReminder.contact?.phoneDisplay ?? null}
+                  disabledReason={paymentReminder.disabledReason}
+                  lastReminderSentAt={paymentReminder.lastReminderSentAt}
+                  messagePreview={paymentReminder.messagePreview}
+                  organizationId={id}
+                  organizationName={organizationName}
+                />
+              ) : (
+                <p className="text-sm font-semibold text-[var(--muted)]">
+                  Seuls les administrateurs Open Spot autorises peuvent envoyer un
+                  rappel de paiement.
+                </p>
+              )}
+            </div>
           </div>
         </Card>
       </div>

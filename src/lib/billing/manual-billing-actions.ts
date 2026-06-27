@@ -339,3 +339,100 @@ export async function addManualBillingNoteAction(formData: FormData) {
   refreshBillingViews(organizationId);
   redirect(billingPath(organizationId, "saved=note"));
 }
+
+export async function sendBillingPaymentReminderAction(organizationId: string) {
+  if (!organizationId) {
+    return {
+      ok: false as const,
+      error: "Organization is required."
+    };
+  }
+
+  const { admin, supabase } = await requireManualBillingAdmin(organizationId);
+  const existing = await loadBillingRow(supabase, organizationId);
+  const { data: organization, error: organizationError } = await supabase
+    .from("organizations")
+    .select("name")
+    .eq("id", organizationId)
+    .maybeSingle();
+
+  if (organizationError || !organization) {
+    return {
+      ok: false as const,
+      error: organizationError?.message ?? "Organization not found."
+    };
+  }
+
+  const billingSummary = {
+    id: existing.id,
+    organizationId: existing.organization_id,
+    billingStatus: existing.billing_status,
+    planName: existing.plan_name ?? "Founder Pilot",
+    monthlyPriceCents: existing.base_plan_amount_cents,
+    currency: existing.base_plan_currency,
+    billingInterval: existing.billing_interval ?? "monthly",
+    paymentMethod: existing.payment_method ?? "manual_external",
+    externalPaymentUrl: existing.external_payment_url,
+    externalCustomerReference: existing.external_customer_reference,
+    lastPaymentAt: existing.last_payment_at,
+    currentPeriodStart: existing.current_period_start,
+    currentPeriodEnd: existing.current_period_end,
+    nextPaymentDueAt: existing.next_payment_due_at,
+    cancelledAt: existing.cancelled_at,
+    internalNotes: existing.internal_notes,
+    stripeCustomerId: existing.stripe_customer_id,
+    stripeSubscriptionId: existing.stripe_subscription_id,
+    stripePaymentLinkId: existing.stripe_payment_link_id,
+    stripeInvoiceId: existing.stripe_invoice_id,
+    smsStatus: existing.sms_status,
+    updatedAt: existing.updated_at
+  };
+
+  const { sendBillingPaymentReminderSms } = await import(
+    "@/lib/sms/billing-payment-reminder"
+  );
+  const result = await sendBillingPaymentReminderSms({
+    organizationId,
+    organizationName: organization.name,
+    billing: billingSummary,
+    sentByPlatformAdminId: admin.id
+  });
+
+  if (!result.ok) {
+    return result;
+  }
+
+  await recordPlatformAdminAuditLog({
+    admin,
+    organizationId,
+    action: "billing.payment_reminder_sent",
+    entityType: "platform_sms_messages",
+    entityId: result.messageId,
+    metadata: {
+      billing_id: existing.id,
+      amount_cents: existing.base_plan_amount_cents,
+      currency: existing.base_plan_currency,
+      billing_status: existing.billing_status
+    }
+  });
+
+  await insertBillingEvent({
+    supabase,
+    organizationId,
+    billingId: existing.id,
+    adminId: admin.id,
+    eventType: "payment_reminder_sent",
+    oldStatus: existing.billing_status,
+    newStatus: existing.billing_status,
+    amountCents: existing.base_plan_amount_cents,
+    currency: existing.base_plan_currency,
+    note: "Billing payment reminder SMS sent."
+  });
+
+  refreshBillingViews(organizationId);
+
+  return {
+    ok: true as const,
+    messageId: result.messageId
+  };
+}

@@ -1061,6 +1061,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      platform_sms_messages: {
+        Row: {
+          id: string;
+          channel: string;
+          message_type: string;
+          provider: string;
+          provider_message_id: string | null;
+          from_number: string;
+          to_number: string;
+          body: string;
+          status: string;
+          error_message: string | null;
+          organization_id: string | null;
+          book_call_request_id: string | null;
+          billing_id: string | null;
+          recipient_type: string;
+          recipient_name: string | null;
+          sent_by_platform_admin_id: string | null;
+          metadata: Json;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          channel?: string;
+          message_type: string;
+          provider: string;
+          provider_message_id?: string | null;
+          from_number: string;
+          to_number: string;
+          body: string;
+          status: string;
+          error_message?: string | null;
+          organization_id?: string | null;
+          book_call_request_id?: string | null;
+          billing_id?: string | null;
+          recipient_type: string;
+          recipient_name?: string | null;
+          sent_by_platform_admin_id?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          channel?: string;
+          message_type?: string;
+          provider?: string;
+          provider_message_id?: string | null;
+          from_number?: string;
+          to_number?: string;
+          body?: string;
+          status?: string;
+          error_message?: string | null;
+          organization_id?: string | null;
+          book_call_request_id?: string | null;
+          billing_id?: string | null;
+          recipient_type?: string;
+          recipient_name?: string | null;
+          sent_by_platform_admin_id?: string | null;
+          metadata?: Json;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       platform_sms_webhook_events: {
         Row: {
           id: string;

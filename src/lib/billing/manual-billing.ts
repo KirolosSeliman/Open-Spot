@@ -30,7 +30,8 @@ export type BillingEventType =
   | "cancelled"
   | "status_changed"
   | "note_added"
-  | "plan_updated";
+  | "plan_updated"
+  | "payment_reminder_sent";
 
 export type ManualBillingInput = {
   planName: string;
