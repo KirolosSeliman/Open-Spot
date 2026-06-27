@@ -20,8 +20,7 @@ import {
   buildCustomerCreateInput,
   buildCustomerUpdateInput,
   buildServiceCreateInput,
-  buildServiceUpdateInput,
-  buildWaitlistCreateInput
+  buildServiceUpdateInput
 } from "@/lib/dashboard/forms";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import {
@@ -127,7 +126,7 @@ function getSafeProviderErrorMessage(error: unknown) {
 function revalidateServiceSurfaces(slug: string) {
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/services");
-  revalidatePath("/dashboard/waitlist");
+  revalidatePath("/dashboard/clients");
   revalidatePath(`/b/${slug}/waitlist`);
   revalidatePath(`/b/${slug}/waitlist/kiosk`);
 }
@@ -140,7 +139,6 @@ function revalidateAppointmentSurfaces() {
 function revalidateCustomerSurfaces() {
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/clients");
-  revalidatePath("/dashboard/waitlist");
   revalidatePath("/dashboard/new-cancellation");
   revalidatePath("/dashboard/responses");
   revalidatePath("/dashboard/appointments");
@@ -161,7 +159,6 @@ function revalidateManualValidationSurfaces({
   revalidatePath("/dashboard/responses");
   revalidatePath("/dashboard/clients");
   revalidatePath("/dashboard/customers");
-  revalidatePath("/dashboard/waitlist");
   revalidatePath("/dashboard/reports");
   revalidatePath("/dashboard/analytics");
   revalidatePath("/dashboard/messages");
@@ -763,7 +760,6 @@ export async function createCustomerAction(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/clients");
-  revalidatePath("/dashboard/waitlist");
 
   if (consentRequestWarning) {
     redirectWithWarning("/dashboard/clients", consentRequestWarning);
@@ -977,7 +973,6 @@ export async function updateCustomerAction(formData: FormData) {
 
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/clients");
-  revalidatePath("/dashboard/waitlist");
   revalidatePath("/dashboard/responses");
   redirect("/dashboard/clients");
 }
@@ -1255,124 +1250,6 @@ export async function restoreCustomerAction(formData: FormData) {
     "message",
     "Client restored."
   );
-}
-
-export async function createWaitlistEntryAction(formData: FormData) {
-  const input = buildWaitlistCreateInput({
-    customerId: formData.get("customerId"),
-    serviceId: formData.get("serviceId"),
-    status: formData.get("status"),
-    preferredDays: formData.getAll("preferredDays"),
-    preferredTimeWindows: formData.getAll("preferredTimeWindows"),
-    discountInterest: formData.get("discountInterest"),
-    notes: formData.get("notes")
-  });
-
-  if (!input.ok) {
-    redirectWithError("/dashboard/waitlist", input.errors.join(" "));
-  }
-
-  const organization = await requireReadyOrganization({
-    canPerform: canManageCustomers
-  });
-  const supabase = await createSupabaseServerClient();
-  const { data: customer, error: customerError } = await supabase
-    .from("customers")
-    .select("id, deleted_at")
-    .eq("organization_id", organization.id)
-    .eq("id", input.value.customerId)
-    .single();
-
-  if (customerError || !customer) {
-    redirectWithError(
-      "/dashboard/waitlist",
-      customerError?.message ?? "Client not found for this organization."
-    );
-  }
-
-  if (customer.deleted_at) {
-    redirectWithError(
-      "/dashboard/waitlist",
-      "Deleted clients cannot be added to the operational waitlist."
-    );
-  }
-
-  const { data: consent, error: consentError } = await supabase
-    .from("sms_consents")
-    .select("status")
-    .eq("organization_id", organization.id)
-    .eq("customer_id", input.value.customerId)
-    .maybeSingle();
-
-  if (consentError) {
-    redirectWithError("/dashboard/waitlist", consentError.message);
-  }
-
-  if (consent?.status !== "opted_in") {
-    redirectWithError(
-      "/dashboard/waitlist",
-      "Only clients with opted-in SMS consent can be added to the operational waitlist."
-    );
-  }
-
-  if (input.value.serviceId) {
-    const { data: service, error: serviceError } = await supabase
-      .from("services")
-      .select("id")
-      .eq("organization_id", organization.id)
-      .eq("id", input.value.serviceId)
-      .eq("active", true)
-      .single();
-
-    if (serviceError || !service) {
-      redirectWithError(
-        "/dashboard/waitlist",
-        serviceError?.message ?? "Selected service is not available."
-      );
-    }
-  }
-
-  const duplicateQuery = supabase
-    .from("waitlist_entries")
-    .select("id")
-    .eq("organization_id", organization.id)
-    .eq("customer_id", input.value.customerId)
-    .eq("status", "active");
-  const scopedDuplicateQuery = input.value.serviceId
-    ? duplicateQuery.eq("service_id", input.value.serviceId)
-    : duplicateQuery.is("service_id", null);
-  const { data: existingEntry, error: duplicateError } =
-    await scopedDuplicateQuery.limit(1);
-
-  if (duplicateError) {
-    redirectWithError("/dashboard/waitlist", duplicateError.message);
-  }
-
-  if (existingEntry && existingEntry.length > 0) {
-    redirectWithError(
-      "/dashboard/waitlist",
-      "This client is already active on the waitlist for that service."
-    );
-  }
-
-  const { error } = await supabase.from("waitlist_entries").insert({
-    organization_id: organization.id,
-    customer_id: input.value.customerId,
-    service_id: input.value.serviceId,
-    status: input.value.status,
-    preferred_days: input.value.preferredDays,
-    preferred_time_windows: input.value.preferredTimeWindows,
-    discount_interest: input.value.discountInterest,
-    notes: input.value.notes
-  });
-
-  if (error) {
-    redirectWithError("/dashboard/waitlist", error.message);
-  }
-
-  revalidatePath("/dashboard");
-  revalidatePath("/dashboard/waitlist");
-  redirect("/dashboard/waitlist");
 }
 
 export async function createAppointmentAction(formData: FormData) {

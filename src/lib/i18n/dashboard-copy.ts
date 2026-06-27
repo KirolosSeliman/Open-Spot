@@ -117,11 +117,6 @@ export const dashboardCopy = {
             "Import or add customers with their consent status."
           ],
           [
-            "/dashboard/waitlist",
-            "Create your waitlist",
-            "Organize interested customers by service and availability."
-          ],
-          [
             "/dashboard/new-cancellation",
             "Create your first cancellation",
             "Prepare an opportunity without sending a real SMS."
@@ -468,11 +463,6 @@ export const dashboardCopy = {
             "/dashboard/clients",
             "Ajouter vos clients",
             "Importez ou ajoutez des clients avec leur statut de consentement."
-          ],
-          [
-            "/dashboard/waitlist",
-            "Créer votre liste d’attente",
-            "Classez les clients intéressés par service et disponibilité."
           ],
           [
             "/dashboard/new-cancellation",

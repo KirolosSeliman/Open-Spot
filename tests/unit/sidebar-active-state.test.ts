@@ -36,7 +36,6 @@ describe("dashboard sidebar active state", () => {
       "/dashboard/appointments",
       "/dashboard/cancellations",
       "/dashboard/clients",
-      "/dashboard/waitlist",
       "/dashboard/qr-code",
       "/dashboard/messages",
       "/dashboard/services",

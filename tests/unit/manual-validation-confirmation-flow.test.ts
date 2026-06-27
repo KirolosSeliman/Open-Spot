@@ -65,7 +65,6 @@ describe("manual validation confirmation flow", () => {
       '`/dashboard/cancellations/${openingId}`',
       '"/dashboard/responses"',
       '"/dashboard/clients"',
-      '"/dashboard/waitlist"',
       '"/dashboard/analytics"',
       '"/dashboard/messages"',
       '"/admin"',

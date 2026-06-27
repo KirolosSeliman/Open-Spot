@@ -31,7 +31,6 @@ function getDesktopNav(locale: Locale) {
     { href: "/dashboard/appointments", label: t.dashboard.appointments },
     { href: "/dashboard/cancellations", label: t.dashboard.cancellations },
     { href: "/dashboard/clients", label: t.customers.customers },
-    { href: "/dashboard/waitlist", label: t.waitlist.waitlist },
     { href: "/dashboard/qr-code", label: t.openings.qrLink },
     { href: "/dashboard/messages", label: t.dashboard.messages },
     { href: "/dashboard/services", label: t.services.services },

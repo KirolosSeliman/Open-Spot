@@ -265,7 +265,7 @@ describe("dashboard operational forms", () => {
     expect(source).toContain("export async function updateCustomerAction");
     const updateSource = source.slice(
       source.indexOf("export async function updateCustomerAction"),
-      source.indexOf("export async function createWaitlistEntryAction")
+      source.indexOf("export async function deleteCustomerAction")
     );
 
     expect(source).toContain('formData.get("customerId")');
@@ -292,7 +292,7 @@ describe("dashboard operational forms", () => {
     );
     const updateSource = source.slice(
       source.indexOf("export async function updateCustomerAction"),
-      source.indexOf("export async function createWaitlistEntryAction")
+      source.indexOf("export async function deleteCustomerAction")
     );
 
     expect(updateSource).not.toContain(".rpc(");
