@@ -34,13 +34,11 @@ export function InsightsPageContent({ data }: { data: InsightsData }) {
         funnel={data.funnel}
         recoveredRevenueSeries={data.recoveredRevenueSeries}
         recoveredRevenueTotalCents={data.recoveredRevenueTotalCents}
-        recoveredRevenueTrend={data.recoveredRevenueTrend}
         responseRateDonut={data.responseRateDonut}
         smsVsResponsesSeries={data.smsVsResponsesSeries}
         topServices={data.topServices}
         waitlistGrowthSeries={data.waitlistGrowthSeries}
         waitlistTotal={data.waitlistTotal}
-        waitlistTrend={data.waitlistTrend}
       />
 
       <p className="text-xs text-[#64748b]">

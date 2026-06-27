@@ -8,10 +8,8 @@ import type {
   InsightsFilters,
   InsightsFunnelStep,
   InsightsSeriesPoint,
-  InsightsServiceRow,
-  InsightsTrend
+  InsightsServiceRow
 } from "@/lib/analytics/types";
-import { cn } from "@/lib/utils/cn";
 
 const CHART = {
   width: 640,
@@ -108,21 +106,6 @@ function EmptyChartState({ message }: { message: string }) {
     <div className="flex min-h-[220px] items-center justify-center rounded-2xl border border-dashed border-[#dbeafe] bg-[#f8fafc] px-4 text-center text-sm text-[#64748b]">
       {message}
     </div>
-  );
-}
-
-function TrendBadge({ trend }: { trend: InsightsTrend }) {
-  return (
-    <span
-      className={cn(
-        "text-sm font-bold",
-        trend.tone === "positive" && "text-[#15803d]",
-        trend.tone === "negative" && "text-[#b91c1c]",
-        trend.tone === "neutral" && "text-[#64748b]"
-      )}
-    >
-      {trend.display}
-    </span>
   );
 }
 
@@ -382,18 +365,20 @@ function FunnelChart({
     return <EmptyChartState message="Aucune annulation enregistrée pour cette période." />;
   }
 
-  const width = 360;
+  const width = 400;
   const stageHeight = 42;
   const gap = 5;
-  const sidePad = 28;
-  const funnelMaxWidth = width - sidePad * 2;
+  const funnelCenterX = 210;
+  const funnelMaxWidth = 168;
+  const labelX = 92;
+  const rateX = 328;
   const totalHeight = steps.length * stageHeight + (steps.length - 1) * gap;
 
   return (
     <div className="flex min-h-[248px] flex-col justify-between">
       <svg
         aria-label="Entonnoir de performance du processus"
-        className="mx-auto h-auto w-full max-w-[360px]"
+        className="mx-auto h-auto w-full max-w-[400px]"
         role="img"
         viewBox={`0 0 ${width} ${totalHeight + 8}`}
       >
@@ -404,38 +389,37 @@ function FunnelChart({
             FUNNEL_WIDTH_RATIOS[index + 1] ?? topRatio * 0.82;
           const topWidth = funnelMaxWidth * topRatio;
           const bottomWidth = funnelMaxWidth * bottomRatio;
-          const centerX = width / 2;
           const points = [
-            [centerX - topWidth / 2, y],
-            [centerX + topWidth / 2, y],
-            [centerX + bottomWidth / 2, y + stageHeight],
-            [centerX - bottomWidth / 2, y + stageHeight]
+            [funnelCenterX - topWidth / 2, y],
+            [funnelCenterX + topWidth / 2, y],
+            [funnelCenterX + bottomWidth / 2, y + stageHeight],
+            [funnelCenterX - bottomWidth / 2, y + stageHeight]
           ]
             .map((point) => point.join(","))
             .join(" ");
 
           return (
             <g key={step.label}>
+              <text
+                fill="#334155"
+                fontSize="11"
+                fontWeight="600"
+                textAnchor="end"
+                x={labelX}
+                y={y + stageHeight / 2 + 4}
+              >
+                {step.label}
+              </text>
               <polygon
                 fill={FUNNEL_COLORS[index] ?? FUNNEL_COLORS[3]}
                 points={points}
               />
               <text
-                fill="#334155"
-                fontSize="11"
-                fontWeight="600"
-                textAnchor="start"
-                x={centerX - topWidth / 2 + 12}
-                y={y + stageHeight / 2 + 4}
-              >
-                {step.label}
-              </text>
-              <text
                 fill="#07142f"
                 fontSize="14"
                 fontWeight="800"
                 textAnchor="middle"
-                x={centerX}
+                x={funnelCenterX}
                 y={y + stageHeight / 2 + 5}
               >
                 {step.count}
@@ -446,7 +430,7 @@ function FunnelChart({
                   fontSize="11"
                   fontWeight="700"
                   textAnchor="start"
-                  x={centerX + topWidth / 2 + 12}
+                  x={rateX}
                   y={y + stageHeight / 2 + 4}
                 >
                   {step.rateLabel}
@@ -469,29 +453,14 @@ function FunnelChart({
   );
 }
 
-function formatCompactPointsTrend(trend: InsightsTrend) {
-  if (trend.display === "—") {
-    return "—";
-  }
-
-  const match = trend.display.match(/([↑↓→])\s*([\d\s,\.]+)\s*pt/);
-  if (match) {
-    return `${match[1]} ${match[2].trim()} pt`;
-  }
-
-  return trend.display.split(" vs ")[0] ?? "—";
-}
-
 function ResponseDonutChart({
   rate,
   responses,
-  noResponse,
-  trend
+  noResponse
 }: {
   rate: number;
   responses: number;
   noResponse: number;
-  trend: InsightsTrend;
 }) {
   const total = Math.max(responses + noResponse, 1);
   const responsePct = (responses / total) * 100;
@@ -501,7 +470,6 @@ function ResponseDonutChart({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const responseArc = (responsePct / 100) * circumference;
-  const compactTrend = formatCompactPointsTrend(trend);
 
   return (
     <div className="flex min-h-[248px] flex-col items-center justify-center gap-6 sm:flex-row sm:items-center sm:gap-8">
@@ -531,21 +499,9 @@ function ResponseDonutChart({
           />
         </svg>
         <div className="absolute inset-0 grid place-items-center text-center">
-          <div>
-            <p className="text-[1.65rem] font-black leading-none text-[#07142f]">
-              {rate.toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %
-            </p>
-            <p
-              className={cn(
-                "mt-1.5 text-xs font-bold",
-                trend.tone === "positive" && "text-[#15803d]",
-                trend.tone === "negative" && "text-[#b91c1c]",
-                trend.tone === "neutral" && "text-[#64748b]"
-              )}
-            >
-              {compactTrend}
-            </p>
-          </div>
+          <p className="text-[1.65rem] font-black leading-none text-[#07142f]">
+            {rate.toLocaleString("fr-CA", { maximumFractionDigits: 1 })} %
+          </p>
         </div>
       </div>
 
@@ -632,19 +588,16 @@ export function InsightsChartsSection({
   filters,
   recoveredRevenueSeries,
   recoveredRevenueTotalCents,
-  recoveredRevenueTrend,
   smsVsResponsesSeries,
   funnel,
   responseRateDonut,
   waitlistGrowthSeries,
   waitlistTotal,
-  waitlistTrend,
   topServices
 }: {
   filters: InsightsFilters;
   recoveredRevenueSeries: InsightsSeriesPoint[];
   recoveredRevenueTotalCents: number;
-  recoveredRevenueTrend: InsightsTrend;
   smsVsResponsesSeries: InsightsDualSeriesPoint[];
   funnel: {
     steps: InsightsFunnelStep[];
@@ -654,11 +607,9 @@ export function InsightsChartsSection({
     rate: number;
     responses: number;
     noResponse: number;
-    trend: InsightsTrend;
   };
   waitlistGrowthSeries: InsightsSeriesPoint[];
   waitlistTotal: number;
-  waitlistTrend: InsightsTrend;
   topServices: InsightsServiceRow[];
 }) {
   const granularityOptions = [
@@ -692,12 +643,9 @@ export function InsightsChartsSection({
           </label>
         }
         subtitle={
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-lg font-black text-[#07142f]">
-              {formatCurrency(recoveredRevenueTotalCents)}
-            </span>
-            <TrendBadge trend={recoveredRevenueTrend} />
-          </div>
+          <span className="text-lg font-black text-[#07142f]">
+            {formatCurrency(recoveredRevenueTotalCents)}
+          </span>
         }
         title="Revenus récupérés"
       >
@@ -725,18 +673,14 @@ export function InsightsChartsSection({
           noResponse={responseRateDonut.noResponse}
           rate={responseRateDonut.rate}
           responses={responseRateDonut.responses}
-          trend={responseRateDonut.trend}
         />
       </ChartCard>
 
       <ChartCard
         subtitle={
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-lg font-black text-[#07142f]">
-              {formatNumber(waitlistTotal)}
-            </span>
-            <TrendBadge trend={waitlistTrend} />
-          </div>
+          <span className="text-lg font-black text-[#07142f]">
+            {formatNumber(waitlistTotal)}
+          </span>
         }
         title="Croissance de la liste d'attente"
       >
