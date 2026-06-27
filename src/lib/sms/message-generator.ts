@@ -14,11 +14,13 @@ export type OpeningSmsInput = {
 
 export type OpeningConfirmationSmsInput = {
   businessName: string;
+  businessAddress?: string | null;
   serviceName: string;
   startsAt: Date | string;
   endsAt?: Date | string | null;
   customerFirstName?: string | null;
   language: SmsLanguage;
+  timezone?: string | null;
   includeOptOut?: boolean;
 };
 
@@ -47,7 +49,11 @@ function parseDate(value: Date | string) {
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
-function formatOpeningDateTime(value: Date | string, language: SmsLanguage) {
+function formatOpeningDateTime(
+  value: Date | string,
+  language: SmsLanguage,
+  timezone = "America/Toronto"
+) {
   const date = parseDate(value);
 
   if (!date) {
@@ -58,16 +64,47 @@ function formatOpeningDateTime(value: Date | string, language: SmsLanguage) {
     };
   }
 
-  return {
-    dateLabel: date.toLocaleDateString(language === "fr" ? "fr-CA" : "en-CA", {
+  const resolvedTimezone = timezone?.trim() || "America/Toronto";
+
+  if (language === "fr") {
+    const dateLabel = date.toLocaleDateString("fr-CA", {
       day: "numeric",
-      month: "short",
-      year: "numeric"
-    }),
-    timeLabel: date.toLocaleTimeString(language === "fr" ? "fr-CA" : "en-CA", {
-      hour: "2-digit",
-      minute: "2-digit"
-    }),
+      month: "long",
+      year: "numeric",
+      timeZone: resolvedTimezone
+    });
+    const parts = new Intl.DateTimeFormat("fr-CA", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: resolvedTimezone
+    }).formatToParts(date);
+    const hour = parts.find((part) => part.type === "hour")?.value ?? "0";
+    const minute = parts.find((part) => part.type === "minute")?.value ?? "00";
+
+    return {
+      dateLabel,
+      timeLabel: `${hour} h ${minute}`,
+      invalid: false
+    };
+  }
+
+  const dateLabel = date.toLocaleDateString("en-CA", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: resolvedTimezone
+  });
+  const timeLabel = date.toLocaleTimeString("en-CA", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: resolvedTimezone
+  });
+
+  return {
+    dateLabel,
+    timeLabel,
     invalid: false
   };
 }
@@ -147,20 +184,28 @@ export function generateOpeningConfirmationSmsMessage(
   const language = input.language === "en" ? "en" : "fr";
   const warnings: string[] = [];
   const cleanedBusinessName = cleanText(input.businessName);
+  const cleanedBusinessAddress = cleanText(input.businessAddress);
   const cleanedServiceName = cleanText(input.serviceName);
   const businessName =
     cleanedBusinessName || (language === "fr" ? "Votre commerce" : "Your business");
   const serviceName =
-    cleanedServiceName || (language === "fr" ? "ce service" : "this service");
+    cleanedServiceName ||
+    (language === "fr" ? "votre service" : "your service");
   const firstName = cleanText(input.customerFirstName);
   const includeOptOut = input.includeOptOut ?? true;
+  const timezone = input.timezone?.trim() || "America/Toronto";
   const { dateLabel, timeLabel, invalid } = formatOpeningDateTime(
     input.startsAt,
-    language
+    language,
+    timezone
   );
 
   if (!cleanedBusinessName) {
     warnings.push("missing_business_name");
+  }
+
+  if (!cleanedBusinessAddress) {
+    warnings.push("missing_business_address");
   }
 
   if (!cleanedServiceName) {
@@ -180,10 +225,21 @@ export function generateOpeningConfirmationSmsMessage(
         ? `Hi ${firstName}, `
         : "Hi, ";
 
+  const addressSentence = cleanedBusinessAddress
+    ? language === "fr"
+      ? ` Adresse : ${cleanedBusinessAddress}.`
+      : ` Address: ${cleanedBusinessAddress}.`
+    : "";
+  const optOutSentence = includeOptOut
+    ? language === "fr"
+      ? " Repondez AIDE pour de l'aide ou STOP pour vous desinscrire."
+      : " Reply HELP for help or STOP to unsubscribe."
+    : "";
+
   const body =
     language === "fr"
-      ? `${greeting}${businessName} confirme votre place pour ${serviceName} le ${dateLabel} a ${timeLabel}. A bientot.${includeOptOut ? " STOP pour arret." : ""}`
-      : `${greeting}${businessName} confirms your spot for ${serviceName} on ${dateLabel} at ${timeLabel}. See you soon.${includeOptOut ? " Reply STOP to opt out." : ""}`;
+      ? `${greeting}votre rendez-vous chez ${businessName} est confirme pour ${serviceName} le ${dateLabel} a ${timeLabel}.${addressSentence} A bientot!${optOutSentence}`
+      : `${greeting}your appointment at ${businessName} is confirmed for ${serviceName} on ${dateLabel} at ${timeLabel}.${addressSentence} See you soon!${optOutSentence}`;
   const characterCount = [...body].length;
   const estimatedSegments = estimateSmsSegments(characterCount);
 

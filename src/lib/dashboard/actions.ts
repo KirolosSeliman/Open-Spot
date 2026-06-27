@@ -37,9 +37,9 @@ import { sendConsentRequestSms } from "@/lib/sms/consent-request";
 import { createSmsProvider } from "@/lib/sms/factory";
 import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 import {
-  generateOpeningConfirmationSmsMessage,
   generateOpeningSmsMessage
 } from "@/lib/sms/message-generator";
+import { sendOpeningConfirmationSmsAfterValidation } from "@/lib/sms/opening-confirmation";
 import { checkSmsDeliveryPersistenceReadiness } from "@/lib/sms/persistence-readiness";
 import { getSmsRuntimeStatus } from "@/lib/sms/runtime-status";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -1931,171 +1931,6 @@ async function sendOpeningSmsAlerts({
   };
 }
 
-async function sendOpeningConfirmationSmsAfterValidation({
-  supabase,
-  organization,
-  openingId,
-  offerId,
-  bookingRequestId
-}: {
-  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>;
-  organization: Awaited<ReturnType<typeof requireReadyOrganization>>;
-  openingId: string;
-  offerId: string;
-  bookingRequestId: string;
-}) {
-  try {
-    await requireOrganizationSmsNotPaused(organization.id);
-
-    const [openingResult, offerResult] = await Promise.all([
-      supabase
-        .from("openings")
-        .select("id, title, service_id, start_time, end_time, status")
-        .eq("organization_id", organization.id)
-        .eq("id", openingId)
-        .maybeSingle(),
-      supabase
-        .from("opening_offers")
-        .select("id, customer_id, status")
-        .eq("organization_id", organization.id)
-        .eq("opening_id", openingId)
-        .eq("id", offerId)
-        .maybeSingle()
-    ]);
-
-    if (openingResult.error || !openingResult.data) {
-      return openingResult.error?.message ?? "Opening was validated, but confirmation SMS lookup failed.";
-    }
-
-    if (offerResult.error || !offerResult.data) {
-      return offerResult.error?.message ?? "Opening was validated, but selected respondent lookup failed.";
-    }
-
-    const opening = openingResult.data;
-    const offer = offerResult.data;
-
-    if (opening.status !== "filled" || offer.status !== "selected") {
-      return "Opening was validated, but confirmation SMS was skipped because the selected state could not be verified.";
-    }
-
-    const [customerResult, consentResult, serviceResult] = await Promise.all([
-      supabase
-        .from("customers")
-        .select("id, full_name, phone_e164, preferred_language, deleted_at")
-        .eq("organization_id", organization.id)
-        .eq("id", offer.customer_id)
-        .maybeSingle(),
-      supabase
-        .from("sms_consents")
-        .select("customer_id, status")
-        .eq("organization_id", organization.id)
-        .eq("customer_id", offer.customer_id)
-        .maybeSingle(),
-      opening.service_id
-        ? supabase
-            .from("services")
-            .select("id, name")
-            .eq("organization_id", organization.id)
-            .eq("id", opening.service_id)
-            .maybeSingle()
-        : Promise.resolve({ data: null, error: null })
-    ]);
-
-    if (customerResult.error || !customerResult.data) {
-      return customerResult.error?.message ?? "Opening was validated, but selected client was not found for confirmation SMS.";
-    }
-
-    if (consentResult.error) {
-      return consentResult.error.message;
-    }
-
-    if (serviceResult.error) {
-      return serviceResult.error.message;
-    }
-
-    const customer = customerResult.data;
-
-    if (customer.deleted_at) {
-      return "Opening was validated, but confirmation SMS was skipped because the selected client is deleted.";
-    }
-
-    if (consentResult.data?.status !== "opted_in") {
-      return "Opening was validated, but confirmation SMS was skipped because the selected client is not opted in.";
-    }
-
-    if (!/^\+[1-9][0-9]{7,14}$/.test(customer.phone_e164)) {
-      return "Opening was validated, but confirmation SMS was skipped because the selected client phone is invalid.";
-    }
-
-    const provider = createSmsProvider();
-    const message = generateOpeningConfirmationSmsMessage({
-      businessName: organization.name,
-      serviceName: serviceResult.data?.name ?? opening.title,
-      startsAt: opening.start_time,
-      endsAt: opening.end_time,
-      customerFirstName: customer.full_name?.trim().split(/\s+/)[0] ?? null,
-      language: customer.preferred_language ?? organization.defaultLanguage,
-      includeOptOut: true
-    });
-    const sendResult = await provider.sendSms({
-      to: customer.phone_e164,
-      body: message.body,
-      metadata: {
-        openingId,
-        organizationId: organization.id,
-        customerId: offer.customer_id,
-        bookingRequestId
-      }
-    });
-    const { data: smsMessage, error: messageError } = await supabase
-      .from("sms_messages")
-      .insert({
-        organization_id: organization.id,
-        customer_id: offer.customer_id,
-        opening_id: openingId,
-        message_type: "opening_confirmation",
-        direction: "outbound",
-        provider: sendResult.provider,
-        provider_message_id: sendResult.providerMessageId,
-        from_number: sendResult.fromNumber,
-        to_number: customer.phone_e164,
-        body: message.body,
-        status: sendResult.status
-      })
-      .select("id")
-      .single();
-
-    if (messageError || !smsMessage) {
-      return messageError?.message ?? "Opening was validated, but confirmation SMS persistence failed.";
-    }
-
-    const { error: auditError } = await supabase.rpc(
-      "record_opening_confirmation_audit",
-      {
-        target_opening_id: openingId,
-        target_offer_id: offerId,
-        target_booking_request_id: bookingRequestId,
-        target_sms_message_id: smsMessage.id,
-        provider_name: sendResult.provider
-      }
-    );
-
-    if (auditError) {
-      console.warn("Opening confirmation SMS audit failed", {
-        openingId,
-        offerId,
-        bookingRequestId,
-        smsMessageId: smsMessage.id,
-        error: auditError.message
-      });
-    }
-
-    return null;
-  } catch (error) {
-    return getSafeProviderErrorMessage(error);
-  }
-}
-
 export async function createOpeningAction(formData: FormData) {
   const input = buildOpeningCreateInput({
     title: formData.get("title"),
@@ -2363,7 +2198,9 @@ export async function validateOpeningOfferAction(formData: FormData) {
   });
   redirectWithNoticeAndConfirmationSmsWarning({
     path: `/dashboard/cancellations/${openingId}`,
-    notice: "Respondent manually confirmed. The opening is marked as recovered.",
+    notice: confirmationSmsWarning
+      ? "Client confirmé."
+      : "Client confirmé. SMS de confirmation envoyé.",
     confirmationSmsWarning
   });
 }

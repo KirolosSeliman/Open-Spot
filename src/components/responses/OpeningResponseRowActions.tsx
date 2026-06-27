@@ -35,12 +35,18 @@ export function OpeningResponseRowActions({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [confirmationSmsWarning, setConfirmationSmsWarning] = useState<string | null>(
+    null
+  );
   const canConfirm = canValidate && canConfirmOpeningCustomer(customer, openingStatus);
   const canReject = canValidate && canRejectOpeningCustomer(customer, openingStatus);
   const isConfirmed = customer.offerStatus === "selected";
 
   function handleConfirm() {
     setError(null);
+    setNotice(null);
+    setConfirmationSmsWarning(null);
     startTransition(async () => {
       try {
         const response = await fetch(`/api/openings/${openingId}/validate`, {
@@ -61,6 +67,14 @@ export function OpeningResponseRowActions({
               : "La validation manuelle a échoué."
           );
           return;
+        }
+
+        if (typeof payload.notice === "string") {
+          setNotice(payload.notice);
+        }
+
+        if (typeof payload.confirmationSmsWarning === "string") {
+          setConfirmationSmsWarning(payload.confirmationSmsWarning);
         }
 
         router.refresh();
@@ -126,6 +140,16 @@ export function OpeningResponseRowActions({
       {error ? (
         <p className="text-xs font-bold text-[#8a1f17]" role="alert">
           {error}
+        </p>
+      ) : null}
+      {notice ? (
+        <p className="text-xs font-bold text-[#245d30]" role="status">
+          {notice}
+        </p>
+      ) : null}
+      {confirmationSmsWarning ? (
+        <p className="text-xs font-bold text-[#74510f]" role="status">
+          {confirmationSmsWarning}
         </p>
       ) : null}
     </div>
