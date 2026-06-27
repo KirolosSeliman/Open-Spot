@@ -134,7 +134,7 @@ export function DashboardShell({
       : t.dashboard.workspaceUnavailable;
 
   return (
-    <div className="open-spot-dashboard-theme min-h-screen bg-[#f4f7fb] text-[#07142f]">
+    <div className="open-spot-dashboard-theme min-h-screen bg-[#f4f8ff] text-[#07142f]">
       <div className="mx-auto flex w-full max-w-[1600px] gap-0 lg:gap-0">
         <aside className="sticky top-0 hidden h-screen w-[280px] shrink-0 flex-col border-r border-[#e2e8f0] bg-[#f8fafc] px-5 py-6 lg:flex">
           <div className="shrink-0">

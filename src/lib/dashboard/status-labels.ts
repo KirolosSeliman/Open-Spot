@@ -2,19 +2,19 @@ import type { Locale } from "@/lib/i18n/types";
 
 const openingStatusLabels: Record<Locale, Record<string, string>> = {
   fr: {
-    draft: "Brouillon",
+    draft: "En attente",
     broadcasting: "Envoi en cours",
-    awaiting_validation: "En attente de validation",
+    awaiting_validation: "Réponses reçues",
     filled: "Créneau récupéré",
-    expired: "Expiré",
+    expired: "Non récupéré",
     cancelled: "Annulé"
   },
   en: {
-    draft: "Draft",
-    broadcasting: "Broadcasting",
-    awaiting_validation: "Awaiting validation",
-    filled: "Recovered",
-    expired: "Expired",
+    draft: "Pending",
+    broadcasting: "Sending",
+    awaiting_validation: "Replies received",
+    filled: "Recovered spot",
+    expired: "Not recovered",
     cancelled: "Cancelled"
   }
 };

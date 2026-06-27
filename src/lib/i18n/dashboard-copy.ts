@@ -139,6 +139,41 @@ export const dashboardCopy = {
         "Create a first cancellation to track contacted customers, received replies, and the final decision."
       ]
     },
+    history: {
+      eyebrow: "Open Spot",
+      title: "History",
+      descriptionLine1:
+        "Real history of cancellation opportunities for this organization.",
+      descriptionLine2: "Replies never automatically confirm a client.",
+      newCancellation: "New cancellation",
+      tableTitle: "History",
+      columns: {
+        title: "Title",
+        start: "Start",
+        end: "End",
+        status: "Status",
+        estimatedValue: "Estimated value",
+        actions: "Actions"
+      },
+      pagination: {
+        showing: "Showing",
+        resultsPerPage: "results per page",
+        range: (start: number, end: number, total: number) =>
+          `${start}–${end} of ${total}`,
+        previousPage: "Previous page",
+        nextPage: "Next page",
+        pageSizeLabel: "Results per page"
+      },
+      empty: {
+        title: "No cancellations yet.",
+        description:
+          "Create a first cancellation to track contacted customers, received replies, and the final decision."
+      },
+      rowActions: {
+        viewDetails: "View details",
+        menuLabel: "Opening actions"
+      }
+    },
     newCancellation: {
       title: "New cancellation",
       description:
@@ -486,6 +521,42 @@ export const dashboardCopy = {
         "Aucune annulation pour le moment.",
         "Créez une première annulation pour suivre les clients contactés, les réponses reçues et la décision finale."
       ]
+    },
+    history: {
+      eyebrow: "Open Spot",
+      title: "Historique",
+      descriptionLine1:
+        "Historique réel des opportunités d’annulation de cette organisation.",
+      descriptionLine2:
+        "Les réponses ne confirment jamais automatiquement un client.",
+      newCancellation: "Nouvelle annulation",
+      tableTitle: "Historique",
+      columns: {
+        title: "Titre",
+        start: "Début",
+        end: "Fin",
+        status: "Statut",
+        estimatedValue: "Valeur estimée",
+        actions: "Actions"
+      },
+      pagination: {
+        showing: "Affichage",
+        resultsPerPage: "résultats par page",
+        range: (start: number, end: number, total: number) =>
+          `${start}–${end} sur ${total}`,
+        previousPage: "Page précédente",
+        nextPage: "Page suivante",
+        pageSizeLabel: "Résultats par page"
+      },
+      empty: {
+        title: "Aucune annulation pour le moment.",
+        description:
+          "Créez une première annulation pour suivre les clients contactés, les réponses reçues et la décision de confirmation."
+      },
+      rowActions: {
+        viewDetails: "Voir les détails",
+        menuLabel: "Actions sur l’annulation"
+      }
     },
     newCancellation: {
       title: "Nouvelle annulation",
