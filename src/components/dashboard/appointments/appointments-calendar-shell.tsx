@@ -77,8 +77,8 @@ export function AppointmentsCalendarShell({
         </button>
       </div>
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_340px]">
-        <div className="rounded-[24px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+      <div className="grid min-w-0 gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(280px,380px)]">
+        <div className="min-w-0 rounded-[24px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
           <CalendarControls
             dateKey={dateKey}
             locale={locale}
@@ -116,7 +116,7 @@ export function AppointmentsCalendarShell({
           </div>
         </div>
 
-        <div className="grid gap-6">
+        <div className="grid min-w-0 gap-6">
           <NewAppointmentForm
             confirmationEnabled={confirmationEnabled}
             customers={customers}

@@ -28,7 +28,7 @@ export function UpcomingAppointmentsCard({
   const copy = getDashboardCopy(locale);
 
   return (
-    <div className="rounded-[24px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+    <div className="min-w-0 overflow-hidden rounded-[24px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-[#0b1328]">
           {copy.appointments.upcomingTitle}

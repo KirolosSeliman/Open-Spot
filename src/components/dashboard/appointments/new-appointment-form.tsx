@@ -12,7 +12,9 @@ import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
 import type { Locale } from "@/lib/i18n/types";
 
 const fieldClassName =
-  "min-h-11 w-full rounded-xl border border-[#e3eaf5] bg-white px-3 text-sm text-[#0b1328]";
+  "box-border min-h-11 w-full min-w-0 max-w-full rounded-xl border border-[#e3eaf5] bg-white px-3 text-sm text-[#0b1328]";
+
+const dateTimeFieldClassName = `${fieldClassName} [color-scheme:light]`;
 
 export function NewAppointmentForm({
   locale,
@@ -79,7 +81,7 @@ export function NewAppointmentForm({
 
   return (
     <div
-      className="rounded-[24px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+      className="min-w-0 overflow-hidden rounded-[24px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
       id="new-appointment-form"
     >
       <h2 className="text-lg font-bold text-[#0b1328]">{copy.appointments.addTitle}</h2>
@@ -90,12 +92,12 @@ export function NewAppointmentForm({
         </p>
       ) : null}
 
-      <form action={createAppointmentAction} className="mt-5 grid gap-4">
+      <form action={createAppointmentAction} className="mt-5 grid min-w-0 gap-4">
         <input name="returnView" type="hidden" value={view} />
         <input name="returnDate" type="hidden" value={dateKey} />
         <input name="timezone" type="hidden" value={timezone} />
 
-        <label className="grid gap-2 text-sm font-semibold text-[#0b1328]">
+        <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#0b1328]">
           {copy.common.customer}
           <select
             className={fieldClassName}
@@ -112,7 +114,7 @@ export function NewAppointmentForm({
           </select>
         </label>
 
-        <label className="grid gap-2 text-sm font-semibold text-[#0b1328]">
+        <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#0b1328]">
           {copy.common.service}
           <select
             className={fieldClassName}
@@ -128,11 +130,11 @@ export function NewAppointmentForm({
           </select>
         </label>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="grid gap-2 text-sm font-semibold text-[#0b1328]">
+        <div className="grid min-w-0 grid-cols-1 gap-4">
+          <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#0b1328]">
             {copy.common.start}
             <input
-              className={fieldClassName}
+              className={dateTimeFieldClassName}
               name="startsAt"
               onChange={(event) => handleStartsAtChange(event.target.value)}
               required
@@ -140,10 +142,10 @@ export function NewAppointmentForm({
               value={startsAt}
             />
           </label>
-          <label className="grid gap-2 text-sm font-semibold text-[#0b1328]">
+          <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#0b1328]">
             {copy.common.end}
             <input
-              className={fieldClassName}
+              className={dateTimeFieldClassName}
               name="endsAt"
               onChange={(event) => setEndsAt(event.target.value)}
               type="datetime-local"
@@ -152,25 +154,25 @@ export function NewAppointmentForm({
           </label>
         </div>
 
-        <label className="grid gap-2 text-sm font-semibold text-[#0b1328]">
+        <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#0b1328]">
           {copy.common.notes}
           <textarea
-            className="min-h-[84px] w-full rounded-xl border border-[#e3eaf5] bg-white px-3 py-2 text-sm text-[#0b1328]"
+            className="box-border min-h-[84px] w-full min-w-0 max-w-full rounded-xl border border-[#e3eaf5] bg-white px-3 py-2 text-sm text-[#0b1328]"
             name="notes"
             placeholder={copy.appointments.notesPlaceholder}
             rows={3}
           />
         </label>
 
-        <label className="flex items-start gap-3">
+        <label className="flex min-w-0 items-start gap-3">
           <input
-            className="mt-1"
+            className="mt-1 shrink-0"
             defaultChecked={reminderEnabled}
             disabled={smsDisabled}
             name="sendReminder"
             type="checkbox"
           />
-          <span>
+          <span className="min-w-0">
             <span className="block text-sm font-semibold text-[#0b1328]">
               {copy.appointments.reminder24h}
             </span>
@@ -180,15 +182,15 @@ export function NewAppointmentForm({
           </span>
         </label>
 
-        <label className="flex items-start gap-3">
+        <label className="flex min-w-0 items-start gap-3">
           <input
-            className="mt-1"
+            className="mt-1 shrink-0"
             defaultChecked={confirmationEnabled}
             disabled={smsDisabled}
             name="requestConfirmation"
             type="checkbox"
           />
-          <span>
+          <span className="min-w-0">
             <span className="block text-sm font-semibold text-[#0b1328]">
               {copy.appointments.askYesNo}
             </span>
@@ -212,7 +214,7 @@ export function NewAppointmentForm({
         />
 
         <button
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#2563eb] px-4 text-sm font-bold text-white transition hover:bg-[#1d4ed8]"
+          className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#2563eb] px-4 text-sm font-bold text-white transition hover:bg-[#1d4ed8]"
           type="submit"
         >
           {copy.appointments.submit}

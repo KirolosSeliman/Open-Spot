@@ -13,7 +13,7 @@ import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
 import type { Locale } from "@/lib/i18n/types";
 
 const fieldClassName =
-  "min-h-11 w-full rounded-xl border border-[#e3eaf5] bg-white px-3 text-sm text-[#0b1328]";
+  "box-border min-h-11 w-full min-w-0 max-w-full rounded-xl border border-[#e3eaf5] bg-white px-3 text-sm text-[#0b1328]";
 
 export function AppointmentEditDrawer({
   appointment,

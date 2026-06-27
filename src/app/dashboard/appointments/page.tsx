@@ -57,7 +57,7 @@ export default async function AppointmentsPage({
   );
 
   return (
-    <div className="rounded-[28px] bg-[#f7faff] p-4 sm:p-6 lg:p-8">
+    <div className="min-w-0 rounded-[28px] bg-[#f7faff] p-4 sm:p-6 lg:p-8">
       <AppointmentsCalendarShell
         appointments={calendarAppointments}
         confirmationEnabled={Boolean(

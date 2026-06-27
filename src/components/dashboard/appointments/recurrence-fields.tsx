@@ -23,7 +23,7 @@ const WEEKDAY_OPTIONS = [
 ] as const;
 
 const inputClassName =
-  "min-h-11 w-full rounded-xl border border-[#e3eaf5] bg-white px-3 text-sm text-[#0b1328]";
+  "box-border min-h-11 w-full min-w-0 max-w-full rounded-xl border border-[#e3eaf5] bg-white px-3 text-sm text-[#0b1328]";
 
 export function RecurrenceFields({
   locale,
@@ -93,10 +93,10 @@ export function RecurrenceFields({
   const showAdvanced = frequency !== "none";
 
   return (
-    <div className="grid gap-3 rounded-xl border border-[#e3eaf5] bg-[#f8fbff] p-4">
+    <div className="grid min-w-0 gap-3 overflow-hidden rounded-xl border border-[#e3eaf5] bg-[#f8fbff] p-4">
       <p className="text-sm font-bold text-[#0b1328]">{copy.appointments.recurrence.title}</p>
 
-      <label className="grid gap-2 text-sm font-semibold text-[#0b1328]">
+      <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#0b1328]">
         <select
           className={inputClassName}
           name="recurrenceFrequency"
