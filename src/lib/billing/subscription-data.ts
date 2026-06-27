@@ -6,10 +6,14 @@ import { calculateSubscriptionTotals } from "@/lib/billing/subscription-calculat
 import { formatSubscriptionMoney } from "@/lib/billing/subscription-format";
 import {
   buildSubscriptionMonthOptions,
+  buildSubscriptionYearOptions,
   formatSubscriptionMonthLabel,
+  getOrganizationRegistrationBounds,
   getSubscriptionMonthWindow,
-  parseSubscriptionMonthKey,
-  type SubscriptionMonthOption
+  parseSubscriptionSelection,
+  type OrganizationRegistrationBounds,
+  type SubscriptionMonthOption,
+  type SubscriptionYearOption
 } from "@/lib/billing/subscription-months";
 import {
   loadManualBillingForOrganization,
@@ -38,6 +42,8 @@ export type SubscriptionPageData = {
     label: string;
   };
   monthOptions: SubscriptionMonthOption[];
+  yearOptions: SubscriptionYearOption[];
+  registrationBounds: OrganizationRegistrationBounds;
   billingConfigured: boolean;
   termsMissing: boolean;
   loadError: boolean;
@@ -62,6 +68,60 @@ function isBookingInRange(
   return effectiveDate >= startIso && effectiveDate < endIso;
 }
 
+async function loadOrganizationRegisteredAt(organizationId: string) {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("organizations")
+    .select("created_at")
+    .eq("id", organizationId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data?.created_at ?? new Date().toISOString();
+}
+
+function buildPeriodOptions({
+  registeredAt,
+  timezone,
+  locale,
+  monthKey
+}: {
+  registeredAt: string;
+  timezone: string;
+  locale: "fr" | "en";
+  monthKey?: string | null;
+}) {
+  const bounds = getOrganizationRegistrationBounds({
+    registeredAt,
+    timezone
+  });
+  const selected = parseSubscriptionSelection({
+    monthKey,
+    registeredAt,
+    timezone
+  });
+
+  return {
+    bounds,
+    selected,
+    monthOptions: buildSubscriptionMonthOptions({
+      activeKey: selected.key,
+      selectedYear: selected.year,
+      bounds,
+      locale,
+      timezone
+    }),
+    yearOptions: buildSubscriptionYearOptions({
+      bounds,
+      activeYear: selected.year,
+      activeMonth: selected.month
+    })
+  };
+}
+
 export async function loadSubscriptionPageData({
   organizationId,
   timezone,
@@ -75,7 +135,13 @@ export async function loadSubscriptionPageData({
 }): Promise<SubscriptionPageData> {
   assertDashboardOrganizationId(organizationId);
 
-  const selected = parseSubscriptionMonthKey(monthKey, timezone);
+  const registeredAt = await loadOrganizationRegisteredAt(organizationId);
+  const { bounds, selected, monthOptions, yearOptions } = buildPeriodOptions({
+    registeredAt,
+    timezone,
+    locale: locale === "fr" ? "fr" : "en",
+    monthKey
+  });
   const monthWindow = getSubscriptionMonthWindow({
     year: selected.year,
     month: selected.month,
@@ -155,11 +221,9 @@ export async function loadSubscriptionPageData({
         locale: intlLocale
       })
     },
-    monthOptions: buildSubscriptionMonthOptions({
-      activeKey: selected.key,
-      timezone,
-      locale: intlLocale
-    }),
+    monthOptions,
+    yearOptions,
+    registrationBounds: bounds,
     billingConfigured,
     termsMissing,
     loadError: false,
@@ -174,14 +238,22 @@ export async function loadSubscriptionPageData({
 export function getSubscriptionEmptyData({
   locale,
   timezone,
-  monthKey
+  monthKey,
+  registeredAt
 }: {
   locale: Locale;
   timezone: string;
   monthKey?: string | null;
+  registeredAt?: string;
 }): SubscriptionPageData {
   const intlLocale = locale === "fr" ? "fr" : "en";
-  const selected = parseSubscriptionMonthKey(monthKey, timezone);
+  const registrationDate = registeredAt ?? new Date().toISOString();
+  const { bounds, selected, monthOptions, yearOptions } = buildPeriodOptions({
+    registeredAt: registrationDate,
+    timezone,
+    locale: intlLocale,
+    monthKey
+  });
   const currency = "CAD";
   const formatMoney = (cents: number) =>
     formatSubscriptionMoney(cents, currency, intlLocale);
@@ -199,11 +271,9 @@ export function getSubscriptionEmptyData({
         locale: intlLocale
       })
     },
-    monthOptions: buildSubscriptionMonthOptions({
-      activeKey: selected.key,
-      timezone,
-      locale: intlLocale
-    }),
+    monthOptions,
+    yearOptions,
+    registrationBounds: bounds,
     billingConfigured: false,
     termsMissing: true,
     loadError: false,

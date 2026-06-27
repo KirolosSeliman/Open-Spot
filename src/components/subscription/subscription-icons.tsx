@@ -89,6 +89,24 @@ export function SubscriptionChevronIcon({ className }: IconProps) {
   );
 }
 
+export function SubscriptionStatusIcon({ className }: IconProps) {
+  return (
+    <SvgIcon className={className}>
+      <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+      <path d="m9 12 2 2 4-4" />
+    </SvgIcon>
+  );
+}
+
+export function SubscriptionClockIcon({ className }: IconProps) {
+  return (
+    <SvgIcon className={className}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 6v6l4 2" />
+    </SvgIcon>
+  );
+}
+
 export function SubscriptionDiamondIcon({ className }: IconProps) {
   return (
     <svg

@@ -7,8 +7,10 @@ import {
 import {
   SubscriptionCalendarIcon,
   SubscriptionChartIcon,
+  SubscriptionClockIcon,
   SubscriptionCreditCardIcon,
   SubscriptionInfoIcon,
+  SubscriptionStatusIcon,
   SubscriptionTagIcon,
   SubscriptionWalletIcon
 } from "@/components/subscription/subscription-icons";
@@ -16,10 +18,15 @@ import {
   SubscriptionMonthSelector,
   SubscriptionMonthSelectorMobile
 } from "@/components/subscription/subscription-month-selector";
-import { SubscriptionHero } from "@/components/subscription/subscription-hero";
-import { SubscriptionManualBillingPanel } from "@/components/subscription/subscription-manual-billing-panel";
-import { getBillingStatusLabel } from "@/lib/billing/manual-billing";
-import { formatSubscriptionMoney } from "@/lib/billing/subscription-format";
+import { SubscriptionPageHeader } from "@/components/subscription/subscription-hero";
+import {
+  getBillingIntervalLabel,
+  getBillingStatusLabel
+} from "@/lib/billing/manual-billing";
+import {
+  formatSubscriptionDate,
+  formatSubscriptionMoney
+} from "@/lib/billing/subscription-format";
 import type { SubscriptionPageData } from "@/lib/billing/subscription-data";
 
 function getInvoiceStatusLabel(
@@ -44,12 +51,17 @@ function getCopy(locale: SubscriptionPageData["locale"]) {
         description:
           "Résumé de votre abonnement mensuel et de la facturation des commissions basée sur les réservations récupérées.",
         months: "Mois",
+        year: "Année",
         fixedFees: "Frais fixes mensuels",
         fixedFeesDetail: "Défini dans l’admin pour cette compagnie",
         recovered: "Réservations récupérées",
         unitCommission: "Commission unitaire",
         totalCommission: "Commission totale",
         monthlyTotal: "Total du mois",
+        paymentStatus: "Statut",
+        nextDue: "Prochaine échéance",
+        periodEnd: "Fin de période",
+        notAvailable: "Non disponible",
         detailsTitle: "Détail de la facturation",
         infoLines: [
           "Le frais fixe mensuel est configuré dans le compte admin de votre organisation.",
@@ -69,12 +81,17 @@ function getCopy(locale: SubscriptionPageData["locale"]) {
         description:
           "Summary of your monthly subscription and commission billing based on recovered reservations.",
         months: "Month",
+        year: "Year",
         fixedFees: "Monthly fixed fees",
         fixedFeesDetail: "Defined in admin for this company",
         recovered: "Recovered reservations",
         unitCommission: "Unit commission",
         totalCommission: "Total commission",
         monthlyTotal: "Monthly total",
+        paymentStatus: "Status",
+        nextDue: "Next payment due",
+        periodEnd: "Period end",
+        notAvailable: "N/A",
         detailsTitle: "Billing details",
         infoLines: [
           "The monthly fixed fee is configured in your organization admin account.",
@@ -93,10 +110,28 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
   const formatMoney = (cents: number) =>
     formatSubscriptionMoney(cents, data.currency, intlLocale);
   const { totals } = data;
-  const statusLabel = getInvoiceStatusLabel(
-    data.manualBilling?.billingStatus,
-    data.locale
-  );
+  const billing = data.manualBilling;
+  const statusLabel = getInvoiceStatusLabel(billing?.billingStatus, data.locale);
+  const paymentStatusValue = billing
+    ? getBillingStatusLabel(billing.billingStatus, data.locale)
+    : copy.notAvailable;
+  const paymentStatusDetail = billing
+    ? getBillingIntervalLabel(billing.billingInterval, data.locale)
+    : null;
+  const nextDueValue = billing
+    ? formatSubscriptionDate(
+        billing.nextPaymentDueAt,
+        intlLocale,
+        copy.notAvailable
+      )
+    : copy.notAvailable;
+  const nextDueDetail = billing
+    ? `${copy.periodEnd} : ${formatSubscriptionDate(
+        billing.currentPeriodEnd,
+        intlLocale,
+        copy.notAvailable
+      )}`
+    : null;
   const fixedFeeValue = formatMoney(totals.monthlyFixedFeeCents);
   const fixedFeeDetail = data.termsMissing
     ? copy.noFixedFee
@@ -104,24 +139,34 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
   const unitCommissionValue = formatMoney(totals.unitCommissionCents);
 
   return (
-    <div className="grid gap-6 lg:gap-8">
-      <SubscriptionHero description={copy.description} title={copy.title} />
+    <div className="overflow-hidden rounded-[22px] border border-[#dde5f0] bg-white shadow-[0_10px_40px_rgba(15,23,42,0.05)]">
+      <SubscriptionPageHeader description={copy.description} title={copy.title} />
 
-      {data.loadError ? (
-        <SubscriptionInfoBox
-          icon={<SubscriptionInfoIcon className="h-5 w-5" />}
-          lines={[copy.loadError]}
-        />
-      ) : null}
-
-      <SubscriptionMonthSelectorMobile months={data.monthOptions} title={copy.months} />
-
-      <div className="grid gap-6 xl:grid-cols-[250px_minmax(0,1fr)] xl:gap-8">
+      <div className="grid gap-6 p-5 sm:p-6 lg:p-8 xl:grid-cols-[250px_minmax(0,1fr)] xl:gap-8">
         <div className="hidden xl:block">
-          <SubscriptionMonthSelector months={data.monthOptions} title={copy.months} />
+          <SubscriptionMonthSelector
+            months={data.monthOptions}
+            title={copy.months}
+            yearLabel={copy.year}
+            years={data.yearOptions}
+          />
         </div>
 
         <div className="grid gap-6">
+          {data.loadError ? (
+            <SubscriptionInfoBox
+              icon={<SubscriptionInfoIcon className="h-5 w-5" />}
+              lines={[copy.loadError]}
+            />
+          ) : null}
+
+          <SubscriptionMonthSelectorMobile
+            months={data.monthOptions}
+            title={copy.months}
+            yearLabel={copy.year}
+            years={data.yearOptions}
+          />
+
           {!data.billingConfigured ? (
             <SubscriptionInfoBox
               icon={<SubscriptionInfoIcon className="h-5 w-5" />}
@@ -129,7 +174,7 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
             />
           ) : null}
 
-          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-3">
             <SubscriptionMetricCard
               detail={fixedFeeDetail}
               icon={<SubscriptionCreditCardIcon className="h-5 w-5" />}
@@ -154,6 +199,18 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
               icon={<SubscriptionChartIcon className="h-5 w-5" />}
               label={copy.totalCommission}
               value={formatMoney(totals.totalCommissionCents)}
+            />
+            <SubscriptionMetricCard
+              detail={paymentStatusDetail}
+              icon={<SubscriptionStatusIcon className="h-5 w-5" />}
+              label={copy.paymentStatus}
+              value={paymentStatusValue}
+            />
+            <SubscriptionMetricCard
+              detail={nextDueDetail}
+              icon={<SubscriptionClockIcon className="h-5 w-5" />}
+              label={copy.nextDue}
+              value={nextDueValue}
             />
           </div>
 
@@ -206,13 +263,6 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
               )
             ]}
           />
-
-          {data.manualBilling ? (
-            <SubscriptionManualBillingPanel
-              billing={data.manualBilling}
-              locale={data.locale}
-            />
-          ) : null}
         </div>
       </div>
     </div>

@@ -9,6 +9,25 @@ export type SubscriptionMonthOption = {
   isCurrent: boolean;
 };
 
+export type SubscriptionYearOption = {
+  year: number;
+  isActive: boolean;
+  href: string;
+};
+
+export type OrganizationRegistrationBounds = {
+  startYear: number;
+  startMonth: number;
+  endYear: number;
+  endMonth: number;
+};
+
+export type SubscriptionSelection = {
+  key: string;
+  year: number;
+  month: number;
+};
+
 const MONTH_NAMES_FR = [
   "Janvier",
   "Février",
@@ -56,37 +75,113 @@ export function buildSubscriptionMonthKey(year: number, month: number) {
   return `${year}-${String(month).padStart(2, "0")}`;
 }
 
-export function parseSubscriptionMonthKey(
-  value: string | null | undefined,
-  timezone: string,
+export function getOrganizationRegistrationBounds({
+  registeredAt,
+  timezone,
   now = new Date()
-) {
-  const current = getZonedParts(now, timezone);
-
-  if (value && /^\d{4}-\d{2}$/.test(value)) {
-    const [yearPart, monthPart] = value.split("-");
-    const year = Number(yearPart);
-    const month = Number(monthPart);
-
-    if (
-      Number.isInteger(year) &&
-      Number.isInteger(month) &&
-      month >= 1 &&
-      month <= 12
-    ) {
-      return {
-        key: buildSubscriptionMonthKey(year, month),
-        year,
-        month
-      };
-    }
-  }
+}: {
+  registeredAt: string;
+  timezone: string;
+  now?: Date;
+}): OrganizationRegistrationBounds {
+  const start = getZonedParts(new Date(registeredAt), timezone);
+  const end = getZonedParts(now, timezone);
 
   return {
-    key: buildSubscriptionMonthKey(current.year, current.month),
-    year: current.year,
-    month: current.month
+    startYear: start.year,
+    startMonth: start.month,
+    endYear: end.year,
+    endMonth: end.month
   };
+}
+
+function getMonthRangeForYear(
+  year: number,
+  bounds: OrganizationRegistrationBounds
+) {
+  const minMonth = year === bounds.startYear ? bounds.startMonth : 1;
+  const maxMonth = year === bounds.endYear ? bounds.endMonth : 12;
+
+  return { minMonth, maxMonth };
+}
+
+export function clampSubscriptionSelection({
+  year,
+  month,
+  bounds
+}: {
+  year: number;
+  month: number;
+  bounds: OrganizationRegistrationBounds;
+}): SubscriptionSelection {
+  const clampedYear = Math.max(
+    bounds.startYear,
+    Math.min(bounds.endYear, year)
+  );
+  const { minMonth, maxMonth } = getMonthRangeForYear(clampedYear, bounds);
+  const clampedMonth = Math.max(minMonth, Math.min(maxMonth, month));
+
+  return {
+    year: clampedYear,
+    month: clampedMonth,
+    key: buildSubscriptionMonthKey(clampedYear, clampedMonth)
+  };
+}
+
+export function parseSubscriptionSelection({
+  monthKey,
+  registeredAt,
+  timezone,
+  now = new Date()
+}: {
+  monthKey: string | null | undefined;
+  registeredAt: string;
+  timezone: string;
+  now?: Date;
+}): SubscriptionSelection {
+  const bounds = getOrganizationRegistrationBounds({
+    registeredAt,
+    timezone,
+    now
+  });
+  const fallback = clampSubscriptionSelection({
+    year: bounds.endYear,
+    month: bounds.endMonth,
+    bounds
+  });
+
+  if (!monthKey || !/^\d{4}-\d{2}$/.test(monthKey)) {
+    return fallback;
+  }
+
+  const [yearPart, monthPart] = monthKey.split("-");
+  const year = Number(yearPart);
+  const month = Number(monthPart);
+
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(month) ||
+    month < 1 ||
+    month > 12
+  ) {
+    return fallback;
+  }
+
+  return clampSubscriptionSelection({ year, month, bounds });
+}
+
+export function buildSubscriptionHref({
+  year,
+  month,
+  bounds
+}: {
+  year: number;
+  month: number;
+  bounds: OrganizationRegistrationBounds;
+}) {
+  const selection = clampSubscriptionSelection({ year, month, bounds });
+
+  return `/dashboard/billing?month=${selection.key}`;
 }
 
 export function getSubscriptionMonthWindow({
@@ -147,37 +242,66 @@ function getTimeZoneOffsetMinutes(date: Date, timezone: string) {
   return hours * 60 + Math.sign(hours) * minutes;
 }
 
+export function buildSubscriptionYearOptions({
+  bounds,
+  activeYear,
+  activeMonth
+}: {
+  bounds: OrganizationRegistrationBounds;
+  activeYear: number;
+  activeMonth: number;
+}): SubscriptionYearOption[] {
+  const options: SubscriptionYearOption[] = [];
+
+  for (let year = bounds.startYear; year <= bounds.endYear; year += 1) {
+    options.push({
+      year,
+      isActive: year === activeYear,
+      href: buildSubscriptionHref({ year, month: activeMonth, bounds })
+    });
+  }
+
+  return options;
+}
+
 export function buildSubscriptionMonthOptions({
   activeKey,
-  timezone,
+  selectedYear,
+  bounds,
   locale,
-  now = new Date()
+  now = new Date(),
+  timezone
 }: {
   activeKey: string;
-  timezone: string;
+  selectedYear: number;
+  bounds: OrganizationRegistrationBounds;
   locale: "fr" | "en";
   now?: Date;
+  timezone: string;
 }): SubscriptionMonthOption[] {
   const current = getZonedParts(now, timezone);
   const monthNames = locale === "fr" ? MONTH_NAMES_FR : MONTH_NAMES_EN;
+  const { minMonth, maxMonth } = getMonthRangeForYear(selectedYear, bounds);
   const options: SubscriptionMonthOption[] = [];
 
-  for (let month = 1; month <= 12; month += 1) {
-    const key = buildSubscriptionMonthKey(current.year, month);
-    const isFuture = month > current.month;
+  for (let month = minMonth; month <= maxMonth; month += 1) {
+    const key = buildSubscriptionMonthKey(selectedYear, month);
+    const isFuture =
+      selectedYear > current.year ||
+      (selectedYear === current.year && month > current.month);
     const label = monthNames[month - 1];
-    const labelWithYear =
-      locale === "fr" ? `${label} ${current.year}` : `${label} ${current.year}`;
+    const labelWithYear = `${label} ${selectedYear}`;
 
     options.push({
       key,
-      year: current.year,
+      year: selectedYear,
       month,
       label,
       labelWithYear,
       isActive: key === activeKey,
       isFuture,
-      isCurrent: month === current.month
+      isCurrent:
+        selectedYear === current.year && month === current.month
     });
   }
 
