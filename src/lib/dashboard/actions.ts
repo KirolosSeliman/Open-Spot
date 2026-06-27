@@ -37,8 +37,9 @@ import { sendConsentRequestSms } from "@/lib/sms/consent-request";
 import { createSmsProvider } from "@/lib/sms/factory";
 import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 import {
-  generateOpeningSmsMessage
+  getOpeningSmsDateTimeLabels
 } from "@/lib/sms/message-generator";
+import { resolveOpeningAlertSmsBody } from "@/lib/sms/organization-templates";
 import { sendOpeningConfirmationSmsAfterValidation } from "@/lib/sms/opening-confirmation";
 import { checkSmsDeliveryPersistenceReadiness } from "@/lib/sms/persistence-readiness";
 import { getSmsRuntimeStatus } from "@/lib/sms/runtime-status";
@@ -1831,21 +1832,39 @@ async function sendOpeningSmsAlerts({
       continue;
     }
 
-    const message = generateOpeningSmsMessage({
-      businessName: organization.name,
-      serviceName: serviceResult.data?.name ?? opening.title,
-      startsAt: opening.start_time,
-      endsAt: opening.end_time,
-      offerLabel: opening.offer_label,
-      customerFirstName: customer.full_name?.trim().split(/\s+/)[0] ?? null,
-      language: customer.preferred_language ?? organization.defaultLanguage,
-      includeOptOut: true
+    const language = customer.preferred_language ?? organization.defaultLanguage;
+    const { dateLabel, timeLabel } = getOpeningSmsDateTimeLabels(
+      opening.start_time,
+      language,
+      organization.timezone
+    );
+    const messageBody = await resolveOpeningAlertSmsBody(supabase, {
+      organizationId: organization.id,
+      language,
+      context: {
+        businessName: organization.name,
+        serviceName: serviceResult.data?.name ?? opening.title,
+        appointmentDate: dateLabel,
+        appointmentTime: timeLabel,
+        clientName: customer.full_name?.trim().split(/\s+/)[0] ?? null,
+        replyKeyword: language === "fr" ? "OUI" : "YES"
+      },
+      fallbackInput: {
+        businessName: organization.name,
+        serviceName: serviceResult.data?.name ?? opening.title,
+        startsAt: opening.start_time,
+        endsAt: opening.end_time,
+        offerLabel: opening.offer_label,
+        customerFirstName: customer.full_name?.trim().split(/\s+/)[0] ?? null,
+        language,
+        includeOptOut: true
+      }
     });
 
     try {
       const sendResult = await provider.sendSms({
         to: customer.phone_e164,
-        body: message.body,
+        body: messageBody,
         metadata: {
           openingId,
           organizationId: organization.id,
@@ -1864,7 +1883,7 @@ async function sendOpeningSmsAlerts({
         provider_message_id: sendResult.providerMessageId,
         from_number: sendResult.fromNumber,
         to_number: customer.phone_e164,
-        body: message.body,
+        body: messageBody,
         status: sendResult.status
       });
     } catch (error) {

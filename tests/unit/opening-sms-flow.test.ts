@@ -37,7 +37,7 @@ describe("opening SMS flow", () => {
   });
 
   it("makes opening alerts use the selected SMS provider and generator", () => {
-    expect(dashboardActions).toContain("generateOpeningSmsMessage");
+    expect(dashboardActions).toContain("resolveOpeningAlertSmsBody");
     expect(dashboardActions).toContain("createSmsProvider");
     expect(dashboardActions).toContain("provider.sendSms");
     expect(dashboardActions).toContain("sendResult.fromNumber");

@@ -113,6 +113,14 @@ function estimateSmsSegments(characterCount: number) {
   return Math.max(1, Math.ceil(characterCount / SMS_SEGMENT_LENGTH));
 }
 
+export function getOpeningSmsDateTimeLabels(
+  startsAt: Date | string,
+  language: SmsLanguage,
+  timezone?: string | null
+) {
+  return formatOpeningDateTime(startsAt, language, timezone ?? undefined);
+}
+
 export function generateOpeningSmsMessage(
   input: OpeningSmsInput
 ): GeneratedSmsMessage {

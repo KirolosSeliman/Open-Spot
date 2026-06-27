@@ -29,7 +29,7 @@ describe("manual validation confirmation flow", () => {
     expect(dashboardActions).toContain("validate_opening_offer");
     expect(dashboardActions).toContain("bookingRequestId");
     expect(dashboardActions).toContain("sendOpeningConfirmationSmsAfterValidation");
-    expect(openingConfirmationSms).toContain("generateOpeningConfirmationSmsMessage");
+    expect(openingConfirmationSms).toContain("resolveOpeningConfirmationSmsBody");
     expect(openingConfirmationSms).toContain('message_type: "opening_confirmation"');
     expect(openingConfirmationSms).toContain('"record_opening_confirmation_audit"');
     expect(openingConfirmationSms).toContain("hasExistingConfirmationSms");
