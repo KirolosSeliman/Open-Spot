@@ -1,3 +1,8 @@
+import {
+  getCalendarQueryRange,
+  parseCalendarDateKey,
+  parseCalendarView
+} from "@/lib/appointments/calendar";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
@@ -771,8 +776,11 @@ export async function loadOpeningCreationData() {
 export async function loadAppointmentWorkspace(filters?: {
   range?: string;
   status?: string;
+  view?: string;
+  date?: string;
 }): Promise<{
   appointments: AppointmentView[];
+  upcomingAppointments: AppointmentView[];
   customers: CustomerWithConsent[];
   services: ServiceRow[];
   settings: Pick<
@@ -789,6 +797,7 @@ export async function loadAppointmentWorkspace(filters?: {
   if (workspace.status !== "ready") {
     return {
       appointments: [],
+      upcomingAppointments: [],
       customers: [],
       services: [],
       settings: null,
@@ -797,6 +806,7 @@ export async function loadAppointmentWorkspace(filters?: {
   }
 
   const organizationId = workspace.organization.id;
+  const timezone = workspace.organization.timezone;
   const supabase = await createSupabaseServerClient();
   const [customers, services, settingsResult] = await Promise.all([
     loadCustomersWithConsent(),
@@ -814,10 +824,16 @@ export async function loadAppointmentWorkspace(filters?: {
     throw new Error(settingsResult.error.message);
   }
 
+  const calendarView = parseCalendarView(filters?.view);
+  const calendarDate = parseCalendarDateKey(filters?.date, timezone);
+  const calendarRange = getCalendarQueryRange(calendarView, calendarDate, timezone);
+
   let appointmentsQuery = supabase
     .from("appointments")
     .select("*")
     .eq("organization_id", organizationId)
+    .gte("starts_at", calendarRange.startIso)
+    .lte("starts_at", calendarRange.endIso)
     .order("starts_at", { ascending: true });
 
   if (filters?.status && filters.status !== "all") {
@@ -825,56 +841,51 @@ export async function loadAppointmentWorkspace(filters?: {
   }
 
   const now = new Date();
-  const startOfToday = new Date(now);
-  startOfToday.setHours(0, 0, 0, 0);
-  const startOfTomorrow = new Date(startOfToday);
-  startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
-  const startOfDayAfterTomorrow = new Date(startOfTomorrow);
-  startOfDayAfterTomorrow.setDate(startOfDayAfterTomorrow.getDate() + 1);
-  const sevenDaysFromToday = new Date(startOfToday);
-  sevenDaysFromToday.setDate(sevenDaysFromToday.getDate() + 7);
+  const upcomingQuery = supabase
+    .from("appointments")
+    .select("*")
+    .eq("organization_id", organizationId)
+    .gte("starts_at", now.toISOString())
+    .order("starts_at", { ascending: true })
+    .limit(3);
 
-  if (filters?.range === "today") {
-    appointmentsQuery = appointmentsQuery
-      .gte("starts_at", startOfToday.toISOString())
-      .lt("starts_at", startOfTomorrow.toISOString());
-  } else if (filters?.range === "tomorrow") {
-    appointmentsQuery = appointmentsQuery
-      .gte("starts_at", startOfTomorrow.toISOString())
-      .lt("starts_at", startOfDayAfterTomorrow.toISOString());
-  } else if (filters?.range === "next_7_days") {
-    appointmentsQuery = appointmentsQuery
-      .gte("starts_at", startOfToday.toISOString())
-      .lt("starts_at", sevenDaysFromToday.toISOString());
+  const [appointmentsResult, upcomingResult] = await Promise.all([
+    appointmentsQuery,
+    upcomingQuery
+  ]);
+
+  if (appointmentsResult.error) {
+    throw new Error(appointmentsResult.error.message);
   }
 
-  const { data: appointments, error } = await appointmentsQuery;
-
-  if (error) {
-    throw new Error(error.message);
+  if (upcomingResult.error) {
+    throw new Error(upcomingResult.error.message);
   }
 
   const customerById = new Map(customers.map((customer) => [customer.id, customer]));
   const serviceById = new Map(services.map((service) => [service.id, service]));
 
-  return {
-    appointments: (appointments ?? []).map((appointment) => {
-      const customer = customerById.get(appointment.customer_id);
-      const service = appointment.service_id
-        ? serviceById.get(appointment.service_id)
-        : null;
+  const mapAppointment = (appointment: AppointmentRow): AppointmentView => {
+    const customer = customerById.get(appointment.customer_id);
+    const service = appointment.service_id
+      ? serviceById.get(appointment.service_id)
+      : null;
 
-      return {
-        ...appointment,
-        customerName: customer?.full_name ?? "Client inconnu",
-        customerPhone: customer?.phone_e164 ?? "",
-        serviceName: service?.name ?? null
-      };
-    }),
+    return {
+      ...appointment,
+      customerName: customer?.full_name ?? "Client inconnu",
+      customerPhone: customer?.phone_e164 ?? "",
+      serviceName: service?.name ?? null
+    };
+  };
+
+  return {
+    appointments: (appointmentsResult.data ?? []).map(mapAppointment),
+    upcomingAppointments: (upcomingResult.data ?? []).map(mapAppointment),
     customers,
     services,
     settings: settingsResult.data ?? null,
-    timezone: workspace.organization.timezone
+    timezone
   };
 }
 

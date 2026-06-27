@@ -13,6 +13,7 @@ import {
   buildSafeCustomerReturnPath,
   validateCustomerDeleteForm
 } from "@/lib/customers/soft-delete";
+import { createRecurringAppointments, createSingleAppointmentRecord } from "@/lib/appointments/create";
 import { shouldQueueAppointmentReminder } from "@/lib/appointments/reminders";
 import {
   buildAppointmentCreateInput,
@@ -1253,6 +1254,13 @@ export async function restoreCustomerAction(formData: FormData) {
 }
 
 export async function createAppointmentAction(formData: FormData) {
+  const returnView = String(formData.get("returnView") ?? "month");
+  const returnDate = String(formData.get("returnDate") ?? "");
+  const returnPath =
+    returnDate && /^\d{4}-\d{2}-\d{2}$/.test(returnDate)
+      ? `/dashboard/appointments?view=${encodeURIComponent(returnView)}&date=${encodeURIComponent(returnDate)}`
+      : "/dashboard/appointments";
+
   const input = buildAppointmentCreateInput({
     customerId: formData.get("customerId"),
     serviceId: formData.get("serviceId"),
@@ -1261,11 +1269,18 @@ export async function createAppointmentAction(formData: FormData) {
     timezone: formData.get("timezone"),
     notes: formData.get("notes"),
     sendReminder: formData.get("sendReminder"),
-    requestConfirmation: formData.get("requestConfirmation")
+    requestConfirmation: formData.get("requestConfirmation"),
+    recurrenceFrequency: formData.get("recurrenceFrequency"),
+    recurrenceInterval: formData.get("recurrenceInterval"),
+    recurrenceWeekdays: formData.get("recurrenceWeekdays"),
+    recurrenceMonthlyPattern: formData.get("recurrenceMonthlyPattern"),
+    recurrenceEndType: formData.get("recurrenceEndType"),
+    recurrenceEndAfterCount: formData.get("recurrenceEndAfterCount"),
+    recurrenceEndDate: formData.get("recurrenceEndDate")
   });
 
   if (!input.ok) {
-    redirectWithError("/dashboard/appointments", input.errors.join(" "));
+    redirectWithError(returnPath, input.errors.join(" "));
   }
 
   const organization = await requireReadyOrganization({
@@ -1284,69 +1299,68 @@ export async function createAppointmentAction(formData: FormData) {
       supabase,
       organizationId: organization.id
     });
-    const shouldScheduleReminder = shouldQueueAppointmentReminder({
-      appointmentStatus: "scheduled",
-      consentStatus: consent?.status,
-      organizationRemindersEnabled:
-        reminderSettings.organizationRemindersEnabled,
-      sendReminder: input.value.sendReminder
-    });
-
-    const { data: appointment, error } = await supabase
-      .from("appointments")
-      .insert({
-        organization_id: organization.id,
-        customer_id: input.value.customerId,
-        service_id: input.value.serviceId,
-        starts_at: input.value.startsAt,
-        ends_at: input.value.endsAt,
-        timezone: input.value.timezone || organization.timezone,
-        status: "scheduled",
-        reminder_status: shouldScheduleReminder ? "scheduled" : "not_scheduled",
-        confirmation_status: input.value.requestConfirmation
-          ? "pending"
-          : "no_response",
-        reminder_24h_enabled: input.value.sendReminder,
-        confirmation_request_enabled: input.value.requestConfirmation,
-        source: "manual",
-        notes: input.value.notes
-      })
-      .select("id")
-      .single();
-
-    if (error || !appointment) {
-      throw new Error(error?.message ?? "Appointment creation failed.");
-    }
-
-    await supabase.from("appointment_events").insert({
-      organization_id: organization.id,
-      appointment_id: appointment.id,
-      event_type: "appointment.created",
-      metadata: {
-        source: "dashboard",
-        reminder_requested: input.value.sendReminder,
-        confirmation_requested: input.value.requestConfirmation
-      }
-    });
-
-    await maybeScheduleAppointmentReminder({
+    const actorProfileId = await getCurrentOrganizationProfileId({
       supabase,
-      organizationId: organization.id,
-      customerId: input.value.customerId,
-      appointmentId: appointment.id,
-      startsAt: input.value.startsAt,
-      defaultReminderDelayHours: reminderSettings.defaultReminderDelayHours,
-      shouldScheduleReminder
+      organizationId: organization.id
     });
+
+    if (input.value.recurrence.frequency !== "none") {
+      await createRecurringAppointments({
+        supabase,
+        organizationId: organization.id,
+        input: input.value,
+        recurrence: input.value.recurrence,
+        reminderSettings,
+        consentStatus: consent?.status,
+        actorProfileId
+      });
+    } else {
+      const shouldScheduleReminder = shouldQueueAppointmentReminder({
+        appointmentStatus: "scheduled",
+        consentStatus: consent?.status,
+        organizationRemindersEnabled:
+          reminderSettings.organizationRemindersEnabled,
+        sendReminder: input.value.sendReminder
+      });
+
+      const appointment = await createSingleAppointmentRecord({
+        supabase,
+        organizationId: organization.id,
+        input: input.value,
+        shouldScheduleReminder,
+        requestConfirmation: input.value.requestConfirmation
+      });
+
+      await supabase.from("appointment_events").insert({
+        organization_id: organization.id,
+        appointment_id: appointment.id,
+        event_type: "appointment.created",
+        metadata: {
+          source: "dashboard",
+          reminder_requested: input.value.sendReminder,
+          confirmation_requested: input.value.requestConfirmation
+        }
+      });
+
+      await maybeScheduleAppointmentReminder({
+        supabase,
+        organizationId: organization.id,
+        customerId: input.value.customerId,
+        appointmentId: appointment.id,
+        startsAt: input.value.startsAt,
+        defaultReminderDelayHours: reminderSettings.defaultReminderDelayHours,
+        shouldScheduleReminder
+      });
+    }
   } catch (error) {
     redirectWithError(
-      "/dashboard/appointments",
+      returnPath,
       error instanceof Error ? error.message : "Appointment creation failed."
     );
   }
 
   revalidateAppointmentSurfaces();
-  redirect("/dashboard/appointments");
+  redirect(returnPath);
 }
 
 export async function updateAppointmentAction(formData: FormData) {

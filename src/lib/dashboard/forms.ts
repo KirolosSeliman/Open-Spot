@@ -3,6 +3,10 @@ import {
   mapConsentStatus
 } from "@/lib/customers/consent";
 import { normalizePhoneToE164 } from "@/lib/customers/phone";
+import {
+  validateRecurrenceInput,
+  type RecurrenceInput
+} from "@/lib/appointments/recurrence";
 import type { Locale } from "@/lib/i18n/types";
 
 export type ServiceCreateInput = {
@@ -50,6 +54,7 @@ export type AppointmentCreateInput = {
   notes: string | null;
   sendReminder: boolean;
   requestConfirmation: boolean;
+  recurrence: RecurrenceInput;
 };
 
 export type AppointmentUpdateInput = AppointmentCreateInput & {
@@ -394,6 +399,13 @@ export function buildAppointmentCreateInput(input: {
   sendReminder?: unknown;
   requestConfirmation?: unknown;
   organizationId?: unknown;
+  recurrenceFrequency?: unknown;
+  recurrenceInterval?: unknown;
+  recurrenceWeekdays?: unknown;
+  recurrenceMonthlyPattern?: unknown;
+  recurrenceEndType?: unknown;
+  recurrenceEndAfterCount?: unknown;
+  recurrenceEndDate?: unknown;
 }): FormResult<AppointmentCreateInput> {
   const errors: string[] = [];
   const customerId = String(input.customerId ?? "").trim();
@@ -438,6 +450,20 @@ export function buildAppointmentCreateInput(input: {
     return { ok: false, errors };
   }
 
+  const recurrenceResult = validateRecurrenceInput({
+    frequency: input.recurrenceFrequency,
+    intervalCount: input.recurrenceInterval,
+    weekdays: input.recurrenceWeekdays,
+    monthlyPattern: input.recurrenceMonthlyPattern,
+    endType: input.recurrenceEndType,
+    endAfterCount: input.recurrenceEndAfterCount,
+    endDate: input.recurrenceEndDate
+  });
+
+  if (!recurrenceResult.ok) {
+    return { ok: false, errors: recurrenceResult.errors };
+  }
+
   return {
     ok: true,
     value: {
@@ -454,7 +480,8 @@ export function buildAppointmentCreateInput(input: {
       requestConfirmation:
         input.requestConfirmation === "on" ||
         input.requestConfirmation === "true" ||
-        input.requestConfirmation === true
+        input.requestConfirmation === true,
+      recurrence: recurrenceResult.input
     }
   };
 }
@@ -472,11 +499,27 @@ export function buildAppointmentUpdateInput(input: {
   sendReminder?: unknown;
   requestConfirmation?: unknown;
   organizationId?: unknown;
+  recurrenceFrequency?: unknown;
+  recurrenceInterval?: unknown;
+  recurrenceWeekdays?: unknown;
+  recurrenceMonthlyPattern?: unknown;
+  recurrenceEndType?: unknown;
+  recurrenceEndAfterCount?: unknown;
+  recurrenceEndDate?: unknown;
 }): FormResult<AppointmentUpdateInput> {
   const appointmentId = String(input.appointmentId ?? "").trim();
   const status = String(input.status ?? "scheduled");
   const confirmationStatus = String(input.confirmationStatus ?? "pending");
-  const appointmentInput = buildAppointmentCreateInput(input);
+  const appointmentInput = buildAppointmentCreateInput({
+    ...input,
+    recurrenceFrequency: input.recurrenceFrequency ?? "none",
+    recurrenceInterval: input.recurrenceInterval ?? 1,
+    recurrenceWeekdays: input.recurrenceWeekdays ?? "",
+    recurrenceMonthlyPattern: input.recurrenceMonthlyPattern ?? "day_of_month",
+    recurrenceEndType: input.recurrenceEndType ?? "never",
+    recurrenceEndAfterCount: input.recurrenceEndAfterCount ?? "",
+    recurrenceEndDate: input.recurrenceEndDate ?? ""
+  });
   const errors: string[] = [];
 
   if (!appointmentId) {

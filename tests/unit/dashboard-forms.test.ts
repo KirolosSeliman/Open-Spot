@@ -349,7 +349,16 @@ describe("dashboard operational forms", () => {
         timezone: "America/Toronto",
         notes: "Prefers text reminders",
         sendReminder: true,
-        requestConfirmation: true
+        requestConfirmation: true,
+        recurrence: {
+          frequency: "none",
+          intervalCount: 1,
+          weekdays: [],
+          monthlyPattern: "day_of_month",
+          endType: "never",
+          endAfterCount: null,
+          endDate: null
+        }
       }
     });
   });
@@ -381,7 +390,16 @@ describe("dashboard operational forms", () => {
         status: "scheduled",
         confirmationStatus: "pending",
         sendReminder: true,
-        requestConfirmation: true
+        requestConfirmation: true,
+        recurrence: {
+          frequency: "none",
+          intervalCount: 1,
+          weekdays: [],
+          monthlyPattern: "day_of_month",
+          endType: "never",
+          endAfterCount: null,
+          endDate: null
+        }
       }
     });
 

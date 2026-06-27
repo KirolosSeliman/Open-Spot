@@ -199,21 +199,63 @@ export const dashboardCopy = {
         "SMS sending is currently in simulation. No real customer SMS will be sent."
     },
     appointments: {
+      eyebrow: "OPEN SPOT",
       title: "Appointments",
       description:
-        "Add the business's existing appointments to prepare 24-hour reminders and track confirmations without replacing the booking system.",
-      addTitle: "Add appointment",
+        "Manage appointments, reminders, and confirmations in one place.",
+      addButton: "Add appointment",
+      addTitle: "New appointment",
       chooseCustomer: "Choose a customer",
-      reminder24h: "24-hour reminder",
-      askYesNo: "Ask for YES/NO",
-      submit: "Add appointment",
+      reminder24h: "24h reminder",
+      reminder24hHelp:
+        "The client will receive a reminder 24h before the appointment.",
+      askYesNo: "Ask YES/NO",
+      askYesNoHelp: "The client will be asked to confirm by SMS.",
+      notesPlaceholder: "Add an optional note",
+      submit: "Save appointment",
       save: "Save appointment",
       upcomingTitle: "Upcoming appointments",
+      seeAll: "See all",
+      openFullAgenda: "Open full agenda",
       help:
         "The 24-hour reminder choice is saved on the appointment. If reminders are enabled and the customer has opted in, Open Spot prepares a scheduled message processed by the server SMS engine.",
       emptyTitle: "No appointments found.",
       emptyDescription:
         "Add an existing appointment to prepare upcoming SMS reminders. Real sends remain disabled until the scheduled provider flow is ready.",
+      calendar: {
+        month: "Month",
+        week: "Week",
+        day: "Day",
+        today: "Today",
+        more: (count: number) => `+ ${count} more`
+      },
+      recurrence: {
+        title: "Recurrence",
+        none: "None",
+        daily: "Daily",
+        weekly: "Weekly",
+        monthly: "Monthly",
+        yearly: "Yearly",
+        custom: "Custom",
+        repeatEvery: "Repeat every",
+        weekdays: "On days",
+        monthlyPattern: "Monthly pattern",
+        dayOfMonth: "Same day of month",
+        nthWeekday: "Same weekday position",
+        endTitle: "Recurrence end",
+        never: "Never",
+        after: "After",
+        until: "Until",
+        occurrences: "occurrences",
+        previewSingle: "This appointment will be created once.",
+        previewMultiple: (count: number) => `${count} appointments will be created.`,
+        previewWarning: (count: number) =>
+          `Warning: ${count} appointments will be created at once.`,
+        maxError: "Recurrence cannot create more than 100 appointments at once."
+      },
+      editTitle: "Edit appointment",
+      editSeriesNote:
+        "Changes apply to this occurrence only, not the entire recurrence series.",
       table: {
         appointment: "Appointment",
         statuses: "Statuses",
@@ -227,6 +269,13 @@ export const dashboardCopy = {
       },
       statuses: {
         all: "All",
+        scheduled: "Scheduled",
+        confirmed: "Confirmed",
+        cancelled: "Cancelled",
+        completed: "Completed",
+        no_show: "No-show"
+      },
+      statusBadges: {
         scheduled: "Scheduled",
         confirmed: "Confirmed",
         cancelled: "Cancelled",
@@ -581,21 +630,64 @@ export const dashboardCopy = {
         "L’envoi SMS est actuellement en simulation. Aucun SMS réel ne sera envoyé aux clients."
     },
     appointments: {
+      eyebrow: "OPEN SPOT",
       title: "Rendez-vous",
       description:
-        "Ajoutez les rendez-vous existants du commerce afin de préparer les rappels 24 h et de suivre les confirmations sans remplacer le système de réservation.",
-      addTitle: "Ajouter un rendez-vous",
+        "Gérez vos rendez-vous, rappels et confirmations au même endroit.",
+      addButton: "Ajouter un rendez-vous",
+      addTitle: "Nouveau rendez-vous",
       chooseCustomer: "Choisir un client",
       reminder24h: "Rappel 24 h",
+      reminder24hHelp:
+        "Le client recevra un rappel 24 h avant le rendez-vous.",
       askYesNo: "Demander OUI/NON",
-      submit: "Ajouter un rendez-vous",
+      askYesNoHelp: "Le client sera invité à confirmer par SMS.",
+      notesPlaceholder: "Ajouter une note (optionnel)",
+      submit: "Enregistrer le rendez-vous",
       save: "Enregistrer le rendez-vous",
-      upcomingTitle: "Rendez-vous à venir",
+      upcomingTitle: "Prochains rendez-vous",
+      seeAll: "Voir tout",
+      openFullAgenda: "Afficher l'agenda complet",
       help:
         "Le choix Rappel 24 h est enregistré sur le rendez-vous. Si les rappels sont activés et que le client a consenti aux SMS, Open Spot prépare un message planifié traité par le moteur SMS serveur.",
       emptyTitle: "Aucun rendez-vous trouvé.",
       emptyDescription:
-        "Ajoutez un rendez-vous existant pour préparer les prochains rappels SMS. Les envois réels resteront désactivés jusqu’à ce que le flux planifié du fournisseur soit prêt.",
+        "Ajoutez un rendez-vous existant pour préparer les prochains rappels SMS. Les envois réels resteront désactivés jusqu'à ce que le flux planifié du fournisseur soit prêt.",
+      calendar: {
+        month: "Mois",
+        week: "Semaine",
+        day: "Jour",
+        today: "Aujourd'hui",
+        more: (count: number) => `+ ${count} autres`
+      },
+      recurrence: {
+        title: "Récurrence",
+        none: "Aucune",
+        daily: "Tous les jours",
+        weekly: "Toutes les semaines",
+        monthly: "Tous les mois",
+        yearly: "Tous les ans",
+        custom: "Personnalisée",
+        repeatEvery: "Répéter chaque",
+        weekdays: "Jours",
+        monthlyPattern: "Règle mensuelle",
+        dayOfMonth: "Même jour du mois",
+        nthWeekday: "Même position dans le mois",
+        endTitle: "Fin de récurrence",
+        never: "Jamais",
+        after: "Après",
+        until: "Jusqu'au",
+        occurrences: "occurrences",
+        previewSingle: "Ce rendez-vous sera créé une seule fois.",
+        previewMultiple: (count: number) => `${count} rendez-vous seront créés.`,
+        previewWarning: (count: number) =>
+          `Attention : ${count} rendez-vous seront créés en une seule action.`,
+        maxError:
+          "La récurrence ne peut pas créer plus de 100 rendez-vous à la fois."
+      },
+      editTitle: "Modifier le rendez-vous",
+      editSeriesNote:
+        "Les modifications s'appliquent à cette occurrence seulement, pas à toute la série.",
       table: {
         appointment: "Rendez-vous",
         statuses: "Statuts",
@@ -614,6 +706,13 @@ export const dashboardCopy = {
         cancelled: "Annulés",
         completed: "Terminés",
         no_show: "Absences"
+      },
+      statusBadges: {
+        scheduled: "Planifié",
+        confirmed: "Confirmé",
+        cancelled: "Annulé",
+        completed: "Terminé",
+        no_show: "Absence"
       },
       reminderStates: {
         disabled: "Rappel désactivé",
