@@ -1,7 +1,13 @@
 import QRCode from "qrcode";
 import Image from "next/image";
 
-export async function QrCode({ value }: { value: string }) {
+export async function QrCode({
+  value,
+  alt = "Waitlist QR code"
+}: {
+  value: string;
+  alt?: string;
+}) {
   const svg = await QRCode.toString(value, {
     type: "svg",
     margin: 1,
@@ -15,7 +21,7 @@ export async function QrCode({ value }: { value: string }) {
 
   return (
     <Image
-      alt="Waitlist QR code"
+      alt={alt}
       className="h-44 w-44 rounded-md border border-[var(--line)] bg-white p-2"
       height={180}
       unoptimized
