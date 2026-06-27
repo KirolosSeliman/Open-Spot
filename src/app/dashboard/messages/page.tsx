@@ -15,6 +15,18 @@ const templates = [
     name: "Last-minute opening EN",
     locale: "en",
     body: "Hi, a spot just opened at {business_name} on {appointment_date} at {appointment_time} for {service_name}. Reply YES if you are interested. Your appointment will only be confirmed after our team validates it."
+  },
+  {
+    id: "confirmation_fr",
+    name: "Confirmation manuelle FR",
+    locale: "fr",
+    body: "Bonjour {client_name}, votre rendez-vous chez {business_name} est confirme pour {service_name} le {appointment_date} a {appointment_time}. Adresse : {business_address}. A bientot! Repondez AIDE pour de l'aide ou STOP pour vous desinscrire."
+  },
+  {
+    id: "confirmation_en",
+    name: "Manual confirmation EN",
+    locale: "en",
+    body: "Hi {client_name}, your appointment at {business_name} is confirmed for {service_name} on {appointment_date} at {appointment_time}. Address: {business_address}. See you soon! Reply HELP for help or STOP to unsubscribe."
   }
 ];
 
@@ -23,6 +35,8 @@ const variables = [
   "{service_name}",
   "{appointment_date}",
   "{appointment_time}",
+  "{client_name}",
+  "{business_address}",
   "{employee_name}",
   "{estimated_price}",
   "{reply_keyword}"
@@ -71,8 +85,10 @@ export default function MessagesPage() {
             ))}
           </div>
           <p className="mt-5 rounded-2xl bg-[#edf8f3] p-4 text-sm font-bold leading-6 text-[var(--primary-strong)]">
-            Les templates doivent toujours rappeler que le rendez-vous est
-            confirme seulement apres validation de l&apos;equipe.
+            L&apos;alerte de creneau libre doit rappeler que le rendez-vous est
+            confirme seulement apres validation de l&apos;equipe. Le message de
+            confirmation manuelle est envoye automatiquement au client une fois
+            que vous confirmez un repondant.
           </p>
         </Panel>
       </div>
