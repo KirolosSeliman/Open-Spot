@@ -29,15 +29,15 @@ export function ResponsesTabs({
   return (
     <nav
       aria-label="Sections de la page Réponses"
-      className="flex flex-wrap gap-6 border-b border-[var(--line)]"
+      className="flex gap-8 border-b border-slate-200"
       role="tablist"
     >
       <Link
         aria-selected={activeTab === "openings"}
-        className={`-mb-px border-b-2 pb-3 text-sm font-black transition ${
+        className={`-mb-px border-b-[3px] pb-3 text-sm font-black transition ${
           activeTab === "openings"
             ? "border-[var(--primary)] text-[var(--primary)]"
-            : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
+            : "border-transparent text-slate-500 hover:text-[var(--foreground)]"
         }`}
         href={openingsHref}
         role="tab"
@@ -46,10 +46,10 @@ export function ResponsesTabs({
       </Link>
       <Link
         aria-selected={activeTab === "appointments"}
-        className={`-mb-px border-b-2 pb-3 text-sm font-black transition ${
+        className={`-mb-px border-b-[3px] pb-3 text-sm font-black transition ${
           activeTab === "appointments"
             ? "border-[var(--primary)] text-[var(--primary)]"
-            : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
+            : "border-transparent text-slate-500 hover:text-[var(--foreground)]"
         }`}
         href={appointmentsHref}
         role="tab"

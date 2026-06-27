@@ -1,5 +1,5 @@
-import { DashboardPageHeader } from "@/components/dashboard/dashboard-ui";
 import { AppointmentsCalendarTab } from "@/components/responses/AppointmentsCalendarTab";
+import { ResponsesPageHeader } from "@/components/responses/ResponsesPageHeader";
 import { SlotAlertsTab } from "@/components/responses/SlotAlertsTab";
 import { ResponsesTabs } from "@/components/responses/ResponsesTabs";
 import {
@@ -60,19 +60,20 @@ export default async function ResponsesPage({ searchParams }: ResponsesPageProps
     canValidateBookings(workspace.organization.role);
 
   return (
-    <div className="grid gap-6">
-      <DashboardPageHeader
+    <div className="grid gap-5">
+      <ResponsesPageHeader
         description={copy.responses.description}
+        tabs={
+          <ResponsesTabs
+            activeTab={activeTab}
+            appointmentsLabel={copy.responses.tabs.appointments}
+            calendarAnchor={calendarData?.anchor ?? new Date()}
+            calendarInterval={calendarData?.interval ?? "1d"}
+            openingFilters={openingFilters}
+            openingsLabel={copy.responses.tabs.openings}
+          />
+        }
         title={copy.responses.title}
-      />
-
-      <ResponsesTabs
-        activeTab={activeTab}
-        appointmentsLabel={copy.responses.tabs.appointments}
-        calendarAnchor={calendarData?.anchor ?? new Date()}
-        calendarInterval={calendarData?.interval ?? "1d"}
-        openingFilters={openingFilters}
-        openingsLabel={copy.responses.tabs.openings}
       />
 
       {activeTab === "appointments" && calendarData ? (

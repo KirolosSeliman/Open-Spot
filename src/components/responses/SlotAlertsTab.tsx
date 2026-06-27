@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { EmptyState, Panel } from "@/components/dashboard/dashboard-ui";
+import { EmptyState } from "@/components/dashboard/dashboard-ui";
 import type { OpeningResponseGroup, ServiceRow } from "@/lib/dashboard/operations-data";
 import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
 import type { Locale } from "@/lib/i18n/types";
@@ -37,14 +37,14 @@ export function SlotAlertsTab({
   const copy = getDashboardCopy(locale);
 
   return (
-    <Panel>
+    <div className="grid gap-4">
       {notice ? (
-        <p className="mb-4 rounded-xl border border-[#b8e0c0] bg-[#f1fff4] p-3 text-sm font-bold text-[#245d30]">
+        <p className="rounded-xl border border-[#b8e0c0] bg-[#f1fff4] p-3 text-sm font-bold text-[#245d30]">
           {notice}
         </p>
       ) : null}
       {validationError ? (
-        <p className="mb-4 rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
+        <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
           {validationError}
         </p>
       ) : null}
@@ -59,7 +59,7 @@ export function SlotAlertsTab({
 
       {groups.length > 0 ? (
         <>
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {groups.map((group, index) => (
               <SlotAlertCard
                 canValidate={canValidate}
@@ -100,7 +100,7 @@ export function SlotAlertsTab({
           />
           {totalCount > 0 ? (
             <Link
-              className="justify-self-center rounded-full border border-[var(--line)] bg-white px-5 py-3 text-sm font-black text-[var(--foreground)]"
+              className="justify-self-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-black text-[var(--foreground)]"
               href={buildOpeningFiltersResetHref()}
             >
               {copy.common.reset}
@@ -108,6 +108,6 @@ export function SlotAlertsTab({
           ) : null}
         </div>
       )}
-    </Panel>
+    </div>
   );
 }

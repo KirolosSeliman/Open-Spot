@@ -3,36 +3,16 @@ import Link from "next/link";
 import type { ServiceRow } from "@/lib/dashboard/operations-data";
 import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
 import type { Locale } from "@/lib/i18n/types";
-import { buildResponsesHref, buildOpeningFiltersResetHref, type ExtendedOpeningFilters } from "@/lib/responses/filters";
+import {
+  buildOpeningFiltersResetHref,
+  buildResponsesHref,
+  type ExtendedOpeningFilters
+} from "@/lib/responses/filters";
 
-function SlidersIcon() {
-  return (
-    <svg aria-hidden className="h-4 w-4" fill="none" viewBox="0 0 24 24">
-      <path
-        d="M4 7h10M14 7h6M4 12h4M10 12h10M4 17h8M14 17h6"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="1.8"
-      />
-      <circle cx="16" cy="7" fill="currentColor" r="1.5" />
-      <circle cx="8" cy="12" fill="currentColor" r="1.5" />
-      <circle cx="12" cy="17" fill="currentColor" r="1.5" />
-    </svg>
-  );
-}
+import { CalendarSlotIcon, SearchIcon, SlidersIcon } from "./responses-icons";
 
-function CalendarIcon() {
-  return (
-    <svg aria-hidden className="h-4 w-4" fill="none" viewBox="0 0 24 24">
-      <path
-        d="M8 3v2M16 3v2M4 9h16M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeWidth="1.8"
-      />
-    </svg>
-  );
-}
+const fieldClass =
+  "min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-[var(--foreground)] shadow-sm outline-none transition focus:border-[var(--primary)] focus:ring-2 focus:ring-[#dbeafe]";
 
 export function ResponsesFilters({
   filters,
@@ -66,19 +46,19 @@ export function ResponsesFilters({
 
   return (
     <form
-      className="mb-5 rounded-[1.35rem] border border-[var(--line)] bg-white p-4 shadow-sm"
+      className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)] sm:p-5"
       method="get"
     >
       <input name="tab" type="hidden" value="openings" />
-      <div className="grid gap-3 lg:grid-cols-[1.1fr_0.9fr_0.9fr_1.2fr_auto] lg:items-end">
-        <label className="grid gap-2 text-sm font-bold">
-          Période du créneau
+      <div className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr_1.2fr_auto] lg:items-end">
+        <label className="grid gap-1.5">
+          <span className="text-xs font-bold text-[var(--muted)]">Période du créneau</span>
           <div className="relative">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]">
-              <CalendarIcon />
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <CalendarSlotIcon />
             </span>
             <select
-              className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-slate-50 pl-10 pr-3 text-sm font-bold"
+              className={`${fieldClass} appearance-none pl-10 pr-8`}
               defaultValue={filters.range}
               name="range"
             >
@@ -90,10 +70,11 @@ export function ResponsesFilters({
             </select>
           </div>
         </label>
-        <label className="grid gap-2 text-sm font-bold">
-          Service
+
+        <label className="grid gap-1.5">
+          <span className="text-xs font-bold text-[var(--muted)]">Service</span>
           <select
-            className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-slate-50 px-3 text-sm font-bold"
+            className={`${fieldClass} appearance-none`}
             defaultValue={filters.serviceId}
             name="serviceId"
           >
@@ -106,10 +87,11 @@ export function ResponsesFilters({
             ))}
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-bold">
-          Statut
+
+        <label className="grid gap-1.5">
+          <span className="text-xs font-bold text-[var(--muted)]">Statut</span>
           <select
-            className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-slate-50 px-3 text-sm font-bold"
+            className={`${fieldClass} appearance-none`}
             defaultValue={filters.status}
             name="status"
           >
@@ -120,31 +102,39 @@ export function ResponsesFilters({
             ))}
           </select>
         </label>
-        <label className="grid gap-2 text-sm font-bold">
-          Recherche
-          <input
-            aria-label={copy.responses.filters.searchAria}
-            autoComplete="off"
-            className="min-h-11 w-full rounded-2xl border border-[var(--line)] bg-slate-50 px-3 text-sm font-bold"
-            defaultValue={filters.q}
-            inputMode="search"
-            maxLength={80}
-            name="q"
-            placeholder="Titre, client, téléphone, SMS..."
-            type="search"
-          />
+
+        <label className="grid gap-1.5">
+          <span className="text-xs font-bold text-[var(--muted)]">Recherche</span>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+              <SearchIcon />
+            </span>
+            <input
+              aria-label={copy.responses.filters.searchAria}
+              autoComplete="off"
+              className={`${fieldClass} pl-10`}
+              defaultValue={filters.q}
+              inputMode="search"
+              maxLength={80}
+              name="q"
+              placeholder="Titre, client, téléphone, SMS..."
+              type="search"
+            />
+          </div>
         </label>
+
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--foreground)] hover:bg-slate-50"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-black text-[var(--foreground)] shadow-sm transition hover:bg-slate-50"
           type="submit"
         >
           <SlidersIcon />
           Filtres
         </button>
       </div>
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[var(--muted)]">
+
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[var(--muted)]">
         <p>{copy.responses.filters.displayed(filteredCount, totalCount)}</p>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-3">
           {filters.q ? <p>{copy.responses.filters.search(filters.q)}</p> : null}
           <Link
             className="text-[var(--primary)] hover:underline"

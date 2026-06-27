@@ -1,10 +1,5 @@
 import Link from "next/link";
 
-import {
-  TableShell,
-  tableCellClass,
-  tableHeadClass
-} from "@/components/dashboard/dashboard-ui";
 import type { OpeningResponseGroup } from "@/lib/dashboard/operations-data";
 import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
 import type { Locale } from "@/lib/i18n/types";
@@ -16,14 +11,14 @@ import {
 
 import { OpeningResponseRowActions } from "./OpeningResponseRowActions";
 
-function replyBadgeClass(tone: "positive" | "negative" | "neutral" | "other") {
+function replyTextClass(tone: "positive" | "negative" | "neutral" | "other") {
   switch (tone) {
     case "positive":
-      return "bg-emerald-50 text-emerald-700 ring-emerald-100";
+      return "text-emerald-600";
     case "negative":
-      return "bg-rose-50 text-rose-700 ring-rose-100";
+      return "text-rose-600";
     default:
-      return "bg-slate-50 text-[var(--muted)] ring-slate-100";
+      return "text-slate-400";
   }
 }
 
@@ -41,65 +36,72 @@ export function ResponsesTable({
   const copy = getDashboardCopy(locale);
 
   return (
-    <div className="mt-4 overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
-      <div className="border-b border-[var(--line)] px-4 py-3">
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+      <div className="border-b border-slate-100 px-4 py-3">
         <h3 className="text-sm font-black text-[var(--foreground)]">
           Réponses ({group.customers.length})
         </h3>
       </div>
       <div className="overflow-x-auto">
-        <TableShell>
+        <table className="min-w-full text-left text-sm">
           <thead>
-            <tr>
-              <th className={tableHeadClass}>Contact</th>
-              <th className={tableHeadClass}>Téléphone</th>
-              <th className={tableHeadClass}>Rang</th>
-              <th className={tableHeadClass}>Réponse</th>
-              <th className={tableHeadClass}>Statut</th>
-              <th className={tableHeadClass}>Actions</th>
+            <tr className="border-b border-slate-100 bg-slate-50/80">
+              {["Contact", "Téléphone", "Rang", "Réponse", "Statut", "Actions"].map(
+                (label) => (
+                  <th
+                    className="px-4 py-3 text-[11px] font-black uppercase tracking-[0.08em] text-slate-500"
+                    key={label}
+                    scope="col"
+                  >
+                    {label}
+                  </th>
+                )
+              )}
             </tr>
           </thead>
-          <tbody className="divide-y divide-[var(--line)] bg-white">
+          <tbody className="divide-y divide-slate-100">
             {group.customers.map((customer) => {
               const reply = formatReplyBadge(customer);
               const statusLabel = formatCustomerReplyStatus(customer, locale);
               const isManual = customer.offerStatus === "selected";
 
               return (
-                <tr key={customer.offerId}>
-                  <td className={tableCellClass}>
+                <tr className="hover:bg-slate-50/60" key={customer.offerId}>
+                  <td className="px-4 py-3.5">
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#edf3ff] text-xs font-black text-[var(--primary)]">
+                      <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-600">
                         {getInitials(customer.customerName)}
                       </span>
-                      <span className="font-bold">{customer.customerName}</span>
+                      <span className="font-bold text-[var(--foreground)]">
+                        {customer.customerName}
+                      </span>
                     </div>
                   </td>
-                  <td className={tableCellClass}>
+                  <td className="px-4 py-3.5 font-semibold text-slate-600">
                     {customer.customerPhone || copy.common.phoneUnknown}
                   </td>
-                  <td className={tableCellClass}>
+                  <td className="px-4 py-3.5 font-bold text-slate-600">
                     {customer.responseRank ? `#${customer.responseRank}` : "—"}
                   </td>
-                  <td className={tableCellClass}>
+                  <td className="px-4 py-3.5">
                     <span
-                      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-black ring-1 ring-inset ${replyBadgeClass(reply.tone)}`}
+                      className={`text-sm font-black ${replyTextClass(reply.tone)}`}
                     >
                       {reply.label}
                     </span>
                   </td>
-                  <td className={tableCellClass}>
+                  <td className="px-4 py-3.5">
                     {isManual ? (
                       <span className="inline-flex rounded-full bg-[#edf3ff] px-2.5 py-1 text-xs font-black text-[var(--primary)]">
                         {statusLabel}
                       </span>
                     ) : (
-                      <span className="text-sm font-bold text-[var(--foreground)]">
+                      <span className="text-sm font-semibold text-slate-600">
                         {statusLabel}
                       </span>
                     )}
                   </td>
-                  <td className={tableCellClass}>
+                  <td className="px-4 py-3.5">
                     <OpeningResponseRowActions
                       canValidate={canValidate}
                       confirmLabel="Confirmer"
@@ -115,7 +117,7 @@ export function ResponsesTable({
               );
             })}
           </tbody>
-        </TableShell>
+        </table>
       </div>
     </div>
   );
@@ -138,47 +140,49 @@ export function ResponsesPagination({
   const pageSizeOptions = [10, 20, 50];
 
   return (
-    <div className="mt-5 flex flex-col gap-3 border-t border-[var(--line)] pt-4 sm:flex-row sm:items-center sm:justify-between">
-      <p className="text-sm font-bold text-[var(--muted)]">
+    <div className="mt-6 grid gap-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+      <p className="text-sm font-semibold text-slate-500">
         Affichage de {start} à {end} sur {total} alerte{total > 1 ? "s" : ""}
       </p>
-      <div className="flex flex-wrap items-center gap-2">
+
+      <div className="flex items-center justify-center gap-2">
         <Link
           aria-label="Page précédente"
-          className={`inline-flex min-h-9 min-w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-sm font-black ${
-            page <= 1 ? "pointer-events-none opacity-40" : "hover:bg-slate-50"
+          className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-sm font-black text-slate-600 ${
+            page <= 1 ? "pointer-events-none opacity-35" : "hover:bg-slate-50"
           }`}
           href={buildPageHref(Math.max(1, page - 1), pageSize)}
         >
           ‹
         </Link>
-        <span className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-full bg-[var(--primary)] text-sm font-black text-white">
+        <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-[var(--primary)] px-3 text-sm font-black text-white shadow-[0_8px_18px_rgba(79,125,243,0.25)]">
           {page}
         </span>
         <Link
           aria-label="Page suivante"
-          className={`inline-flex min-h-9 min-w-9 items-center justify-center rounded-full border border-[var(--line)] bg-white text-sm font-black ${
-            page >= totalPages ? "pointer-events-none opacity-40" : "hover:bg-slate-50"
+          className={`inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-sm font-black text-slate-600 ${
+            page >= totalPages ? "pointer-events-none opacity-35" : "hover:bg-slate-50"
           }`}
           href={buildPageHref(Math.min(totalPages, page + 1), pageSize)}
         >
           ›
         </Link>
-        <div className="ml-2 flex items-center gap-2 text-sm font-bold">
-          {pageSizeOptions.map((option) => (
-            <Link
-              className={`rounded-full border px-3 py-1.5 text-xs font-black ${
-                option === pageSize
-                  ? "border-[var(--primary)] bg-[var(--primary)] text-white"
-                  : "border-[var(--line)] bg-white text-[var(--foreground)]"
-              }`}
-              href={buildPageHref(1, option)}
-              key={option}
-            >
-              {option} / page
-            </Link>
-          ))}
-        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
+        {pageSizeOptions.map((option) => (
+          <Link
+            className={`rounded-full px-3 py-1.5 text-xs font-black transition ${
+              option === pageSize
+                ? "bg-[var(--primary)] text-white shadow-[0_6px_14px_rgba(79,125,243,0.22)]"
+                : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+            }`}
+            href={buildPageHref(1, option)}
+            key={option}
+          >
+            {option} / page
+          </Link>
+        ))}
       </div>
     </div>
   );

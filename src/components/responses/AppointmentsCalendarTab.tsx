@@ -1,4 +1,3 @@
-import { Panel } from "@/components/dashboard/dashboard-ui";
 import type { Locale } from "@/lib/i18n/types";
 import type { AppointmentCalendarItem, CalendarInterval } from "@/lib/responses/types";
 
@@ -21,7 +20,7 @@ export function AppointmentsCalendarTab({
   locale: Locale;
 }) {
   return (
-    <Panel>
+    <div className="grid gap-4">
       <CalendarToolbar
         anchor={anchor}
         interval={interval}
@@ -29,7 +28,9 @@ export function AppointmentsCalendarTab({
         rangeEnd={rangeEnd}
         rangeStart={rangeStart}
       />
-      <AppointmentCalendar interval={interval} items={items} locale={locale} />
-    </Panel>
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)] sm:p-5">
+        <AppointmentCalendar interval={interval} items={items} locale={locale} />
+      </div>
+    </div>
   );
 }

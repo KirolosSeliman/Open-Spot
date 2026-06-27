@@ -50,7 +50,7 @@ export function CalendarToolbar({
   );
 
   return (
-    <div className="mb-4 grid gap-4 rounded-[1.35rem] border border-[var(--line)] bg-white p-4 shadow-sm">
+    <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)] sm:p-5">
       <div>
         <h2 className="text-lg font-black">Calendrier des rendez-vous</h2>
         <p className="mt-1 text-sm font-bold text-[var(--muted)]">
@@ -60,26 +60,26 @@ export function CalendarToolbar({
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
           <Link
-            className="inline-flex min-h-10 items-center justify-center rounded-full border border-[var(--line)] bg-white px-4 text-sm font-black hover:bg-slate-50"
+            className="inline-flex min-h-10 items-center justify-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-black hover:bg-slate-50"
             href={buildCalendarHref(today, interval)}
           >
             Aujourd&apos;hui
           </Link>
           <Link
             aria-label="Intervalle précédent"
-            className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border border-[var(--line)] bg-white text-sm font-black hover:bg-slate-50"
+            className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-black hover:bg-slate-50"
             href={buildCalendarHref(previousAnchor, interval)}
           >
             ‹
           </Link>
           <Link
             aria-label="Intervalle suivant"
-            className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-full border border-[var(--line)] bg-white text-sm font-black hover:bg-slate-50"
+            className="inline-flex min-h-10 min-w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-sm font-black hover:bg-slate-50"
             href={buildCalendarHref(nextAnchor, interval)}
           >
             ›
           </Link>
-          <span className="inline-flex min-h-10 items-center rounded-full bg-slate-50 px-4 text-sm font-black text-[var(--foreground)]">
+          <span className="inline-flex min-h-10 items-center rounded-xl bg-slate-50 px-4 text-sm font-black text-[var(--foreground)]">
             {rangeLabel}
           </span>
         </div>
@@ -91,10 +91,10 @@ export function CalendarToolbar({
           {intervalOptions.map((option) => (
             <Link
               aria-selected={interval === option.value}
-              className={`inline-flex min-h-10 items-center justify-center rounded-full px-4 text-sm font-black ${
+              className={`inline-flex min-h-10 items-center justify-center rounded-xl px-4 text-sm font-black ${
                 interval === option.value
-                  ? "bg-[var(--primary)] text-white shadow-[0_10px_20px_rgba(79,125,243,0.18)]"
-                  : "border border-[var(--line)] bg-white text-[var(--foreground)] hover:bg-slate-50"
+                  ? "bg-[var(--primary)] text-white shadow-[0_8px_18px_rgba(79,125,243,0.22)]"
+                  : "border border-slate-200 bg-white text-[var(--foreground)] hover:bg-slate-50"
               }`}
               href={buildCalendarHref(anchor, option.value)}
               key={option.value}
