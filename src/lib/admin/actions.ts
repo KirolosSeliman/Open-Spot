@@ -699,26 +699,6 @@ export async function updateOrganizationBusinessInfoAction(formData: FormData) {
     })
     .eq("organization_id", organizationId);
 
-  if (existing.hasOnboardingSubmission) {
-    await supabase
-      .from("organization_onboarding_submissions")
-      .update({
-        business_name: value.name,
-        business_type: value.businessType || null,
-        booking_system: value.bookingSystem || null,
-        business_address: value.businessAddress || null,
-        public_contact_email: normalizedEmail,
-        public_contact_phone: normalizedPhone,
-        responsible_name: value.contactName || null,
-        responsible_email: normalizedEmail,
-        responsible_phone: normalizedPhone,
-        admin_notes: value.internalNotes || null,
-        sms_language: value.defaultLanguage,
-        updated_at: new Date().toISOString()
-      })
-      .eq("organization_id", organizationId);
-  }
-
   if (existing.sourceRequestId) {
     await supabase
       .from("book_call_requests")

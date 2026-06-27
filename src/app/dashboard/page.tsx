@@ -12,15 +12,15 @@ import {
 } from "@/lib/dashboard/real-data";
 import { getDashboardCopy, intlLocale } from "@/lib/i18n/dashboard-copy";
 import { getRequestLocale } from "@/lib/i18n/locale";
-import { getOnboardingStatusLabel } from "@/lib/organization/client-onboarding";
 import {
   getBillingStatusLabel,
+  canBillingStatusSendSms,
+  getOrganizationSmsStatusLabel,
   type ManualBillingStatus
 } from "@/lib/billing/manual-billing";
 import { loadManualBillingForOrganization } from "@/lib/billing/manual-billing-data";
 import { calculateAutomationOutcomeMetrics } from "@/lib/reports/metrics";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
-import { loadOnboardingByOrganization } from "@/lib/organization/onboarding-records";
 
 function formatCurrency(cents: number, locale: string) {
   return new Intl.NumberFormat(locale, {
@@ -69,16 +69,18 @@ function getFallbackOverview(organizationName: string): DashboardOverview {
 
 function getBillingBannerCopy({
   billingStatus,
-  onboardingCompleted,
+  smsStatus,
   locale
 }: {
   billingStatus: string | null | undefined;
-  onboardingCompleted: boolean;
+  smsStatus: string | null | undefined;
   locale: "en" | "fr";
 }) {
   const status = billingStatus as ManualBillingStatus | null | undefined;
+  const billingAllowed = canBillingStatusSendSms(status);
+  const smsActive = smsStatus === "active";
 
-  if (status === "paid" && onboardingCompleted) {
+  if (billingAllowed && smsActive) {
     return null;
   }
 
@@ -93,10 +95,10 @@ function getBillingBannerCopy({
         "Votre compte est en retard de paiement. L’envoi de nouveaux SMS est temporairement suspendu.",
       cancelled:
         "Votre compte est annulé. Contactez l’équipe Open Spot pour le réactiver.",
-      paidIncomplete:
-        "Paiement reçu. Complétez l’onboarding pour finaliser votre configuration.",
+      incomplete:
+        "Configuration SMS incomplète. Vérifiez que le paiement est autorisé et que le statut SMS du commerce est actif.",
       fallback:
-        "L’envoi SMS sera disponible lorsque la configuration, la facturation et l’activation SMS seront complétées."
+        "L’envoi SMS sera disponible lorsque la facturation sera autorisée et le statut SMS actif."
     },
     en: {
       title: "SMS activation pending",
@@ -108,18 +110,12 @@ function getBillingBannerCopy({
         "Your account is past due. New SMS sending is temporarily paused.",
       cancelled:
         "Your account is cancelled. Contact the Open Spot team to reactivate it.",
-      paidIncomplete: "Payment received. Complete onboarding to finish your setup.",
+      incomplete:
+        "SMS setup is incomplete. Make sure billing is allowed and SMS status is active for this company.",
       fallback:
-        "SMS sending will be available once setup, billing, and SMS activation are complete."
+        "SMS sending will be available once billing is authorized and SMS status is active."
     }
   }[locale];
-
-  if (status === "paid" && !onboardingCompleted) {
-    return {
-      title: copy.title,
-      body: copy.paidIncomplete
-    };
-  }
 
   if (
     status === "unpaid" ||
@@ -130,6 +126,13 @@ function getBillingBannerCopy({
     return {
       title: copy.title,
       body: copy[status]
+    };
+  }
+
+  if (!billingAllowed || !smsActive) {
+    return {
+      title: copy.title,
+      body: copy.incomplete
     };
   }
 
@@ -148,12 +151,6 @@ export default async function DashboardPage() {
   const numberFormatter = new Intl.NumberFormat(intlLocale(locale));
   const organizationName =
     workspace.status === "ready" ? workspace.organization.name : "Open Spot";
-  const onboarding =
-    workspace.status === "ready"
-      ? await loadOnboardingByOrganization({
-          organizationId: workspace.organization.id
-        }).catch(() => null)
-      : null;
   const billing =
     workspace.status === "ready"
       ? await loadManualBillingForOrganization(workspace.organization.id).catch(
@@ -162,7 +159,7 @@ export default async function DashboardPage() {
       : null;
   const billingBanner = getBillingBannerCopy({
     billingStatus: billing?.billingStatus ?? null,
-    onboardingCompleted: onboarding?.status === "completed",
+    smsStatus: billing?.smsStatus ?? null,
     locale
   });
   const overview =
@@ -228,11 +225,11 @@ export default async function DashboardPage() {
                   ? "Facturation à configurer"
                   : "Billing not configured"}
               {" · "}
-              {onboarding
-                ? getOnboardingStatusLabel(onboarding.status, locale)
+              {billing
+                ? getOrganizationSmsStatusLabel(billing.smsStatus, locale)
                 : locale === "fr"
-                  ? "Onboarding à générer"
-                  : "Onboarding not generated"}
+                  ? "SMS à activer"
+                  : "SMS not active"}
             </span>
           </div>
         </div>

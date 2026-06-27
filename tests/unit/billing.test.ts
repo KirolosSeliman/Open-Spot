@@ -48,16 +48,16 @@ describe("billing and cost controls", () => {
     ).toEqual({ ok: false, reason: "Monthly SMS limit reached." });
   });
 
-  it("only allows paid manual billing status to unlock SMS billing gate", () => {
-    expect(canBillingStatusSendSms("paid")).toBe(true);
+  it("allows paid, trial, and comped billing statuses to unlock SMS billing gate", () => {
+    for (const status of ["paid", "trial", "comped"] as const) {
+      expect(canBillingStatusSendSms(status)).toBe(true);
+    }
 
     for (const status of [
       "unpaid",
       "payment_link_sent",
       "past_due",
       "cancelled",
-      "comped",
-      "trial",
       null
     ]) {
       expect(canBillingStatusSendSms(status)).toBe(false);

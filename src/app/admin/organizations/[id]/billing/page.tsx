@@ -5,10 +5,14 @@ import { PaymentLinkActions } from "@/components/admin/payment-link-actions";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
+  activateOrganizationSmsStatusAction,
   addManualBillingNoteAction,
   cancelManualBillingAction,
+  deactivateOrganizationSmsStatusAction,
+  markBillingCompedAction,
   markBillingPaidAction,
   markBillingPastDueAction,
+  markBillingTrialAction,
   markBillingUnpaidAction,
   markPaymentLinkSentAction,
   updateManualBillingPlanAction
@@ -18,6 +22,7 @@ import {
   getBillingIntervalLabel,
   getBillingStatusLabel,
   getBillingStatusTone,
+  getOrganizationSmsStatusLabel,
   getPaymentMethodLabel
 } from "@/lib/billing/manual-billing";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
@@ -173,8 +178,8 @@ export default async function AdminOrganizationBillingPage({
             <div>
               <h2 className="text-lg font-black">Current billing status</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                SMS sending is available only when billing is paid, onboarding
-                is completed, and SMS status is active.
+                SMS sending is available only when billing is authorized (paid,
+                trial, or comped) and SMS status is active.
               </p>
             </div>
             <Badge tone={getBillingStatusTone(billing.billingStatus)}>
@@ -214,6 +219,42 @@ export default async function AdminOrganizationBillingPage({
           </div>
         </Card>
       </div>
+
+      <Card>
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h2 className="text-lg font-black">SMS status</h2>
+            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+              Controls whether this company is configured for SMS sending.
+              This is separate from the platform pause/resume control on the
+              company overview.
+            </p>
+          </div>
+          <Badge tone={billing.smsStatus === "active" ? "success" : "default"}>
+            {getOrganizationSmsStatusLabel(billing.smsStatus, "en")}
+          </Badge>
+        </div>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          {billing.smsStatus === "active" ? (
+            <StatusAction
+              action={deactivateOrganizationSmsStatusAction}
+              label="Deactivate SMS"
+              notePlaceholder="Reason for deactivating SMS"
+              organizationId={id}
+              tone="danger"
+            />
+          ) : (
+            <StatusAction
+              action={activateOrganizationSmsStatusAction}
+              label="Activate SMS"
+              notePlaceholder="Reason for activating SMS"
+              organizationId={id}
+              tone="primary"
+            />
+          )}
+        </div>
+      </Card>
 
       <Card>
         <h2 className="text-lg font-black">Plan and payment details</h2>
@@ -346,7 +387,7 @@ export default async function AdminOrganizationBillingPage({
 
       <Card>
         <h2 className="text-lg font-black">Status actions</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-7">
           <StatusAction
             action={markBillingUnpaidAction}
             label="Set as unpaid"
@@ -365,6 +406,18 @@ export default async function AdminOrganizationBillingPage({
             notePlaceholder="Payment confirmation note"
             organizationId={id}
             tone="primary"
+          />
+          <StatusAction
+            action={markBillingTrialAction}
+            label="Mark as trial"
+            notePlaceholder="Trial account note"
+            organizationId={id}
+          />
+          <StatusAction
+            action={markBillingCompedAction}
+            label="Mark as comped"
+            notePlaceholder="Comped account note"
+            organizationId={id}
           />
           <StatusAction
             action={markBillingPastDueAction}

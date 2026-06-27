@@ -8,8 +8,8 @@ import {
 } from "@/lib/organization/onboarding";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-function onboardingError(message: string): never {
-  redirect(`/onboarding?error=${encodeURIComponent(message)}`);
+function organizationSetupError(message: string): never {
+  redirect(`/sign-in?error=${encodeURIComponent(message)}`);
 }
 
 export async function createOrganizationAction(formData: FormData) {
@@ -23,7 +23,7 @@ export async function createOrganizationAction(formData: FormData) {
   });
 
   if (!payload.ok) {
-    onboardingError(payload.errors.join(" "));
+    organizationSetupError(payload.errors.join(" "));
   }
 
   const supabase = await createSupabaseServerClient();
@@ -43,7 +43,7 @@ export async function createOrganizationAction(formData: FormData) {
     .limit(1);
 
   if (membershipError) {
-    onboardingError(membershipError.message);
+    organizationSetupError(membershipError.message);
   }
 
   if (existingMembership && existingMembership.length > 0) {
@@ -74,9 +74,9 @@ async function bootstrapOrganizationForUser(
     }
 
     if (error.code === "23505") {
-      onboardingError("This organization slug is already used.");
+      organizationSetupError("This organization slug is already used.");
     }
 
-    onboardingError(error.message || "Organization creation failed.");
+    organizationSetupError(error.message || "Organization creation failed.");
   }
 }

@@ -264,6 +264,75 @@ async function updateBillingStatus({
   redirect(billingPath(organizationId, `saved=${status}`));
 }
 
+async function updateOrganizationSmsStatus({
+  formData,
+  smsStatus
+}: {
+  formData: FormData;
+  smsStatus: "active" | "inactive";
+}) {
+  const organizationId = clean(formData, "organizationId");
+  const note = clean(formData, "note").slice(0, 1000) || null;
+  const { admin, supabase } = await requireManualBillingAdmin(organizationId);
+  const existing = await loadBillingRow(supabase, organizationId);
+  const previousStatus = existing.sms_status;
+
+  const { error } = await supabase
+    .from("organization_billing_settings")
+    .update({
+      sms_status: smsStatus,
+      updated_at: new Date().toISOString()
+    })
+    .eq("organization_id", organizationId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  await insertBillingEvent({
+    supabase,
+    organizationId,
+    billingId: existing.id,
+    adminId: admin.id,
+    eventType: "status_changed",
+    oldStatus: previousStatus,
+    newStatus: smsStatus,
+    amountCents: null,
+    currency: existing.base_plan_currency,
+    note:
+      note ??
+      (smsStatus === "active"
+        ? "SMS status activated by platform admin."
+        : "SMS status deactivated by platform admin.")
+  });
+
+  await recordPlatformAdminAuditLog({
+    admin,
+    organizationId,
+    action:
+      smsStatus === "active"
+        ? "admin.organization.sms_status_activated"
+        : "admin.organization.sms_status_deactivated",
+    entityType: "organization_billing_settings",
+    entityId: existing.id,
+    metadata: {
+      old_sms_status: previousStatus,
+      new_sms_status: smsStatus,
+      note_length: note?.length ?? 0
+    }
+  });
+  refreshBillingViews(organizationId);
+  redirect(billingPath(organizationId, `saved=sms_${smsStatus}`));
+}
+
+export async function activateOrganizationSmsStatusAction(formData: FormData) {
+  await updateOrganizationSmsStatus({ formData, smsStatus: "active" });
+}
+
+export async function deactivateOrganizationSmsStatusAction(formData: FormData) {
+  await updateOrganizationSmsStatus({ formData, smsStatus: "inactive" });
+}
+
 export async function markBillingUnpaidAction(formData: FormData) {
   await updateBillingStatus({
     formData,
@@ -285,6 +354,22 @@ export async function markBillingPaidAction(formData: FormData) {
     formData,
     status: "paid",
     eventType: "marked_paid"
+  });
+}
+
+export async function markBillingTrialAction(formData: FormData) {
+  await updateBillingStatus({
+    formData,
+    status: "trial",
+    eventType: "status_changed"
+  });
+}
+
+export async function markBillingCompedAction(formData: FormData) {
+  await updateBillingStatus({
+    formData,
+    status: "comped",
+    eventType: "status_changed"
   });
 }
 

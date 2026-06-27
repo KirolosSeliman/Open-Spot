@@ -29,7 +29,6 @@ const adminNav: NavItem[] = [
 
 const companySetupNav: NavItem[] = [
   { href: "", label: "Overview", activeMatch: "exact" },
-  { href: "/onboarding", label: "Onboarding" },
   { href: "/billing", label: "Billing" },
   { href: "/sms", label: "SMS" },
   { href: "/replies", label: "Replies" },
@@ -221,11 +220,6 @@ export function AdminMobileNav() {
           href={companyBase}
           isActive={pathname === companyBase}
           label="Company"
-        />
-        <MobilePillLink
-          href={`${companyBase}/onboarding`}
-          isActive={pathname.startsWith(`${companyBase}/onboarding`)}
-          label="Onboarding"
         />
         <MobilePillLink
           href={`${companyBase}/billing`}

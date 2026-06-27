@@ -205,7 +205,51 @@ export function getPaymentMethodLabel(
 }
 
 export function canBillingStatusSendSms(status: string | null | undefined) {
-  return status === "paid";
+  return status === "paid" || status === "trial" || status === "comped";
+}
+
+export const organizationSmsStatuses = [
+  "inactive",
+  "pending_setup",
+  "active",
+  "paused",
+  "blocked"
+] as const;
+
+export type OrganizationSmsStatus = (typeof organizationSmsStatuses)[number];
+
+const smsStatusLabels: Record<Locale, Record<OrganizationSmsStatus, string>> = {
+  fr: {
+    inactive: "Inactif",
+    pending_setup: "Configuration en attente",
+    active: "Actif",
+    paused: "En pause",
+    blocked: "Bloqué"
+  },
+  en: {
+    inactive: "Inactive",
+    pending_setup: "Pending setup",
+    active: "Active",
+    paused: "Paused",
+    blocked: "Blocked"
+  }
+};
+
+export function isOrganizationSmsStatus(
+  value: string | null | undefined
+): value is OrganizationSmsStatus {
+  return organizationSmsStatuses.includes(value as OrganizationSmsStatus);
+}
+
+export function getOrganizationSmsStatusLabel(
+  status: string | null | undefined,
+  locale: Locale = "en"
+) {
+  return isOrganizationSmsStatus(status)
+    ? smsStatusLabels[locale][status]
+    : locale === "fr"
+      ? "Statut SMS inconnu"
+      : "Unknown SMS status";
 }
 
 export function normalizeManualBillingInput(formData: FormData): ManualBillingValidation {
