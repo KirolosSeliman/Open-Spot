@@ -110,46 +110,48 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
         </p>
       </Link>
 
-      <nav aria-label="Navigation admin" className="mt-6 grid gap-1">
-        {adminNav.map((item) => (
-          <NavLink
-            href={item.href}
-            isActive={isActiveNavItem(pathname, item)}
-            key={item.href}
-            label={item.label}
-          />
-        ))}
-      </nav>
-
-      {organizationId ? (
-        <nav
-          aria-label="Company setup navigation"
-          className="mt-6 border-t border-[var(--line)] pt-5"
-        >
-          <p className="px-4 pb-2 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--muted)]">
-            Company setup
-          </p>
-          <div className="grid gap-1">
-            {companySetupNav.map((item) => {
-              const href = `/admin/organizations/${organizationId}${item.href}`;
-
-              return (
-                <NavLink
-                  href={href}
-                  isActive={isActiveCompanyNavItem(
-                    pathname,
-                    organizationId,
-                    item.href,
-                    item.activeMatch
-                  )}
-                  key={item.label}
-                  label={item.label}
-                />
-              );
-            })}
-          </div>
+      <div className="mt-6 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <nav aria-label="Navigation admin" className="grid gap-1">
+          {adminNav.map((item) => (
+            <NavLink
+              href={item.href}
+              isActive={isActiveNavItem(pathname, item)}
+              key={item.href}
+              label={item.label}
+            />
+          ))}
         </nav>
-      ) : null}
+
+        {organizationId ? (
+          <nav
+            aria-label="Company setup navigation"
+            className="mt-6 border-t border-[var(--line)] pt-5"
+          >
+            <p className="px-4 pb-2 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--muted)]">
+              Company setup
+            </p>
+            <div className="grid gap-1">
+              {companySetupNav.map((item) => {
+                const href = `/admin/organizations/${organizationId}${item.href}`;
+
+                return (
+                  <NavLink
+                    href={href}
+                    isActive={isActiveCompanyNavItem(
+                      pathname,
+                      organizationId,
+                      item.href,
+                      item.activeMatch
+                    )}
+                    key={item.label}
+                    label={item.label}
+                  />
+                );
+              })}
+            </div>
+          </nav>
+        ) : null}
+      </div>
 
       <div className="mt-auto rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4">
         <p className="text-sm font-black">{admin.email}</p>
