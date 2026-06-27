@@ -11,7 +11,7 @@ import {
 
 import { SmsPreviewPanel } from "@/components/messages/sms-preview-phone";
 import { SmsVariableChips } from "@/components/messages/sms-variable-chips";
-import { saveSmsTemplateAction } from "@/lib/dashboard/sms-template-actions";
+import { deleteSmsTemplateAction, saveSmsTemplateAction } from "@/lib/dashboard/sms-template-actions";
 import type { OrganizationSmsTemplateRecord } from "@/lib/sms/organization-templates";
 import { formatSmsCounterLabel } from "@/lib/sms/sms-counter";
 import { renderSmsTemplatePreview } from "@/lib/sms/template-renderer";
@@ -88,6 +88,7 @@ export function SmsTemplateEditor({
   const [errors, setErrors] = useState<string[]>([]);
   const [toast, setToast] = useState<ToastState>(null);
   const [isPending, startTransition] = useTransition();
+  const [isDeleting, startDeleteTransition] = useTransition();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const counter = useMemo(() => formatSmsCounterLabel(message), [message]);
@@ -107,6 +108,12 @@ export function SmsTemplateEditor({
     () =>
       savedTemplateOptions.filter((option) => option.templateKey === templateKey),
     [savedTemplateOptions, templateKey]
+  );
+  const currentSelection = useMemo(
+    () =>
+      savedTemplateOptions.find((option) => option.id === selectedTemplateId) ??
+      savedTemplateOptions[0],
+    [savedTemplateOptions, selectedTemplateId]
   );
 
   const applySelection = useCallback((option: SmsTemplateSelectionOption) => {
@@ -260,6 +267,64 @@ export function SmsTemplateEditor({
       setSelectedTemplateId(buildTemplateSelectionId(templateKey, language));
       setPreviewMessage(renderSmsTemplatePreview(result.savedBody, language));
       setWarnings(result.warnings);
+      setToast({
+        tone: "success",
+        message: result.message
+      });
+    });
+  };
+
+  const handleDelete = () => {
+    if (!currentSelection?.isSaved) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      "Supprimer ce template enregistré et revenir au modèle par défaut Open Spot ?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("templateKey", templateKey);
+    formData.set("language", language);
+
+    startDeleteTransition(async () => {
+      const result = await deleteSmsTemplateAction(formData);
+
+      if (!result.ok) {
+        setToast({
+          tone: "error",
+          message: result.message
+        });
+        return;
+      }
+
+      setTemplates((current) =>
+        current.filter(
+          (template) =>
+            !(
+              template.templateKey === result.templateKey &&
+              template.language === result.language
+            )
+        )
+      );
+
+      const defaultBody = getDefaultTemplateBody(result.templateKey, result.language);
+      const defaultName = getDefaultTemplateName(result.templateKey, result.language);
+
+      setSelectedTemplateId(
+        buildTemplateSelectionId(result.templateKey, result.language)
+      );
+      setTemplateKey(result.templateKey);
+      setLanguage(result.language);
+      setName(defaultName);
+      setMessage(defaultBody);
+      setPreviewMessage(renderSmsTemplatePreview(defaultBody, result.language));
+      setWarnings([]);
+      setErrors([]);
       setToast({
         tone: "success",
         message: result.message
@@ -483,13 +548,37 @@ export function SmsTemplateEditor({
               </button>
               <button
                 className="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#2563ff] px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(37,99,255,0.24)] transition hover:bg-[#1d4ed8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-                disabled={!canEdit || isPending}
+                disabled={!canEdit || isPending || isDeleting}
                 onClick={handleSave}
                 type="button"
               >
                 {isPending ? "Enregistrement..." : "Enregistrer le template"}
               </button>
             </div>
+
+            <button
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#fecaca] bg-[#fff1f2] px-5 text-sm font-semibold text-[#b91c1c] transition hover:bg-[#ffe4e6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ef4444] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 sm:ml-auto sm:w-auto"
+              disabled={
+                !canEdit ||
+                !currentSelection?.isSaved ||
+                isPending ||
+                isDeleting
+              }
+              onClick={handleDelete}
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                viewBox="0 0 24 24"
+              >
+                <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" />
+              </svg>
+              {isDeleting ? "Suppression..." : "Supprimer le template"}
+            </button>
           </div>
         </section>
 

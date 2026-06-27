@@ -197,6 +197,41 @@ export async function upsertOrganizationSmsTemplate(
   } satisfies OrganizationSmsTemplateRecord;
 }
 
+export async function deactivateOrganizationSmsTemplate(
+  supabase: DbClient,
+  {
+    organizationId,
+    templateKey,
+    language
+  }: {
+    organizationId: string;
+    templateKey: SmsTemplateKey;
+    language: SmsTemplateLanguage;
+  }
+) {
+  const existing = await loadOrganizationSmsTemplate(supabase, {
+    organizationId,
+    templateKey,
+    language
+  });
+
+  if (!existing) {
+    return false;
+  }
+
+  const { error } = await supabase
+    .from("sms_templates")
+    .update({ is_active: false })
+    .eq("id", existing.id)
+    .eq("organization_id", organizationId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return true;
+}
+
 function buildOpeningAlertValues(context: OpeningAlertTemplateContext) {
   return {
     "{business_name}": context.businessName,

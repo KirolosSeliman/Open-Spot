@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { canManageOrganizationSettings } from "@/lib/organization/permissions";
 import {
+  deactivateOrganizationSmsTemplate,
   loadOrganizationSmsTemplates,
   upsertOrganizationSmsTemplate
 } from "@/lib/sms/organization-templates";
@@ -118,6 +119,41 @@ export async function saveSmsTemplateAction(formData: FormData) {
       message: "Impossible d'enregistrer le template pour le moment.",
       errors: [],
       warnings: []
+    };
+  }
+}
+
+export async function deleteSmsTemplateAction(formData: FormData) {
+  try {
+    const organization = await requireTemplateEditorOrganization();
+    const templateKey = parseTemplateKey(formData.get("templateKey"));
+    const language = parseTemplateLanguage(formData.get("language"));
+    const supabase = await createSupabaseServerClient();
+    const deleted = await deactivateOrganizationSmsTemplate(supabase, {
+      organizationId: organization.id,
+      templateKey,
+      language
+    });
+
+    if (!deleted) {
+      return {
+        ok: false as const,
+        message: "Impossible de supprimer le template pour le moment."
+      };
+    }
+
+    revalidatePath("/dashboard/messages");
+
+    return {
+      ok: true as const,
+      message: "Template SMS supprimé.",
+      templateKey,
+      language
+    };
+  } catch {
+    return {
+      ok: false as const,
+      message: "Impossible de supprimer le template pour le moment."
     };
   }
 }
