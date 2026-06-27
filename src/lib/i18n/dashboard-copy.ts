@@ -173,20 +173,32 @@ export const dashboardCopy = {
       }
     },
     newCancellation: {
+      eyebrow: "OPEN SPOT",
       title: "New cancellation",
-      description:
-        "Create a last-minute opening, prepare eligible customers, and keep confirmation under manual control.",
-      detailsTitle: "Opening details",
+      descriptionLine1:
+        "Create a last-minute opening, prepare eligible customers",
+      descriptionLine2: "and keep confirmation under manual control.",
+      detailsTitle: "Slot details",
       titleLabel: "Title",
-      anyService: "Any service",
+      anyService: "All services",
       estimatedValue: "Estimated recovered value",
       offer: "Offer",
       offerPlaceholder: "15% today only",
+      offerHelper: "This offer will be included in the message sent to customers.",
       internalNote: "Internal note",
-      eligibleCustomers: "Eligible customers",
-      emptyEligibleTitle: "No eligible customers.",
+      submit: "Create cancellation",
+      cancel: "Cancel",
+      eligibleCustomers: "Eligible clients",
+      clientCount: (count: number) =>
+        `${count} client${count === 1 ? "" : "s"}`,
+      searchPlaceholder: "Search for a client...",
+      smsAuthorized: "SMS allowed",
+      criterion: "Criterion: SMS consent only",
+      eligibleCountFooter: (count: number) =>
+        `${count} eligible client${count === 1 ? "" : "s"}`,
+      emptyEligibleTitle: "No eligible clients",
       emptyEligibleDescription:
-        "Add customers who have opted in to SMS communications to the waitlist before preparing an alert."
+        "Add clients with SMS consent to send a cancellation alert."
     },
     smsRuntime: {
       sendAlert: "Send SMS alert",
@@ -604,20 +616,33 @@ export const dashboardCopy = {
       }
     },
     newCancellation: {
+      eyebrow: "OPEN SPOT",
       title: "Nouvelle annulation",
-      description:
-        "Créez une ouverture de dernière minute, préparez les clients admissibles et gardez la confirmation sous contrôle manuel.",
+      descriptionLine1:
+        "Créez une ouverture de dernière minute, préparez les clients admissibles",
+      descriptionLine2: "et gardez la confirmation sous contrôle manuel.",
       detailsTitle: "Détails du créneau",
       titleLabel: "Titre",
       anyService: "Tous les services",
       estimatedValue: "Valeur récupérée estimée",
       offer: "Offre",
       offerPlaceholder: "15 % aujourd’hui seulement",
+      offerHelper:
+        "Cette offre sera incluse dans le message envoyé aux clients.",
       internalNote: "Note interne",
+      submit: "Créer l’annulation",
+      cancel: "Annuler",
       eligibleCustomers: "Clients admissibles",
-      emptyEligibleTitle: "Aucun client admissible.",
+      clientCount: (count: number) =>
+        `${count} client${count === 1 ? "" : "s"}`,
+      searchPlaceholder: "Rechercher un client...",
+      smsAuthorized: "SMS autorisé",
+      criterion: "Critère : consentement SMS uniquement",
+      eligibleCountFooter: (count: number) =>
+        `${count} client${count === 1 ? "" : "s"} admissible${count === 1 ? "" : "s"}`,
+      emptyEligibleTitle: "Aucun client admissible",
       emptyEligibleDescription:
-        "Ajoutez des clients ayant consenti aux communications SMS dans la liste d’attente avant de préparer une alerte."
+        "Ajoutez des clients avec consentement SMS pour pouvoir envoyer une annulation."
     },
     smsRuntime: {
       sendAlert: "Envoyer l’alerte SMS",
