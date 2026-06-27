@@ -55,10 +55,22 @@ describe("public waitlist links and consent", () => {
       join(process.cwd(), "src", "app", "dashboard", "qr-code", "page.tsx"),
       "utf8"
     );
+    const qrUnavailableState = readFileSync(
+      join(
+        process.cwd(),
+        "src",
+        "components",
+        "dashboard",
+        "qr-link",
+        "unavailable-state.tsx"
+      ),
+      "utf8"
+    );
 
     expect(qrPage).toContain("getPublicAppOrigin");
     expect(qrPage).toContain("canRenderPublicLinks");
-    expect(qrPage).toContain("Les liens publics ne sont pas prets");
+    expect(qrPage).toContain("PublicOriginConfigState");
+    expect(qrUnavailableState).toContain("Les liens publics ne sont pas prets");
     expect(qrPage).not.toContain("http://localhost:3000");
   });
 
