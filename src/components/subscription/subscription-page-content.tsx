@@ -63,10 +63,6 @@ function getCopy(locale: SubscriptionPageData["locale"]) {
         periodEnd: "Fin de période",
         notAvailable: "Non disponible",
         detailsTitle: "Détail de la facturation",
-        infoLines: [
-          "Le frais fixe mensuel est configuré dans le compte admin de votre organisation.",
-          "La commission totale est calculée automatiquement selon le nombre de réservations récupérées."
-        ],
         noSubscription:
           "Aucun abonnement configuré pour cette compagnie.",
         noRecovered:
@@ -93,10 +89,6 @@ function getCopy(locale: SubscriptionPageData["locale"]) {
         periodEnd: "Period end",
         notAvailable: "N/A",
         detailsTitle: "Billing details",
-        infoLines: [
-          "The monthly fixed fee is configured in your organization admin account.",
-          "Total commission is calculated automatically from recovered reservations."
-        ],
         noSubscription: "No subscription configured for this company.",
         noRecovered: "No recovered appointments for this month.",
         loadError: "Unable to load subscription information right now.",
@@ -245,16 +237,6 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
             ]}
             statusLabel={statusLabel}
             title={copy.detailsTitle}
-          />
-
-          <SubscriptionInfoBox
-            icon={<SubscriptionInfoIcon className="h-5 w-5" />}
-            lines={[
-              ...copy.infoLines,
-              ...data.warnings.filter(
-                (warning) => !copy.infoLines.includes(warning)
-              )
-            ]}
           />
         </div>
       </div>

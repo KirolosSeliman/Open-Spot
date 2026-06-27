@@ -42,36 +42,8 @@ export function SubscriptionTotalCard({
   icon: ReactNode;
 }) {
   return (
-    <section className="relative min-h-[132px] overflow-hidden rounded-[18px] border border-[#dbeafe] bg-gradient-to-r from-[#f0f6ff] via-[#f7faff] to-white px-6 py-5 shadow-[0_8px_30px_rgba(37,99,235,0.08)] sm:px-7 sm:py-6">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 right-0 w-[min(100%,22rem)] opacity-90"
-      >
-        <svg
-          className="h-full w-full"
-          fill="none"
-          preserveAspectRatio="none"
-          viewBox="0 0 352 132"
-        >
-          <path
-            d="M24 98C88 62 144 108 208 82C256 62 304 92 352 78"
-            stroke="#bfdbfe"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M0 112C72 84 144 118 216 92C272 72 320 104 352 90"
-            stroke="#dbeafe"
-            strokeWidth="1.5"
-          />
-          <path
-            d="M48 72C112 48 176 88 240 64C288 48 320 68 352 58"
-            stroke="#e0efff"
-            strokeWidth="1.25"
-          />
-        </svg>
-      </div>
-
-      <div className="relative flex h-full items-center gap-5">
+    <section className="min-h-[132px] rounded-[18px] border border-[#dbeafe] bg-gradient-to-r from-[#f0f6ff] via-[#f7faff] to-white px-6 py-5 shadow-[0_8px_30px_rgba(37,99,235,0.08)] sm:px-7 sm:py-6">
+      <div className="flex h-full items-center gap-5">
         <div className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-[16px] border border-[#dbeafe] bg-white text-[#2563eb] shadow-[0_10px_24px_rgba(37,99,235,0.12)]">
           {icon}
         </div>
