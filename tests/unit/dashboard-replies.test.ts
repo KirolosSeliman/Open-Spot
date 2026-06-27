@@ -10,6 +10,20 @@ const operationsDataSource = readFileSync(
   join(process.cwd(), "src", "lib", "dashboard", "operations-data.ts"),
   "utf8"
 );
+const responsesTableSource = readFileSync(
+  join(process.cwd(), "src", "components", "responses", "ResponsesTable.tsx"),
+  "utf8"
+);
+const appointmentDrawerSource = readFileSync(
+  join(
+    process.cwd(),
+    "src",
+    "components",
+    "responses",
+    "AppointmentDetailsDrawer.tsx"
+  ),
+  "utf8"
+);
 const responsesPageSource = readFileSync(
   join(process.cwd(), "src", "app", "dashboard", "responses", "page.tsx"),
   "utf8"
@@ -37,11 +51,10 @@ describe("dashboard SMS replies", () => {
     expect(operationsDataSource).toContain('.eq("direction", "inbound")');
     expect(operationsDataSource).toContain("classifyInboundSmsBody");
     expect(operationsDataSource).toContain("lastInboundBody");
-    expect(responsesPageSource).toContain("customer.replyClassification");
-    expect(responsesPageSource).toContain("item.classification");
-    expect(responsesPageSource).toContain(
-      "copy.responses.labels.awaitingManualValidation"
-    );
+    expect(responsesTableSource).toContain("formatReplyBadge");
+    expect(appointmentDrawerSource).toContain("formatAppointmentClassification");
+    expect(responsesPageSource).toContain("loadOpeningResponseGroups");
+    expect(responsesPageSource).toContain("loadAppointmentCalendarItems");
     expect(dashboardCopy.fr.responses.labels.awaitingManualValidation).toBe(
       "En attente de validation manuelle"
     );
