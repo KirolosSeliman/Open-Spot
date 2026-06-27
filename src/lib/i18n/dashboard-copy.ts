@@ -158,8 +158,6 @@ export const dashboardCopy = {
       pagination: {
         showing: "Showing",
         resultsPerPage: "results per page",
-        range: (start: number, end: number, total: number) =>
-          `${start}–${end} of ${total}`,
         previousPage: "Previous page",
         nextPage: "Next page",
         pageSizeLabel: "Results per page"
@@ -542,8 +540,6 @@ export const dashboardCopy = {
       pagination: {
         showing: "Affichage",
         resultsPerPage: "résultats par page",
-        range: (start: number, end: number, total: number) =>
-          `${start}–${end} sur ${total}`,
         previousPage: "Page précédente",
         nextPage: "Page suivante",
         pageSizeLabel: "Résultats par page"

@@ -25,3 +25,14 @@ export function formatOpeningCurrency(cents: number | null, locale: "fr" | "en" 
     currency: "CAD"
   }).format(cents / 100);
 }
+
+export function formatHistoryPaginationRange(
+  start: number,
+  end: number,
+  total: number,
+  locale: "fr" | "en" = "fr"
+) {
+  return locale === "en"
+    ? `${start}–${end} of ${total}`
+    : `${start}–${end} sur ${total}`;
+}

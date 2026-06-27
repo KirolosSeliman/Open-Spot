@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 
 import { OpeningStatusBadge } from "@/components/dashboard/opening-status-badge";
 import {
+  formatHistoryPaginationRange,
   formatOpeningCurrency,
   formatOpeningDateTime
 } from "@/lib/dashboard/format-opening-datetime";
@@ -27,7 +28,6 @@ type HistoryCopy = {
   pagination: {
     showing: string;
     resultsPerPage: string;
-    range: (start: number, end: number, total: number) => string;
     previousPage: string;
     nextPage: string;
     pageSizeLabel: string;
@@ -161,6 +161,7 @@ function HistoryPagination({
   currentPage,
   pageSize,
   totalCount,
+  locale,
   onPageChange,
   onPageSizeChange,
   copy
@@ -168,6 +169,7 @@ function HistoryPagination({
   currentPage: number;
   pageSize: number;
   totalCount: number;
+  locale: Locale;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   copy: HistoryCopy["pagination"];
@@ -199,7 +201,7 @@ function HistoryPagination({
 
       <div className="flex flex-wrap items-center justify-start gap-2 sm:justify-end">
         <span className="text-sm font-medium text-[#64748b]">
-          {copy.range(start, end, totalCount)}
+          {formatHistoryPaginationRange(start, end, totalCount, locale)}
         </span>
         <button
           aria-label={copy.previousPage}
@@ -340,6 +342,7 @@ export function CancellationsHistoryTable({
         <HistoryPagination
           copy={copy.pagination}
           currentPage={safePage}
+          locale={locale}
           onPageChange={setCurrentPage}
           onPageSizeChange={(size) => {
             setPageSize(size);
