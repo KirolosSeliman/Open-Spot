@@ -1246,8 +1246,7 @@ select {
 
 .lunera-template {
   max-width: 100%;
-  overflow-x: clip;
-  overflow-y: visible;
+  overflow: visible;
   --lunera-progress: 0;
 }
 
@@ -4483,7 +4482,7 @@ select {
 
   .open-spot-how-shell {
     --how-stack-gap: 1.75rem;
-    --how-stack-top: 7.5rem;
+    --how-stack-top: calc(var(--header-height) + 2.75rem);
     --how-title-offset: 2.65rem;
     gap: clamp(2.5rem, 4vw, 4rem);
     grid-template-columns: minmax(15rem, 0.42fr) minmax(0, 0.58fr);
@@ -4552,12 +4551,6 @@ select {
   .open-spot-how-card-frame--2 .open-spot-how-card:hover,
   .open-spot-how-card-frame--3 .open-spot-how-card:hover {
     transform: translateY(-6px) scale(1.01);
-  }
-
-  .open-spot-how-section.is-js-stack .open-spot-how-copy,
-  .open-spot-how-section.is-js-stack .open-spot-how-card-frame {
-    position: relative;
-    top: auto;
   }
 }
 

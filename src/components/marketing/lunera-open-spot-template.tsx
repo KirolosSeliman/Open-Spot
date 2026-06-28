@@ -15,7 +15,6 @@ import {
   sliderPercent,
   sliderValueFromClientX
 } from "@/lib/marketing/revenue-calculator";
-import { useWorkflowStackScroll } from "@/lib/marketing/use-workflow-stack-scroll";
 import { cn } from "@/lib/utils/cn";
 
 const getStartedHref = "/signup";
@@ -1293,21 +1292,14 @@ function SetupSection({ t }: { t: TemplateCopy }) {
 }
 
 function HowItWorks({ t }: { t: TemplateCopy }) {
-  const sectionRef = useRef<HTMLElement>(null);
-  const copyRef = useRef<HTMLDivElement>(null);
-  const frameRefs = useRef<Array<HTMLDivElement | null>>([]);
-
-  useWorkflowStackScroll({ sectionRef, copyRef, frameRefs });
-
   return (
     <section
       aria-labelledby="workflow-title"
       className="open-spot-how-section bg-white px-4 py-20 sm:py-24"
       id="how-it-works"
-      ref={sectionRef}
     >
       <div className="open-spot-how-shell mx-auto grid">
-        <div className="open-spot-how-copy" ref={copyRef}>
+        <div className="open-spot-how-copy">
           <span className="open-spot-how-pill">
             {t.how.tag}
           </span>
@@ -1327,9 +1319,6 @@ function HowItWorks({ t }: { t: TemplateCopy }) {
             <div
               className={cn("open-spot-how-card-frame", `open-spot-how-card-frame--${index + 1}`)}
               key={step.number}
-              ref={(element) => {
-                frameRefs.current[index] = element;
-              }}
             >
               <article className="open-spot-how-card" data-lunera-reveal>
               <div className="open-spot-how-card-header">
