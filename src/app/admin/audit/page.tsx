@@ -1,13 +1,14 @@
 import Link from "next/link";
 
+import { AuditFilters } from "@/components/admin/audit/audit-filters";
+import { AuditKpiCards } from "@/components/admin/audit/audit-kpi-cards";
+import { AuditLogList } from "@/components/admin/audit/audit-log-list";
 import { Card } from "@/components/ui/card";
-import { loadPlatformAdminAuditLog } from "@/lib/admin/audit-log";
+import {
+  buildAuditLogQueryString,
+  loadPlatformAdminAuditLog
+} from "@/lib/admin/audit-log";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
-
-const dateFormatter = new Intl.DateTimeFormat("en-CA", {
-  dateStyle: "medium",
-  timeStyle: "short"
-});
 
 export default async function AdminAuditPage({
   searchParams
@@ -20,9 +21,14 @@ export default async function AdminAuditPage({
   if (access.status !== "authorized") {
     return (
       <section className="grid gap-6">
-        <h1 className="text-3xl font-black">Audit</h1>
+        <div>
+          <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
+            Admin
+          </p>
+          <h1 className="mt-2 text-3xl font-black">Journal d&apos;audit</h1>
+        </div>
         <Card>
-          <p className="text-sm text-[var(--muted)]">Admin access required.</p>
+          <p className="text-sm text-[var(--muted)]">Accès administrateur requis.</p>
         </Card>
       </section>
     );
@@ -32,56 +38,40 @@ export default async function AdminAuditPage({
     admin: access.admin,
     searchParams: resolvedSearchParams
   });
+  const queryString = buildAuditLogQueryString(result.filters, result.page);
+  const refreshHref = queryString ? `/admin/audit?${queryString}` : "/admin/audit";
 
   return (
     <section className="grid gap-6">
-      <div>
-        <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
-          Admin
-        </p>
-        <h1 className="mt-2 text-3xl font-black">Audit log</h1>
-        <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-          Read-only platform admin audit trail.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
+            Admin
+          </p>
+          <h1 className="mt-2 text-3xl font-black text-[#0b1328]">
+            Journal d&apos;audit
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[#657492]">
+            Historique sécurisé des actions importantes effectuées dans la
+            plateforme.
+          </p>
+        </div>
+        <Link
+          className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#e3eaf5] bg-white px-5 text-sm font-semibold text-[#0b1328] transition hover:bg-[#f8fbff]"
+          href={refreshHref}
+        >
+          Rafraîchir
+        </Link>
       </div>
 
-      <Card>
-        <div className="grid gap-3">
-          {result.rows.map((row) => (
-            <div className="rounded-2xl border border-[var(--line)] p-4" key={row.id}>
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-black">{row.action}</p>
-                  <p className="mt-1 text-sm text-[var(--muted)]">
-                    {row.admin_email} · {dateFormatter.format(new Date(row.created_at))}
-                  </p>
-                </div>
-                <p className="max-w-xs break-all text-xs font-mono text-[var(--muted)]">
-                  {row.organization_id ?? "global"}
-                </p>
-              </div>
-              <p className="mt-2 text-xs text-[var(--muted)]">
-                {row.entity_type ?? "entity"} · {row.entity_id ?? "—"}
-              </p>
-              <pre className="mt-3 max-h-28 overflow-auto rounded-2xl bg-[#f7f5ef] p-3 text-xs text-[var(--muted)]">
-                {JSON.stringify(row.metadata, null, 2).slice(0, 1000)}
-              </pre>
-            </div>
-          ))}
-        </div>
-        <div className="mt-5 flex gap-2">
-          {result.page > 1 ? (
-            <Link className="rounded-full border border-[var(--line)] px-4 py-2 text-sm font-black" href={`/admin/audit?page=${result.page - 1}`}>
-              Previous
-            </Link>
-          ) : null}
-          {result.hasNextPage ? (
-            <Link className="rounded-full border border-[var(--line)] px-4 py-2 text-sm font-black" href={`/admin/audit?page=${result.page + 1}`}>
-              Next
-            </Link>
-          ) : null}
-        </div>
-      </Card>
+      <AuditKpiCards stats={result.stats} />
+      <AuditFilters filters={result.filters} rangeLabel={result.rangeLabel} />
+      <AuditLogList
+        filters={result.filters}
+        hasNextPage={result.hasNextPage}
+        page={result.page}
+        rows={result.rows}
+      />
     </section>
   );
 }
