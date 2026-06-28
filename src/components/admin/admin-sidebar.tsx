@@ -350,9 +350,9 @@ export function AdminMobileNav() {
           label="Company"
         />
         <MobilePillLink
-          href={`${companyBase}/business-info`}
-          isActive={pathname.startsWith(`${companyBase}/business-info`)}
-          label="Infos"
+          href={`${companyBase}/manager`}
+          isActive={pathname.startsWith(`${companyBase}/manager`)}
+          label="Manager"
         />
         <MobilePillLink
           href={`${companyBase}/billing`}

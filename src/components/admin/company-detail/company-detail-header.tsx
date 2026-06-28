@@ -108,7 +108,7 @@ function BillingIcon() {
 
 export function CompanyDetailHeader({
   organizationId,
-  eyebrow = "Company overview",
+  eyebrow = "COMPANY OVERVIEW",
   title,
   description,
   refreshHref,

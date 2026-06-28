@@ -58,18 +58,16 @@ function KpiCard({
   icon: React.ReactNode;
 }) {
   return (
-    <CompanyDetailCard className="flex flex-col gap-4">
+    <CompanyDetailCard className="flex min-h-[168px] flex-col justify-between">
       <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-[#64748b]">{title}</p>
-          <p className="mt-3 text-[2rem] font-bold leading-none text-[#0b1328]">{value}</p>
-        </div>
-        <CompanyDetailIconBadge>{icon}</CompanyDetailIconBadge>
+        <p className="text-sm font-semibold text-[#64748b]">{title}</p>
+        <CompanyDetailIconBadge className="h-10 w-10 rounded-full">{icon}</CompanyDetailIconBadge>
       </div>
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-xs text-[#64748b]">{note}</p>
+      <div className="mt-4 flex items-end justify-between gap-3">
+        <p className="text-[2rem] font-bold leading-none text-[#0b1328]">{value}</p>
         <TrendBadge tone={trendTone} trend={trend} />
       </div>
+      <p className="mt-3 text-xs text-[#64748b]">{note}</p>
     </CompanyDetailCard>
   );
 }
@@ -194,12 +192,14 @@ export function CompanySimpleKpiCard({
   icon: React.ReactNode;
 }) {
   return (
-    <CompanyDetailCard className="flex items-start gap-4">
-      <CompanyDetailIconBadge>{icon}</CompanyDetailIconBadge>
-      <div>
-        <p className="text-sm font-semibold text-[#64748b]">{title}</p>
-        <p className="mt-2 text-[2rem] font-bold leading-none text-[#0b1328]">{value}</p>
-        {note ? <p className="mt-2 text-xs text-[#64748b]">{note}</p> : null}
+    <CompanyDetailCard className="flex min-h-[140px] flex-col">
+      <div className="flex items-start gap-4">
+        <CompanyDetailIconBadge className="h-10 w-10 rounded-full">{icon}</CompanyDetailIconBadge>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold text-[#64748b]">{title}</p>
+          <p className="mt-3 text-[1.75rem] font-bold leading-none text-[#0b1328]">{value}</p>
+          {note ? <p className="mt-2 text-xs text-[#64748b]">{note}</p> : null}
+        </div>
       </div>
     </CompanyDetailCard>
   );

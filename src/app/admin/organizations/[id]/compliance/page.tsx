@@ -148,6 +148,27 @@ export default async function AdminOrganizationCompliancePage({
         />
       </div>
 
+      <CompanyDetailCard>
+        <CompanyDetailSectionTitle>Indicateurs conformité détaillés</CompanyDetailSectionTitle>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <CompanySimpleKpiCard
+            icon={<AlertIcon />}
+            title="Envois potentiellement risqués"
+            value={numberFormatter.format(complianceResult.metrics.potentialRiskySends)}
+          />
+          <CompanySimpleKpiCard
+            icon={<AlertIcon />}
+            title="Consentements manquants"
+            value={numberFormatter.format(complianceResult.metrics.missingConsentRecords)}
+          />
+          <CompanySimpleKpiCard
+            icon={<AlertIcon />}
+            title="Callbacks manquants"
+            value={numberFormatter.format(complianceResult.metrics.missingStatusCallbacks)}
+          />
+        </div>
+      </CompanyDetailCard>
+
       {complianceResult.issues.length > 0 ? (
         <CompanyDetailCard>
           <CompanyDetailSectionTitle>Problèmes de conformité</CompanyDetailSectionTitle>

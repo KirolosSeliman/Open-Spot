@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
+import { SmsBookIcon } from "@/components/admin/sms-configuration-icons";
 import { SmsConfigurationDashboard } from "@/components/admin/sms-configuration-dashboard";
-import { ButtonLink } from "@/components/ui/button";
 import { loadAdminSmsDiagnostics } from "@/lib/admin/sms-diagnostics";
 import { loadSafeOrganizationSmsSenderView } from "@/lib/admin/sms-sender-actions";
 import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
@@ -64,26 +64,27 @@ export default async function AdminOrganizationSmsPage({
     toSafeOrganizationSmsSenderView(sender);
 
   return (
-    <section className="grid gap-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section className="mx-auto grid max-w-6xl gap-8">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
+          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--primary)]">
             Open Spot
           </p>
-          <h1 className="mt-2 text-3xl font-black">Configuration SMS</h1>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--foreground)]">
+            Configuration SMS
+          </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
             Gérez l&apos;envoi de SMS, les modèles, les tests et la conformité.
           </p>
-          <p className="mt-2 text-sm font-bold text-[var(--muted)]">{organization.name}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <ButtonLink href="https://github.com/KirolosSeliman/Open-Spot/blob/main/docs/sms-compliance-notes.md" variant="outline">
-            Documentation
-          </ButtonLink>
-          <ButtonLink href={`/admin/organizations/${id}`} variant="outline">
-            Retour à la compagnie
-          </ButtonLink>
-        </div>
+
+        <a
+          className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-[var(--line)] bg-white px-5 text-sm font-bold text-[var(--foreground)] shadow-sm transition hover:bg-slate-50"
+          href="https://github.com/KirolosSeliman/Open-Spot/blob/main/docs/sms-compliance-notes.md"
+        >
+          <SmsBookIcon className="h-4 w-4" />
+          Documentation
+        </a>
       </div>
 
       <SmsConfigurationDashboard
@@ -92,7 +93,7 @@ export default async function AdminOrganizationSmsPage({
         organizationName={organization.name}
         readiness={readiness}
         realSmsEnabled={process.env.ALLOW_REAL_SMS_SENDS === "true"}
-        recentActivity={diagnostics.rows.slice(0, 8)}
+        recentActivity={diagnostics.rows.slice(0, 5)}
         sender={safeSender}
       />
     </section>

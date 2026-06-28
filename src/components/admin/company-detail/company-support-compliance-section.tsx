@@ -112,11 +112,13 @@ export function CompanyComplianceOverviewCard({
       <CompanyDetailSectionTitle>Aperçu conformité</CompanyDetailSectionTitle>
       <div className="mt-6 grid gap-4 md:grid-cols-3">
         {metrics.map((metric) => (
-          <div className="flex items-start gap-4 rounded-[16px] border border-[#e2eaf5] bg-[#f8fbff] p-5" key={metric.label}>
-            <CompanyDetailIconBadge>{metric.icon}</CompanyDetailIconBadge>
+          <div className="flex items-center gap-4" key={metric.label}>
+            <CompanyDetailIconBadge className="h-10 w-10 rounded-full">
+              {metric.icon}
+            </CompanyDetailIconBadge>
             <div>
               <p className="text-sm font-semibold text-[#64748b]">{metric.label}</p>
-              <p className="mt-2 text-[1.75rem] font-bold text-[#0b1328]">{metric.value}</p>
+              <p className="mt-1 text-[1.75rem] font-bold text-[#0b1328]">{metric.value}</p>
             </div>
           </div>
         ))}
@@ -279,73 +281,83 @@ export function CompanySmsControlsSection({
           </label>
         </div>
 
-        {smsPaused ? (
-          <form action={resumeOrganizationSmsAction}>
-            <input name="organizationId" type="hidden" value={organizationId} />
-            <button
-              className={companyDetailPrimaryButtonClassName}
-              disabled={!permissions.canResumeSms}
-              type="submit"
-            >
-              Reprendre SMS
-            </button>
-          </form>
-        ) : (
-          <form action={pauseOrganizationSmsAction} className="grid gap-3">
-            <input name="organizationId" type="hidden" value={organizationId} />
+        <form action={smsPaused ? resumeOrganizationSmsAction : pauseOrganizationSmsAction} className="grid gap-2" id={`pause-form-${organizationId}`}>
+          <input name="organizationId" type="hidden" value={organizationId} />
+          {!smsPaused ? (
             <label className="grid gap-2">
               <span className="text-sm font-semibold text-[#64748b]">Raison de pause</span>
               <input
                 className={companyDetailInputClassName}
+                defaultValue={controls.sms_pause_reason ?? ""}
                 name="reason"
                 placeholder="Sélectionnez ou saisissez la raison..."
-                required
+                required={!smsPaused}
               />
             </label>
-            <button
-              className={`${companyDetailPrimaryButtonClassName} w-fit`}
-              disabled={!permissions.canPauseSms}
-              type="submit"
-            >
-              Pause SMS
-            </button>
-          </form>
-        )}
+          ) : null}
+        </form>
 
-        {orgDisabled ? (
-          <form action={reactivateOrganizationAction}>
-            <input name="organizationId" type="hidden" value={organizationId} />
-            <button
-              className={companyDetailSecondaryButtonClassName}
-              disabled={!permissions.canReactivate}
-              type="submit"
-            >
-              Réactiver l&apos;organisation
-            </button>
-          </form>
-        ) : (
-          <form action={disableOrganizationAction} className="grid gap-3">
-            <input name="organizationId" type="hidden" value={organizationId} />
+        <form action={orgDisabled ? reactivateOrganizationAction : disableOrganizationAction} className="grid gap-2" id={`disable-form-${organizationId}`}>
+          <input name="organizationId" type="hidden" value={organizationId} />
+          {!orgDisabled ? (
             <label className="grid gap-2">
               <span className="text-sm font-semibold text-[#64748b]">Raison de désactivation</span>
               <input
                 className={companyDetailInputClassName}
+                defaultValue={controls.disabled_reason ?? ""}
                 name="reason"
                 placeholder="Sélectionnez ou saisissez la raison..."
-                required
+                required={!orgDisabled}
               />
             </label>
+          ) : null}
+        </form>
+
+        <div className="flex flex-wrap gap-3 pt-2">
+          {smsPaused ? (
+            <form action={resumeOrganizationSmsAction}>
+              <input name="organizationId" type="hidden" value={organizationId} />
+              <button
+                className={companyDetailPrimaryButtonClassName}
+                disabled={!permissions.canResumeSms}
+                type="submit"
+              >
+                Reprendre SMS
+              </button>
+            </form>
+          ) : (
             <button
-              className="inline-flex min-h-11 w-fit items-center justify-center rounded-[13px] border border-red-200 bg-white px-5 text-sm font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
+              className={companyDetailPrimaryButtonClassName}
+              disabled={!permissions.canPauseSms}
+              form={`pause-form-${organizationId}`}
+              type="submit"
+            >
+              Pause SMS
+            </button>
+          )}
+
+          {orgDisabled ? (
+            <form action={reactivateOrganizationAction}>
+              <input name="organizationId" type="hidden" value={organizationId} />
+              <button
+                className={companyDetailSecondaryButtonClassName}
+                disabled={!permissions.canReactivate}
+                type="submit"
+              >
+                Réactiver l&apos;organisation
+              </button>
+            </form>
+          ) : (
+            <button
+              className="inline-flex min-h-11 items-center justify-center rounded-[13px] border border-red-200 bg-white px-5 text-sm font-bold text-red-600 transition hover:bg-red-50 disabled:opacity-50"
               disabled={!permissions.canDisable}
+              form={`disable-form-${organizationId}`}
               type="submit"
             >
               Désactiver l&apos;organisation
             </button>
-          </form>
-        )}
+          )}
 
-        {!orgDisabled ? (
           <form action={runOrganizationHealthCheckAction}>
             <input name="organizationId" type="hidden" value={organizationId} />
             <button
@@ -356,7 +368,7 @@ export function CompanySmsControlsSection({
               Lancer un diagnostic
             </button>
           </form>
-        ) : null}
+        </div>
       </div>
     </CompanyDetailCard>
   );

@@ -108,28 +108,31 @@ export function CompanyOwnerAccessCard({
         </CompanyDetailIconBadge>
         <CompanyDetailSectionTitle>Propriétaire / accès</CompanyDetailSectionTitle>
       </div>
-      <dl className="mt-6 grid gap-5">
-        <FieldRow
-          label="Courriel du propriétaire"
-          value={ownerEmail ?? "Non renseigné"}
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_minmax(220px,280px)]">
+        <dl className="grid gap-5">
+          <FieldRow
+            label="Courriel du propriétaire"
+            value={ownerEmail ?? "Non renseigné"}
+          />
+          <div className="grid gap-1.5">
+            <dt className="text-sm font-semibold text-[#64748b]">Niveau d&apos;accès</dt>
+            <dd>
+              <span className="inline-flex rounded-full bg-[#eef5ff] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#2563ff]">
+                {accessLevel}
+              </span>
+            </dd>
+          </div>
+          <FieldRow
+            label="Fuseau horaire"
+            value={timezone ?? "Non renseigné"}
+          />
+        </dl>
+        <ResendOwnerInvitationButton
+          organizationId={organizationId}
+          ownerEmail={ownerEmail}
+          variant="embedded"
         />
-        <div className="grid gap-1.5">
-          <dt className="text-sm font-semibold text-[#64748b]">Niveau d&apos;accès</dt>
-          <dd>
-            <span className="inline-flex rounded-full bg-[#eef5ff] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#2563ff]">
-              {accessLevel}
-            </span>
-          </dd>
-        </div>
-        <FieldRow
-          label="Fuseau horaire"
-          value={timezone ?? "Non renseigné"}
-        />
-      </dl>
-      <ResendOwnerInvitationButton
-        organizationId={organizationId}
-        ownerEmail={ownerEmail}
-      />
+      </div>
     </CompanyDetailCard>
   );
 }
@@ -186,7 +189,7 @@ const navigationItems = [
     )
   },
   {
-    hrefSuffix: "#manager-mode",
+    hrefSuffix: "/manager",
     title: "Manager mode",
     description: "Ouvrir le dashboard en tant que gestionnaire.",
     icon: (

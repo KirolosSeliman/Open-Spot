@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 
-import { CompanyAdminVisibilitySection } from "@/components/admin/company-detail/company-admin-visibility";
 import { CompanyDateRangeFilter } from "@/components/admin/company-detail/company-date-range-filter";
 import { CompanyDetailHeader } from "@/components/admin/company-detail/company-detail-header";
 import { CompanyOverviewKpiCards } from "@/components/admin/company-detail/company-kpi-cards";
@@ -9,10 +8,7 @@ import {
   CompanyNavigationCards,
   CompanyOwnerAccessCard
 } from "@/components/admin/company-detail/company-identity-section";
-import {
-  CompanyManagerModeSection,
-  CompanyManagerSessionsSection
-} from "@/components/admin/company-detail/company-manager-section";
+import { CompanyRecentActivitySection } from "@/components/admin/company-detail/company-recent-activity";
 import { loadCompanyDetailOverview } from "@/lib/admin/company-detail-data";
 import { parseAdminDateRange } from "@/lib/admin/date-range";
 import { formatEstimatedSmsCost } from "@/lib/admin/sms-cost";
@@ -38,9 +34,6 @@ export default async function AdminOrganizationDetailPage({
     from: getSingleSearchParam(resolvedSearchParams.from),
     to: getSingleSearchParam(resolvedSearchParams.to)
   });
-  const managerModeError = getSingleSearchParam(
-    resolvedSearchParams.managerModeError
-  );
   const access = await requireCurrentPlatformAdmin();
 
   if (access.status === "unconfigured") {
@@ -66,7 +59,7 @@ export default async function AdminOrganizationDetailPage({
     notFound();
   }
 
-  const { overview, controlsPanel, kpis } = detail;
+  const { overview, kpis } = detail;
   const refreshHref = `/admin/organizations/${overview.organization.id}?range=${overview.range.rangeKey}`;
 
   return (
@@ -113,24 +106,9 @@ export default async function AdminOrganizationDetailPage({
 
       <CompanyNavigationCards organizationId={overview.organization.id} />
 
-      <CompanyAdminVisibilitySection
-        canArchive={controlsPanel.permissions.canArchive}
-        canUnarchive={controlsPanel.permissions.canUnarchive}
-        controls={controlsPanel.controls}
-        organizationId={overview.organization.id}
-        returnTo={`/admin/organizations/${overview.organization.id}`}
-      />
-
-      <CompanyManagerSessionsSection
-        canEndSessions={controlsPanel.permissions.canEndManagerSessions}
-        organizationId={overview.organization.id}
-        sessions={controlsPanel.activeManagerSessions}
-      />
-
-      <CompanyManagerModeSection
-        canOpenManagerMode={overview.access.canOpenManagerMode}
-        managerModeError={managerModeError}
-        organizationId={overview.organization.id}
+      <CompanyRecentActivitySection
+        recent={overview.recent}
+        warnings={overview.warnings}
       />
     </section>
   );

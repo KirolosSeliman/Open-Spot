@@ -60,7 +60,7 @@ export function CompanyAnalyticsCharts({
   const cumulativeCustomerData = buildCumulativeOptIn(charts.customerGrowthByDay);
 
   return (
-    <div className="grid gap-4 xl:grid-cols-2">
+    <div className="grid gap-4 xl:grid-cols-2 2xl:grid-cols-4">
       <AnalyticsChartCard title="Spots remplis dans le temps">
         <LineChart
           labels={filledLabels}

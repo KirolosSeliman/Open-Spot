@@ -24,7 +24,7 @@ export function CompanyBillingTermsForm({
       <CompanyDetailSectionTitle>Conditions de facturation</CompanyDetailSectionTitle>
       <form
         action={updateOrganizationBillingTermsAction}
-        className="mt-6 grid gap-4 xl:grid-cols-[repeat(6,minmax(0,1fr))_auto]"
+        className="mt-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:overflow-x-auto"
       >
         <input name="organizationId" type="hidden" value={organizationId} />
         <input
@@ -33,7 +33,7 @@ export function CompanyBillingTermsForm({
           value={`/admin/organizations/${organizationId}/billing`}
         />
 
-        <label className="grid gap-2 xl:col-span-1">
+        <label className="grid min-w-[140px] shrink-0 gap-2">
           <span className="text-sm font-semibold text-[#64748b]">Abonnement mensuel</span>
           <div className="relative">
             <input
@@ -51,7 +51,7 @@ export function CompanyBillingTermsForm({
           </div>
         </label>
 
-        <label className="grid gap-2 xl:col-span-1">
+        <label className="grid min-w-[140px] shrink-0 gap-2">
           <span className="text-sm font-semibold text-[#64748b]">Devise</span>
           <select
             className={companyDetailSelectClassName}
@@ -65,7 +65,7 @@ export function CompanyBillingTermsForm({
           </select>
         </label>
 
-        <label className="grid gap-2 xl:col-span-1">
+        <label className="grid min-w-[140px] shrink-0 gap-2">
           <span className="text-sm font-semibold text-[#64748b]">Modèle frais par spot rempli</span>
           <select
             className={companyDetailSelectClassName}
@@ -74,13 +74,13 @@ export function CompanyBillingTermsForm({
             name="filledSpotFeeMode"
           >
             <option value="none">Aucun</option>
-            <option value="fixed">Frais fixe</option>
+            <option value="fixed">frais fixe</option>
             <option value="percentage">Pourcentage</option>
             <option value="fixed_plus_percentage">Fixe + pourcentage</option>
           </select>
         </label>
 
-        <label className="grid gap-2 xl:col-span-1">
+        <label className="grid min-w-[140px] shrink-0 gap-2">
           <span className="text-sm font-semibold text-[#64748b]">Frais fixe par spot rempli</span>
           <div className="relative">
             <input
@@ -98,7 +98,7 @@ export function CompanyBillingTermsForm({
           </div>
         </label>
 
-        <label className="grid gap-2 xl:col-span-1">
+        <label className="grid min-w-[140px] shrink-0 gap-2">
           <span className="text-sm font-semibold text-[#64748b]">Frais en pourcentage</span>
           <div className="relative">
             <input
@@ -117,7 +117,7 @@ export function CompanyBillingTermsForm({
           </div>
         </label>
 
-        <label className="grid gap-2 xl:col-span-1">
+        <label className="grid min-w-[140px] shrink-0 gap-2">
           <span className="text-sm font-semibold text-[#64748b]">Notes</span>
           <input
             className={companyDetailInputClassName}
@@ -128,7 +128,7 @@ export function CompanyBillingTermsForm({
           />
         </label>
 
-        <div className="flex items-end">
+        <div className="flex shrink-0 items-end pb-0.5">
           <button
             className={companyDetailPrimaryButtonClassName}
             disabled={!canEdit}
