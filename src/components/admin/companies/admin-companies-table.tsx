@@ -52,7 +52,7 @@ function StatusBadge({ label }: { label: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold",
+        "inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold whitespace-nowrap",
         tone
       )}
     >
@@ -77,7 +77,7 @@ function CompanyActionsMenu({
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={`Actions for ${company.name}`}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-[#64748b] transition hover:bg-[#f1f5f9] hover:text-[#0b1328]"
+        className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-[#64748b] transition hover:bg-[#f1f5f9] hover:text-[#0b1328]"
         onClick={() => setOpen((current) => !current)}
         type="button"
       >
@@ -198,26 +198,37 @@ export function AdminCompaniesTable({
         {filteredCount} {filteredCount === 1 ? "company" : "companies"} shown out of{" "}
         {totalCount}.
       </p>
-      <div className="max-h-[560px] overflow-auto">
-        <table className="w-full min-w-[1180px] border-collapse text-left text-sm">
-          <thead className="sticky top-0 z-[1] bg-[#f8fafc] text-[11px] font-semibold uppercase tracking-[0.08em] text-[#64748b]">
+      <div className="max-h-[560px] overflow-x-hidden overflow-y-auto">
+        <table className="w-full table-fixed border-collapse text-left text-[13px]">
+          <colgroup>
+            <col className="w-[15%]" />
+            <col className="w-[17%]" />
+            <col className="w-[9%]" />
+            <col className="w-[7%]" />
+            <col className="w-[7%]" />
+            <col className="w-[8%]" />
+            <col className="w-[9%]" />
+            <col className="w-[10%]" />
+            <col className="w-[12%]" />
+            <col className="w-[6%]" />
+          </colgroup>
+          <thead className="sticky top-0 z-[1] bg-[#f8fafc] text-[10px] font-semibold uppercase tracking-[0.06em] text-[#64748b]">
             <tr>
-              <th className="px-5 py-3.5">COMPANY</th>
-              <th className="px-4 py-3.5">OWNER EMAIL</th>
-              <th className="px-4 py-3.5">STATUS</th>
-              <th className="px-4 py-3.5">PLAN</th>
-              <th className="px-4 py-3.5 text-right">CUSTOMERS</th>
-              <th className="px-4 py-3.5 text-right">OPENINGS</th>
-              <th className="px-4 py-3.5 text-right">FILLED SPOTS</th>
-              <th className="px-4 py-3.5 text-right">SMS SENT (30D)</th>
-              <th className="px-4 py-3.5 text-right">EST. SMS COST (30D)</th>
-              <th className="px-4 py-3.5">
-                <span className="inline-flex items-center gap-1">
-                  LAST ACTIVITY
+              <th className="px-3 py-3">Company</th>
+              <th className="px-2 py-3">Owner email</th>
+              <th className="px-2 py-3">Status</th>
+              <th className="px-2 py-3 text-right">Customers</th>
+              <th className="px-2 py-3 text-right">Openings</th>
+              <th className="px-2 py-3 text-right">Filled spots</th>
+              <th className="px-2 py-3 text-right">SMS (30d)</th>
+              <th className="px-2 py-3 text-right">Est. cost (30d)</th>
+              <th className="px-2 py-3">
+                <span className="inline-flex items-center gap-0.5">
+                  Last activity
                   <ChevronDownIcon />
                 </span>
               </th>
-              <th className="px-4 py-3.5">
+              <th className="px-2 py-3">
                 <span className="sr-only">Actions</span>
               </th>
             </tr>
@@ -231,48 +242,49 @@ export function AdminCompaniesTable({
                   className="border-t border-[#e3eaf5] transition hover:bg-[#fbfdff]"
                   key={company.id}
                 >
-                  <td className="px-5 py-4">
+                  <td className="px-3 py-3">
                     <Link
-                      className="group block min-w-[160px]"
+                      className="group block min-w-0"
                       href={`/admin/organizations/${company.id}?range=${range}`}
                     >
-                      <p className="font-semibold text-[#0b1328] group-hover:text-[#2563ff]">
+                      <p className="truncate font-semibold text-[#0b1328] group-hover:text-[#2563ff]">
                         {company.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-[#64748b]">
+                      <p className="mt-0.5 truncate text-xs text-[#64748b]">
                         {company.slug ?? "No slug"}
                       </p>
                     </Link>
                   </td>
-                  <td className="px-4 py-4 text-[#0b1328]">
-                    {company.ownerEmail ?? "No owner email"}
+                  <td className="px-2 py-3">
+                    <span className="block truncate text-[#0b1328]" title={company.ownerEmail ?? undefined}>
+                      {company.ownerEmail ?? "No owner email"}
+                    </span>
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-2 py-3">
                     <StatusBadge label={company.statusLabel} />
                   </td>
-                  <td className="px-4 py-4 text-[#0b1328]">{company.plan ?? "—"}</td>
-                  <td className="px-4 py-4 text-right tabular-nums text-[#0b1328]">
+                  <td className="px-2 py-3 text-right tabular-nums text-[#0b1328]">
                     {numberFormatter.format(company.customersCount)}
                   </td>
-                  <td className="px-4 py-4 text-right tabular-nums text-[#0b1328]">
+                  <td className="px-2 py-3 text-right tabular-nums text-[#0b1328]">
                     {numberFormatter.format(company.openingsCount)}
                   </td>
-                  <td className="px-4 py-4 text-right tabular-nums text-[#0b1328]">
+                  <td className="px-2 py-3 text-right tabular-nums text-[#0b1328]">
                     {numberFormatter.format(company.filledSpotsCount)}
                   </td>
-                  <td className="px-4 py-4 text-right tabular-nums text-[#0b1328]">
+                  <td className="px-2 py-3 text-right tabular-nums text-[#0b1328]">
                     {numberFormatter.format(company.smsSentCount)}
                   </td>
-                  <td className="px-4 py-4 text-right tabular-nums text-[#0b1328]">
+                  <td className="px-2 py-3 text-right tabular-nums text-[#0b1328]">
                     {formatEstimatedSmsCost(company.estimatedSmsCostCents)}
                   </td>
-                  <td className="px-4 py-4 text-[#0b1328]">
-                    <p>{activity.date}</p>
+                  <td className="px-2 py-3 text-[#0b1328]">
+                    <p className="truncate">{activity.date}</p>
                     {activity.time ? (
-                      <p className="mt-0.5 text-xs text-[#64748b]">{activity.time}</p>
+                      <p className="mt-0.5 truncate text-xs text-[#64748b]">{activity.time}</p>
                     ) : null}
                   </td>
-                  <td className="px-4 py-4">
+                  <td className="px-2 py-3">
                     <CompanyActionsMenu company={company} range={range} />
                   </td>
                 </tr>
