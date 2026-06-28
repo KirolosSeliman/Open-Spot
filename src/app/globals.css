@@ -7091,8 +7091,7 @@ select {
   -webkit-tap-highlight-color: transparent;
 }
 
-.open-spot-dashboard-theme [data-open-spot-button="primary"],
-.open-spot-dashboard-theme a[href="/dashboard/new-cancellation"] {
+.open-spot-dashboard-theme [data-open-spot-button="primary"] {
   box-shadow: var(--dashboard-shadow-blue);
 }
 
