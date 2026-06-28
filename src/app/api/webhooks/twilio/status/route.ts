@@ -1,22 +1,65 @@
 import { NextResponse } from "next/server";
 
+import { resolveTwilioAuthTokenForAccountSid } from "@/lib/sms/twilio-admin";
 import { touchOrganizationSmsSenderStatusCallback } from "@/lib/sms/organization-sender";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import {
   getMonotonicTwilioDeliveryStatus,
   normalizeTwilioDeliveryStatus,
   parseTwilioStatusRequest,
-  validateTwilioWebhookRequest
+  validateTwilioWebhookRequestForAccountSid
 } from "@/lib/sms/twilio";
 import { recordSmsWebhookEvent } from "@/lib/sms/webhook-events";
 
 export const runtime = "nodejs";
 
+async function touchSmsSetupTestRun({
+  supabase,
+  organizationId,
+  smsMessageId,
+  deliveryStatus
+}: {
+  supabase: NonNullable<ReturnType<typeof createSupabaseServiceClient>>;
+  organizationId: string;
+  smsMessageId: string;
+  deliveryStatus: string;
+}) {
+  const { data: testRun } = await supabase
+    .from("sms_setup_test_runs")
+    .select("id, status")
+    .eq("organization_id", organizationId)
+    .eq("outbound_sms_message_id", smsMessageId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (!testRun || !["sent", "created"].includes(testRun.status)) {
+    return;
+  }
+
+  await supabase
+    .from("sms_setup_test_runs")
+    .update({
+      status:
+        deliveryStatus === "delivered"
+          ? "delivered"
+          : "status_callback_received",
+      completed_at: new Date().toISOString()
+    })
+    .eq("id", testRun.id);
+}
+
 export async function POST(request: Request) {
   const body = await request.clone().text();
   const params = Object.fromEntries(new URLSearchParams(body));
 
-  if (!validateTwilioWebhookRequest(request, params)) {
+  const signatureValid = await validateTwilioWebhookRequestForAccountSid(
+    request,
+    params,
+    resolveTwilioAuthTokenForAccountSid
+  );
+
+  if (!signatureValid) {
     await recordSmsWebhookEvent({
       provider: "twilio",
       event_type: "status_callback",
@@ -191,6 +234,12 @@ export async function POST(request: Request) {
   }
 
   await touchOrganizationSmsSenderStatusCallback(message.organization_id);
+  await touchSmsSetupTestRun({
+    supabase,
+    organizationId: message.organization_id,
+    smsMessageId: message.id,
+    deliveryStatus
+  });
 
   await supabase.from("audit_logs").insert({
     organization_id: message.organization_id,

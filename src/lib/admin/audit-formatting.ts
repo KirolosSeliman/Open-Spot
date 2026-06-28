@@ -31,6 +31,8 @@ const auditActionLabels: Record<string, string> = {
   "admin.organization.sms_number_assigned": "Numéro SMS assigné",
   "admin.organization.sms_messaging_service_updated":
     "Service de messagerie SMS mis à jour",
+  "admin.organization.sms_messaging_service_attach_failed":
+    "Échec d'attachement au service de messagerie SMS",
   "admin.organization.sms_webhooks_configured": "Webhooks SMS configurés",
   "admin.organization.sms_test_sent": "SMS test envoyé",
   "admin.organization.sms_compliance_approved": "Conformité SMS approuvée",

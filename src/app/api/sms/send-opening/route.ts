@@ -50,7 +50,6 @@ export async function POST(request: Request) {
         provider: provider.getProviderName(),
         error: "Opening send is blocked until billing and SMS activation are complete.",
         blockingReasons: readiness.blockingReasons,
-        onboardingStatus: readiness.onboardingStatus,
         billingStatus: readiness.billingStatus,
         smsStatus: readiness.smsStatus
       },

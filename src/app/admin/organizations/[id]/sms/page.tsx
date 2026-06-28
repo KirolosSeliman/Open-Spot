@@ -11,6 +11,7 @@ import {
   toSafeOrganizationSmsSenderView
 } from "@/lib/sms/organization-sender";
 import { computeSmsSenderReadiness } from "@/lib/sms/sms-setup-readiness";
+import { verifyTwilioLiveConfigurationForOrganization } from "@/lib/sms/twilio-live-verification";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
@@ -55,9 +56,16 @@ export default async function AdminOrganizationSmsPage({
   }
 
   const organizationReadiness = await loadOrganizationSmsReadiness(supabase, id);
+  const liveVerification = sender
+    ? await verifyTwilioLiveConfigurationForOrganization({
+        organizationId: id,
+        sender
+      }).catch(() => null)
+    : null;
   const readiness = computeSmsSenderReadiness({
     sender,
-    organizationReadiness
+    organizationReadiness,
+    liveVerification
   });
   const safeSender =
     (await loadSafeOrganizationSmsSenderView(id)) ??

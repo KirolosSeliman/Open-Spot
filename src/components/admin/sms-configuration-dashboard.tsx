@@ -7,10 +7,12 @@ import { Button } from "@/components/ui/button";
 import type { AdminSmsDiagnosticRow } from "@/lib/admin/sms-diagnostics";
 import type { SmsSenderReadinessResult } from "@/lib/sms/sms-setup-readiness";
 import type { SafeOrganizationSmsSenderView } from "@/lib/sms/organization-sender-types";
+import { DEFAULT_ORGANIZATION_TEST_SMS_BODY } from "@/lib/sms/organization-sms-copy";
+import { SafeTwilioErrorDisplay } from "@/components/admin/sms-safe-error-display";
+import { SmsTwilioNumberPicker } from "@/components/admin/sms-twilio-number-picker";
 import {
   activateSmsForOrganizationAction,
   approveSmsComplianceAction,
-  assignTwilioPhoneNumberAction,
   blockSmsForOrganizationAction,
   configureTwilioWebhooksAction,
   connectTwilioSubaccountAction,
@@ -20,9 +22,9 @@ import {
   runFullSmsSetupTestAction,
   sendSmsSetupTestAction,
   syncTwilioSenderAction,
+  verifyTwilioConfigurationAction,
   type SmsSenderActionResult
 } from "@/lib/admin/sms-sender-actions";
-import { DEFAULT_ORGANIZATION_TEST_SMS_BODY } from "@/lib/sms/organization-sms-copy";
 
 type Props = {
   organizationId: string;
@@ -63,24 +65,6 @@ function statusTone(status: string) {
   return "info" as const;
 }
 
-function senderStatusLabel(status: string | null | undefined) {
-  switch (status) {
-    case "ready":
-      return "Actif";
-    case "paused":
-      return "En pause";
-    case "blocked":
-      return "Bloqué";
-    case "number_missing":
-    case "webhook_missing":
-    case "test_required":
-    case "compliance_pending":
-      return "À configurer";
-    default:
-      return "À configurer";
-  }
-}
-
 function complianceLabel(status: string | null | undefined) {
   switch (status) {
     case "approved":
@@ -95,18 +79,31 @@ function complianceLabel(status: string | null | undefined) {
   }
 }
 
+function liveConfiguredLabel(
+  localConfigured: boolean,
+  liveOk: boolean | null | undefined
+) {
+  if (liveOk === true) {
+    return "Vérifié live";
+  }
+
+  if (liveOk === false) {
+    return "Erreur Twilio";
+  }
+
+  return localConfigured ? "À vérifier" : "Manquant";
+}
+
 function ActionFeedback({ result }: { result: SmsSenderActionResult | null }) {
   if (!result) {
     return null;
   }
 
-  return (
-    <p
-      className={`text-sm font-bold ${result.ok ? "text-emerald-700" : "text-red-700"}`}
-    >
-      {result.message}
-    </p>
-  );
+  if (result.ok) {
+    return <p className="text-sm font-bold text-emerald-700 break-words">{result.message}</p>;
+  }
+
+  return <SafeTwilioErrorDisplay error={result.message} />;
 }
 
 function AdminActionForm({
@@ -158,10 +155,13 @@ export function SmsConfigurationDashboard({
 }: Props) {
   const [testPhone, setTestPhone] = useState(sender?.phoneE164 ?? "");
   const [testMessage, setTestMessage] = useState(DEFAULT_ORGANIZATION_TEST_SMS_BODY);
-  const [phoneNumberSid, setPhoneNumberSid] = useState("");
   const [subaccountSid, setSubaccountSid] = useState("");
   const testBlocked =
     !isSuperAdmin || !realSmsEnabled || !readiness.canSendTest || !sender?.phoneE164;
+
+  const testBlockedReason = testBlocked
+    ? "Test bloqué : le numéro, le service d'envoi, les webhooks et ALLOW_REAL_SMS_SENDS doivent être configurés."
+    : undefined;
 
   return (
     <div className="grid gap-6">
@@ -172,6 +172,10 @@ export function SmsConfigurationDashboard({
         </div>
       ) : null}
 
+      {sender?.lastError ? (
+        <SafeTwilioErrorDisplay error={sender.lastError} title="Dernière erreur Twilio" />
+      ) : null}
+
       <div className="grid gap-4 xl:grid-cols-3">
         <section className="rounded-3xl border border-[var(--line)] bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,0.06)]">
           <div className="flex items-start justify-between gap-3">
@@ -179,8 +183,15 @@ export function SmsConfigurationDashboard({
               <p className="text-sm font-black">📞 Numéro dédié</p>
               <p className="mt-1 text-xs text-[var(--muted)]">Fournisseur Twilio</p>
             </div>
-            <Badge tone={statusTone(senderStatusLabel(sender?.senderStatus))}>
-              {senderStatusLabel(sender?.senderStatus)}
+            <Badge
+              tone={statusTone(
+                liveConfiguredLabel(
+                  Boolean(sender?.phoneE164),
+                  sender?.livePhoneOk
+                )
+              )}
+            >
+              {liveConfiguredLabel(Boolean(sender?.phoneE164), sender?.livePhoneOk)}
             </Badge>
           </div>
           <dl className="mt-5 grid gap-3 text-sm">
@@ -200,6 +211,16 @@ export function SmsConfigurationDashboard({
           {isSuperAdmin ? (
             <div className="mt-5 grid gap-3">
               <AdminActionForm
+                action={verifyTwilioConfigurationAction}
+                organizationId={organizationId}
+                organizationName={organizationName}
+                className="grid gap-2"
+              >
+                <Button className="w-full" type="submit" variant="outline">
+                  Vérifier la configuration Twilio
+                </Button>
+              </AdminActionForm>
+              <AdminActionForm
                 action={syncTwilioSenderAction}
                 organizationId={organizationId}
                 organizationName={organizationName}
@@ -209,23 +230,7 @@ export function SmsConfigurationDashboard({
                   Synchroniser
                 </Button>
               </AdminActionForm>
-              <input
-                className="min-h-11 rounded-2xl border border-[var(--line)] px-4 text-sm"
-                onChange={(event) => setPhoneNumberSid(event.target.value)}
-                placeholder="PNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-                value={phoneNumberSid}
-              />
-              <form
-                action={async (formData) => {
-                  formData.set("phoneNumberSid", phoneNumberSid);
-                  await assignTwilioPhoneNumberAction(formData);
-                }}
-              >
-                <input name="organizationId" type="hidden" value={organizationId} />
-                <Button className="w-full" disabled={!phoneNumberSid} type="submit" variant="outline">
-                  Gérer le numéro
-                </Button>
-              </form>
+              <SmsTwilioNumberPicker organizationId={organizationId} />
             </div>
           ) : null}
         </section>
@@ -237,24 +242,40 @@ export function SmsConfigurationDashboard({
             </div>
             <Badge
               tone={statusTone(
-                sender?.inboundWebhookConfigured && sender?.statusCallbackConfigured
-                  ? "Configuré"
-                  : "À configurer"
+                liveConfiguredLabel(
+                  Boolean(
+                    sender?.inboundWebhookConfigured && sender?.statusCallbackConfigured
+                  ),
+                  sender?.liveWebhookOk && sender?.liveStatusCallbackOk
+                )
               )}
             >
-              {sender?.inboundWebhookConfigured && sender?.statusCallbackConfigured
-                ? "Configuré"
-                : "À configurer"}
+              {liveConfiguredLabel(
+                Boolean(
+                  sender?.inboundWebhookConfigured && sender?.statusCallbackConfigured
+                ),
+                sender?.liveWebhookOk && sender?.liveStatusCallbackOk
+              )}
             </Badge>
           </div>
           <dl className="mt-5 grid gap-3 text-sm">
             <div className="flex items-center justify-between gap-3">
               <dt className="font-bold text-[var(--muted)]">Webhook entrant</dt>
-              <dd>{sender?.inboundWebhookConfigured ? "✓ Configuré" : "Manquant"}</dd>
+              <dd>
+                {liveConfiguredLabel(
+                  Boolean(sender?.inboundWebhookConfigured),
+                  sender?.liveWebhookOk
+                )}
+              </dd>
             </div>
             <div className="flex items-center justify-between gap-3">
               <dt className="font-bold text-[var(--muted)]">Callback de statut</dt>
-              <dd>{sender?.statusCallbackConfigured ? "✓ Configuré" : "Manquant"}</dd>
+              <dd>
+                {liveConfiguredLabel(
+                  Boolean(sender?.statusCallbackConfigured),
+                  sender?.liveStatusCallbackOk
+                )}
+              </dd>
             </div>
             <div>
               <dt className="font-bold text-[var(--muted)]">Pool d&apos;envoi</dt>
@@ -386,15 +407,12 @@ export function SmsConfigurationDashboard({
               >
                 <input name="organizationId" type="hidden" value={organizationId} />
                 <Button disabled={testBlocked} type="submit" variant="outline">
-                  Lancer le test complet
+                  Vérification guidée du test
                 </Button>
               </form>
             </div>
-            {testBlocked ? (
-              <p className="text-xs text-[var(--muted)]">
-                Test bloqué : vérifiez le numéro dédié, les webhooks, ALLOW_REAL_SMS_SENDS et
-                vos droits super_admin.
-              </p>
+            {testBlocked && testBlockedReason ? (
+              <p className="text-xs text-[var(--muted)] break-words">{testBlockedReason}</p>
             ) : null}
           </div>
         </section>

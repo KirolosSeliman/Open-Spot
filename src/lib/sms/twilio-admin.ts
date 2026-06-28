@@ -1,78 +1,135 @@
 import "server-only";
 
-import twilio from "twilio";
-
 import {
   loadOrganizationSmsSender,
   loadOrganizationSmsSenderBySubaccountSid,
   updateOrganizationSmsSender
 } from "@/lib/sms/organization-sender";
 import type { OrganizationSmsSenderRow } from "@/lib/sms/organization-sender-types";
+import {
+  evaluateOrganizationSmsActivationReadiness
+} from "@/lib/sms/organization-gate";
 import { deriveSenderStatusFromConfig } from "@/lib/sms/sms-setup-readiness";
 import { buildTwilioWebhookUrls } from "@/lib/sms/twilio-sender-config";
 import { DEFAULT_ORGANIZATION_TEST_SMS_BODY } from "@/lib/sms/organization-sms-copy";
 import {
+  createParentTwilioClient,
+  createScopedTwilioClient,
+  getOrganizationFriendlyName,
+  type TwilioEnv
+} from "@/lib/sms/twilio-admin-client";
+import { verifyTwilioLiveConfigurationForOrganization } from "@/lib/sms/twilio-live-verification";
+import {
+  assertTwilioPhoneNumberBelongsToSender,
+  verifyStoredTwilioPhoneNumberForSender
+} from "@/lib/sms/twilio-phone-verification";
+import {
+  getSafeTwilioErrorMessage,
+  getSafeTwilioUiError,
+  isTwilioDuplicateMessagingAttachError
+} from "@/lib/sms/twilio-ui-errors";
+import {
   validateE164,
   validateTwilioAccountSid,
-  validateTwilioMessagingServiceSid,
-  validateTwilioPhoneNumberSid
+  validateTwilioMessagingServiceSid
 } from "@/lib/sms/twilio-validation";
-import {
-  normalizeInitialTwilioStatus
-} from "@/lib/sms/twilio";
+import { normalizeInitialTwilioStatus } from "@/lib/sms/twilio";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
-type TwilioEnv = Partial<Record<string, string | undefined>>;
+export { createParentTwilioClient, createScopedTwilioClient, type TwilioEnv };
 
-function requireTwilioParentCredentials(env: TwilioEnv = process.env) {
-  const accountSid = env.TWILIO_ACCOUNT_SID?.trim();
-  const authToken = env.TWILIO_AUTH_TOKEN?.trim();
+async function persistTwilioFailure({
+  organizationId,
+  platformAdminId,
+  error,
+  context
+}: {
+  organizationId: string;
+  platformAdminId?: string | null;
+  error: unknown;
+  context?: {
+    accountSid?: string | null;
+    phoneNumberSid?: string | null;
+  };
+}) {
+  const safe = getSafeTwilioUiError(error, context);
 
-  if (!accountSid || !authToken) {
-    throw new Error("Twilio parent credentials are not configured.");
-  }
+  await updateOrganizationSmsSender(
+    organizationId,
+    {
+      last_error: safe.message.slice(0, 500)
+    },
+    platformAdminId ?? null
+  );
 
-  if (!validateTwilioAccountSid(accountSid)) {
-    throw new Error("TWILIO_ACCOUNT_SID is invalid.");
-  }
-
-  return { accountSid, authToken };
+  return safe;
 }
 
-function createParentTwilioClient(env: TwilioEnv = process.env) {
-  const { accountSid, authToken } = requireTwilioParentCredentials(env);
-
-  return twilio(accountSid, authToken);
-}
-
-function createScopedTwilioClient(
-  sender: OrganizationSmsSenderRow,
-  env: TwilioEnv = process.env
+async function ensureBillingRow(
+  supabase: NonNullable<ReturnType<typeof createSupabaseServiceClient>>,
+  organizationId: string
 ) {
-  const { accountSid, authToken } = requireTwilioParentCredentials(env);
+  const { data, error } = await supabase
+    .from("organization_billing_settings")
+    .select("organization_id, billing_status, sms_status")
+    .eq("organization_id", organizationId)
+    .maybeSingle();
 
-  if (
-    sender.sender_model === "dedicated_subaccount" &&
-    sender.twilio_subaccount_sid
-  ) {
-    return twilio(accountSid, authToken, {
-      accountSid: sender.twilio_subaccount_sid
-    });
+  if (error) {
+    throw new Error(error.message);
   }
 
-  return twilio(accountSid, authToken);
+  if (data) {
+    return data;
+  }
+
+  const { data: created, error: createError } = await supabase
+    .from("organization_billing_settings")
+    .insert({
+      organization_id: organizationId,
+      billing_status: "unpaid",
+      sms_status: "inactive",
+      plan_name: "Founder Pilot",
+      base_plan_amount_cents: 14900,
+      base_plan_currency: "CAD",
+      billing_interval: "monthly",
+      payment_method: "manual_external"
+    })
+    .select("organization_id, billing_status, sms_status")
+    .single();
+
+  if (createError || !created) {
+    throw new Error(createError?.message ?? "Unable to create billing record.");
+  }
+
+  return created;
 }
 
-function getSafeTwilioErrorMessage(error: unknown, env: TwilioEnv = process.env) {
-  const rawMessage =
-    error instanceof Error ? error.message : "Twilio request failed.";
-  const authToken = env.TWILIO_AUTH_TOKEN;
+function pickMessagingService(
+  services: { sid: string; friendlyName: string }[],
+  sender: OrganizationSmsSenderRow,
+  organizationName: string
+) {
+  if (
+    sender.twilio_messaging_service_sid &&
+    services.some((service) => service.sid === sender.twilio_messaging_service_sid)
+  ) {
+    return services.find((service) => service.sid === sender.twilio_messaging_service_sid)!;
+  }
 
-  return authToken ? rawMessage.replaceAll(authToken, "[redacted]") : rawMessage;
-}
+  const expectedName = getOrganizationFriendlyName(organizationName);
 
-function getOrganizationFriendlyName(organizationName: string) {
-  return `Open Spot - ${organizationName}`.slice(0, 64);
+  const byName = services.find((service) => service.friendlyName === expectedName);
+
+  if (byName) {
+    return byName;
+  }
+
+  if (services.length === 1) {
+    return services[0];
+  }
+
+  return null;
 }
 
 export async function resolveTwilioAuthTokenForAccountSid(
@@ -141,6 +198,7 @@ export async function createTwilioSubaccountForOrganization({
       platformAdminId
     );
   } catch (error) {
+    await persistTwilioFailure({ organizationId, platformAdminId, error });
     throw new Error(getSafeTwilioErrorMessage(error, env));
   }
 }
@@ -184,16 +242,24 @@ export async function connectTwilioSubaccountForOrganization({
       platformAdminId
     );
   } catch (error) {
+    await persistTwilioFailure({
+      organizationId,
+      platformAdminId,
+      error,
+      context: { accountSid: subaccountSid }
+    });
     throw new Error(getSafeTwilioErrorMessage(error, env));
   }
 }
 
 export async function syncTwilioSubaccountForOrganization({
   organizationId,
+  organizationName,
   platformAdminId,
   env = process.env
 }: {
   organizationId: string;
+  organizationName: string;
   platformAdminId: string;
   env?: TwilioEnv;
 }) {
@@ -203,46 +269,92 @@ export async function syncTwilioSubaccountForOrganization({
     throw new Error("No Twilio subaccount is linked to this organization.");
   }
 
-  const client = createParentTwilioClient(env);
-
   try {
-    const account = await client.api.accounts(sender.twilio_subaccount_sid).fetch();
+    const parentClient = createParentTwilioClient(env);
+    const account = await parentClient.api.accounts(sender.twilio_subaccount_sid).fetch();
     const scopedClient = createScopedTwilioClient(sender, env);
-    const messagingServices = await scopedClient.messaging.v1.services.list({
-      limit: 20
-    });
-    const messagingService = messagingServices[0] ?? null;
-    const phoneNumbers = messagingService
-      ? await scopedClient.messaging.v1
-          .services(messagingService.sid)
-          .phoneNumbers.list({ limit: 20 })
-      : await scopedClient.incomingPhoneNumbers.list({ limit: 20 });
-    const primaryNumber = phoneNumbers[0] ?? null;
+    const messagingServices = await scopedClient.messaging.v1.services.list({ limit: 20 });
+    const messagingService = pickMessagingService(
+      messagingServices.map((service) => ({
+        sid: service.sid,
+        friendlyName: service.friendlyName
+      })),
+      sender,
+      organizationName
+    );
+
+    let twilioPhoneNumberSid = sender.twilio_phone_number_sid;
+    let phoneE164 = sender.phone_e164;
+
+    if (twilioPhoneNumberSid) {
+      const verified = await verifyStoredTwilioPhoneNumberForSender({
+        client: scopedClient,
+        sender
+      });
+
+      if (!verified.ok) {
+        twilioPhoneNumberSid = null;
+        phoneE164 = null;
+        await updateOrganizationSmsSender(
+          organizationId,
+          {
+            twilio_phone_number_sid: null,
+            phone_e164: null,
+            last_error: verified.reason.slice(0, 500)
+          },
+          platformAdminId
+        );
+      } else {
+        twilioPhoneNumberSid = verified.phone.sid;
+        phoneE164 = verified.phone.phoneE164;
+      }
+    } else {
+      const availableNumbers = (await scopedClient.incomingPhoneNumbers.list({ limit: 50 }))
+        .filter((number) => number.capabilities?.sms)
+        .map((number) => ({
+          sid: number.sid,
+          phoneE164: number.phoneNumber
+        }));
+
+      if (availableNumbers.length === 1) {
+        twilioPhoneNumberSid = availableNumbers[0].sid;
+        phoneE164 = availableNumbers[0].phoneE164;
+      }
+    }
+
     const webhookUrls = buildTwilioWebhookUrls(env);
+    const liveVerification = await verifyTwilioLiveConfigurationForOrganization({
+      organizationId,
+      sender: {
+        ...sender,
+        twilio_messaging_service_sid:
+          messagingService?.sid ?? sender.twilio_messaging_service_sid,
+        twilio_phone_number_sid: twilioPhoneNumberSid,
+        phone_e164: phoneE164
+      },
+      env
+    });
+
     const nextSender = {
       twilio_subaccount_friendly_name: account.friendlyName,
       twilio_subaccount_status: account.status,
-      twilio_messaging_service_sid: messagingService?.sid ?? sender.twilio_messaging_service_sid,
-      twilio_phone_number_sid: primaryNumber?.sid ?? sender.twilio_phone_number_sid,
-      phone_e164: primaryNumber?.phoneNumber ?? sender.phone_e164,
-      inbound_webhook_url:
-        messagingService?.inboundRequestUrl ??
-        (primaryNumber as { smsUrl?: string } | null)?.smsUrl ??
-        sender.inbound_webhook_url,
-      status_callback_url:
-        messagingService?.statusCallback ??
-        webhookUrls.statusCallbackUrl ??
-        sender.status_callback_url,
+      twilio_messaging_service_sid:
+        messagingService?.sid ?? sender.twilio_messaging_service_sid,
+      twilio_phone_number_sid: twilioPhoneNumberSid,
+      phone_e164: phoneE164,
+      inbound_webhook_url: webhookUrls.inboundWebhookUrl,
+      status_callback_url: webhookUrls.statusCallbackUrl,
       last_synced_at: new Date().toISOString(),
-      last_error: null,
+      last_error: liveVerification.issues.length > 0 ? liveVerification.issues[0] : null,
       provider_payload: {
         ...(sender.provider_payload ?? {}),
         is_trial_account: account.type === "Trial",
         messaging_service_count: messagingServices.length,
-        phone_number_count: phoneNumbers.length
+        live_verification: liveVerification
       }
     };
-    const updated = await updateOrganizationSmsSender(
+
+    return updateOrganizationSmsSender(
       organizationId,
       {
         ...nextSender,
@@ -253,19 +365,37 @@ export async function syncTwilioSubaccountForOrganization({
       },
       platformAdminId
     );
-
-    return updated;
   } catch (error) {
-    await updateOrganizationSmsSender(
+    await persistTwilioFailure({
       organizationId,
-      {
-        last_error: getSafeTwilioErrorMessage(error, env).slice(0, 500)
-      },
-      platformAdminId
-    );
-
+      platformAdminId,
+      error,
+      context: {
+        accountSid: sender.twilio_subaccount_sid,
+        phoneNumberSid: sender.twilio_phone_number_sid
+      }
+    });
     throw new Error(getSafeTwilioErrorMessage(error, env));
   }
+}
+
+export async function verifyTwilioConfigurationForOrganization({
+  organizationId,
+  organizationName,
+  platformAdminId,
+  env = process.env
+}: {
+  organizationId: string;
+  organizationName: string;
+  platformAdminId: string;
+  env?: TwilioEnv;
+}) {
+  return syncTwilioSubaccountForOrganization({
+    organizationId,
+    organizationName,
+    platformAdminId,
+    env
+  });
 }
 
 export async function listTwilioNumbersForOrganization({
@@ -305,10 +435,6 @@ export async function assignTwilioNumberToOrganization({
   platformAdminId: string;
   env?: TwilioEnv;
 }) {
-  if (!validateTwilioPhoneNumberSid(phoneNumberSid)) {
-    throw new Error("Twilio phone number SID is invalid.");
-  }
-
   const sender = await loadOrganizationSmsSender(organizationId);
 
   if (!sender) {
@@ -316,21 +442,41 @@ export async function assignTwilioNumberToOrganization({
   }
 
   const client = createScopedTwilioClient(sender, env);
-  const number = await client.incomingPhoneNumbers(phoneNumberSid).fetch();
 
-  return updateOrganizationSmsSender(
-    organizationId,
-    {
-      twilio_phone_number_sid: number.sid,
-      phone_e164: number.phoneNumber,
-      sender_status: deriveSenderStatusFromConfig({
-        ...sender,
-        twilio_phone_number_sid: number.sid,
-        phone_e164: number.phoneNumber
-      })
-    },
-    platformAdminId
-  );
+  try {
+    const verified = await assertTwilioPhoneNumberBelongsToSender({
+      client,
+      sender,
+      phoneNumberSid
+    });
+
+    return updateOrganizationSmsSender(
+      organizationId,
+      {
+        twilio_phone_number_sid: verified.sid,
+        phone_e164: verified.phoneE164,
+        last_error: null,
+        last_synced_at: new Date().toISOString(),
+        sender_status: deriveSenderStatusFromConfig({
+          ...sender,
+          twilio_phone_number_sid: verified.sid,
+          phone_e164: verified.phoneE164
+        })
+      },
+      platformAdminId
+    );
+  } catch (error) {
+    await persistTwilioFailure({
+      organizationId,
+      platformAdminId,
+      error,
+      context: {
+        accountSid: sender.twilio_subaccount_sid,
+        phoneNumberSid
+      }
+    });
+    throw new Error(getSafeTwilioErrorMessage(error, env));
+  }
 }
 
 export async function createOrUpdateTwilioMessagingServiceForOrganization({
@@ -354,50 +500,84 @@ export async function createOrUpdateTwilioMessagingServiceForOrganization({
   const webhookUrls = buildTwilioWebhookUrls(env);
   const friendlyName = getOrganizationFriendlyName(organizationName);
 
+  if (sender.twilio_phone_number_sid) {
+    await assertTwilioPhoneNumberBelongsToSender({
+      client,
+      sender,
+      phoneNumberSid: sender.twilio_phone_number_sid
+    });
+  }
+
   let serviceSid = sender.twilio_messaging_service_sid;
 
-  if (serviceSid && validateTwilioMessagingServiceSid(serviceSid)) {
-    await client.messaging.v1.services(serviceSid).update({
-      friendlyName,
-      inboundRequestUrl: webhookUrls.inboundWebhookUrl ?? undefined,
-      statusCallback: webhookUrls.statusCallbackUrl ?? undefined
-    });
-  } else {
-    const created = await client.messaging.v1.services.create({
-      friendlyName,
-      inboundRequestUrl: webhookUrls.inboundWebhookUrl ?? undefined,
-      statusCallback: webhookUrls.statusCallbackUrl ?? undefined
-    });
-    serviceSid = created.sid;
-  }
-
-  if (sender.twilio_phone_number_sid && serviceSid) {
-    try {
-      await client.messaging.v1
-        .services(serviceSid)
-        .phoneNumbers.create({ phoneNumberSid: sender.twilio_phone_number_sid });
-    } catch {
-      // Number may already be attached to the service.
+  try {
+    if (serviceSid && validateTwilioMessagingServiceSid(serviceSid)) {
+      await client.messaging.v1.services(serviceSid).update({
+        friendlyName,
+        inboundRequestUrl: webhookUrls.inboundWebhookUrl ?? undefined,
+        statusCallback: webhookUrls.statusCallbackUrl ?? undefined
+      });
+    } else {
+      const created = await client.messaging.v1.services.create({
+        friendlyName,
+        inboundRequestUrl: webhookUrls.inboundWebhookUrl ?? undefined,
+        statusCallback: webhookUrls.statusCallbackUrl ?? undefined
+      });
+      serviceSid = created.sid;
     }
-  }
 
-  return updateOrganizationSmsSender(
-    organizationId,
-    {
-      twilio_messaging_service_sid: serviceSid,
-      inbound_webhook_url: webhookUrls.inboundWebhookUrl,
-      status_callback_url: webhookUrls.statusCallbackUrl,
-      stop_help_status: "active",
-      sender_status: deriveSenderStatusFromConfig({
-        ...sender,
+    if (sender.twilio_phone_number_sid && serviceSid) {
+      try {
+        await client.messaging.v1
+          .services(serviceSid)
+          .phoneNumbers.create({ phoneNumberSid: sender.twilio_phone_number_sid });
+      } catch (error) {
+        if (!isTwilioDuplicateMessagingAttachError(error)) {
+          await persistTwilioFailure({
+            organizationId,
+            platformAdminId,
+            error,
+            context: {
+              accountSid: sender.twilio_subaccount_sid,
+              phoneNumberSid: sender.twilio_phone_number_sid
+            }
+          });
+          throw new Error(getSafeTwilioErrorMessage(error, env));
+        }
+      }
+    }
+
+    return updateOrganizationSmsSender(
+      organizationId,
+      {
         twilio_messaging_service_sid: serviceSid,
         inbound_webhook_url: webhookUrls.inboundWebhookUrl,
         status_callback_url: webhookUrls.statusCallbackUrl,
-        stop_help_status: "active"
-      })
-    },
-    platformAdminId
-  );
+        stop_help_status: "active",
+        last_error: null,
+        last_synced_at: new Date().toISOString(),
+        sender_status: deriveSenderStatusFromConfig({
+          ...sender,
+          twilio_messaging_service_sid: serviceSid,
+          inbound_webhook_url: webhookUrls.inboundWebhookUrl,
+          status_callback_url: webhookUrls.statusCallbackUrl,
+          stop_help_status: "active"
+        })
+      },
+      platformAdminId
+    );
+  } catch (error) {
+    await persistTwilioFailure({
+      organizationId,
+      platformAdminId,
+      error,
+      context: {
+        accountSid: sender.twilio_subaccount_sid,
+        phoneNumberSid: sender.twilio_phone_number_sid
+      }
+    });
+    throw new Error(getSafeTwilioErrorMessage(error, env));
+  }
 }
 
 export async function configureTwilioWebhooksForOrganization({
@@ -422,37 +602,74 @@ export async function configureTwilioWebhooksForOrganization({
     throw new Error("APP_BASE_URL must be configured to build webhook URLs.");
   }
 
-  if (sender.twilio_messaging_service_sid) {
-    await client.messaging.v1.services(sender.twilio_messaging_service_sid).update({
-      inboundRequestUrl: webhookUrls.inboundWebhookUrl,
-      statusCallback: webhookUrls.statusCallbackUrl
-    });
-  }
+  try {
+    if (sender.twilio_phone_number_sid) {
+      await assertTwilioPhoneNumberBelongsToSender({
+        client,
+        sender,
+        phoneNumberSid: sender.twilio_phone_number_sid
+      });
+    }
 
-  if (sender.twilio_phone_number_sid) {
-    await client.incomingPhoneNumbers(sender.twilio_phone_number_sid).update({
-      smsUrl: webhookUrls.inboundWebhookUrl,
-      smsMethod: "POST",
-      statusCallback: webhookUrls.statusCallbackUrl,
-      statusCallbackMethod: "POST"
-    });
-  }
+    if (sender.twilio_messaging_service_sid) {
+      await client.messaging.v1.services(sender.twilio_messaging_service_sid).update({
+        inboundRequestUrl: webhookUrls.inboundWebhookUrl,
+        statusCallback: webhookUrls.statusCallbackUrl
+      });
+    }
 
-  return updateOrganizationSmsSender(
-    organizationId,
-    {
-      inbound_webhook_url: webhookUrls.inboundWebhookUrl,
-      status_callback_url: webhookUrls.statusCallbackUrl,
-      stop_help_status: "active",
-      sender_status: deriveSenderStatusFromConfig({
+    if (sender.twilio_phone_number_sid) {
+      await client.incomingPhoneNumbers(sender.twilio_phone_number_sid).update({
+        smsUrl: webhookUrls.inboundWebhookUrl,
+        smsMethod: "POST",
+        statusCallback: webhookUrls.statusCallbackUrl,
+        statusCallbackMethod: "POST"
+      });
+    }
+
+    const liveVerification = await verifyTwilioLiveConfigurationForOrganization({
+      organizationId,
+      sender: {
         ...sender,
         inbound_webhook_url: webhookUrls.inboundWebhookUrl,
+        status_callback_url: webhookUrls.statusCallbackUrl
+      },
+      env
+    });
+
+    return updateOrganizationSmsSender(
+      organizationId,
+      {
+        inbound_webhook_url: webhookUrls.inboundWebhookUrl,
         status_callback_url: webhookUrls.statusCallbackUrl,
-        stop_help_status: "active"
-      })
-    },
-    platformAdminId
-  );
+        stop_help_status: liveVerification.inboundWebhookOk ? "active" : sender.stop_help_status,
+        last_synced_at: new Date().toISOString(),
+        last_error: liveVerification.issues[0] ?? null,
+        provider_payload: {
+          ...(sender.provider_payload ?? {}),
+          live_verification: liveVerification
+        },
+        sender_status: deriveSenderStatusFromConfig({
+          ...sender,
+          inbound_webhook_url: webhookUrls.inboundWebhookUrl,
+          status_callback_url: webhookUrls.statusCallbackUrl,
+          stop_help_status: liveVerification.inboundWebhookOk ? "active" : sender.stop_help_status
+        })
+      },
+      platformAdminId
+    );
+  } catch (error) {
+    await persistTwilioFailure({
+      organizationId,
+      platformAdminId,
+      error,
+      context: {
+        accountSid: sender.twilio_subaccount_sid,
+        phoneNumberSid: sender.twilio_phone_number_sid
+      }
+    });
+    throw new Error(getSafeTwilioErrorMessage(error, env));
+  }
 }
 
 export async function sendOrganizationTestSms({
@@ -480,6 +697,15 @@ export async function sendOrganizationTestSms({
 
   if (!sender?.phone_e164 || !sender.twilio_messaging_service_sid) {
     throw new Error("Organization SMS sender is not ready for test sends.");
+  }
+
+  if (sender.twilio_phone_number_sid) {
+    const client = createScopedTwilioClient(sender, env);
+    await assertTwilioPhoneNumberBelongsToSender({
+      client,
+      sender,
+      phoneNumberSid: sender.twilio_phone_number_sid
+    });
   }
 
   const client = createScopedTwilioClient(sender, env);
@@ -542,18 +768,59 @@ export async function sendOrganizationTestSms({
 
 export async function activateOrganizationSmsSender({
   organizationId,
-  platformAdminId
+  platformAdminId,
+  env = process.env
 }: {
   organizationId: string;
   platformAdminId: string;
+  env?: TwilioEnv;
 }) {
+  const supabase = createSupabaseServiceClient();
+
+  if (!supabase) {
+    throw new Error("Supabase service client is not configured.");
+  }
+
   const sender = await loadOrganizationSmsSender(organizationId);
 
   if (!sender) {
     throw new Error("Organization SMS sender is not configured.");
   }
 
+  const billing = await ensureBillingRow(supabase, organizationId);
+  const activationReadiness = evaluateOrganizationSmsActivationReadiness({
+    billingStatus: billing.billing_status,
+    smsStatus: billing.sms_status
+  });
+
+  if (!activationReadiness.canActivateSms) {
+    throw new Error(activationReadiness.blockingReasons.join(" · "));
+  }
+
+  const liveVerification = await verifyTwilioLiveConfigurationForOrganization({
+    organizationId,
+    sender,
+    env
+  });
+
+  if (
+    !liveVerification.phoneOk ||
+    !liveVerification.messagingServiceOk ||
+    !liveVerification.inboundWebhookOk ||
+    !liveVerification.statusCallbackOk
+  ) {
+    throw new Error(liveVerification.issues[0] ?? "Configuration Twilio live invalide.");
+  }
+
   const now = new Date().toISOString();
+  const { error: billingError } = await supabase
+    .from("organization_billing_settings")
+    .update({ sms_status: "active" })
+    .eq("organization_id", organizationId);
+
+  if (billingError) {
+    throw new Error(billingError.message);
+  }
 
   return updateOrganizationSmsSender(
     organizationId,
@@ -562,7 +829,12 @@ export async function activateOrganizationSmsSender({
       activated_at: now,
       paused_at: null,
       blocked_at: null,
-      last_error: null
+      last_error: null,
+      last_synced_at: now,
+      provider_payload: {
+        ...(sender.provider_payload ?? {}),
+        live_verification: liveVerification
+      }
     },
     platformAdminId
   );

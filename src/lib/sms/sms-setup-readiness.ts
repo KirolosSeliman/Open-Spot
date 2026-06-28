@@ -1,8 +1,10 @@
 import type { OrganizationSmsReadiness } from "@/lib/sms/organization-gate";
+import { organizationReadinessBlocksActivation } from "@/lib/sms/organization-gate";
 import type {
   OrganizationSmsSenderRow,
   OrganizationSmsSenderStatus
 } from "@/lib/sms/organization-sender-types";
+import type { TwilioLiveVerificationResult } from "@/lib/sms/twilio-live-verification";
 import { validateE164 } from "@/lib/sms/twilio-validation";
 
 type EnvSource = Partial<Record<string, string | undefined>>;
@@ -22,6 +24,7 @@ export type SmsSenderReadinessResult = {
   checks: SmsSenderReadinessCheck[];
   canActivate: boolean;
   canSendTest: boolean;
+  liveVerification: TwilioLiveVerificationResult | null;
 };
 
 function isProductionSenderModel(senderModel: string) {
@@ -32,17 +35,43 @@ function isWebhookConfigured(url: string | null | undefined) {
   return Boolean(url?.trim());
 }
 
+function getLiveVerification(sender: OrganizationSmsSenderRow | null) {
+  const payload = sender?.provider_payload?.live_verification;
+
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+
+  return payload as TwilioLiveVerificationResult;
+}
+
+function checkStatusFromLive(
+  localConfigured: boolean,
+  liveOk: boolean | undefined,
+  hasLiveVerification: boolean
+): SmsSenderReadinessCheck["status"] {
+  if (hasLiveVerification) {
+    return liveOk ? "active" : "error";
+  }
+
+  return localConfigured ? "pending" : "missing";
+}
+
 export function computeSmsSenderReadiness({
   sender,
   organizationReadiness,
+  liveVerification,
   env = process.env
 }: {
   sender: OrganizationSmsSenderRow | null;
   organizationReadiness?: OrganizationSmsReadiness;
+  liveVerification?: TwilioLiveVerificationResult | null;
   env?: EnvSource;
 }): SmsSenderReadinessResult {
   const blockingReasons: string[] = [];
   const checks: SmsSenderReadinessCheck[] = [];
+  const live = liveVerification ?? getLiveVerification(sender);
+  const hasLiveVerification = Boolean(live);
 
   const pushCheck = (check: SmsSenderReadinessCheck) => {
     checks.push(check);
@@ -56,7 +85,11 @@ export function computeSmsSenderReadiness({
     key: "dedicated_number",
     label: "Numéro dédié lié",
     description: "Un numéro SMS dédié est connecté et actif.",
-    status: sender?.phone_e164 && validateE164(sender.phone_e164) ? "active" : "missing",
+    status: checkStatusFromLive(
+      Boolean(sender?.phone_e164 && validateE164(sender.phone_e164)),
+      live?.phoneOk,
+      hasLiveVerification
+    ),
     blocking: true
   });
 
@@ -64,7 +97,11 @@ export function computeSmsSenderReadiness({
     key: "inbound_webhook",
     label: "Webhook configuré",
     description: "Webhook entrant configuré et répondant.",
-    status: isWebhookConfigured(sender?.inbound_webhook_url) ? "active" : "missing",
+    status: checkStatusFromLive(
+      isWebhookConfigured(sender?.inbound_webhook_url),
+      live?.inboundWebhookOk,
+      hasLiveVerification
+    ),
     blocking: true
   });
 
@@ -72,7 +109,23 @@ export function computeSmsSenderReadiness({
     key: "status_callback",
     label: "Callback de statut",
     description: "Callback de statut configuré pour la livraison.",
-    status: isWebhookConfigured(sender?.status_callback_url) ? "active" : "missing",
+    status: checkStatusFromLive(
+      isWebhookConfigured(sender?.status_callback_url),
+      live?.statusCallbackOk,
+      hasLiveVerification
+    ),
+    blocking: true
+  });
+
+  pushCheck({
+    key: "messaging_service",
+    label: "Service d'envoi",
+    description: "Messaging Service Twilio valide et lié.",
+    status: checkStatusFromLive(
+      Boolean(sender?.twilio_messaging_service_sid),
+      live?.messagingServiceOk && live?.phoneAttachedToService,
+      hasLiveVerification
+    ),
     blocking: true
   });
 
@@ -99,7 +152,7 @@ export function computeSmsSenderReadiness({
 
   const testValidated =
     Boolean(sender?.last_test_sms_sent_at) &&
-    Boolean(sender?.last_status_callback_at || sender?.last_inbound_test_at);
+    Boolean(sender?.last_status_callback_at);
 
   pushCheck({
     key: "test_message",
@@ -141,10 +194,14 @@ export function computeSmsSenderReadiness({
     if (sender.sender_status === "paused" || sender.sender_status === "blocked") {
       blockingReasons.push("Sender SMS en pause ou bloqué.");
     }
+
+    if (sender.last_error) {
+      blockingReasons.push("Erreur Twilio à corriger.");
+    }
   }
 
-  if (organizationReadiness && !organizationReadiness.canSendSms) {
-    blockingReasons.push(...organizationReadiness.blockingReasons);
+  if (organizationReadiness) {
+    blockingReasons.push(...organizationReadinessBlocksActivation(organizationReadiness));
   }
 
   if (env.ALLOW_REAL_SMS_SENDS !== "true") {
@@ -155,6 +212,7 @@ export function computeSmsSenderReadiness({
   const isReady =
     Boolean(sender) &&
     sender!.sender_status === "ready" &&
+    organizationReadiness?.canSendSms === true &&
     uniqueBlockingReasons.length === 0;
 
   return {
@@ -164,9 +222,17 @@ export function computeSmsSenderReadiness({
     checks,
     canActivate: Boolean(sender) && uniqueBlockingReasons.length === 0,
     canSendTest:
-      Boolean(sender?.phone_e164) &&
-      isWebhookConfigured(sender?.inbound_webhook_url) &&
-      env.ALLOW_REAL_SMS_SENDS === "true"
+      Boolean(sender) &&
+      sender!.provider === "twilio" &&
+      Boolean(sender!.phone_e164) &&
+      validateE164(sender!.phone_e164) &&
+      Boolean(sender!.twilio_messaging_service_sid) &&
+      isWebhookConfigured(sender!.inbound_webhook_url) &&
+      isWebhookConfigured(sender!.status_callback_url) &&
+      sender!.sender_status !== "paused" &&
+      sender!.sender_status !== "blocked" &&
+      env.ALLOW_REAL_SMS_SENDS === "true",
+    liveVerification: live
   };
 }
 

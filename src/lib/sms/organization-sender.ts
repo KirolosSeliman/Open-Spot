@@ -159,6 +159,17 @@ export function toSafeOrganizationSmsSenderView(
 
   const providerPayload = sender.provider_payload ?? {};
   const isTrialAccount = providerPayload.is_trial_account === true;
+  const liveVerification =
+    providerPayload.live_verification &&
+    typeof providerPayload.live_verification === "object"
+      ? (providerPayload.live_verification as {
+          verifiedAt?: string;
+          phoneOk?: boolean;
+          inboundWebhookOk?: boolean;
+          statusCallbackOk?: boolean;
+          messagingServiceOk?: boolean;
+        })
+      : null;
 
   return {
     id: sender.id,
@@ -188,7 +199,12 @@ export function toSafeOrganizationSmsSenderView(
     lastError: sender.last_error,
     subaccountFriendlyName: sender.twilio_subaccount_friendly_name,
     subaccountStatus: sender.twilio_subaccount_status,
-    isTrialAccount
+    isTrialAccount,
+    livePhoneOk: liveVerification?.phoneOk ?? null,
+    liveWebhookOk: liveVerification?.inboundWebhookOk ?? null,
+    liveStatusCallbackOk: liveVerification?.statusCallbackOk ?? null,
+    liveMessagingServiceOk: liveVerification?.messagingServiceOk ?? null,
+    liveVerifiedAt: liveVerification?.verifiedAt ?? null
   };
 }
 

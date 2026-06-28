@@ -145,10 +145,9 @@ describe("organization input", () => {
     expect(currentOrganizationSource).toContain('in("status", workspaceMemberStatuses)');
   });
 
-  it("keeps the SMS gate closed until client submission, billing, and SMS status are all ready", () => {
+  it("keeps the SMS gate closed until billing and SMS status are ready", () => {
     expect(
       evaluateOrganizationSmsReadiness({
-        onboardingStatus: "completed",
         billingStatus: "paid",
         smsStatus: "active"
       })
@@ -159,22 +158,20 @@ describe("organization input", () => {
 
     expect(
       evaluateOrganizationSmsReadiness({
-        onboardingStatus: "submitted",
-        billingStatus: "paid",
+        billingStatus: "trial",
         smsStatus: "active"
       })
     ).toMatchObject({
-      canSendSms: false,
-      blockingReasons: ["Client onboarding is not completed."]
+      canSendSms: true,
+      blockingReasons: []
     });
 
     expect(
       evaluateOrganizationSmsReadiness({
-        onboardingStatus: "completed",
-        billingStatus: "trial",
+        billingStatus: "paid",
         smsStatus: "pending_setup"
       }).blockingReasons
-    ).toEqual(["Billing status is not paid.", "SMS status is not active."]);
+    ).toEqual(["SMS status is not active."]);
 
     for (const billingStatus of [
       "unpaid",
@@ -184,13 +181,12 @@ describe("organization input", () => {
     ]) {
       expect(
         evaluateOrganizationSmsReadiness({
-          onboardingStatus: "completed",
           billingStatus,
           smsStatus: "active"
         })
       ).toMatchObject({
         canSendSms: false,
-        blockingReasons: ["Billing status is not paid."]
+        blockingReasons: ["Le statut de facturation ne permet pas l'envoi SMS."]
       });
     }
   });

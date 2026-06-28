@@ -206,7 +206,7 @@ export function getPaymentMethodLabel(
 }
 
 export function canBillingStatusSendSms(status: string | null | undefined) {
-  return status === "paid";
+  return status === "paid" || status === "trial" || status === "comped";
 }
 
 export function normalizeManualBillingInput(formData: FormData): ManualBillingValidation {

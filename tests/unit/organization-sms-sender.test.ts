@@ -109,10 +109,20 @@ describe("sms sender readiness", () => {
       },
       organizationReadiness: {
         canSendSms: true,
-        onboardingStatus: "completed",
+        canActivateSms: true,
         billingStatus: "paid",
         smsStatus: "active",
         blockingReasons: []
+      },
+      liveVerification: {
+        verifiedAt: "2026-06-27T10:00:00.000Z",
+        subaccountOk: true,
+        phoneOk: true,
+        messagingServiceOk: true,
+        inboundWebhookOk: true,
+        statusCallbackOk: true,
+        phoneAttachedToService: true,
+        issues: []
       },
       env: { ALLOW_REAL_SMS_SENDS: "true" }
     });
@@ -157,7 +167,8 @@ describe("organization SMS integration wiring", () => {
       "utf8"
     );
 
-    expect(statusRoute).toContain("touchOrganizationSmsSenderStatusCallback");
+    expect(statusRoute).toContain("validateTwilioWebhookRequestForAccountSid");
+    expect(statusRoute).toContain("resolveTwilioAuthTokenForAccountSid");
   });
 
   it("keeps platform SMS isolated from organization senders", () => {

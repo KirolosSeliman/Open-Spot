@@ -24,9 +24,11 @@ import {
   listTwilioNumbersForOrganization,
   pauseOrganizationSmsSender,
   sendOrganizationTestSms,
-  syncTwilioSubaccountForOrganization
+  syncTwilioSubaccountForOrganization,
+  verifyTwilioConfigurationForOrganization
 } from "@/lib/sms/twilio-admin";
 import { DEFAULT_ORGANIZATION_TEST_SMS_BODY } from "@/lib/sms/organization-sms-copy";
+import { getSafeTwilioUiError } from "@/lib/sms/twilio-ui-errors";
 import { validateE164 } from "@/lib/sms/twilio-validation";
 import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 import {
@@ -42,6 +44,10 @@ export type SmsSenderActionResult = {
 
 function stringField(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
+}
+
+function actionErrorMessage(error: unknown) {
+  return getSafeTwilioUiError(error).message;
 }
 
 async function requireSuperAdmin(): Promise<AuthorizedPlatformAdmin> {
@@ -127,7 +133,7 @@ export async function createTwilioSubaccountAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -161,7 +167,37 @@ export async function connectTwilioSubaccountAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
+    };
+  }
+}
+
+export async function verifyTwilioConfigurationAction(
+  formData: FormData
+): Promise<SmsSenderActionResult> {
+  try {
+    const organizationId = stringField(formData, "organizationId");
+    const organizationName = stringField(formData, "organizationName");
+    const admin = await requireSuperAdmin();
+
+    await verifyTwilioConfigurationForOrganization({
+      organizationId,
+      organizationName,
+      platformAdminId: admin.id
+    });
+    await auditSmsAction({
+      admin,
+      organizationId,
+      action: "admin.organization.sms_sender_synced",
+      metadata: { mode: "live_verification" }
+    });
+    refreshSmsPage(organizationId);
+
+    return { ok: true, message: "Configuration Twilio vérifiée et synchronisée." };
+  } catch (error) {
+    return {
+      ok: false,
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -171,10 +207,12 @@ export async function syncTwilioSenderAction(
 ): Promise<SmsSenderActionResult> {
   try {
     const organizationId = stringField(formData, "organizationId");
+    const organizationName = stringField(formData, "organizationName");
     const admin = await requireSuperAdmin();
 
     await syncTwilioSubaccountForOrganization({
       organizationId,
+      organizationName,
       platformAdminId: admin.id
     });
     await auditSmsAction({
@@ -188,7 +226,7 @@ export async function syncTwilioSenderAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -217,7 +255,7 @@ export async function assignTwilioPhoneNumberAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -225,10 +263,13 @@ export async function assignTwilioPhoneNumberAction(
 export async function createOrUpdateMessagingServiceAction(
   formData: FormData
 ): Promise<SmsSenderActionResult> {
+  let organizationId = "";
+  let admin: AuthorizedPlatformAdmin | null = null;
+
   try {
-    const organizationId = stringField(formData, "organizationId");
+    organizationId = stringField(formData, "organizationId");
     const organizationName = stringField(formData, "organizationName");
-    const admin = await requireSuperAdmin();
+    admin = await requireSuperAdmin();
 
     await createOrUpdateTwilioMessagingServiceForOrganization({
       organizationId,
@@ -244,9 +285,22 @@ export async function createOrUpdateMessagingServiceAction(
 
     return { ok: true, message: "Service d'envoi configuré." };
   } catch (error) {
+    if (admin && organizationId) {
+      const safe = getSafeTwilioUiError(error);
+      await auditSmsAction({
+        admin,
+        organizationId,
+        action: "admin.organization.sms_messaging_service_attach_failed",
+        metadata: {
+          error_code: safe.twilioCode ?? null,
+          message: safe.message
+        }
+      });
+    }
+
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -273,7 +327,7 @@ export async function configureTwilioWebhooksAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -310,7 +364,7 @@ export async function sendSmsSetupTestAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -327,7 +381,7 @@ export async function runFullSmsSetupTestAction(
   return {
     ok: true,
     message:
-      "Test complet lancé. Vérifiez la réception, le callback de statut et répondez STOP/AIDE si nécessaire."
+      "SMS de test envoyé. Vérifiez la réception, attendez le callback de statut, puis testez STOP/AIDE manuellement."
   };
 }
 
@@ -366,7 +420,11 @@ export async function activateSmsForOrganizationAction(
     await auditSmsAction({
       admin,
       organizationId,
-      action: "admin.organization.sms_activated"
+      action: "admin.organization.sms_activated",
+      metadata: {
+        billing_status: organizationReadiness.billingStatus,
+        sms_status: "active"
+      }
     });
     refreshSmsPage(organizationId);
 
@@ -374,7 +432,7 @@ export async function activateSmsForOrganizationAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -401,7 +459,7 @@ export async function pauseSmsForOrganizationAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -428,7 +486,7 @@ export async function blockSmsForOrganizationAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }
@@ -469,7 +527,7 @@ export async function approveSmsComplianceAction(
   } catch (error) {
     return {
       ok: false,
-      message: error instanceof Error ? error.message : "Action failed."
+      message: actionErrorMessage(error)
     };
   }
 }

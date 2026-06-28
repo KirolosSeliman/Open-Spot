@@ -86,4 +86,9 @@ export type SafeOrganizationSmsSenderView = {
   subaccountFriendlyName: string | null;
   subaccountStatus: string | null;
   isTrialAccount: boolean;
+  livePhoneOk: boolean | null;
+  liveWebhookOk: boolean | null;
+  liveStatusCallbackOk: boolean | null;
+  liveMessagingServiceOk: boolean | null;
+  liveVerifiedAt: string | null;
 };
