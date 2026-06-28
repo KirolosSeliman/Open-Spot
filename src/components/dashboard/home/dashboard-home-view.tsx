@@ -419,63 +419,6 @@ export function DashboardHomeView({
       </HomeSectionCard>
 
       <HomeSectionCard
-        action={
-          <div className="text-right">
-            <p className="text-sm font-semibold text-[#0b1328]">
-              {d.setupProgress(data.setupCompletedCount, data.setupSteps.length)}
-            </p>
-            <div className="mt-2 h-2 w-40 overflow-hidden rounded-full bg-[#e2eaf5]">
-              <div
-                className="h-full rounded-full bg-[#2563ff] transition-all"
-                style={{
-                  width: `${(data.setupCompletedCount / data.setupSteps.length) * 100}%`
-                }}
-              />
-            </div>
-          </div>
-        }
-        description={d.setup.description}
-        title={d.setup.title}
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-          {data.setupSteps.map((step) => (
-            <Link
-              className={cn(
-                "group relative flex min-h-[180px] flex-col rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-5 transition hover:border-[#cbd5e1] hover:bg-white",
-                step.completed && "border-[#dbeafe] bg-white"
-              )}
-              href={step.href}
-              key={step.href}
-            >
-              <span
-                className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-xl",
-                  step.iconTone === "blue" && "bg-[#eff6ff] text-[#2563ff]",
-                  step.iconTone === "purple" && "bg-[#f5f3ff] text-[#7c3aed]",
-                  step.iconTone === "orange" && "bg-[#fff7ed] text-[#f97316]",
-                  step.iconTone === "green" && "bg-[#ecfdf3] text-[#16a34a]"
-                )}
-              >
-                <BriefcaseIcon />
-              </span>
-              <p className="mt-4 font-semibold text-[#0b1328]">{step.title}</p>
-              <p className="mt-2 flex-1 text-sm leading-6 text-[#64748b]">
-                {step.description}
-              </p>
-              <span className="mt-4 inline-flex h-9 w-9 items-center justify-center self-end rounded-full border border-[#e2eaf5] bg-white text-[#64748b] transition group-hover:border-[#2563ff] group-hover:text-[#2563ff]">
-                <ArrowRightIcon />
-              </span>
-              {step.completed ? (
-                <span className="absolute right-4 top-4 rounded-full bg-[#ecfdf3] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#16a34a]">
-                  OK
-                </span>
-              ) : null}
-            </Link>
-          ))}
-        </div>
-      </HomeSectionCard>
-
-      <HomeSectionCard
         description={d.remindersPanel.description}
         title={d.remindersPanel.title}
       >
@@ -553,6 +496,63 @@ export function DashboardHomeView({
             tone="green"
             value={formatCurrency(data.recoveryMetrics.recoveredAfterSms.value, locale)}
           />
+        </div>
+      </HomeSectionCard>
+
+      <HomeSectionCard
+        action={
+          <div className="text-right">
+            <p className="text-sm font-semibold text-[#0b1328]">
+              {d.setupProgress(data.setupCompletedCount, data.setupSteps.length)}
+            </p>
+            <div className="mt-2 h-2 w-40 overflow-hidden rounded-full bg-[#e2eaf5]">
+              <div
+                className="h-full rounded-full bg-[#2563ff] transition-all"
+                style={{
+                  width: `${(data.setupCompletedCount / data.setupSteps.length) * 100}%`
+                }}
+              />
+            </div>
+          </div>
+        }
+        description={d.setup.description}
+        title={d.setup.title}
+      >
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          {data.setupSteps.map((step) => (
+            <Link
+              className={cn(
+                "group relative flex min-h-[180px] flex-col rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-5 transition hover:border-[#cbd5e1] hover:bg-white",
+                step.completed && "border-[#dbeafe] bg-white"
+              )}
+              href={step.href}
+              key={step.href}
+            >
+              <span
+                className={cn(
+                  "flex h-10 w-10 items-center justify-center rounded-xl",
+                  step.iconTone === "blue" && "bg-[#eff6ff] text-[#2563ff]",
+                  step.iconTone === "purple" && "bg-[#f5f3ff] text-[#7c3aed]",
+                  step.iconTone === "orange" && "bg-[#fff7ed] text-[#f97316]",
+                  step.iconTone === "green" && "bg-[#ecfdf3] text-[#16a34a]"
+                )}
+              >
+                <BriefcaseIcon />
+              </span>
+              <p className="mt-4 font-semibold text-[#0b1328]">{step.title}</p>
+              <p className="mt-2 flex-1 text-sm leading-6 text-[#64748b]">
+                {step.description}
+              </p>
+              <span className="mt-4 inline-flex h-9 w-9 items-center justify-center self-end rounded-full border border-[#e2eaf5] bg-white text-[#64748b] transition group-hover:border-[#2563ff] group-hover:text-[#2563ff]">
+                <ArrowRightIcon />
+              </span>
+              {step.completed ? (
+                <span className="absolute right-4 top-4 rounded-full bg-[#ecfdf3] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[#16a34a]">
+                  OK
+                </span>
+              ) : null}
+            </Link>
+          ))}
         </div>
       </HomeSectionCard>
     </div>

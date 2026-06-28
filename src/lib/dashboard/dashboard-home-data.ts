@@ -305,11 +305,146 @@ function buildKeyPointTexts({
   return { revenueText, smsText, responsesText };
 }
 
+const auditActionLabels: Record<
+  Locale,
+  Record<string, { message: string; iconTone: DashboardActivityEntry["iconTone"] }>
+> = {
+  fr: {
+    "sms.positive_reply.received": {
+      message: "Réponse positive reçue par SMS.",
+      iconTone: "purple"
+    },
+    "sms.inbound.linked": {
+      message: "Réponse SMS entrante associée au bon contexte.",
+      iconTone: "purple"
+    },
+    "sms.twilio_status.received": {
+      message: "Statut de livraison SMS mis à jour.",
+      iconTone: "blue"
+    },
+    "sms.opt_out.received": {
+      message: "Demande de désabonnement SMS reçue.",
+      iconTone: "orange"
+    },
+    "sms.consent_request.sent": {
+      message: "Demande de consentement SMS envoyée.",
+      iconTone: "purple"
+    },
+    "sms.consent.opted_in_by_reply": {
+      message: "Consentement SMS confirmé par réponse client.",
+      iconTone: "green"
+    },
+    "sms.consent.declined_by_reply": {
+      message: "Refus de consentement SMS enregistré.",
+      iconTone: "orange"
+    },
+    "sms.deleted_customer_reply_ignored": {
+      message: "Réponse SMS ignorée pour un client supprimé.",
+      iconTone: "neutral"
+    },
+    "opening.created_from_sms_cancellation": {
+      message: "Ouverture créée à partir d'une annulation SMS.",
+      iconTone: "orange"
+    },
+    "customer.updated": {
+      message: "Fiche client mise à jour.",
+      iconTone: "blue"
+    },
+    "customer.deleted": {
+      message: "Client archivé.",
+      iconTone: "neutral"
+    },
+    "customer.restored": {
+      message: "Client restauré.",
+      iconTone: "green"
+    },
+    "waitlist.auto_added_from_customer_create": {
+      message: "Client ajouté automatiquement à la liste d'attente.",
+      iconTone: "green"
+    }
+  },
+  en: {
+    "sms.positive_reply.received": {
+      message: "Positive SMS reply received.",
+      iconTone: "purple"
+    },
+    "sms.inbound.linked": {
+      message: "Inbound SMS reply linked to the correct context.",
+      iconTone: "purple"
+    },
+    "sms.twilio_status.received": {
+      message: "SMS delivery status updated.",
+      iconTone: "blue"
+    },
+    "sms.opt_out.received": {
+      message: "SMS opt-out request received.",
+      iconTone: "orange"
+    },
+    "sms.consent_request.sent": {
+      message: "SMS consent request sent.",
+      iconTone: "purple"
+    },
+    "sms.consent.opted_in_by_reply": {
+      message: "SMS consent confirmed by customer reply.",
+      iconTone: "green"
+    },
+    "sms.consent.declined_by_reply": {
+      message: "SMS consent decline recorded.",
+      iconTone: "orange"
+    },
+    "sms.deleted_customer_reply_ignored": {
+      message: "SMS reply ignored for a deleted customer.",
+      iconTone: "neutral"
+    },
+    "opening.created_from_sms_cancellation": {
+      message: "Opening created from an SMS cancellation.",
+      iconTone: "orange"
+    },
+    "customer.updated": {
+      message: "Customer record updated.",
+      iconTone: "blue"
+    },
+    "customer.deleted": {
+      message: "Customer archived.",
+      iconTone: "neutral"
+    },
+    "customer.restored": {
+      message: "Customer restored.",
+      iconTone: "green"
+    },
+    "waitlist.auto_added_from_customer_create": {
+      message: "Customer automatically added to the waitlist.",
+      iconTone: "green"
+    }
+  }
+};
+
+function humanizeAuditAction(action: string, locale: Locale) {
+  const normalized = action
+    .replace(/[._]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!normalized) {
+    return locale === "en" ? "Activity recorded." : "Activité enregistrée.";
+  }
+
+  const sentence = normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  return sentence.endsWith(".") ? sentence : `${sentence}.`;
+}
+
 function formatAuditLogMessage(
   action: string,
   metadata: Record<string, unknown> | null,
   locale: Locale
 ): { message: string; iconTone: DashboardActivityEntry["iconTone"] } {
+  const normalizedLocale = locale === "en" ? "en" : "fr";
+  const knownAction = auditActionLabels[normalizedLocale][action];
+
+  if (knownAction) {
+    return knownAction;
+  }
+
   const meta = metadata ?? {};
   const customerName =
     typeof meta.customer_name === "string"
@@ -373,7 +508,7 @@ function formatAuditLogMessage(
   }
 
   return {
-    message: action.replaceAll(".", " "),
+    message: humanizeAuditAction(action, normalizedLocale),
     iconTone: "neutral"
   };
 }
