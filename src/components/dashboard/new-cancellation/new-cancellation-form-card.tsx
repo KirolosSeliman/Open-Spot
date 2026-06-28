@@ -7,6 +7,7 @@ import {
   CalendarIcon,
   ChevronDownIcon
 } from "@/components/dashboard/new-cancellation/new-cancellation-icons";
+import type { NewCancellationFormCopy } from "@/components/dashboard/new-cancellation/new-cancellation-copy";
 import { createOpeningAction } from "@/lib/dashboard/actions";
 import type { DashboardCopy } from "@/lib/i18n/dashboard-copy";
 import { cn } from "@/lib/utils/cn";
@@ -17,8 +18,8 @@ type Service = {
 };
 
 type NewCancellationFormCardProps = {
-  copy: DashboardCopy["newCancellation"];
-  commonCopy: DashboardCopy["common"];
+  copy: NewCancellationFormCopy;
+  commonCopy: Pick<DashboardCopy["common"], "service" | "start" | "end">;
   services: Service[];
   error?: string;
   canSendSmsAlerts: boolean;

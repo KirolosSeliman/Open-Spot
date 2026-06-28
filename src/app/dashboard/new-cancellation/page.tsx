@@ -1,4 +1,8 @@
 import { EligibleCustomersPanel } from "@/components/dashboard/new-cancellation/eligible-customers-panel";
+import {
+  pickEligibleCustomersCopy,
+  pickNewCancellationFormCopy
+} from "@/components/dashboard/new-cancellation/new-cancellation-copy";
 import { NewCancellationFormCard } from "@/components/dashboard/new-cancellation/new-cancellation-form-card";
 import { loadOpeningCreationData } from "@/lib/dashboard/operations-data";
 import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
@@ -47,15 +51,20 @@ export default async function NewCancellationPage({
       <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-8">
         <NewCancellationFormCard
           canSendSmsAlerts={canSendSmsAlerts}
-          commonCopy={copy.common}
-          copy={copy.newCancellation}
+          commonCopy={{
+            service: copy.common.service,
+            start: copy.common.start,
+            end: copy.common.end
+          }}
+          copy={pickNewCancellationFormCopy(copy.newCancellation)}
           error={error}
           services={data.services}
           smsBlockingReasons={smsBlockingReasons}
         />
         <EligibleCustomersPanel
-          copy={copy.newCancellation}
+          copy={pickEligibleCustomersCopy(copy.newCancellation)}
           customers={data.eligibleCustomers}
+          locale={locale}
         />
       </div>
     </div>

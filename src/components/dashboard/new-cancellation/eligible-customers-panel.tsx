@@ -8,7 +8,12 @@ import {
   SearchIcon,
   UsersIcon
 } from "@/components/dashboard/new-cancellation/new-cancellation-icons";
-import type { DashboardCopy } from "@/lib/i18n/dashboard-copy";
+import {
+  formatEligibleClientCount,
+  formatEligibleCountFooter,
+  type EligibleCustomersCopy
+} from "@/components/dashboard/new-cancellation/new-cancellation-copy";
+import type { Locale } from "@/lib/i18n/types";
 
 type EligibleCustomer = {
   id: string;
@@ -17,13 +22,15 @@ type EligibleCustomer = {
 };
 
 type EligibleCustomersPanelProps = {
-  copy: DashboardCopy["newCancellation"];
+  copy: EligibleCustomersCopy;
   customers: EligibleCustomer[];
+  locale: Locale;
 };
 
 export function EligibleCustomersPanel({
   copy,
-  customers
+  customers,
+  locale
 }: EligibleCustomersPanelProps) {
   const [query, setQuery] = useState("");
   const normalizedQuery = query.trim().toLowerCase();
@@ -53,7 +60,7 @@ export function EligibleCustomersPanel({
           </h2>
         </div>
         <span className="inline-flex shrink-0 rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#64748b]">
-          {copy.clientCount(totalCount)}
+          {formatEligibleClientCount(totalCount, locale)}
         </span>
       </div>
 
@@ -122,7 +129,7 @@ export function EligibleCustomersPanel({
           <span className="font-medium">{copy.criterion}</span>
         </div>
         <span className="text-sm font-bold text-[#334155]">
-          {copy.eligibleCountFooter(totalCount)}
+          {formatEligibleCountFooter(totalCount, locale)}
         </span>
       </div>
     </section>
