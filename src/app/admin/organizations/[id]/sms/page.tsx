@@ -1,9 +1,16 @@
 import { notFound } from "next/navigation";
 
-import { SmsBookIcon } from "@/components/admin/sms-configuration-icons";
-import { SmsConfigurationDashboard } from "@/components/admin/sms-configuration-dashboard";
+import { SmsConfigurationShell } from "@/components/sms/sms-configuration-shell";
+import { SmsPageHeader } from "@/components/sms/sms-page-header";
+import { parseSmsTab } from "@/components/sms/sms-shared";
 import { loadAdminSmsDiagnostics } from "@/lib/admin/sms-diagnostics";
 import { loadSafeOrganizationSmsSenderView } from "@/lib/admin/sms-sender-actions";
+import {
+  deriveSmsActivationPrerequisites,
+  deriveSmsTestDeliveryResults,
+  loadSmsActivityMetrics,
+  loadSmsRecentEvents
+} from "@/lib/sms/configuration-data";
 import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 import {
   getOrCreateOrganizationSmsSender,
@@ -14,12 +21,19 @@ import { computeSmsSenderReadiness } from "@/lib/sms/sms-setup-readiness";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
+function one(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export default async function AdminOrganizationSmsPage({
-  params
+  params,
+  searchParams
 }: {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id } = await params;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const access = await requireCurrentPlatformAdmin();
 
   if (access.status !== "authorized") {
@@ -32,11 +46,15 @@ export default async function AdminOrganizationSmsPage({
     throw new Error("Admin service client is not configured.");
   }
 
+  const activeTab = parseSmsTab(one(resolvedSearchParams.tab));
+  const baseHref = `/admin/organizations/${id}/sms`;
+
   const [{ data: organization }, diagnostics] = await Promise.all([
     supabase.from("organizations").select("id, name").eq("id", id).maybeSingle(),
     loadAdminSmsDiagnostics({
       admin: access.admin,
       organizationId: id,
+      searchParams: resolvedSearchParams,
       auditAction: "admin.organization.sms_viewed"
     })
   ]);
@@ -63,38 +81,45 @@ export default async function AdminOrganizationSmsPage({
     (await loadSafeOrganizationSmsSenderView(id)) ??
     toSafeOrganizationSmsSenderView(sender);
 
+  const [metrics, events] = await Promise.all([
+    loadSmsActivityMetrics(id, safeSender),
+    loadSmsRecentEvents(id)
+  ]);
+
+  const testSteps = deriveSmsTestDeliveryResults(safeSender);
+  const prerequisites = deriveSmsActivationPrerequisites({
+    sender: safeSender,
+    readiness,
+    organizationReadiness
+  });
+
   return (
-    <section className="mx-auto grid max-w-6xl gap-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--primary)]">
-            Open Spot
-          </p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-[var(--foreground)]">
-            Configuration SMS
-          </h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-            Gérez l&apos;envoi de SMS, les modèles, les tests et la conformité.
-          </p>
-        </div>
+    <section className="mx-auto grid max-w-[1280px] gap-6 bg-[#f7fbff] pb-10">
+      <SmsPageHeader />
 
-        <a
-          className="inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-xl border border-[var(--line)] bg-white px-5 text-sm font-bold text-[var(--foreground)] shadow-sm transition hover:bg-slate-50"
-          href="https://github.com/KirolosSeliman/Open-Spot/blob/main/docs/sms-compliance-notes.md"
-        >
-          <SmsBookIcon className="h-4 w-4" />
-          Documentation
-        </a>
-      </div>
-
-      <SmsConfigurationDashboard
+      <SmsConfigurationShell
+        activeTab={activeTab}
+        activityFilters={{
+          q: diagnostics.filters.q,
+          status: diagnostics.filters.status,
+          direction: diagnostics.filters.direction,
+          from: diagnostics.filters.range.fromIso,
+          to: diagnostics.filters.range.toIso,
+          page: diagnostics.filters.page
+        }}
+        baseHref={baseHref}
+        events={events}
         isSuperAdmin={access.admin.role === "super_admin"}
+        journalRows={diagnostics.rows}
+        metrics={metrics}
         organizationId={id}
         organizationName={organization.name}
+        prerequisites={prerequisites}
         readiness={readiness}
         realSmsEnabled={process.env.ALLOW_REAL_SMS_SENDS === "true"}
         recentActivity={diagnostics.rows.slice(0, 5)}
         sender={safeSender}
+        testSteps={testSteps}
       />
     </section>
   );
