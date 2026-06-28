@@ -121,9 +121,10 @@ async function readTwilioFormParams(request: Request) {
 export function validateTwilioWebhookRequest(
   request: Request,
   params: Record<string, string>,
-  env: TwilioEnv = process.env
+  env: TwilioEnv = process.env,
+  authTokenOverride?: string | null
 ) {
-  const authToken = env.TWILIO_AUTH_TOKEN;
+  const authToken = authTokenOverride ?? env.TWILIO_AUTH_TOKEN;
   const signature = request.headers.get("x-twilio-signature");
 
   if (!authToken || !signature) {
@@ -136,6 +137,32 @@ export function validateTwilioWebhookRequest(
     getTwilioWebhookUrl(request, env),
     params
   );
+}
+
+export async function validateTwilioWebhookRequestForAccountSid(
+  request: Request,
+  params: Record<string, string>,
+  resolveAuthToken: (accountSid: string) => Promise<string | null>,
+  env: TwilioEnv = process.env
+) {
+  const accountSid = params.AccountSid?.trim();
+  const parentSid = env.TWILIO_ACCOUNT_SID?.trim();
+
+  if (parentSid && validateTwilioWebhookRequest(request, params, env)) {
+    return true;
+  }
+
+  if (!accountSid) {
+    return false;
+  }
+
+  const authToken = await resolveAuthToken(accountSid);
+
+  if (!authToken) {
+    return false;
+  }
+
+  return validateTwilioWebhookRequest(request, params, env, authToken);
 }
 
 export async function parseTwilioInboundRequest(request: Request) {

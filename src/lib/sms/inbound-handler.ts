@@ -4,6 +4,11 @@ import { normalizePhoneToE164 } from "@/lib/customers/phone";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import { classifyInboundSmsBody } from "@/lib/sms/inbound";
 import { createSmsProvider } from "@/lib/sms/factory";
+import {
+  findInboundCustomer,
+  findLatestOutboundContext,
+  resolveInboundOrganizationFromSender
+} from "@/lib/sms/inbound-organization-routing";
 import { getNextResponseRank } from "@/lib/sms/simulation";
 import {
   buildSmsBodyPreview,
@@ -183,30 +188,149 @@ export async function handleInboundSmsRequest(
     }
   }
 
-  const { data: contextRows, error: contextError } = await supabase
-    .from("sms_messages")
-    .select("id, organization_id, customer_id, opening_id, appointment_id, message_type")
-    .eq("provider", providerName)
-    .eq("direction", "outbound")
-    .eq("to_number", fromNumber)
-    .eq("from_number", toNumber)
-    .not("customer_id", "is", null)
-    .or("opening_id.not.is.null,appointment_id.not.is.null,message_type.eq.consent_request")
-    .order("created_at", { ascending: false })
-    .limit(1);
+  const organizationSender = await resolveInboundOrganizationFromSender({
+    toNumber,
+    messagingServiceSid: inbound.messagingServiceSid
+  });
 
-  if (contextError) {
-    return NextResponse.json(
-      { error: "Inbound context lookup failed." },
-      { status: 500 }
-    );
+  let context: InboundContext | null = null;
+
+  if (organizationSender) {
+    try {
+      context = await findLatestOutboundContext({
+        supabase,
+        providerName,
+        organizationId: organizationSender.organization_id,
+        fromNumber,
+        toNumber
+      });
+    } catch (organizationRoutingError) {
+      return NextResponse.json(
+        {
+          error:
+            organizationRoutingError instanceof Error
+              ? organizationRoutingError.message
+              : "Organization inbound routing failed."
+        },
+        { status: 500 }
+      );
+    }
   }
 
-  const context = contextRows?.[0] ?? null;
+  if (!context) {
+    const { data: contextRows, error: contextError } = await supabase
+      .from("sms_messages")
+      .select("id, organization_id, customer_id, opening_id, appointment_id, message_type")
+      .eq("provider", providerName)
+      .eq("direction", "outbound")
+      .eq("to_number", fromNumber)
+      .eq("from_number", toNumber)
+      .not("customer_id", "is", null)
+      .or("opening_id.not.is.null,appointment_id.not.is.null,message_type.eq.consent_request")
+      .order("created_at", { ascending: false })
+      .limit(1);
+
+    if (contextError) {
+      return NextResponse.json(
+        { error: "Inbound context lookup failed." },
+        { status: 500 }
+      );
+    }
+
+    context = contextRows?.[0] ?? null;
+  }
+
   const contextType = getInboundContextType(context);
   const classification = classifyInboundSmsBody(inbound.body, contextType);
 
   if (!context?.organization_id || !context.customer_id) {
+    if (organizationSender) {
+      try {
+        const customer = await findInboundCustomer({
+          supabase,
+          organizationId: organizationSender.organization_id,
+          fromNumber
+        });
+        const { data: inboundMessage, error: messageError } = await supabase
+          .from("sms_messages")
+          .insert({
+            organization_id: organizationSender.organization_id,
+            customer_id: customer?.id ?? null,
+            direction: "inbound",
+            provider: providerName,
+            provider_message_id: inbound.providerMessageId ?? null,
+            from_number: fromNumber,
+            to_number: toNumber,
+            body: inbound.body,
+            status: "received"
+          })
+          .select("id")
+          .single();
+
+        if (messageError || !inboundMessage) {
+          return NextResponse.json(
+            { error: "Inbound message persistence failed." },
+            { status: 500 }
+          );
+        }
+
+        if (classification === "opt_out" && customer?.id) {
+          const now = new Date().toISOString();
+
+          await supabase.from("sms_consents").upsert(
+            {
+              organization_id: organizationSender.organization_id,
+              customer_id: customer.id,
+              phone_e164: fromNumber,
+              status: "opted_out",
+              source: "sms_opt_out_reply",
+              consent_text: null,
+              consented_at: null,
+              unsubscribed_at: now
+            },
+            { onConflict: "organization_id,customer_id" }
+          );
+        }
+
+        await recordSmsWebhookEvent({
+          provider: providerName,
+          event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+          processing_status: "received_unlinked",
+          organization_id: organizationSender.organization_id,
+          customer_id: customer?.id ?? null,
+          sms_message_id: inboundMessage.id,
+          provider_message_id: inbound.providerMessageId ?? null,
+          from_number: fromNumber,
+          to_number: toNumber,
+          classification,
+          http_status: 202,
+          body_preview: buildSmsBodyPreview(inbound.body),
+          payload_summary: {
+            reason: "Dedicated sender matched without outbound context."
+          }
+        });
+
+        return NextResponse.json({
+          classification,
+          status: "received_unlinked",
+          organizationId: organizationSender.organization_id,
+          customerId: customer?.id ?? null,
+          messageId: inboundMessage.id,
+          warning: "Dedicated sender matched without outbound context."
+        });
+      } catch (organizationPersistError) {
+        return NextResponse.json(
+          {
+            error:
+              organizationPersistError instanceof Error
+                ? organizationPersistError.message
+                : "Organization inbound persistence failed."
+          },
+          { status: 500 }
+        );
+      }
+    }
+
     await recordSmsWebhookEvent({
       provider: providerName,
       event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",

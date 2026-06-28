@@ -2,8 +2,8 @@ import "server-only";
 
 import { requireOrganizationSmsNotPaused } from "@/lib/admin/organization-controls";
 import type { ActiveOrganization } from "@/lib/organization/current";
-import { createSmsProvider } from "@/lib/sms/factory";
 import { getOpeningSmsDateTimeLabels } from "@/lib/sms/message-generator";
+import { sendOrganizationSms } from "@/lib/sms/organization-sms";
 import { resolveOpeningConfirmationSmsBody } from "@/lib/sms/organization-templates";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -195,7 +195,6 @@ export async function sendOpeningConfirmationSmsAfterValidation({
       return "Client confirmé, mais le SMS de confirmation n'a pas été envoyé, car l'adresse du commerce est manquante.";
     }
 
-    const provider = createSmsProvider();
     const language = customer.preferred_language ?? organization.defaultLanguage;
     const { dateLabel, timeLabel } = getOpeningSmsDateTimeLabels(
       opening.start_time,
@@ -225,9 +224,14 @@ export async function sendOpeningConfirmationSmsAfterValidation({
         includeOptOut: true
       }
     });
-    const sendResult = await provider.sendSms({
+    const sendResult = await sendOrganizationSms({
+      organizationId: organization.id,
       to: customer.phone_e164,
       body: messageBody,
+      messageType: "opening_confirmation",
+      openingId,
+      customerId: offer.customer_id,
+      consentStatus: "opted_in",
       metadata: {
         openingId,
         organizationId: organization.id,

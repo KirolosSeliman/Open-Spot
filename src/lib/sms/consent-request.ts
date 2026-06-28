@@ -1,9 +1,9 @@
 import type { createSupabaseServerClient } from "@/lib/supabase/server";
-import type { SmsProviderClient } from "@/lib/sms/provider";
 import {
   generateConsentRequestSmsMessage,
   type SmsLanguage
 } from "@/lib/sms/message-generator";
+import { sendOrganizationSms } from "@/lib/sms/organization-sms";
 
 export const CONSENT_REQUEST_COOLDOWN_HOURS = 24;
 export const CONSENT_REQUEST_MAX_ATTEMPTS = 3;
@@ -151,12 +151,10 @@ export function canSendConsentRequest({
 
 export async function sendConsentRequestSms({
   supabase,
-  provider,
   organization,
   customer
 }: {
   supabase: SupabaseServerClient;
-  provider: SmsProviderClient;
   organization: {
     id: string;
     name: string;
@@ -230,9 +228,13 @@ export async function sendConsentRequestSms({
   }
 
   try {
-    const sendResult = await provider.sendSms({
+    const sendResult = await sendOrganizationSms({
+      organizationId: organization.id,
       to: customer.phoneE164,
       body: message.body,
+      messageType: "consent_request",
+      customerId: customer.id,
+      consentStatus: "needs_consent",
       metadata: {
         organizationId: organization.id,
         customerId: customer.id,

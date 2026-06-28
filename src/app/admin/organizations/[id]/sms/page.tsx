@@ -1,102 +1,100 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Card } from "@/components/ui/card";
+import { SmsConfigurationDashboard } from "@/components/admin/sms-configuration-dashboard";
+import { ButtonLink } from "@/components/ui/button";
 import { loadAdminSmsDiagnostics } from "@/lib/admin/sms-diagnostics";
+import { loadSafeOrganizationSmsSenderView } from "@/lib/admin/sms-sender-actions";
+import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
+import {
+  getOrCreateOrganizationSmsSender,
+  loadOrganizationSmsSender,
+  toSafeOrganizationSmsSenderView
+} from "@/lib/sms/organization-sender";
+import { computeSmsSenderReadiness } from "@/lib/sms/sms-setup-readiness";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
-
-const dateFormatter = new Intl.DateTimeFormat("en-CA", {
-  dateStyle: "medium",
-  timeStyle: "short"
-});
+import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
 export default async function AdminOrganizationSmsPage({
-  params,
-  searchParams
+  params
 }: {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id } = await params;
-  const resolvedSearchParams = searchParams ? await searchParams : {};
   const access = await requireCurrentPlatformAdmin();
 
   if (access.status !== "authorized") {
     notFound();
   }
 
-  const result = await loadAdminSmsDiagnostics({
-    admin: access.admin,
-    organizationId: id,
-    searchParams: resolvedSearchParams,
-    auditAction: "admin.organization.sms_viewed"
-  });
+  const supabase = createSupabaseServiceClient();
 
-  const organizationName = result.rows[0]?.organizationName ?? "Company";
+  if (!supabase) {
+    throw new Error("Admin service client is not configured.");
+  }
+
+  const [{ data: organization }, diagnostics] = await Promise.all([
+    supabase.from("organizations").select("id, name").eq("id", id).maybeSingle(),
+    loadAdminSmsDiagnostics({
+      admin: access.admin,
+      organizationId: id,
+      auditAction: "admin.organization.sms_viewed"
+    })
+  ]);
+
+  if (!organization) {
+    notFound();
+  }
+
+  let sender = await loadOrganizationSmsSender(id);
+
+  if (!sender && access.admin.role === "super_admin") {
+    sender = await getOrCreateOrganizationSmsSender({
+      organizationId: id,
+      createdByPlatformAdminId: access.admin.id
+    });
+  }
+
+  const organizationReadiness = await loadOrganizationSmsReadiness(supabase, id);
+  const readiness = computeSmsSenderReadiness({
+    sender,
+    organizationReadiness
+  });
+  const safeSender =
+    (await loadSafeOrganizationSmsSenderView(id)) ??
+    toSafeOrganizationSmsSenderView(sender);
 
   return (
     <section className="grid gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
-            Company SMS
+            Open Spot
           </p>
-          <h1 className="mt-2 text-3xl font-black">{organizationName}</h1>
-          <p className="mt-3 text-sm leading-6 text-[var(--muted)]">
-            SMS diagnostics scoped to this company.
+          <h1 className="mt-2 text-3xl font-black">Configuration SMS</h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+            Gérez l&apos;envoi de SMS, les modèles, les tests et la conformité.
           </p>
+          <p className="mt-2 text-sm font-bold text-[var(--muted)]">{organization.name}</p>
         </div>
-        <Link className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black" href={`/admin/organizations/${id}`}>
-          Back to company
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <ButtonLink href="https://github.com/KirolosSeliman/Open-Spot/blob/main/docs/sms-compliance-notes.md" variant="outline">
+            Documentation
+          </ButtonLink>
+          <ButtonLink href={`/admin/organizations/${id}`} variant="outline">
+            Retour à la compagnie
+          </ButtonLink>
+        </div>
       </div>
 
-      <Card>
-        <form className="grid gap-3 md:grid-cols-4" method="get">
-          <select className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3" defaultValue={result.filters.direction} name="direction">
-            <option value="all">All directions</option>
-            <option value="outbound">Outbound</option>
-            <option value="inbound">Inbound</option>
-          </select>
-          <select className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3" defaultValue={result.filters.status} name="status">
-            <option value="all">All statuses</option>
-            <option value="delivered">Delivered</option>
-            <option value="failed">Failed</option>
-            <option value="undelivered">Undelivered</option>
-            <option value="received">Received</option>
-          </select>
-          <input className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4" defaultValue={result.filters.q} name="q" placeholder="Search SMS" type="search" />
-          <button className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white" type="submit">
-            Filter
-          </button>
-        </form>
-      </Card>
-
-      <Card>
-        <p className="text-sm font-bold text-[var(--muted)]">
-          Showing {result.rows.length} records.
-        </p>
-        <div className="mt-4 grid gap-3">
-          {result.rows.map((row) => (
-            <div className="rounded-2xl border border-[var(--line)] p-4" key={row.id}>
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="font-black">{dateFormatter.format(new Date(row.createdAt))}</p>
-                <p className="text-sm font-bold text-[var(--muted)]">
-                  {row.direction} · {row.provider} · {row.status}
-                </p>
-              </div>
-              <p className="mt-2 text-sm text-[var(--muted)]">
-                {row.customerName ?? "Unknown customer"} · {row.phoneMasked} · {row.context}
-              </p>
-              <p className="mt-2 text-sm">{row.bodyPreview}</p>
-              {row.error ? <p className="mt-2 text-xs text-red-700">{row.error}</p> : null}
-            </div>
-          ))}
-          {result.rows.length === 0 ? (
-            <p className="text-sm text-[var(--muted)]">No SMS records match these filters.</p>
-          ) : null}
-        </div>
-      </Card>
+      <SmsConfigurationDashboard
+        isSuperAdmin={access.admin.role === "super_admin"}
+        organizationId={id}
+        organizationName={organization.name}
+        readiness={readiness}
+        realSmsEnabled={process.env.ALLOW_REAL_SMS_SENDS === "true"}
+        recentActivity={diagnostics.rows.slice(0, 8)}
+        sender={safeSender}
+      />
     </section>
   );
 }

@@ -34,7 +34,8 @@ import { calculateCommissionEstimate } from "@/lib/openings/commission";
 import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
 import { sendConsentRequestSms } from "@/lib/sms/consent-request";
-import { createSmsProvider } from "@/lib/sms/factory";
+import { getSmsProvider } from "@/lib/env/config";
+import { sendOrganizationSms } from "@/lib/sms/organization-sms";
 import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 import {
   getOpeningSmsDateTimeLabels
@@ -730,7 +731,6 @@ export async function createCustomerAction(formData: FormData) {
       } else {
         const consentRequestResult = await sendConsentRequestSms({
           supabase,
-          provider: createSmsProvider(),
           organization: {
             id: organization.id,
             name: organization.name,
@@ -1710,7 +1710,6 @@ async function sendOpeningSmsAlerts({
     };
   }
 
-  const provider = createSmsProvider();
   const now = new Date().toISOString();
   const successfulOfferIds: string[] = [];
   const failedReasons: string[] = [];
@@ -1753,9 +1752,14 @@ async function sendOpeningSmsAlerts({
     });
 
     try {
-      const sendResult = await provider.sendSms({
+      const sendResult = await sendOrganizationSms({
+        organizationId: organization.id,
         to: customer.phone_e164,
         body: messageBody,
+        messageType: "opening_alert",
+        openingId,
+        customerId: offer.customer_id,
+        consentStatus: "opted_in",
         metadata: {
           openingId,
           organizationId: organization.id,
@@ -1825,7 +1829,7 @@ async function sendOpeningSmsAlerts({
 
   await supabase.rpc("record_opening_broadcast_audit", {
     target_opening_id: openingId,
-    provider_name: provider.getProviderName(),
+    provider_name: getSmsProvider(),
     sent_count: messageRecords.length,
     failed_count: failedReasons.length,
     failure_reasons: [...new Set(failedReasons)].slice(0, 5)

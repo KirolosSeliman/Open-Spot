@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { touchOrganizationSmsSenderStatusCallback } from "@/lib/sms/organization-sender";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import {
   getMonotonicTwilioDeliveryStatus,
@@ -188,6 +189,8 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+
+  await touchOrganizationSmsSenderStatusCallback(message.organization_id);
 
   await supabase.from("audit_logs").insert({
     organization_id: message.organization_id,

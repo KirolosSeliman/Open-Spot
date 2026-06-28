@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { createSmsProvider } from "@/lib/sms/factory";
+import { getSmsProvider } from "@/lib/env/config";
 import {
   isAuthorizedCronRequest,
   processDueScheduledMessages
@@ -29,17 +29,14 @@ export async function GET(request: Request) {
     );
   }
 
-  const provider = createSmsProvider();
-
   try {
     const summary = await processDueScheduledMessages({
       supabase,
-      provider,
       batchSize: 25
     });
 
     return NextResponse.json({
-      provider: provider.getProviderName(),
+      provider: getSmsProvider(),
       ...summary
     });
   } catch {

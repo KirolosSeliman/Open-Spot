@@ -36,10 +36,9 @@ describe("opening SMS flow", () => {
     );
   });
 
-  it("makes opening alerts use the selected SMS provider and generator", () => {
+  it("makes opening alerts use the organization SMS sender and generator", () => {
     expect(dashboardActions).toContain("resolveOpeningAlertSmsBody");
-    expect(dashboardActions).toContain("createSmsProvider");
-    expect(dashboardActions).toContain("provider.sendSms");
+    expect(dashboardActions).toContain("sendOrganizationSms");
     expect(dashboardActions).toContain("sendResult.fromNumber");
     expect(dashboardActions).toContain(
       'consentByCustomer.get(offer.customer_id) === "opted_in"'

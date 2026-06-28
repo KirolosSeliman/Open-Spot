@@ -1,6 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import type { SmsProviderClient } from "@/lib/sms/provider";
+import { sendOrganizationSms } from "@/lib/sms/organization-sms";
 import { isOrganizationSmsPaused } from "@/lib/admin/organization-controls";
 import type { Database } from "@/types/database";
 
@@ -89,12 +89,10 @@ function defaultSummary(): ScheduledMessageProcessSummary {
 
 export async function processDueScheduledMessages({
   supabase,
-  provider,
   now = new Date(),
   batchSize = 25
 }: {
   supabase: SupabaseClient<Database>;
-  provider: SmsProviderClient;
   now?: Date;
   batchSize?: number;
 }): Promise<ScheduledMessageProcessSummary> {
@@ -115,7 +113,6 @@ export async function processDueScheduledMessages({
     summary.processed += 1;
     await processOneScheduledMessage({
       supabase,
-      provider,
       message,
       now,
       summary
@@ -127,13 +124,11 @@ export async function processDueScheduledMessages({
 
 async function processOneScheduledMessage({
   supabase,
-  provider,
   message,
   now,
   summary
 }: {
   supabase: SupabaseClient<Database>;
-  provider: SmsProviderClient;
   message: ScheduledMessageRow;
   now: Date;
   summary: ScheduledMessageProcessSummary;
@@ -289,9 +284,15 @@ async function processOneScheduledMessage({
           : ""
       });
 
-    const sendResult = await provider.sendSms({
+    const sendResult = await sendOrganizationSms({
+      organizationId: claimed.organization_id,
       to: customer.phone_e164,
       body,
+      messageType: claimed.appointment_id ? "appointment_reminder" : "opening_alert",
+      openingId: claimed.opening_id,
+      appointmentId: claimed.appointment_id,
+      customerId: claimed.customer_id,
+      consentStatus: "opted_in",
       metadata: {
         scheduledMessageId: claimed.id,
         organizationId: claimed.organization_id
