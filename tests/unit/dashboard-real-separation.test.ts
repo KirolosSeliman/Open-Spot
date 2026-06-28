@@ -56,20 +56,14 @@ describe("real dashboard and demo dashboard separation", () => {
 
     expect(dashboardPage).toContain("getRequestLocale");
     expect(dashboardPage).toContain("getDashboardCopy");
-    expect(dashboardPage).toContain("copy.dashboard.setup.items");
+    expect(dashboardPage).toContain("loadDashboardHomeData");
     expect(dashboardCopy.fr.dashboard.description("Open Spot")).toContain(
       "Votre espace est prêt."
     );
     expect(dashboardCopy.fr.dashboard.setup.description).toBe(
       "Commencez par ajouter vos services et vos clients."
     );
-    expect(dashboardCopy.fr.dashboard.setup.items).toEqual(
-      expect.arrayContaining([
-        expect.arrayContaining(["Ajouter vos services"]),
-        expect.arrayContaining(["Ajouter vos clients"]),
-        expect.arrayContaining(["Créer votre première annulation"])
-      ])
-    );
+    expect(dashboardCopy.fr.dashboard.setup.title).toBe("Configuration initiale");
   });
 
   it("loads separated response dashboards from organization-scoped data", () => {

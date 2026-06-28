@@ -25,10 +25,30 @@ export const dashboardCopy = {
       timeUnknown: "Unknown time"
     },
     dashboard: {
+      greeting: (organizationName: string) => `Hello, ${organizationName} team 👋`,
+      subtitle: "Here is an overview of your activity today.",
       title: (organizationName: string) => `${organizationName} Dashboard`,
       description: (organizationName: string) =>
         `Your workspace is ready. ${organizationName} is now using real data and operational statuses.`,
       newCancellation: "New cancellation",
+      filters: "Filters",
+      viewAll: "View all",
+      range7Days: "Last 7 days",
+      range30Days: "Last 30 days",
+      range90Days: "Last 90 days",
+      activityOverview: "Activity overview",
+      keyPoints: "Key points",
+      activityLog: "Activity log",
+      activityLogEmpty: [
+        "No recent activity",
+        "Important actions will appear here."
+      ],
+      responseColumn: "Response",
+      dateTimeColumn: "Date / time",
+      titleColumn: "Title",
+      estimatedValueColumn: "Estimated value",
+      setupProgress: (completed: number, total: number) =>
+        `${completed}/${total} steps completed`,
       metrics: {
         customers: ["Customers", "Real customers linked to this organization."],
         services: ["Services", "Real services configured in your workspace."],
@@ -460,11 +480,32 @@ export const dashboardCopy = {
       timeUnknown: "Heure inconnue"
     },
     dashboard: {
+      greeting: (organizationName: string) =>
+        `Bonjour, équipe ${organizationName} 👋`,
+      subtitle: "Voici un aperçu de votre activité aujourd’hui.",
       title: (organizationName: string) =>
         `Tableau de bord de ${organizationName}`,
       description: (organizationName: string) =>
         `Votre espace est prêt. ${organizationName} utilise maintenant vos données réelles et vos états opérationnels.`,
       newCancellation: "Nouvelle annulation",
+      filters: "Filtres",
+      viewAll: "Voir toutes",
+      range7Days: "7 derniers jours",
+      range30Days: "30 derniers jours",
+      range90Days: "90 derniers jours",
+      activityOverview: "Aperçu de l'activité",
+      keyPoints: "Points clés",
+      activityLog: "Journal d'activité",
+      activityLogEmpty: [
+        "Aucune activité récente",
+        "Les actions importantes apparaîtront ici."
+      ],
+      responseColumn: "Réponse",
+      dateTimeColumn: "Date / heure",
+      titleColumn: "Titre",
+      estimatedValueColumn: "Valeur estimée",
+      setupProgress: (completed: number, total: number) =>
+        `${completed}/${total} étapes complétées`,
       metrics: {
         customers: ["Clients", "Clients réels rattachés à cette organisation."],
         services: ["Services", "Services réels configurés dans votre espace."],

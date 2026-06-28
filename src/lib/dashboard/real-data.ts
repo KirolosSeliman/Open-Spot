@@ -173,7 +173,7 @@ function readCount(label: string, result: CountResult) {
   return result.count ?? 0;
 }
 
-function calculateDashboardActionItems({
+export function calculateDashboardActionItems({
   automation,
   pendingRepliesCount,
   recoveryOpenings
