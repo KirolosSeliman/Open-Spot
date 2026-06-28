@@ -83,13 +83,15 @@ async function auditAndRefresh({
   organizationId,
   action,
   metadata = {},
-  suffix = ""
+  suffix = "",
+  returnTo
 }: {
   admin: { id: string; userId: string; email: string };
   organizationId: string;
   action: string;
   metadata?: Record<string, unknown>;
   suffix?: string;
+  returnTo?: string;
 }) {
   await recordPlatformAdminAuditLog({
     admin,
@@ -102,7 +104,7 @@ async function auditAndRefresh({
   revalidatePath("/admin");
   revalidatePath("/admin/organizations");
   revalidatePath(`/admin/organizations/${organizationId}`);
-  backToOrganization(organizationId, suffix);
+  redirect(returnTo ?? `/admin/organizations/${organizationId}${suffix}`);
 }
 
 export async function updateOrganizationSupportStatusAction(formData: FormData) {
@@ -130,7 +132,11 @@ export async function updateOrganizationSupportStatusAction(formData: FormData) 
     admin,
     organizationId,
     action: "admin.organization.support_status_updated",
-    metadata: { support_status: supportStatus }
+    metadata: { support_status: supportStatus },
+    returnTo: getSafeReturnTo(
+      formData,
+      `/admin/organizations/${organizationId}/compliance`
+    )
   });
 }
 
@@ -154,7 +160,11 @@ export async function updateOrganizationAdminNoteAction(formData: FormData) {
     admin,
     organizationId,
     action: "admin.organization.admin_note_updated",
-    metadata: { note_length: adminNote.length }
+    metadata: { note_length: adminNote.length },
+    returnTo: getSafeReturnTo(
+      formData,
+      `/admin/organizations/${organizationId}/compliance`
+    )
   });
 }
 
@@ -178,7 +188,11 @@ export async function toggleOrganizationInternalTestAction(formData: FormData) {
     admin,
     organizationId,
     action: "admin.organization.internal_test_updated",
-    metadata: { is_internal_test: isInternalTest }
+    metadata: { is_internal_test: isInternalTest },
+    returnTo: getSafeReturnTo(
+      formData,
+      `/admin/organizations/${organizationId}/compliance`
+    )
   });
 }
 
@@ -441,7 +455,10 @@ export async function updateOrganizationBillingTermsAction(formData: FormData) {
     }
   });
   revalidatePath(`/admin/organizations/${organizationId}`);
-  redirect(`/admin/organizations/${organizationId}`);
+  revalidatePath(`/admin/organizations/${organizationId}/billing`);
+  redirect(
+    getSafeReturnTo(formData, `/admin/organizations/${organizationId}/billing`)
+  );
 }
 
 export async function markComplianceReviewAction(formData: FormData) {

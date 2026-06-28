@@ -1052,11 +1052,13 @@ function sumNullableValues(values: Array<number | null>) {
 export async function loadAdminOrganizationOverview({
   admin,
   organizationId,
-  range
+  range,
+  skipAudit = false
 }: {
   admin: AuthorizedPlatformAdmin;
   organizationId: string;
   range: AdminDateRange;
+  skipAudit?: boolean;
 }): Promise<AdminOrganizationOverview | null> {
   const access = await getAdminOrganizationAccessLevel({
     admin,
@@ -1373,21 +1375,23 @@ export async function loadAdminOrganizationOverview({
     warnings.push("Some inbound SMS replies are not linked to an opening or appointment.");
   }
 
-  await recordPlatformAdminAuditLog({
-    admin,
-    organizationId,
-    action: "admin.organization.overview_viewed",
-    entityType: "organizations",
-    entityId: organizationId,
-    metadata: {
-      source: "admin_organization_overview",
-      range: {
-        rangeKey: range.rangeKey,
-        fromIso: range.fromIso,
-        toIso: range.toIso
+  if (!skipAudit) {
+    await recordPlatformAdminAuditLog({
+      admin,
+      organizationId,
+      action: "admin.organization.overview_viewed",
+      entityType: "organizations",
+      entityId: organizationId,
+      metadata: {
+        source: "admin_organization_overview",
+        range: {
+          rangeKey: range.rangeKey,
+          fromIso: range.fromIso,
+          toIso: range.toIso
+        }
       }
-    }
-  });
+    });
+  }
 
   return {
     organization: {

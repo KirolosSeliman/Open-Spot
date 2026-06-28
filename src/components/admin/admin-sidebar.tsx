@@ -110,11 +110,7 @@ const adminNav: NavItem[] = [
 
 const companySetupNav: NavItem[] = [
   { href: "", label: "Overview", icon: OverviewIcon, activeMatch: "exact" },
-  { href: "/onboarding", label: "Onboarding", icon: BuildingIcon },
-  { href: "/billing", label: "Billing", icon: BuildingIcon },
-  { href: "/sms", label: "SMS", icon: MessageIcon },
-  { href: "/replies", label: "Replies", icon: ReplyIcon },
-  { href: "/compliance", label: "Compliance", icon: ShieldIcon }
+  { href: "/onboarding", label: "Onboarding", icon: BuildingIcon }
 ];
 
 const ORGANIZATION_PATH_PATTERN = /^\/admin\/organizations\/([^/]+)/;
@@ -354,14 +350,19 @@ export function AdminMobileNav() {
           label="Company"
         />
         <MobilePillLink
-          href={`${companyBase}/onboarding`}
-          isActive={pathname.startsWith(`${companyBase}/onboarding`)}
-          label="Onboarding"
+          href={`${companyBase}/business-info`}
+          isActive={pathname.startsWith(`${companyBase}/business-info`)}
+          label="Infos"
         />
         <MobilePillLink
           href={`${companyBase}/billing`}
           isActive={pathname.startsWith(`${companyBase}/billing`)}
           label="Billing"
+        />
+        <MobilePillLink
+          href={`${companyBase}/compliance`}
+          isActive={pathname.startsWith(`${companyBase}/compliance`)}
+          label="Support"
         />
       </nav>
     );

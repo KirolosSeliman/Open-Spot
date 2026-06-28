@@ -106,3 +106,35 @@ export function parseAdminDateRange(
 export function formatAdminDateInput(date: Date) {
   return date.toISOString().slice(0, 10);
 }
+
+/** Previous period of equal length immediately before `range.from`. */
+export function getPreviousAdminDateRange(range: AdminDateRange): AdminDateRange {
+  const durationMs = range.to.getTime() - range.from.getTime();
+  const prevTo = endOfUtcDay(new Date(range.from.getTime() - 1));
+  const prevFrom = startOfUtcDay(new Date(prevTo.getTime() - durationMs));
+
+  return {
+    label: `${formatAdminDateInput(prevFrom)} to ${formatAdminDateInput(prevTo)}`,
+    rangeKey: range.rangeKey,
+    from: prevFrom,
+    to: prevTo,
+    fromIso: prevFrom.toISOString(),
+    toIso: prevTo.toISOString()
+  };
+}
+
+export function formatAdminRangeDisplayLabel(range: AdminDateRange) {
+  if (range.rangeKey === "7d") {
+    return "Affichage des 7 derniers jours";
+  }
+
+  if (range.rangeKey === "30d") {
+    return "Affichage des 30 derniers jours";
+  }
+
+  if (range.rangeKey === "90d") {
+    return "Affichage des 90 derniers jours";
+  }
+
+  return `Affichage du ${formatAdminDateInput(range.from)} au ${formatAdminDateInput(range.to)}`;
+}
