@@ -83,6 +83,12 @@ describe("book call admin", () => {
     expect(filterBookCallRequests(rows, { q: "nova" })[0].business_name).toBe(
       "Clinique Nova"
     );
+
+    const recent = request({ created_at: new Date().toISOString() });
+    const old = request({ created_at: "2020-01-01T12:00:00.000Z" });
+
+    expect(filterBookCallRequests([recent, old], { range: "all" })).toHaveLength(2);
+    expect(filterBookCallRequests([recent, old], { range: "7" })).toHaveLength(1);
   });
 
   it("keeps the admin loader behind platform admin protection", () => {

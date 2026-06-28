@@ -74,21 +74,25 @@ describe("book call request feature", () => {
 
   it("ships a protected admin call request surface with manual follow-up actions", () => {
     const adminPage = source("src/app/admin/call-requests/page.tsx");
+    const adminHeader = source(
+      "src/components/admin/call-requests/call-requests-header.tsx"
+    );
     const adminTable = source("src/components/admin/call-requests-table.tsx");
     const adminActions = source("src/app/admin/call-requests/actions.ts");
-    const adminLayout = source("src/app/admin/layout.tsx");
+    const adminSidebar = source("src/components/admin/admin-sidebar.tsx");
     const legacyAdminPage = source("src/app/admin/potential-clients/page.tsx");
 
     expect(adminPage).toContain("requireCurrentPlatformAdmin");
     expect(adminPage).toContain("loadBookCallRequests");
-    expect(adminPage).toContain("Demandes d'appel");
+    expect(adminPage).toContain("CallRequestsHeader");
+    expect(adminHeader).toContain("Demandes d&apos;appel");
     expect(adminTable).toContain("mailto:");
     expect(adminTable).toContain("tel:");
-    expect(adminTable).toContain("sms:");
+    expect(adminTable).not.toContain("sms:");
     expect(adminTable).toContain("updateBookCallRequestAction");
     expect(adminActions).toContain("requireCurrentPlatformAdmin");
     expect(adminActions).toContain("validateBookCallRequestStatus");
-    expect(adminLayout).toContain('href="/admin/call-requests"');
+    expect(adminSidebar).toContain('href: "/admin/call-requests"');
     expect(legacyAdminPage).toContain('redirect("/admin/call-requests")');
   });
 });

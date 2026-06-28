@@ -3,10 +3,41 @@ import type { Database } from "@/types/database";
 export type BookCallRequestRow =
   Database["public"]["Tables"]["book_call_requests"]["Row"];
 
+export type BookCallRequestDateRange = "7" | "30" | "90" | "all";
+
 export type BookCallRequestFilters = {
   q?: string;
   status?: string;
+  range?: string;
 };
+
+function parseDateRange(range: string | undefined): BookCallRequestDateRange {
+  if (range === "7" || range === "30" || range === "90" || range === "all") {
+    return range;
+  }
+
+  return "30";
+}
+
+function matchesDateRange(
+  request: BookCallRequestRow,
+  range: BookCallRequestDateRange
+) {
+  if (range === "all") {
+    return true;
+  }
+
+  const createdAt = new Date(request.created_at).getTime();
+
+  if (Number.isNaN(createdAt)) {
+    return false;
+  }
+
+  const days = Number(range);
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+
+  return createdAt >= cutoff;
+}
 
 export type BookCallRequestStats = {
   total: number;
@@ -42,9 +73,13 @@ export function filterBookCallRequests(
 ) {
   const q = normalizeSearch(filters.q);
   const status = filters.status && filters.status !== "all" ? filters.status : null;
+  const range = parseDateRange(filters.range);
 
   return requests.filter(
-    (request) => (!status || request.status === status) && matchesSearch(request, q)
+    (request) =>
+      (!status || request.status === status) &&
+      matchesSearch(request, q) &&
+      matchesDateRange(request, range)
   );
 }
 

@@ -1,32 +1,28 @@
 import { CallRequestsTable } from "@/components/admin/call-requests-table";
-import {
-  DashboardPageHeader,
-  MetricCard,
-  Panel
-} from "@/components/dashboard/dashboard-ui";
-import { Button } from "@/components/ui/button";
+import { CallRequestsFilters } from "@/components/admin/call-requests/call-requests-filters";
+import { CallRequestsHeader } from "@/components/admin/call-requests/call-requests-header";
+import { CallRequestsKpiCards } from "@/components/admin/call-requests/call-requests-kpi-cards";
 import { loadBookCallRequests } from "@/lib/admin/call-requests";
+import type { BookCallRequestDateRange } from "@/lib/book-call/admin";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
-import { bookCallRequestStatuses } from "@/lib/book-call/validation";
 
 type CallRequestsPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
-
-const statusLabels = {
-  new: "Nouveau",
-  contacted: "Contacte",
-  qualified: "Qualifie",
-  closed: "Ferme",
-  spam: "Spam",
-  converted: "Converti"
-} as const;
 
 function firstParam(
   value: string | string[] | undefined,
   fallback = ""
 ) {
   return Array.isArray(value) ? value[0] ?? fallback : value ?? fallback;
+}
+
+function parseDateRange(value: string): BookCallRequestDateRange {
+  if (value === "7" || value === "30" || value === "90" || value === "all") {
+    return value;
+  }
+
+  return "30";
 }
 
 export default async function CallRequestsPage({
@@ -37,66 +33,54 @@ export default async function CallRequestsPage({
   const resolvedSearchParams = searchParams ? await searchParams : {};
   const status = firstParam(resolvedSearchParams.status, "all");
   const q = firstParam(resolvedSearchParams.q);
+  const range = parseDateRange(firstParam(resolvedSearchParams.range, "30"));
   const notice = firstParam(resolvedSearchParams.notice);
   const errorMessage = firstParam(resolvedSearchParams.error);
   const { filteredRequests, stats, error } = await loadBookCallRequests({
     q,
-    status
+    status,
+    range
   });
 
   return (
     <div className="grid gap-6">
-      <DashboardPageHeader
-        description="Consultez les demandes d'appel Open Spot, contactez les commerces et gardez le statut de suivi a jour tout en gardant le suivi manuel."
-        title="Demandes d'appel"
-      />
+      <CallRequestsHeader />
 
       {notice ? (
-        <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800">
+        <p
+          className="rounded-[16px] border border-[#bbf7d0] bg-[#ecfdf5] px-4 py-3 text-sm font-semibold text-[#16a34a]"
+          role="status"
+        >
           {notice}
         </p>
       ) : null}
       {errorMessage || error ? (
-        <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-800">
+        <p
+          className="rounded-[16px] border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-sm font-semibold text-[#dc2626]"
+          role="alert"
+        >
           {errorMessage || error}
         </p>
       ) : null}
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard detail="Toutes les demandes sauvegardees" label="Total" value={String(stats.total)} />
-        <MetricCard detail="Demandes a traiter" label="Nouvelles" tone="violet" value={String(stats.new)} />
-        <MetricCard detail="Suivi deja commence" label="Contactees" value={String(stats.contacted)} />
-        <MetricCard detail="Demandes pretes pour vente" label="Qualifiees" tone="green" value={String(stats.qualified)} />
-      </div>
+      <CallRequestsKpiCards stats={stats} />
 
-      <Panel
-        description="Les liens SMS et email servent au suivi manuel seulement. Aucun SMS marketing et aucune validation de rendez-vous ne part depuis cette page."
-        title="Boite de demandes"
-      >
-        <form className="mb-5 grid gap-3 md:grid-cols-[1fr_14rem_auto]" method="get">
-          <input
-            className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm font-semibold"
-            defaultValue={q}
-            name="q"
-            placeholder="Rechercher nom, commerce, email, telephone..."
-          />
-          <select
-            className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-4 text-sm font-bold"
-            defaultValue={status}
-            name="status"
-          >
-            <option value="all">Tous les statuts</option>
-            {bookCallRequestStatuses.map((requestStatus) => (
-              <option key={requestStatus} value={requestStatus}>
-                {statusLabels[requestStatus]}
-              </option>
-            ))}
-          </select>
-          <Button type="submit">Filtrer</Button>
-        </form>
+      <section className="rounded-[20px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
+        <div className="mb-5">
+          <h2 className="text-lg font-bold text-[#0b1328]">Boîte de demandes</h2>
+          <p className="mt-1 text-sm italic leading-6 text-[#64748b]">
+            Les liens SMS et email servent au suivi manuel seulement. Aucun SMS
+            marketing et aucune validation de rendez-vous ne part depuis cette
+            page.
+          </p>
+        </div>
 
-        <CallRequestsTable requests={filteredRequests} />
-      </Panel>
+        <CallRequestsFilters q={q} range={range} status={status} />
+
+        <div className="pt-5">
+          <CallRequestsTable requests={filteredRequests} />
+        </div>
+      </section>
     </div>
   );
 }
