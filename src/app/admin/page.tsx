@@ -16,24 +16,6 @@ import { TopCompaniesTable } from "@/components/admin/overview/top-companies-tab
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
 import { loadAdminOverviewData } from "@/lib/admin/overview-data";
 
-function resolveSmsRangeParam(
-  searchParams: Record<string, string | string[] | undefined>
-) {
-  const value = Array.isArray(searchParams.smsRange)
-    ? searchParams.smsRange[0]
-    : searchParams.smsRange;
-
-  if (value === "7d") {
-    return "7d";
-  }
-
-  if (value === "90d") {
-    return "90d";
-  }
-
-  return "30d";
-}
-
 export default async function AdminPage({
   searchParams
 }: {
@@ -64,7 +46,6 @@ export default async function AdminPage({
     admin: access.admin,
     searchParams: resolvedSearchParams
   });
-  const smsRangeParam = resolveSmsRangeParam(resolvedSearchParams);
 
   return (
     <section className="flex flex-col gap-6">
@@ -100,7 +81,6 @@ export default async function AdminPage({
           maxCount={data.smsActivity.maxCount}
           points={data.smsActivity.points}
           range={data.smsActivity.range}
-          topPage={data.topCompanies.page}
         />
         <AdminSummaryCard className="xl:col-span-3" items={data.operationalSummary} />
         <AdminProfileCard className="xl:col-span-3" profile={data.adminProfile} />
@@ -109,11 +89,8 @@ export default async function AdminPage({
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         <TopCompaniesTable
           className="xl:col-span-7"
-          page={data.topCompanies.page}
           rows={data.topCompanies.rows}
-          smsRange={smsRangeParam}
           totalCount={data.topCompanies.totalCount}
-          totalPages={data.topCompanies.totalPages}
         />
         <div className="flex flex-col gap-5 xl:col-span-5">
           <RecentCallRequestsCard rows={data.recentCallRequests} />

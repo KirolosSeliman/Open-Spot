@@ -90,10 +90,7 @@ export type AdminOverviewData = {
   adminProfile: AdminProfileInfo;
   topCompanies: {
     rows: TopCompanyRow[];
-    page: number;
-    pageSize: number;
     totalCount: number;
-    totalPages: number;
   };
   recentCallRequests: RecentCallRequestRow[];
   auditLogs: AuditLogRow[];
@@ -108,7 +105,7 @@ export type AdminOverviewData = {
   };
 };
 
-const TOP_PAGE_SIZE = 5;
+const SMS_HISTORY_DAYS = 90;
 
 const roleLabels: Record<string, string> = {
   super_admin: "Super administrateur",
@@ -138,16 +135,6 @@ function parseSmsRange(value: string | undefined): SmsChartRange {
   }
 
   return "30";
-}
-
-function parseTopPage(value: string | undefined) {
-  const page = Number(value ?? 1);
-
-  if (!Number.isFinite(page) || page < 1) {
-    return 1;
-  }
-
-  return Math.floor(page);
 }
 
 function getRangeBounds(days: number, now = new Date()) {
@@ -346,9 +333,6 @@ export async function loadAdminOverviewData({
       ? searchParams.smsRange[0]
       : searchParams.smsRange
   );
-  const topPage = parseTopPage(
-    Array.isArray(searchParams.topPage) ? searchParams.topPage[0] : searchParams.topPage
-  );
 
   const [currentOrganizations, callRequestsResult] = await Promise.all([
     loadAdminOrganizations({ admin, timeRange: "30", tab: "active" }),
@@ -368,6 +352,7 @@ export async function loadAdminOverviewData({
   const current30 = getRangeBounds(30);
   const previous30 = getPreviousRangeBounds(30);
   const chartRange = getRangeBounds(Number(smsRange));
+  const smsLoadRange = getRangeBounds(SMS_HISTORY_DAYS);
   const next7DaysEnd = new Date();
   next7DaysEnd.setDate(next7DaysEnd.getDate() + 7);
 
@@ -390,8 +375,8 @@ export async function loadAdminOverviewData({
           .select("id, organization_id, direction, provider, status, created_at")
           .in("organization_id", organizationIds)
           .eq("direction", "outbound")
-          .gte("created_at", previous30.fromIso)
-          .lte("created_at", current30.toIso)
+          .gte("created_at", smsLoadRange.fromIso)
+          .lte("created_at", smsLoadRange.toIso)
       : Promise.resolve({ data: [], error: null }),
     organizationIds.length > 0
       ? supabase
@@ -648,12 +633,6 @@ export async function loadAdminOverviewData({
   });
 
   const topCompaniesAll = buildTopCompanyRows(activeOrganizations);
-  const totalPages = Math.max(1, Math.ceil(topCompaniesAll.length / TOP_PAGE_SIZE));
-  const normalizedTopPage = Math.min(topPage, totalPages);
-  const topCompaniesSlice = topCompaniesAll.slice(
-    (normalizedTopPage - 1) * TOP_PAGE_SIZE,
-    normalizedTopPage * TOP_PAGE_SIZE
-  );
 
   const organizationNameById = new Map(
     activeOrganizations.map((organization) => [organization.id, organization.name])
@@ -759,11 +738,8 @@ export async function loadAdminOverviewData({
     ],
     adminProfile,
     topCompanies: {
-      rows: topCompaniesSlice,
-      page: normalizedTopPage,
-      pageSize: TOP_PAGE_SIZE,
-      totalCount: topCompaniesAll.length,
-      totalPages
+      rows: topCompaniesAll,
+      totalCount: topCompaniesAll.length
     },
     recentCallRequests: (callRequestsResult.requests ?? []).slice(0, 4).map((request) => ({
       id: request.id,
