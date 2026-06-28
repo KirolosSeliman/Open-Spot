@@ -28,7 +28,7 @@ export default async function AdminLayout({
         };
 
   return (
-    <div className="open-spot-dashboard-theme min-h-screen bg-[#f7f5ef] text-[var(--foreground)]">
+    <div className="open-spot-dashboard-theme min-h-screen bg-[#f8fbff] text-[var(--foreground)]">
       <div className="mx-auto flex w-full max-w-[1500px] gap-6 px-3 py-3 lg:px-5">
         <AdminSidebar admin={admin} />
 
@@ -41,7 +41,7 @@ export default async function AdminLayout({
               <AdminMobileNav />
             </div>
           </SiteHeaderShell>
-          <main className="mx-auto w-full max-w-6xl px-2 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-8 lg:pt-8">
+          <main className="mx-auto w-full max-w-[1200px] px-2 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-8 lg:pt-8">
             {children}
           </main>
         </div>

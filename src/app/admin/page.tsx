@@ -1,43 +1,58 @@
-import Link from "next/link";
-
-import { Card } from "@/components/ui/card";
-import { signOutAction } from "@/lib/auth/actions";
+import { AdminAuditLogCard } from "@/components/admin/overview/admin-audit-log-card";
+import {
+  BuildingIcon,
+  CalendarIcon,
+  DollarIcon,
+  MessageIcon,
+  WarningIcon
+} from "@/components/admin/overview/admin-overview-icons";
+import { AdminOverviewHeader } from "@/components/admin/overview/admin-overview-header";
+import { AdminKpiCard } from "@/components/admin/overview/admin-kpi-card";
+import { AdminProfileCard } from "@/components/admin/overview/admin-profile-card";
+import { AdminSmsActivityCard } from "@/components/admin/overview/admin-sms-activity-card";
+import { AdminSummaryCard } from "@/components/admin/overview/admin-summary-card";
+import { RecentCallRequestsCard } from "@/components/admin/overview/recent-call-requests-card";
+import { TopCompaniesTable } from "@/components/admin/overview/top-companies-table";
 import { requireCurrentPlatformAdmin } from "@/lib/auth/platform-admin";
-import { loadAdminOverview } from "@/lib/admin/organizations";
-import { formatEstimatedSmsCost } from "@/lib/admin/sms-cost";
+import { loadAdminOverviewData } from "@/lib/admin/overview-data";
 
-const numberFormatter = new Intl.NumberFormat("en-CA");
+function resolveSmsRangeParam(
+  searchParams: Record<string, string | string[] | undefined>
+) {
+  const value = Array.isArray(searchParams.smsRange)
+    ? searchParams.smsRange[0]
+    : searchParams.smsRange;
 
-function StatCard({
-  label,
-  value,
-  note
-}: {
-  label: string;
-  value: string;
-  note?: string;
-}) {
-  return (
-    <Card className="shadow-[var(--card-shadow)]">
-      <p className="text-sm font-bold text-[var(--muted)]">{label}</p>
-      <p className="mt-3 text-3xl font-black text-[var(--foreground)]">{value}</p>
-      {note ? <p className="mt-2 text-xs text-[var(--muted)]">{note}</p> : null}
-    </Card>
-  );
+  if (value === "7d") {
+    return "7d";
+  }
+
+  if (value === "90d") {
+    return "90d";
+  }
+
+  return "30d";
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams
+}: {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const access = await requireCurrentPlatformAdmin();
 
   if (access.status === "unconfigured") {
     return (
       <section className="grid gap-6">
         <div>
-          <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#2563ff]">
             Admin Open Spot
           </p>
-          <h1 className="mt-2 text-3xl font-black">Admin access is not configured.</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
+          <h1 className="mt-2 text-3xl font-bold text-[#0b1328]">
+            L&apos;accès administrateur n&apos;est pas configuré.
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-[#657492]">
             {access.message}
           </p>
         </div>
@@ -45,78 +60,63 @@ export default async function AdminPage() {
     );
   }
 
-  const overview = await loadAdminOverview({ admin: access.admin });
+  const data = await loadAdminOverviewData({
+    admin: access.admin,
+    searchParams: resolvedSearchParams
+  });
+  const smsRangeParam = resolveSmsRangeParam(resolvedSearchParams);
 
   return (
     <section className="grid gap-6">
-      <div className="rounded-[2rem] border border-[var(--line)] bg-white/90 p-5 shadow-[var(--card-shadow)] sm:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.16em] text-[var(--primary)]">
-            Admin Open Spot
-          </p>
-          <h1 className="mt-2 text-3xl font-black">Vue interne plateforme</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--muted)]">
-            Read-only operational overview for companies visible to your admin
-            account.
-          </p>
-        </div>
-        <Link
-          className="inline-flex min-h-11 items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white transition hover:bg-[var(--primary-strong)]"
-          href="/admin/organizations"
-        >
-          View companies
-        </Link>
-      </div>
+      <AdminOverviewHeader exportPayload={data.exportPayload} />
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <AdminKpiCard
+          icon={<BuildingIcon className="h-5 w-5" />}
+          metric={data.kpis[0]!}
+        />
+        <AdminKpiCard
+          icon={<MessageIcon className="h-5 w-5" />}
+          metric={data.kpis[1]!}
+        />
+        <AdminKpiCard
+          icon={<DollarIcon className="h-5 w-5" />}
+          metric={data.kpis[2]!}
+        />
+        <AdminKpiCard
+          icon={<CalendarIcon className="h-5 w-5" />}
+          metric={data.kpis[3]!}
+        />
+        <AdminKpiCard
+          icon={<WarningIcon className="h-5 w-5 text-[#ef4444]" />}
+          iconClassName="bg-[#fef2f2] text-[#ef4444]"
+          metric={data.kpis[4]!}
+        />
       </div>
 
-      <Card className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-black">{overview.admin.email}</p>
-          <p className="mt-1 text-xs text-[var(--muted)]">
-            Role: {overview.admin.role}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="w-fit rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--muted)]">
-            Lecture seule
-          </span>
-          <form action={signOutAction}>
-            <button
-              className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)] transition hover:bg-slate-50"
-              type="submit"
-            >
-              Déconnexion
-            </button>
-          </form>
-        </div>
-      </Card>
+      <div className="grid gap-4 xl:grid-cols-4">
+        <AdminSmsActivityCard
+          maxCount={data.smsActivity.maxCount}
+          points={data.smsActivity.points}
+          range={data.smsActivity.range}
+          topPage={data.topCompanies.page}
+        />
+        <AdminSummaryCard items={data.operationalSummary} />
+        <AdminProfileCard profile={data.adminProfile} />
+      </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <StatCard
-          label="Companies visible"
-          value={numberFormatter.format(overview.visibleCompaniesCount)}
+      <div className="grid gap-4 xl:grid-cols-5">
+        <TopCompaniesTable
+          page={data.topCompanies.page}
+          rows={data.topCompanies.rows}
+          smsRange={smsRangeParam}
+          totalCount={data.topCompanies.totalCount}
+          totalPages={data.topCompanies.totalPages}
         />
-        <StatCard
-          label="SMS sent"
-          note="Last 30 days"
-          value={numberFormatter.format(overview.outboundSmsCount)}
-        />
-        <StatCard
-          label="Estimated SMS cost"
-          note="Estimated, not an invoice"
-          value={formatEstimatedSmsCost(overview.estimatedSmsCostCents)}
-        />
-        <StatCard
-          label="Filled spots"
-          note="Validated openings only"
-          value={numberFormatter.format(overview.filledSpotsCount)}
-        />
-        <StatCard
-          label="Failed reminders"
-          note="Scheduled queue"
-          value={numberFormatter.format(overview.failedScheduledMessagesCount)}
-        />
+        <div className="grid gap-4 xl:col-span-2">
+          <RecentCallRequestsCard rows={data.recentCallRequests} />
+          <AdminAuditLogCard rows={data.auditLogs} />
+        </div>
       </div>
     </section>
   );

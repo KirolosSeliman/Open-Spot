@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode, SVGProps } from "react";
 
 import { signOutAction } from "@/lib/auth/actions";
 import { cn } from "@/lib/utils/cn";
@@ -9,31 +10,111 @@ import { cn } from "@/lib/utils/cn";
 type AdminInfo = {
   email: string;
   role: string;
+  displayName?: string;
+  initials?: string;
 };
 
 type NavItem = {
   href: string;
   label: string;
+  icon: (props: SVGProps<SVGSVGElement>) => ReactNode;
   activeMatch?: "exact" | "nested";
+  disabled?: boolean;
 };
 
+function OverviewIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1z" />
+    </svg>
+  );
+}
+
+function BuildingIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="M4 21V7l8-4 8 4v14" />
+      <path d="M9 21v-6h6v6" />
+    </svg>
+  );
+}
+
+function PhoneIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72c.12.86.31 1.7.57 2.5a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.58-1.09a2 2 0 0 1 2.11-.45c.8.26 1.64.45 2.5.57A2 2 0 0 1 22 16.92z" />
+    </svg>
+  );
+}
+
+function MessageIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z" />
+    </svg>
+  );
+}
+
+function ReplyIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="m9 11-4 4 4 4" />
+      <path d="M20 4v7a4 4 0 0 1-4 4H5" />
+    </svg>
+  );
+}
+
+function ShieldIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="M12 3 20 7v6c0 5-3.5 8-8 8s-8-3-8-8V7z" />
+    </svg>
+  );
+}
+
+function AuditIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+    </svg>
+  );
+}
+
+function SettingsIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.75" viewBox="0 0 24 24" {...props}>
+      <path d="m9 6 6 6-6 6" />
+    </svg>
+  );
+}
+
 const adminNav: NavItem[] = [
-  { href: "/admin", label: "Overview", activeMatch: "exact" },
-  { href: "/admin/organizations", label: "Companies" },
-  { href: "/admin/call-requests", label: "Call Requests" },
-  { href: "/admin/sms", label: "SMS" },
-  { href: "/admin/replies", label: "Replies" },
-  { href: "/admin/compliance", label: "Compliance" },
-  { href: "/admin/audit", label: "Audit" }
+  { href: "/admin", label: "Vue d'ensemble", icon: OverviewIcon, activeMatch: "exact" },
+  { href: "/admin/organizations", label: "Compagnies", icon: BuildingIcon },
+  { href: "/admin/call-requests", label: "Demandes d'appel", icon: PhoneIcon },
+  { href: "/admin/sms", label: "SMS", icon: MessageIcon },
+  { href: "/admin/replies", label: "Réponses", icon: ReplyIcon },
+  { href: "/admin/compliance", label: "Conformité", icon: ShieldIcon },
+  { href: "/admin/audit", label: "Audit", icon: AuditIcon },
+  { href: "/admin", label: "Paramètres", icon: SettingsIcon, disabled: true }
 ];
 
 const companySetupNav: NavItem[] = [
-  { href: "", label: "Overview", activeMatch: "exact" },
-  { href: "/onboarding", label: "Onboarding" },
-  { href: "/billing", label: "Billing" },
-  { href: "/sms", label: "SMS" },
-  { href: "/replies", label: "Replies" },
-  { href: "/compliance", label: "Compliance" }
+  { href: "", label: "Overview", icon: OverviewIcon, activeMatch: "exact" },
+  { href: "/onboarding", label: "Onboarding", icon: BuildingIcon },
+  { href: "/billing", label: "Billing", icon: BuildingIcon },
+  { href: "/sms", label: "SMS", icon: MessageIcon },
+  { href: "/replies", label: "Replies", icon: ReplyIcon },
+  { href: "/compliance", label: "Compliance", icon: ShieldIcon }
 ];
 
 const ORGANIZATION_PATH_PATTERN = /^\/admin\/organizations\/([^/]+)/;
@@ -66,30 +147,65 @@ function isActiveCompanyNavItem(
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-const navLinkClassName =
-  "rounded-2xl px-4 py-3 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]";
+function getInitials(admin: AdminInfo) {
+  if (admin.initials) {
+    return admin.initials;
+  }
+
+  const source = admin.displayName?.trim() || admin.email.trim();
+
+  if (!source) {
+    return "AD";
+  }
+
+  const parts = source.split(/\s+/).filter(Boolean);
+
+  if (parts.length >= 2) {
+    return `${parts[0]?.[0] ?? ""}${parts[1]?.[0] ?? ""}`.toUpperCase();
+  }
+
+  return source.slice(0, 2).toUpperCase();
+}
 
 function NavLink({
   href,
   label,
-  isActive
+  icon: Icon,
+  isActive,
+  disabled
 }: {
   href: string;
   label: string;
+  icon: NavItem["icon"];
   isActive: boolean;
+  disabled?: boolean;
 }) {
-  return (
-    <Link
-      aria-current={isActive ? "page" : undefined}
-      className={cn(
-        navLinkClassName,
-        isActive
-          ? "bg-[#f2f7f4] text-[var(--foreground)]"
-          : "text-[var(--muted)] hover:bg-[#f2f7f4] hover:text-[var(--foreground)]"
-      )}
-      href={href}
-    >
+  const className = cn(
+    "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]",
+    isActive
+      ? "bg-[#eff6ff] text-[#2563ff] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#2563ff]"
+      : "text-[#657492] hover:bg-[#f8fbff] hover:text-[#2563ff]",
+    disabled && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-[#657492]"
+  );
+
+  const content = (
+    <>
+      <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-[#2563ff]" : "text-[#94a3b8]")} />
       {label}
+    </>
+  );
+
+  if (disabled) {
+    return (
+      <span className={className} title="Paramètres à venir">
+        {content}
+      </span>
+    );
+  }
+
+  return (
+    <Link aria-current={isActive ? "page" : undefined} className={className} href={href}>
+      {content}
     </Link>
   );
 }
@@ -97,16 +213,17 @@ function NavLink({
 export function AdminSidebar({ admin }: { admin: AdminInfo }) {
   const pathname = usePathname();
   const organizationId = extractOrganizationId(pathname);
+  const displayName = admin.displayName?.trim() || admin.email;
 
   return (
-    <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[2rem] border border-[var(--line)] bg-white/90 p-4 shadow-[0_24px_70px_rgba(36,54,66,0.08)] lg:flex lg:flex-col">
+    <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[22px] border border-[#e1e9f5] bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] lg:flex lg:flex-col">
       <Link
-        className="rounded-2xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+        className="rounded-xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
         href="/admin"
       >
-        <p className="text-lg font-black">Admin Open Spot</p>
-        <p className="mt-1 text-xs font-semibold text-[var(--muted)]">
-          Vue interne plateforme
+        <p className="text-lg font-bold text-[#0b1328]">Open Spot</p>
+        <p className="mt-1 text-[11px] font-bold uppercase tracking-[0.16em] text-[#657492]">
+          Admin
         </p>
       </Link>
 
@@ -114,9 +231,11 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
         <nav aria-label="Navigation admin" className="grid gap-1">
           {adminNav.map((item) => (
             <NavLink
+              disabled={item.disabled}
               href={item.href}
-              isActive={isActiveNavItem(pathname, item)}
-              key={item.href}
+              icon={item.icon}
+              isActive={!item.disabled && isActiveNavItem(pathname, item)}
+              key={item.label}
               label={item.label}
             />
           ))}
@@ -125,9 +244,9 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
         {organizationId ? (
           <nav
             aria-label="Company setup navigation"
-            className="mt-6 border-t border-[var(--line)] pt-5"
+            className="mt-6 border-t border-[#edf2f9] pt-5"
           >
-            <p className="px-4 pb-2 text-[11px] font-black uppercase tracking-[0.14em] text-[var(--muted)]">
+            <p className="px-3 pb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#657492]">
               Company setup
             </p>
             <div className="grid gap-1">
@@ -137,6 +256,7 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
                 return (
                   <NavLink
                     href={href}
+                    icon={item.icon}
                     isActive={isActiveCompanyNavItem(
                       pathname,
                       organizationId,
@@ -153,24 +273,35 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
         ) : null}
       </div>
 
-      <div className="mt-auto rounded-2xl border border-[var(--line)] bg-[#fbfaf7] p-4">
-        <p className="text-sm font-black">{admin.email}</p>
-        <p className="mt-1 text-xs leading-5 text-[var(--muted)]">
-          {admin.role} · Lecture seule
-        </p>
+      <div className="mt-auto rounded-[18px] border border-[#e1e9f5] bg-[#f8fbff] p-4">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#2563ff] text-sm font-bold text-white">
+            {getInitials(admin)}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-bold text-[#0b1328]">{displayName}</p>
+            <p className="truncate text-xs text-[#657492]">{admin.role}</p>
+            <p className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[#16a34a]">
+              <span aria-hidden="true" className="h-2 w-2 rounded-full bg-[#16a34a]" />
+              En ligne
+            </p>
+          </div>
+          <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#657492]" />
+        </div>
+
         <div className="mt-4 grid gap-2">
           <Link
-            className="rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-center text-sm font-black text-[var(--foreground)] transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+            className="rounded-xl border border-[#e1e9f5] bg-white px-4 py-2.5 text-center text-sm font-semibold text-[#0b1328] transition hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
             href="/dashboard"
           >
-            Back to merchant dashboard
+            Retour au dashboard marchand
           </Link>
           <form action={signOutAction}>
             <button
-              className="w-full rounded-2xl border border-[var(--line)] bg-white px-4 py-3 text-sm font-black text-[var(--foreground)] transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+              className="w-full rounded-xl border border-[#e1e9f5] bg-white px-4 py-2.5 text-sm font-semibold text-[#0b1328] transition hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
               type="submit"
             >
-              Logout
+              Déconnexion
             </button>
           </form>
         </div>
@@ -180,7 +311,7 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
 }
 
 const mobilePillClassName =
-  "rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black transition hover:bg-[#f2f7f4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]";
+  "rounded-full border border-[#e1e9f5] bg-white px-3 py-2 text-xs font-bold transition hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]";
 
 function MobilePillLink({
   href,
@@ -196,7 +327,7 @@ function MobilePillLink({
       aria-current={isActive ? "page" : undefined}
       className={cn(
         mobilePillClassName,
-        isActive && "border-[#d8e8df] bg-[#f2f7f4] text-[var(--foreground)]"
+        isActive && "border-[#bfdbfe] bg-[#eff6ff] text-[#2563ff]"
       )}
       href={href}
     >
@@ -238,17 +369,17 @@ export function AdminMobileNav() {
 
   return (
     <nav aria-label="Admin mobile navigation" className="flex items-center gap-2">
+      <MobilePillLink href="/admin" isActive={pathname === "/admin"} label="Vue" />
       <MobilePillLink
         href="/admin/organizations"
         isActive={pathname.startsWith("/admin/organizations")}
-        label="Companies"
+        label="Compagnies"
       />
       <MobilePillLink
         href="/admin/call-requests"
         isActive={pathname.startsWith("/admin/call-requests")}
-        label="Calls"
+        label="Appels"
       />
-      <MobilePillLink href="/dashboard" label="Dashboard" />
     </nav>
   );
 }

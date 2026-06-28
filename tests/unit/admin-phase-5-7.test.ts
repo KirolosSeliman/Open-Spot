@@ -119,16 +119,16 @@ describe("admin phase 5 to 7 helpers", () => {
       join(process.cwd(), "src", "app", "admin", "page.tsx"),
       "utf8"
     );
-    const adminOrganizations = readFileSync(
-      join(process.cwd(), "src", "lib", "admin", "organizations.ts"),
+    const overviewData = readFileSync(
+      join(process.cwd(), "src", "lib", "admin", "overview-data.ts"),
       "utf8"
     );
 
-    expect(adminOrganizations).toContain("failedScheduledMessagesCount");
-    expect(adminOrganizations).toContain('.from("scheduled_messages")');
-    expect(adminOrganizations).toContain('.eq("status", "failed")');
-    expect(adminPage).toContain("Failed reminders");
-    expect(adminPage).toContain("overview.failedScheduledMessagesCount");
+    expect(overviewData).toContain('.from("scheduled_messages")');
+    expect(overviewData).toContain('.eq("status", "failed")');
+    expect(overviewData).toContain("failedRemindersCurrent");
+    expect(overviewData).toContain("Rappels échoués");
+    expect(adminPage).toContain("loadAdminOverviewData");
   });
 
   it("adds diagnostics, compliance, and controls tables safely", () => {
