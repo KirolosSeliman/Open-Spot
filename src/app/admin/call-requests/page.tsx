@@ -43,12 +43,12 @@ export default async function CallRequestsPage({
   });
 
   return (
-    <div className="grid gap-6">
+    <div className="flex min-h-[calc(100dvh-5.5rem)] flex-col gap-4 lg:min-h-[calc(100dvh-4.5rem)] lg:gap-5">
       <CallRequestsHeader />
 
       {notice ? (
         <p
-          className="rounded-[16px] border border-[#bbf7d0] bg-[#ecfdf5] px-4 py-3 text-sm font-semibold text-[#16a34a]"
+          className="shrink-0 rounded-[16px] border border-[#bbf7d0] bg-[#ecfdf5] px-4 py-3 text-sm font-semibold text-[#16a34a]"
           role="status"
         >
           {notice}
@@ -56,7 +56,7 @@ export default async function CallRequestsPage({
       ) : null}
       {errorMessage || error ? (
         <p
-          className="rounded-[16px] border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-sm font-semibold text-[#dc2626]"
+          className="shrink-0 rounded-[16px] border border-[#fecaca] bg-[#fef2f2] px-4 py-3 text-sm font-semibold text-[#dc2626]"
           role="alert"
         >
           {errorMessage || error}
@@ -65,10 +65,12 @@ export default async function CallRequestsPage({
 
       <CallRequestsKpiCards stats={stats} />
 
-      <section className="rounded-[20px] border border-[#e3eaf5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-6">
-        <div className="mb-5">
-          <h2 className="text-lg font-bold text-[#0b1328]">Boîte de demandes</h2>
-          <p className="mt-1 text-sm italic leading-6 text-[#64748b]">
+      <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-[20px] border border-[#e3eaf5] bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] sm:p-5">
+        <div className="mb-4 shrink-0">
+          <h2 className="text-base font-bold text-[#0b1328] xl:text-lg">
+            Boîte de demandes
+          </h2>
+          <p className="mt-1 text-xs italic leading-5 text-[#64748b] xl:text-sm xl:leading-6">
             Les liens SMS et email servent au suivi manuel seulement. Aucun SMS
             marketing et aucune validation de rendez-vous ne part depuis cette
             page.
@@ -77,7 +79,7 @@ export default async function CallRequestsPage({
 
         <CallRequestsFilters q={q} range={range} status={status} />
 
-        <div className="pt-5">
+        <div className="min-h-0 flex-1 overflow-hidden pt-4">
           <CallRequestsTable requests={filteredRequests} />
         </div>
       </section>

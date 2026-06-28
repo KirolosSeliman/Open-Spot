@@ -68,16 +68,16 @@ export function CallRequestsFilters({
   return (
     <form
       action={applyFilters}
-      className="flex flex-col gap-3 border-b border-[#e3eaf5] pb-5 lg:flex-row lg:items-center"
+      className="grid shrink-0 gap-3 border-b border-[#e3eaf5] pb-4 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_11rem_12rem] xl:items-center"
     >
-      <label className="min-w-0 flex-1">
+      <label className="min-w-0 sm:col-span-2 xl:col-span-1">
         <span className="sr-only">
           Rechercher un nom, commerce, email, téléphone
         </span>
         <div className="relative">
           <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#94a3b8]" />
           <input
-            className="h-11 w-full rounded-xl border border-[#e3eaf5] bg-white pl-10 pr-4 text-sm text-[#0b1328] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2563ff] focus:ring-2 focus:ring-[#2563ff]/10 disabled:opacity-60"
+            className="h-10 w-full rounded-xl border border-[#e3eaf5] bg-white pl-10 pr-4 text-sm text-[#0b1328] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2563ff] focus:ring-2 focus:ring-[#2563ff]/10 disabled:opacity-60 xl:h-11"
             defaultValue={q}
             disabled={isPending}
             name="q"
@@ -93,10 +93,10 @@ export function CallRequestsFilters({
         </div>
       </label>
 
-      <label className="relative min-w-[180px]">
+      <label className="relative min-w-0">
         <span className="sr-only">Filtrer par statut</span>
         <select
-          className="h-11 w-full appearance-none rounded-xl border border-[#e3eaf5] bg-white px-3.5 pr-9 text-sm font-medium text-[#0b1328] outline-none transition focus:border-[#2563ff] focus:ring-2 focus:ring-[#2563ff]/10 disabled:opacity-60"
+          className="h-10 w-full appearance-none rounded-xl border border-[#e3eaf5] bg-white px-3.5 pr-9 text-sm font-medium text-[#0b1328] outline-none transition focus:border-[#2563ff] focus:ring-2 focus:ring-[#2563ff]/10 disabled:opacity-60 xl:h-11"
           defaultValue={status}
           disabled={isPending}
           name="status"
@@ -114,11 +114,11 @@ export function CallRequestsFilters({
         <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]" />
       </label>
 
-      <label className="relative min-w-[190px]">
+      <label className="relative min-w-0">
         <span className="sr-only">Filtrer par période</span>
         <CalendarIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94a3b8]" />
         <select
-          className="h-11 w-full appearance-none rounded-xl border border-[#e3eaf5] bg-white pl-9 pr-9 text-sm font-medium text-[#0b1328] outline-none transition focus:border-[#2563ff] focus:ring-2 focus:ring-[#2563ff]/10 disabled:opacity-60"
+          className="h-10 w-full appearance-none rounded-xl border border-[#e3eaf5] bg-white pl-9 pr-9 text-sm font-medium text-[#0b1328] outline-none transition focus:border-[#2563ff] focus:ring-2 focus:ring-[#2563ff]/10 disabled:opacity-60 xl:h-11"
           defaultValue={range}
           disabled={isPending}
           name="range"
