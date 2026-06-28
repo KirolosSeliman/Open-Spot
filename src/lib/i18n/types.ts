@@ -12,7 +12,6 @@ export type Dictionary = {
   import: CopyNamespace;
   marketing: CopyNamespace;
   navigation: CopyNamespace;
-  onboarding: CopyNamespace;
   openings: CopyNamespace;
   reports: CopyNamespace;
   responses: CopyNamespace;

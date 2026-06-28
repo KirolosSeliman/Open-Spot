@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         provider: provider.getProviderName(),
-        error: "Opening send is blocked until onboarding, billing, and SMS activation are complete.",
+        error: "Opening send is blocked until billing and SMS activation are complete.",
         blockingReasons: readiness.blockingReasons,
         onboardingStatus: readiness.onboardingStatus,
         billingStatus: readiness.billingStatus,

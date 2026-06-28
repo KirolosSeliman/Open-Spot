@@ -2,7 +2,7 @@ import { normalizePhoneToE164 } from "@/lib/customers/phone";
 import {
   buildOrganizationCreateInput,
   normalizeOrganizationSlug
-} from "@/lib/organization/onboarding";
+} from "@/lib/organization/organization-input";
 import type { Locale } from "@/lib/i18n/types";
 
 export type OrganizationBusinessInfoInput = {

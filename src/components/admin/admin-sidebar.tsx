@@ -108,9 +108,8 @@ const adminNav: NavItem[] = [
   { href: "/admin", label: "Paramètres", icon: SettingsIcon, disabled: true }
 ];
 
-const companySetupNav: NavItem[] = [
-  { href: "", label: "Overview", icon: OverviewIcon, activeMatch: "exact" },
-  { href: "/onboarding", label: "Onboarding", icon: BuildingIcon }
+const companyNav: NavItem[] = [
+  { href: "", label: "Overview", icon: OverviewIcon, activeMatch: "exact" }
 ];
 
 const ORGANIZATION_PATH_PATTERN = /^\/admin\/organizations\/([^/]+)/;
@@ -239,14 +238,14 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
 
         {organizationId ? (
           <nav
-            aria-label="Company setup navigation"
+            aria-label="Company navigation"
             className="mt-6 border-t border-[#edf2f9] pt-5"
           >
             <p className="px-3 pb-2 text-[11px] font-bold uppercase tracking-[0.14em] text-[#657492]">
-              Company setup
+              Company
             </p>
             <div className="grid gap-1">
-              {companySetupNav.map((item) => {
+              {companyNav.map((item) => {
                 const href = `/admin/organizations/${organizationId}${item.href}`;
 
                 return (
@@ -341,7 +340,7 @@ export function AdminMobileNav() {
 
     return (
       <nav
-        aria-label="Company setup mobile navigation"
+        aria-label="Company mobile navigation"
         className="flex flex-wrap items-center gap-2"
       >
         <MobilePillLink

@@ -126,8 +126,8 @@ const allMigrationFiles = readdirSync(migrationDirectory)
   .filter((fileName) => fileName.endsWith(".sql"))
   .sort();
 
-const organizationActions = readFileSync(
-  join(process.cwd(), "src", "lib", "organization", "actions.ts"),
+const bookCallConversion = readFileSync(
+  join(process.cwd(), "src", "lib", "book-call", "conversion.ts"),
   "utf8"
 );
 
@@ -223,11 +223,10 @@ describe("phase 2 migration safety", () => {
   });
 
   it("does not use service-role manual rollback for organization bootstrap", () => {
-    expect(organizationActions).toContain(
-      'supabase.rpc("create_organization_with_owner"'
+    expect(bookCallConversion).toContain(
+      "admin_bootstrap_organization_from_call_request"
     );
-    expect(organizationActions).not.toContain("createSupabaseServiceClient");
-    expect(organizationActions).not.toContain(".delete()");
+    expect(bookCallConversion).not.toContain(".delete()");
   });
 
   it("prevents accidental second organizations until a switcher exists", () => {
@@ -243,8 +242,7 @@ describe("phase 2 migration safety", () => {
     expect(singleOrganizationMigration).toContain(
       "User already belongs to an organization."
     );
-    expect(organizationActions).toContain('.from("organization_members")');
-    expect(organizationActions).toContain('redirect("/dashboard")');
+    expect(bookCallConversion).toContain("already belongs to an organization");
   });
 
   it("keeps organization creation auditable without storing contact PII in metadata", () => {

@@ -40,15 +40,19 @@ describe("private route security", () => {
     expect(middlewareSource).toContain('redirectTo(request, "/sign-in")');
   });
 
-  it("does not force authenticated dashboard users through commerce setup onboarding", () => {
+  it("does not force authenticated dashboard users through onboarding", () => {
     expect(middlewareSource).not.toContain('redirectTo(request, "/onboarding")');
   });
 
   it("keeps a server-side dashboard layout guard as the second layer", () => {
     expect(dashboardLayoutSource).toContain("getActiveOrganizationWorkspace");
-    expect(organizationSource).toContain('redirect("/sign-in")');
+    expect(organizationSource).toContain('"/sign-in"');
     expect(organizationSource).toContain('in("status", workspaceMemberStatuses)');
+  });
+
+  it("redirects legacy onboarding URLs to the normal post-auth destination", () => {
     expect(onboardingPageSource).toContain("resolvePostAuthDestination");
+    expect(onboardingPageSource).toContain("redirect(");
   });
 
   it("does not expose service-role secrets in middleware or browser clients", () => {

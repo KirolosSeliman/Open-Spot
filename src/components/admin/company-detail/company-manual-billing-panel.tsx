@@ -113,7 +113,7 @@ export function CompanyManualBillingPanel({
                 <h3 className="text-lg font-bold text-[#0b1328]">Statut de facturation actuel</h3>
                 <p className="mt-2 text-sm leading-6 text-[#64748b]">
                   L&apos;envoi SMS est disponible uniquement lorsque la facturation est
-                  payée, l&apos;onboarding est complété et le statut SMS est actif.
+                  payée et le statut SMS est actif.
                 </p>
               </div>
               <Badge tone={getBillingStatusTone(billing.billingStatus)}>

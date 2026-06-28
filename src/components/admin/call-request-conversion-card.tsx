@@ -211,8 +211,7 @@ export function CallRequestConversionCard({
                   <li>marquer cette demande comme convertie.</li>
                 </ol>
                 <p>
-                  Le compte sera cree avec un statut d&apos;onboarding. L&apos;envoi SMS ne
-                  sera pas automatiquement active.
+                  L&apos;envoi SMS ne sera pas automatiquement active.
                 </p>
               </>
             }

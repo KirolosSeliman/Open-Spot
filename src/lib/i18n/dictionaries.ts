@@ -70,10 +70,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
       settings: "Settings",
       services: "Services"
     },
-    onboarding: {
-      onboarding: "Onboarding",
-      businessSetup: "Business setup"
-    },
     openings: {
       newCancellation: "New cancellation",
       openings: "Openings",
@@ -176,10 +172,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
       waitlist: "Liste d’attente",
       settings: "Paramètres",
       services: "Services"
-    },
-    onboarding: {
-      onboarding: "Démarrage",
-      businessSetup: "Configuration du commerce"
     },
     openings: {
       newCancellation: "Nouvelle annulation",

@@ -1,8 +1,24 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { canBillingStatusSendSms } from "@/lib/billing/manual-billing";
-import { isClientOnboardingStatus } from "@/lib/organization/client-onboarding";
 import type { Database } from "@/types/database";
+
+const clientSubmissionStatuses = [
+  "not_started",
+  "in_progress",
+  "submitted",
+  "changes_requested",
+  "ready_for_sms_setup",
+  "completed"
+] as const;
+
+type ClientSubmissionStatus = (typeof clientSubmissionStatuses)[number];
+
+function isClientSubmissionStatus(
+  value: string | null | undefined
+): value is ClientSubmissionStatus {
+  return clientSubmissionStatuses.includes(value as ClientSubmissionStatus);
+}
 
 export type OrganizationSmsReadinessInput = {
   onboardingStatus: string | null;
@@ -23,7 +39,7 @@ export function evaluateOrganizationSmsReadiness({
   billingStatus,
   smsStatus
 }: OrganizationSmsReadinessInput): OrganizationSmsReadiness {
-  const normalizedOnboardingStatus = isClientOnboardingStatus(onboardingStatus)
+  const normalizedOnboardingStatus = isClientSubmissionStatus(onboardingStatus)
     ? onboardingStatus
     : null;
   const reasons: string[] = [];

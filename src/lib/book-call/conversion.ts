@@ -13,7 +13,7 @@ import {
   buildInvitationRedirectUrl,
   buildPasswordRecoveryRedirectUrl
 } from "@/lib/book-call/invitation-url";
-import { normalizeOrganizationSlug } from "@/lib/organization/onboarding";
+import { normalizeOrganizationSlug } from "@/lib/organization/organization-input";
 import { normalizePhoneToE164 } from "@/lib/customers/phone";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import type { Locale } from "@/lib/i18n/types";

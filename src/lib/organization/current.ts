@@ -4,7 +4,7 @@ import { requireOrganizationNotDisabled } from "@/lib/admin/organization-control
 import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
 import { getActivePlatformAdminManagerMode } from "@/lib/admin/manager-mode";
 import { isSupabaseConfigured } from "@/lib/env/config";
-import { decideWorkspaceRedirect } from "@/lib/organization/onboarding";
+import { decideWorkspaceRedirect } from "@/lib/organization/organization-input";
 import { workspaceMemberStatuses } from "@/lib/organization/membership";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -274,21 +274,4 @@ export async function redirectAuthenticatedUserByWorkspace() {
   }
 
   redirect(destination);
-}
-
-export async function requireOrganizationOnboardingUser() {
-  if (!isSupabaseConfigured()) {
-    redirect("/sign-in");
-  }
-
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user }
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/sign-in");
-  }
-
-  redirect(await resolvePostAuthDestination());
 }
