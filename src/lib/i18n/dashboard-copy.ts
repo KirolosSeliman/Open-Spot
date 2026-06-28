@@ -25,7 +25,7 @@ export const dashboardCopy = {
       timeUnknown: "Unknown time"
     },
     dashboard: {
-      greeting: (organizationName: string) => `Hello, ${organizationName} team 👋`,
+      greeting: (organizationName: string) => `Hello, ${organizationName} team`,
       subtitle: "Here is an overview of your activity today.",
       title: (organizationName: string) => `${organizationName} Dashboard`,
       description: (organizationName: string) =>
@@ -481,7 +481,7 @@ export const dashboardCopy = {
     },
     dashboard: {
       greeting: (organizationName: string) =>
-        `Bonjour, équipe ${organizationName} 👋`,
+        `Bonjour, équipe ${organizationName}`,
       subtitle: "Voici un aperçu de votre activité aujourd’hui.",
       title: (organizationName: string) =>
         `Tableau de bord de ${organizationName}`,
