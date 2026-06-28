@@ -183,7 +183,7 @@ function NavLink({
   const className = cn(
     "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]",
     isActive
-      ? "bg-[#eff6ff] text-[#2563ff] before:absolute before:left-0 before:top-2 before:bottom-2 before:w-1 before:rounded-full before:bg-[#2563ff]"
+      ? "bg-[#eef4ff] text-[#2563ff] before:absolute before:bottom-2 before:left-0 before:top-2 before:w-[3px] before:rounded-full before:bg-[#2563ff]"
       : "text-[#657492] hover:bg-[#f8fbff] hover:text-[#2563ff]",
     disabled && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-[#657492]"
   );
@@ -216,7 +216,7 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
   const displayName = admin.displayName?.trim() || admin.email;
 
   return (
-    <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-72 shrink-0 rounded-[22px] border border-[#e1e9f5] bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] lg:flex lg:flex-col">
+    <aside className="sticky top-3 hidden h-[calc(100vh-1.5rem)] w-[280px] shrink-0 rounded-[22px] border border-[#e1e9f5] bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.06)] lg:flex lg:flex-col">
       <Link
         className="rounded-xl px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
         href="/admin"
@@ -286,7 +286,7 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
               En ligne
             </p>
           </div>
-          <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#657492]" />
+          <ChevronRightIcon className="h-4 w-4 shrink-0 text-[#94a3b8]" />
         </div>
 
         <div className="mt-4 grid gap-2">

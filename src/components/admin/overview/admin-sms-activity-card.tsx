@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import {
+  AdminOverviewPanel,
+  AdminOverviewSectionTitle
+} from "@/components/admin/overview/admin-overview-panel";
 import { InfoIcon } from "@/components/admin/overview/admin-overview-icons";
 import type { SmsChartRange, SmsDailyPoint } from "@/lib/admin/overview-data";
 import { cn } from "@/lib/utils/cn";
@@ -12,10 +16,10 @@ const rangeOptions: Array<{ key: SmsChartRange; label: string; param: string }> 
 
 function formatAxisValue(value: number) {
   if (value >= 1000) {
-    return `${Math.round(value / 1000)}k`;
+    return `${(value / 1000).toLocaleString("fr-CA", { maximumFractionDigits: 1 })}k`;
   }
 
-  return String(value);
+  return value.toLocaleString("fr-CA");
 }
 
 function buildYAxis(maxCount: number) {
@@ -25,26 +29,59 @@ function buildYAxis(maxCount: number) {
   return [step * 4, step * 3, step * 2, step, 0];
 }
 
+function bucketChartPoints(points: SmsDailyPoint[], range: SmsChartRange) {
+  const targetBuckets = range === "7" ? 7 : range === "30" ? 5 : 6;
+
+  if (points.length <= targetBuckets) {
+    return points;
+  }
+
+  const bucketSize = Math.ceil(points.length / targetBuckets);
+  const buckets: SmsDailyPoint[] = [];
+
+  for (let index = 0; index < points.length; index += bucketSize) {
+    const slice = points.slice(index, index + bucketSize);
+    const first = slice[0];
+    const last = slice[slice.length - 1];
+
+    if (!first) {
+      continue;
+    }
+
+    buckets.push({
+      date: first.date,
+      label: last && last.date !== first.date ? `${first.label}` : first.label,
+      count: slice.reduce((total, point) => total + point.count, 0)
+    });
+  }
+
+  return buckets;
+}
+
 export function AdminSmsActivityCard({
   range,
   points,
   maxCount,
-  topPage
+  topPage,
+  className
 }: {
   range: SmsChartRange;
   points: SmsDailyPoint[];
   maxCount: number;
   topPage?: number;
+  className?: string;
 }) {
-  const yAxis = buildYAxis(maxCount);
+  const chartPoints = bucketChartPoints(points, range);
+  const chartMax = Math.max(...chartPoints.map((point) => point.count), maxCount, 1);
+  const yAxis = buildYAxis(chartMax);
   const chartTop = yAxis[0] ?? 1;
 
   return (
-    <section className="rounded-[20px] border border-[#e1e9f5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] lg:col-span-2">
-      <div className="flex flex-wrap items-start justify-between gap-4">
+    <AdminOverviewPanel className={className}>
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-bold text-[#0b1328]">Activité des SMS</h2>
-          <InfoIcon className="h-4 w-4 text-[#657492]" />
+          <AdminOverviewSectionTitle>Activité des SMS</AdminOverviewSectionTitle>
+          <InfoIcon className="h-4 w-4 text-[#94a3b8]" />
         </div>
 
         <div
@@ -64,9 +101,9 @@ export function AdminSmsActivityCard({
               <Link
                 aria-current={range === option.key ? "true" : undefined}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-xs font-semibold transition",
+                  "rounded-lg px-3.5 py-1.5 text-xs font-semibold transition",
                   range === option.key
-                    ? "bg-white text-[#2563ff] shadow-sm"
+                    ? "bg-white text-[#2563ff] shadow-[0_1px_2px_rgba(15,23,42,0.06)]"
                     : "text-[#657492] hover:text-[#2563ff]"
                 )}
                 href={`/admin?${params.toString()}`}
@@ -81,35 +118,35 @@ export function AdminSmsActivityCard({
 
       <div
         aria-label="Graphique des SMS envoyés par jour"
-        className="mt-6 grid grid-cols-[auto_1fr] gap-3"
+        className="mt-6 grid grid-cols-[44px_1fr] gap-4"
         role="img"
       >
-        <div className="flex h-56 flex-col justify-between py-1 text-[11px] font-medium text-[#657492]">
+        <div className="flex h-[248px] flex-col justify-between py-2 text-[11px] font-medium text-[#94a3b8]">
           {yAxis.map((value) => (
             <span key={value}>{formatAxisValue(value)}</span>
           ))}
         </div>
 
-        <div className="relative h-56 rounded-2xl border border-[#edf2f9] bg-[linear-gradient(to_top,#edf2f9_1px,transparent_1px)] bg-size-[100%_25%] px-2 pb-8 pt-2">
-          {points.length === 0 ? (
+        <div className="relative h-[248px] rounded-[18px] border border-[#edf2f9] bg-[linear-gradient(to_top,rgba(226,232,240,0.45)_1px,transparent_1px)] bg-size-[100%_25%] px-3 pb-10 pt-3">
+          {chartPoints.length === 0 ? (
             <div className="flex h-full items-center justify-center text-sm text-[#657492]">
               Aucune activité SMS sur cette période
             </div>
           ) : (
-            <div className="flex h-full items-end gap-1 sm:gap-2">
-              {points.map((point) => {
+            <div className="grid h-full items-end gap-3" style={{ gridTemplateColumns: `repeat(${chartPoints.length}, minmax(0, 1fr))` }}>
+              {chartPoints.map((point) => {
                 const height = chartTop <= 0 ? 0 : (point.count / chartTop) * 100;
 
                 return (
-                  <div className="flex min-w-0 flex-1 flex-col items-center gap-2" key={point.date}>
+                  <div className="flex min-w-0 flex-col items-center gap-3" key={point.date}>
                     <div className="flex h-full w-full items-end justify-center">
                       <div
-                        className="w-full max-w-8 rounded-t-lg bg-[#2563ff]"
-                        style={{ height: `${Math.max(height, point.count > 0 ? 4 : 0)}%` }}
+                        className="w-full max-w-[42px] rounded-t-[10px] bg-[#2563ff]"
+                        style={{ height: `${Math.max(height, point.count > 0 ? 6 : 0)}%` }}
                         title={`${point.label}: ${point.count}`}
                       />
                     </div>
-                    <span className="truncate text-[10px] font-medium text-[#657492] sm:text-[11px]">
+                    <span className="truncate text-[11px] font-medium text-[#94a3b8]">
                       {point.label}
                     </span>
                   </div>
@@ -119,6 +156,6 @@ export function AdminSmsActivityCard({
           )}
         </div>
       </div>
-    </section>
+    </AdminOverviewPanel>
   );
 }

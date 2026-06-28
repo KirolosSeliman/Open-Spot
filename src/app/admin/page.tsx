@@ -46,7 +46,7 @@ export default async function AdminPage({
     return (
       <section className="grid gap-6">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#2563ff]">
+          <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#2563ff]">
             Admin Open Spot
           </p>
           <h1 className="mt-2 text-3xl font-bold text-[#0b1328]">
@@ -67,10 +67,10 @@ export default async function AdminPage({
   const smsRangeParam = resolveSmsRangeParam(resolvedSearchParams);
 
   return (
-    <section className="grid gap-6">
+    <section className="flex flex-col gap-6">
       <AdminOverviewHeader exportPayload={data.exportPayload} />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-5">
         <AdminKpiCard
           icon={<BuildingIcon className="h-5 w-5" />}
           metric={data.kpis[0]!}
@@ -88,32 +88,34 @@ export default async function AdminPage({
           metric={data.kpis[3]!}
         />
         <AdminKpiCard
-          icon={<WarningIcon className="h-5 w-5 text-[#ef4444]" />}
+          icon={<WarningIcon className="h-5 w-5" />}
           iconClassName="bg-[#fef2f2] text-[#ef4444]"
           metric={data.kpis[4]!}
         />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         <AdminSmsActivityCard
+          className="xl:col-span-6"
           maxCount={data.smsActivity.maxCount}
           points={data.smsActivity.points}
           range={data.smsActivity.range}
           topPage={data.topCompanies.page}
         />
-        <AdminSummaryCard items={data.operationalSummary} />
-        <AdminProfileCard profile={data.adminProfile} />
+        <AdminSummaryCard className="xl:col-span-3" items={data.operationalSummary} />
+        <AdminProfileCard className="xl:col-span-3" profile={data.adminProfile} />
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-5">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12">
         <TopCompaniesTable
+          className="xl:col-span-7"
           page={data.topCompanies.page}
           rows={data.topCompanies.rows}
           smsRange={smsRangeParam}
           totalCount={data.topCompanies.totalCount}
           totalPages={data.topCompanies.totalPages}
         />
-        <div className="grid gap-4 xl:col-span-2">
+        <div className="flex flex-col gap-5 xl:col-span-5">
           <RecentCallRequestsCard rows={data.recentCallRequests} />
           <AdminAuditLogCard rows={data.auditLogs} />
         </div>

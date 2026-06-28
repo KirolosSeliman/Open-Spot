@@ -10,23 +10,23 @@ export function AdminOverviewHeader({
   exportPayload: AdminOverviewData["exportPayload"];
 }) {
   return (
-    <header className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-      <div className="max-w-3xl">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#2563ff]">
+    <header className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
+      <div className="min-w-0 max-w-3xl">
+        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#2563ff]">
           Admin Open Spot
         </p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-[#0b1328] sm:text-4xl">
+        <h1 className="mt-2 text-[2rem] font-bold leading-tight tracking-tight text-[#0b1328] xl:text-[2.35rem]">
           Vue interne plateforme
         </h1>
-        <p className="mt-3 text-sm leading-6 text-[#657492] sm:text-base">
+        <p className="mt-3 text-[15px] leading-7 text-[#657492]">
           Aperçu opérationnel interne de la plateforme pour les compagnies visibles sur
           votre compte administrateur.
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
         <Link
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[#2563ff] px-5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(37,99,255,0.25)] transition hover:bg-[#1d4ed8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#2563ff] px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(37,99,255,0.28)] transition hover:bg-[#1d4ed8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
           href="/admin/organizations"
         >
           <BuildingIcon className="h-4 w-4" />

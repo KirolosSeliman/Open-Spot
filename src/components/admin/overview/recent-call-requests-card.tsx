@@ -1,6 +1,10 @@
 import Link from "next/link";
 
 import {
+  AdminOverviewPanel,
+  AdminOverviewSectionTitle
+} from "@/components/admin/overview/admin-overview-panel";
+import {
   ChevronRightIcon,
   PhoneIcon
 } from "@/components/admin/overview/admin-overview-icons";
@@ -24,7 +28,7 @@ const statusLabels: Record<RecentCallRequestRow["status"], string> = {
 };
 
 const statusStyles: Record<RecentCallRequestRow["status"], string> = {
-  new: "bg-[#eff6ff] text-[#2563ff]",
+  new: "bg-[#eef4ff] text-[#2563ff]",
   contacted: "bg-[#fff7ed] text-[#ea580c]",
   qualified: "bg-[#fff7ed] text-[#f97316]",
   converted: "bg-[#ecfdf3] text-[#16a34a]",
@@ -33,14 +37,16 @@ const statusStyles: Record<RecentCallRequestRow["status"], string> = {
 };
 
 export function RecentCallRequestsCard({
-  rows
+  rows,
+  className
 }: {
   rows: RecentCallRequestRow[];
+  className?: string;
 }) {
   return (
-    <section className="rounded-[20px] border border-[#e1e9f5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+    <AdminOverviewPanel className={className}>
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-lg font-bold text-[#0b1328]">Demandes d&apos;appel récentes</h2>
+        <AdminOverviewSectionTitle>Demandes d&apos;appel récentes</AdminOverviewSectionTitle>
         <Link
           className="text-sm font-semibold text-[#2563ff] transition hover:text-[#1d4ed8]"
           href="/admin/call-requests"
@@ -49,45 +55,46 @@ export function RecentCallRequestsCard({
         </Link>
       </div>
 
-      <div className="mt-5 divide-y divide-[#edf2f9]">
+      <div className="mt-4 divide-y divide-[#edf2f9]">
         {rows.length === 0 ? (
-          <p className="py-8 text-sm text-[#657492]">Aucune demande d&apos;appel récente</p>
+          <p className="py-10 text-sm text-[#657492]">Aucune demande d&apos;appel récente</p>
         ) : (
           rows.map((row) => (
             <Link
-              className="flex items-center gap-3 py-4 transition hover:bg-[#f8fbff]"
+              className="grid grid-cols-[auto_1fr_auto] items-center gap-3 py-4 transition hover:bg-[#f8fbff] sm:grid-cols-[auto_1fr_auto_auto]"
               href={`/admin/call-requests/${row.id}`}
               key={row.id}
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#eff6ff] text-[#2563ff]">
-                <PhoneIcon className="h-4 w-4" />
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[#2563ff]">
+                <PhoneIcon className="h-[18px] w-[18px]" />
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-semibold text-[#0b1328]">{row.name}</p>
-                  <span
-                    className={cn(
-                      "rounded-full px-2.5 py-1 text-[11px] font-semibold",
-                      statusStyles[row.status]
-                    )}
-                  >
-                    {statusLabels[row.status]}
-                  </span>
-                </div>
-                <p className="mt-1 text-sm text-[#657492]">
+
+              <div className="min-w-0">
+                <p className="truncate font-semibold text-[#0b1328]">{row.name}</p>
+                <p className="mt-1 truncate text-sm text-[#657492]">
                   {row.phone} · {row.businessName}
                 </p>
               </div>
-              <div className="hidden shrink-0 items-center gap-2 sm:flex">
-                <span className="text-xs font-medium text-[#657492]">
+
+              <span
+                className={cn(
+                  "justify-self-end rounded-full px-3 py-1 text-[11px] font-semibold sm:justify-self-auto",
+                  statusStyles[row.status]
+                )}
+              >
+                {statusLabels[row.status]}
+              </span>
+
+              <div className="col-span-3 flex items-center justify-end gap-2 sm:col-span-1">
+                <span className="text-xs font-medium text-[#94a3b8]">
                   {dateFormatter.format(new Date(row.createdAt))}
                 </span>
-                <ChevronRightIcon className="h-4 w-4 text-[#657492]" />
+                <ChevronRightIcon className="h-4 w-4 text-[#94a3b8]" />
               </div>
             </Link>
           ))
         )}
       </div>
-    </section>
+    </AdminOverviewPanel>
   );
 }

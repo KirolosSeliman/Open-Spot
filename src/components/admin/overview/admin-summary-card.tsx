@@ -1,6 +1,10 @@
 import Link from "next/link";
 
 import {
+  AdminOverviewPanel,
+  AdminOverviewSectionTitle
+} from "@/components/admin/overview/admin-overview-panel";
+import {
   CalendarIcon,
   ChevronRightIcon,
   MessageIcon,
@@ -16,59 +20,53 @@ const iconMap = {
 } as const;
 
 export function AdminSummaryCard({
-  items
+  items,
+  className
 }: {
   items: OperationalSummaryItem[];
+  className?: string;
 }) {
   return (
-    <section className="rounded-[20px] border border-[#e1e9f5] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-      <h2 className="text-lg font-bold text-[#0b1328]">Résumé opérationnel</h2>
+    <AdminOverviewPanel className={className}>
+      <AdminOverviewSectionTitle>Résumé opérationnel</AdminOverviewSectionTitle>
 
       <div className="mt-5 divide-y divide-[#edf2f9]">
         {items.map((item) => {
           const Icon = iconMap[item.id as keyof typeof iconMap] ?? ShieldIcon;
-          const content = (
-            <>
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#eff6ff] text-[#2563ff]">
-                  <Icon className="h-4 w-4" />
+          const row = (
+            <div className="flex items-center justify-between gap-4 py-[1.125rem]">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[#2563ff]">
+                  <Icon className="h-[18px] w-[18px]" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm font-semibold text-[#0b1328]">{item.label}</p>
-                  <p className="text-xs text-[#657492]">{item.sublabel}</p>
+                  <p className="text-xs text-[#94a3b8]">{item.sublabel}</p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2">
                 <span className="text-sm font-bold text-[#0b1328]">{item.formattedValue}</span>
                 {item.trendPositive ? (
                   <span aria-hidden="true" className="text-xs font-bold text-[#16a34a]">
                     ↑
                   </span>
                 ) : null}
-                {item.href ? <ChevronRightIcon className="h-4 w-4 text-[#657492]" /> : null}
+                {item.href ? <ChevronRightIcon className="h-4 w-4 text-[#94a3b8]" /> : null}
               </div>
-            </>
+            </div>
           );
 
           if (item.href) {
             return (
-              <Link
-                className="flex items-center justify-between gap-3 py-4 transition hover:bg-[#f8fbff]"
-                href={item.href}
-                key={item.id}
-              >
-                {content}
+              <Link className="block transition hover:bg-[#f8fbff]" href={item.href} key={item.id}>
+                {row}
               </Link>
             );
           }
 
-          return (
-            <div className="flex items-center justify-between gap-3 py-4" key={item.id}>
-              {content}
-            </div>
-          );
+          return <div key={item.id}>{row}</div>;
         })}
       </div>
-    </section>
+    </AdminOverviewPanel>
   );
 }

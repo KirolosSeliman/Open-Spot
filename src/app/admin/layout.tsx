@@ -41,7 +41,7 @@ export default async function AdminLayout({
               <AdminMobileNav />
             </div>
           </SiteHeaderShell>
-          <main className="mx-auto w-full max-w-[1200px] px-2 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-8 lg:pt-8">
+          <main className="w-full px-2 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-8 lg:pt-8">
             {children}
           </main>
         </div>
