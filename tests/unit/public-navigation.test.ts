@@ -1118,14 +1118,15 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
     expect(styles).toContain("height: var(--phone-height)");
+    expect(mobileStyles).toContain("height: clamp(20.75rem, 84vw, 28rem)");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
     expect(mobileStyles).toContain(".reference-phone {");
-    expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("left: 0");
-    expect(mobileStyles).toContain("transform: none");
-    expect(mobileStyles).toContain("width: min(76vw, 306px)");
+    expect(mobileStyles).toContain("position: relative");
+    expect(mobileStyles).toContain("left: auto");
+    expect(mobileStyles).toContain("rotateY(-1.4deg) rotateZ(0.45deg)");
+    expect(mobileStyles).toContain("width: min(68vw, 292px)");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
     expect(mobileStyles).toContain(".reference-floating-card {");
@@ -1134,7 +1135,8 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-mobile-phone-fade {");
     expect(mobileStyles).toContain("display: block !important");
-    expect(mobileStyles).toContain("bottom: -0.55rem");
+    expect(mobileStyles).toContain("--mobile-phone-fade-opacity: 0.94");
+    expect(mobileStyles).toContain("bottom: -8rem");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
     expect(mobileStyles).toContain("position: relative");

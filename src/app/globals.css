@@ -6547,18 +6547,18 @@ select {
 
   .reference-hero-section {
     background:
-      linear-gradient(180deg, rgba(116, 204, 244, 0.18) 0%, rgba(255, 255, 255, 0.08) 42%, rgba(255, 255, 255, 0) 68%),
-      url("/lunera-style/sky-clouds.png") center calc(100% + 1.5rem) / min(920px, 145vw) auto no-repeat,
-      radial-gradient(ellipse at 50% 55%, rgba(255, 255, 255, 0.72) 0%, rgba(232, 246, 255, 0.44) 34%, transparent 57%),
-      linear-gradient(180deg, #b4d7f3 0%, #cce7f8 34%, #edf7fd 67%, #ffffff 92%);
+      linear-gradient(180deg, rgba(116, 204, 244, 0.2) 0%, rgba(255, 255, 255, 0.06) 42%, rgba(255, 255, 255, 0) 70%),
+      url("/lunera-style/sky-clouds.png") center calc(100% + 2rem) / min(920px, 145vw) auto no-repeat,
+      radial-gradient(ellipse at 50% 54%, rgba(255, 255, 255, 0.66) 0%, rgba(232, 246, 255, 0.38) 36%, transparent 59%),
+      linear-gradient(180deg, #b4d7f3 0%, #cce7f8 34%, #edf7fd 68%, #ffffff 94%);
     min-height: auto;
     overflow: hidden;
-    padding: clamp(5.85rem, 24vw, 7rem) 20px calc(3.25rem + env(safe-area-inset-bottom));
+    padding: clamp(5.85rem, 24vw, 7rem) 20px calc(4.25rem + env(safe-area-inset-bottom));
     position: relative;
   }
 
   .lunera-template--with-site-header .reference-hero-section {
-    padding-top: clamp(5.25rem, 18vw, 6.5rem);
+    padding-top: clamp(6.25rem, 20vw, 7.25rem);
   }
 
   .reference-hero-cloud,
@@ -6605,18 +6605,18 @@ select {
   }
 
   .reference-hero-stage {
-    --mobile-phone-fade-height: 145px;
-    --mobile-phone-fade-opacity: 0.65;
+    --mobile-phone-fade-height: clamp(13rem, 48vw, 17rem);
+    --mobile-phone-fade-opacity: 0.94;
     --mobile-phone-fade-progress: 0;
-    --mobile-phone-mask-height: 118px;
-    --mobile-phone-mask-mid-height: 57px;
+    --mobile-phone-mask-height: clamp(8.5rem, 30vw, 11rem);
+    --mobile-phone-mask-mid-height: clamp(3.9rem, 14vw, 5.2rem);
     --mobile-phone-scale: 1;
     --mobile-phone-y: 0px;
     align-items: flex-start;
     display: flex;
-    height: clamp(16.45rem, 68vw, 18.2rem);
+    height: clamp(20.75rem, 84vw, 28rem);
     justify-content: center;
-    margin: clamp(1.4rem, 5.8vw, 1.9rem) auto 0;
+    margin: clamp(1.95rem, 7vw, 2.65rem) auto 0;
     max-width: min(390px, 100%);
     overflow: visible;
     position: relative;
@@ -6630,16 +6630,17 @@ select {
 
   .reference-mobile-phone-fade {
     background:
-      radial-gradient(ellipse at 2% 74%, rgba(255, 255, 255, 0.98) 0 4.5rem, rgba(255, 255, 255, 0.68) 6.4rem, rgba(255, 255, 255, 0) 9rem),
-      radial-gradient(ellipse at 98% 76%, rgba(255, 255, 255, 0.98) 0 4.9rem, rgba(255, 255, 255, 0.7) 6.8rem, rgba(255, 255, 255, 0) 9.35rem),
+      radial-gradient(ellipse at 2% 82%, rgba(255, 255, 255, 0.98) 0 4.5rem, rgba(255, 255, 255, 0.72) 6.4rem, rgba(255, 255, 255, 0) 9rem),
+      radial-gradient(ellipse at 98% 82%, rgba(255, 255, 255, 0.98) 0 4.9rem, rgba(255, 255, 255, 0.72) 6.8rem, rgba(255, 255, 255, 0) 9.35rem),
       linear-gradient(
         180deg,
         rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.62) 32%,
-        rgba(255, 255, 255, 0.92) 67%,
+        rgba(255, 255, 255, 0.58) 24%,
+        rgba(255, 255, 255, 0.96) 56%,
+        #ffffff 82%,
         #ffffff 100%
       );
-    bottom: -0.55rem;
+    bottom: -8rem;
     display: block !important;
     height: var(--mobile-phone-fade-height);
     left: 50%;
@@ -6660,24 +6661,24 @@ select {
   .reference-phone {
     background:
       linear-gradient(92deg, #06070a 0%, #252932 45%, #07080a 72%, #616873 100%);
-    border-radius: clamp(2.75rem, 11.5vw, 3.875rem);
+    border-radius: clamp(2.5rem, 10vw, 3.4rem);
     box-shadow:
-      0 34px 75px rgba(20, 33, 45, 0.22),
-      0 10px 20px rgba(0, 0, 0, 0.2),
-      inset 0 0 0 2px rgba(255, 255, 255, 0.42),
-      inset 0 0 0 9px #08090c;
-    height: min(145vw, 566px);
+      0 26px 60px rgba(20, 33, 45, 0.24),
+      0 10px 22px rgba(0, 0, 0, 0.24),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      inset 0 0 0 7px #08090c;
+    height: min(128vw, 528px);
     left: auto;
     margin: 0 auto;
-    max-height: 566px;
-    max-width: 318px;
+    max-height: 528px;
+    max-width: 292px;
     overflow: visible;
-    padding: clamp(0.65rem, 2.9vw, 0.875rem);
+    padding: clamp(0.58rem, 2.5vw, 0.78rem);
     position: relative;
     top: auto;
-    transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale)) perspective(1500px) rotateY(-3deg) rotateZ(1.35deg);
+    transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale)) perspective(1500px) rotateY(-1.4deg) rotateZ(0.45deg);
     transform-origin: 50% 6%;
-    width: min(76vw, 306px);
+    width: min(68vw, 292px);
     z-index: 14;
     -webkit-mask-image: linear-gradient(
       to bottom,
@@ -6715,18 +6716,18 @@ select {
 
   .reference-phone-screen {
     background: #ffffff;
-    border-radius: 3rem;
+    border-radius: clamp(2.25rem, 9vw, 3rem);
     box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
-    padding: clamp(2.5rem, 10.5vw, 2.75rem) clamp(0.85rem, 3.8vw, 1.05rem) 1.05rem;
+    padding: clamp(2.2rem, 9vw, 2.55rem) clamp(0.75rem, 3.3vw, 0.95rem) 1rem;
   }
 
   .reference-dynamic-island {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
-    height: 1.94rem;
+    height: clamp(1.55rem, 6.8vw, 1.78rem);
     left: calc(50% - 0.2rem);
     top: 0.75rem;
     transform: translateX(-50%);
-    width: 6rem;
+    width: clamp(4.85rem, 22vw, 5.55rem);
   }
 
   .reference-dynamic-island span {
@@ -6754,10 +6755,10 @@ select {
   }
 
   .reference-detected-card {
-    border-radius: 1.125rem;
-    gap: 1.125rem;
-    min-height: 5.875rem;
-    padding: 1rem;
+    border-radius: 1rem;
+    gap: 0.9rem;
+    min-height: 5.2rem;
+    padding: 0.85rem;
   }
 
   .reference-detected-icon {
@@ -6837,7 +6838,7 @@ select {
     display: grid;
     justify-items: center;
     left: auto;
-    margin: clamp(1.15rem, 4.8vw, 1.7rem) auto 0;
+    margin: clamp(1.55rem, 6.5vw, 2.15rem) auto 0;
     max-width: min(21.375rem, calc(100% - 2rem));
     position: relative;
     right: auto;
