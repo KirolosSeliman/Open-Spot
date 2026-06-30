@@ -289,8 +289,8 @@ function FilledSpotsGauge({
   value: string;
 }) {
   const ticks = Array.from({ length: 42 }).map((_, index) => {
-    const startAngle = -168;
-    const endAngle = 28;
+    const startAngle = -180;
+    const endAngle = 0;
     const angle = startAngle + (index / 41) * (endAngle - startAngle);
     const radians = (angle * Math.PI) / 180;
     const outerRadius = 92;
@@ -308,7 +308,7 @@ function FilledSpotsGauge({
 
   return (
     <div className="open-spot-filled-gauge-wrap">
-      <svg aria-hidden="true" className="open-spot-filled-gauge" viewBox="0 0 220 180">
+      <svg aria-hidden="true" className="open-spot-filled-gauge" viewBox="0 0 220 120">
         {ticks.map((tick, index) => (
           <line
             className={cn("open-spot-filled-gauge-tick", tick.active && "is-active")}

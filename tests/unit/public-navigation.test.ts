@@ -142,6 +142,14 @@ describe("public navigation", () => {
     expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
   });
 
+  it("keeps the filled-spots gauge as a level half circle", () => {
+    const metricsShowcase = source(metricsShowcasePath);
+
+    expect(metricsShowcase).toContain("const startAngle = -180;");
+    expect(metricsShowcase).toContain("const endAngle = 0;");
+    expect(metricsShowcase).toContain('viewBox="0 0 220 120"');
+  });
+
   it("adds the screenshot-matched booking flow compatibility section to the public homepage", () => {
     const homepage = source(homepagePath);
     const metricsShowcase = source(metricsShowcasePath);
