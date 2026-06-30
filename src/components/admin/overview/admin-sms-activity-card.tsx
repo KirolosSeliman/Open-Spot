@@ -41,7 +41,7 @@ function shouldShowLabel(index: number, total: number) {
     return index === 0 || index === total - 1 || index % 5 === 0;
   }
 
-  return index === 0 || index === total - 1 || index % 14 === 0;
+  return index === 0 || index === total - 1 || (index % 14 === 0 && total - 1 - index >= 10);
 }
 
 function getBarHeight(count: number, chartTop: number) {
@@ -167,7 +167,7 @@ export function AdminSmsActivityCard({
               </div>
 
               <div
-                className="mt-2 grid px-3"
+                className="mt-2 grid overflow-hidden px-3"
                 style={{
                   columnGap: chartGap,
                   gridTemplateColumns: chartGridTemplateColumns
@@ -175,7 +175,14 @@ export function AdminSmsActivityCard({
               >
                 {points.map((point, index) => (
                   <div
-                    className="min-w-0 text-center text-[11px] font-medium leading-4 text-[#94a3b8]"
+                    className={cn(
+                      "min-w-0 whitespace-nowrap text-[11px] font-medium leading-4 text-[#94a3b8]",
+                      index === 0
+                        ? "text-left"
+                        : index === points.length - 1
+                          ? "text-right"
+                          : "text-center"
+                    )}
                     key={`${point.date}-label`}
                   >
                     {shouldShowLabel(index, points.length) ? point.label : ""}
