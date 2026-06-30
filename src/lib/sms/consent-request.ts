@@ -3,7 +3,11 @@ import {
   generateConsentRequestSmsMessage,
   type SmsLanguage
 } from "@/lib/sms/message-generator";
-import { sendOrganizationSms } from "@/lib/sms/organization-sms";
+import {
+  getOrganizationSmsRuntimeProviderName,
+  resolveOrganizationSmsFromNumber,
+  sendOrganizationSms
+} from "@/lib/sms/organization-sms";
 
 export const CONSENT_REQUEST_COOLDOWN_HOURS = 24;
 export const CONSENT_REQUEST_MAX_ATTEMPTS = 3;
@@ -228,39 +232,81 @@ export async function sendConsentRequestSms({
   }
 
   try {
-    const sendResult = await sendOrganizationSms({
-      organizationId: organization.id,
-      to: customer.phoneE164,
-      body: message.body,
-      messageType: "consent_request",
-      customerId: customer.id,
-      consentStatus: "needs_consent",
-      metadata: {
-        organizationId: organization.id,
-        customerId: customer.id,
-        consentRequestId: requestRow.id
-      }
+    const outboundProvider = getOrganizationSmsRuntimeProviderName();
+    const outboundFromNumber = await resolveOrganizationSmsFromNumber({
+      organizationId: organization.id
     });
-    const { data: smsMessage, error: smsMessageError } = await supabase
+    const { data: pendingSmsMessage, error: pendingSmsMessageError } = await supabase
       .from("sms_messages")
       .insert({
         organization_id: organization.id,
         customer_id: customer.id,
         message_type: "consent_request",
         direction: "outbound",
-        provider: sendResult.provider,
-        provider_message_id: sendResult.providerMessageId,
-        from_number: sendResult.fromNumber,
+        provider: outboundProvider,
+        provider_message_id: null,
+        from_number: outboundFromNumber,
         to_number: customer.phoneE164,
         body: message.body,
-        status: sendResult.status,
+        status: "pending_send",
         created_at: now
       })
       .select("id")
       .single();
 
+    if (pendingSmsMessageError || !pendingSmsMessage) {
+      throw (
+        pendingSmsMessageError ??
+        new Error("Consent request SMS persistence failed.")
+      );
+    }
+
+    let sendResult;
+
+    try {
+      sendResult = await sendOrganizationSms({
+        organizationId: organization.id,
+        to: customer.phoneE164,
+        body: message.body,
+        messageType: "consent_request",
+        customerId: customer.id,
+        consentStatus: "needs_consent",
+        metadata: {
+          organizationId: organization.id,
+          customerId: customer.id,
+          consentRequestId: requestRow.id
+        }
+      });
+    } catch (error) {
+      const safeError = sanitizeSmsProviderError(error);
+
+      await supabase
+        .from("sms_messages")
+        .update({
+          status: "failed",
+          error_message: safeError
+        })
+        .eq("organization_id", organization.id)
+        .eq("id", pendingSmsMessage.id);
+
+      throw new Error(safeError);
+    }
+
+    const { data: smsMessage, error: smsMessageError } = await supabase
+      .from("sms_messages")
+      .update({
+        provider: sendResult.provider,
+        provider_message_id: sendResult.providerMessageId,
+        from_number: sendResult.fromNumber,
+        status: sendResult.status
+      })
+      .eq("organization_id", organization.id)
+      .eq("id", pendingSmsMessage.id)
+      .select("id")
+      .single();
+
     if (smsMessageError || !smsMessage) {
-      throw smsMessageError ?? new Error("Consent request SMS persistence failed.");
+      throw smsMessageError ?? new Error("Consent request SMS update failed.");
     }
 
     await supabase

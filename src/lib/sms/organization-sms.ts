@@ -1,7 +1,11 @@
 import twilio from "twilio";
 
+import { canSendSmsWithinLimits } from "@/lib/billing/sms-cost-controls";
 import { getSmsProvider } from "@/lib/env/config";
-import { createSimulatorSmsProvider } from "@/lib/sms/simulator";
+import {
+  createSimulatorSmsProvider,
+  SIMULATOR_SOURCE_NUMBER
+} from "@/lib/sms/simulator";
 import {
   assertCanSendSms,
   type SmsConsentStatus
@@ -56,6 +60,30 @@ function usesOrganizationSmsSimulator(env: TwilioEnv = process.env) {
   return getSmsProvider(env) === "simulator" || env.ALLOW_REAL_SMS_SENDS !== "true";
 }
 
+export function getOrganizationSmsRuntimeProviderName(env: TwilioEnv = process.env) {
+  return usesOrganizationSmsSimulator(env) ? "simulator" : "twilio";
+}
+
+export async function resolveOrganizationSmsFromNumber({
+  organizationId,
+  env = process.env
+}: {
+  organizationId: string;
+  env?: TwilioEnv;
+}) {
+  if (usesOrganizationSmsSimulator(env)) {
+    return SIMULATOR_SOURCE_NUMBER;
+  }
+
+  const sender = await loadOrganizationSmsSender(organizationId);
+
+  if (!sender) {
+    throw new Error("Organization SMS sender is not configured.");
+  }
+
+  return resolveOrganizationTwilioSenderOptions(sender, env).fromNumber;
+}
+
 function createOrganizationTwilioClient(
   accountSid: string | null,
   env: TwilioEnv = process.env
@@ -74,6 +102,82 @@ function createOrganizationTwilioClient(
   return twilio(parentSid, authToken);
 }
 
+function getUtcDayStart(date = new Date()) {
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  ).toISOString();
+}
+
+function getUtcMonthStart(date = new Date()) {
+  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1)).toISOString();
+}
+
+async function assertSmsWithinOrganizationLimits({
+  organizationId,
+  supabase
+}: {
+  organizationId: string;
+  supabase: NonNullable<ReturnType<typeof createSupabaseServiceClient>>;
+}) {
+  const { data: settings, error: settingsError } = await supabase
+    .from("organization_billing_settings")
+    .select("sms_daily_limit, sms_monthly_limit")
+    .eq("organization_id", organizationId)
+    .maybeSingle();
+
+  if (settingsError) {
+    throw new Error(settingsError.message);
+  }
+
+  const dailyLimit = settings?.sms_daily_limit ?? 100;
+  const monthlyLimit = settings?.sms_monthly_limit ?? 1000;
+  const billableStatuses = [
+    "accepted",
+    "queued",
+    "sending",
+    "sent",
+    "delivered",
+    "submitted_to_provider"
+  ];
+
+  const [{ count: dailySent, error: dailyError }, { count: monthlySent, error: monthlyError }] =
+    await Promise.all([
+      supabase
+        .from("sms_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organizationId)
+        .eq("direction", "outbound")
+        .in("status", billableStatuses)
+        .gte("created_at", getUtcDayStart()),
+      supabase
+        .from("sms_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organizationId)
+        .eq("direction", "outbound")
+        .in("status", billableStatuses)
+        .gte("created_at", getUtcMonthStart())
+    ]);
+
+  if (dailyError) {
+    throw new Error(dailyError.message);
+  }
+
+  if (monthlyError) {
+    throw new Error(monthlyError.message);
+  }
+
+  const limitCheck = canSendSmsWithinLimits({
+    dailySent: dailySent ?? 0,
+    dailyLimit,
+    monthlySent: monthlySent ?? 0,
+    monthlyLimit
+  });
+
+  if (!limitCheck.ok) {
+    throw new Error(limitCheck.reason ?? "SMS sending limit reached.");
+  }
+}
+
 export async function sendOrganizationSms(
   input: SendOrganizationSmsInput
 ): Promise<SendOrganizationSmsResult> {
@@ -85,10 +189,19 @@ export async function sendOrganizationSms(
   }
 
   if (input.consentStatus) {
-    assertCanSendSms({
-      phoneE164: input.to,
-      consentStatus: input.consentStatus
-    });
+    if (
+      input.messageType === "consent_request" &&
+      input.consentStatus === "needs_consent"
+    ) {
+      if (!/^\+[1-9][0-9]{7,14}$/.test(input.to)) {
+        throw new Error("SMS phone must be valid E.164.");
+      }
+    } else {
+      assertCanSendSms({
+        phoneE164: input.to,
+        consentStatus: input.consentStatus
+      });
+    }
   }
 
   if (usesOrganizationSmsSimulator(env)) {
@@ -123,6 +236,10 @@ export async function sendOrganizationSms(
   ]);
 
   assertOrganizationSmsSenderReady(sender, organizationReadiness);
+  await assertSmsWithinOrganizationLimits({
+    organizationId: input.organizationId,
+    supabase
+  });
 
   const readiness = computeSmsSenderReadiness({
     sender,

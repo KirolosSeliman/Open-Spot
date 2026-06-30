@@ -15,8 +15,8 @@ describe("sign out UI", () => {
       join(process.cwd(), "src", "components", "dashboard", "dashboard-shell.tsx"),
       "utf8"
     );
-    const adminPage = readFileSync(
-      join(process.cwd(), "src", "app", "admin", "page.tsx"),
+    const adminSidebar = readFileSync(
+      join(process.cwd(), "src", "components", "admin", "admin-sidebar.tsx"),
       "utf8"
     );
 
@@ -29,7 +29,7 @@ describe("sign out UI", () => {
     expect(dashboardShell).toContain("<form action={signOutAction}");
     expect(dictionaries.fr.auth.signOut).toBeTruthy();
 
-    expect(adminPage).toContain("signOutAction");
-    expect(adminPage).toContain("<form action={signOutAction}");
+    expect(adminSidebar).toContain("signOutAction");
+    expect(adminSidebar).toContain("<form action={signOutAction}");
   });
 });

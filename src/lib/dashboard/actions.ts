@@ -35,7 +35,11 @@ import { filterEligibleOpeningRecipients } from "@/lib/openings/eligibility";
 import { buildOpeningCreateInput } from "@/lib/openings/forms";
 import { sendConsentRequestSms } from "@/lib/sms/consent-request";
 import { getSmsProvider } from "@/lib/env/config";
-import { sendOrganizationSms } from "@/lib/sms/organization-sms";
+import {
+  getOrganizationSmsRuntimeProviderName,
+  resolveOrganizationSmsFromNumber,
+  sendOrganizationSms
+} from "@/lib/sms/organization-sms";
 import { loadOrganizationSmsReadiness } from "@/lib/sms/organization-gate";
 import {
   getOpeningSmsDateTimeLabels
@@ -1713,7 +1717,11 @@ async function sendOpeningSmsAlerts({
   const now = new Date().toISOString();
   const successfulOfferIds: string[] = [];
   const failedReasons: string[] = [];
-  const messageRecords = [];
+  const sentMessageIds: string[] = [];
+  const outboundProvider = getOrganizationSmsRuntimeProviderName();
+  const outboundFromNumber = await resolveOrganizationSmsFromNumber({
+    organizationId: organization.id
+  });
 
   for (const offer of sendableOffers) {
     const customer = customerById.get(offer.customer_id);
@@ -1751,6 +1759,31 @@ async function sendOpeningSmsAlerts({
       }
     });
 
+    const { data: pendingMessage, error: pendingMessageError } = await supabase
+      .from("sms_messages")
+      .insert({
+        organization_id: organization.id,
+        customer_id: offer.customer_id,
+        opening_id: openingId,
+        message_type: "opening_alert",
+        direction: "outbound",
+        provider: outboundProvider,
+        provider_message_id: null,
+        from_number: outboundFromNumber,
+        to_number: customer.phone_e164,
+        body: messageBody,
+        status: "pending_send"
+      })
+      .select("id")
+      .single();
+
+    if (pendingMessageError || !pendingMessage) {
+      failedReasons.push(
+        pendingMessageError?.message ?? "SMS outbox persistence failed."
+      );
+      continue;
+    }
+
     try {
       const sendResult = await sendOrganizationSms({
         organizationId: organization.id,
@@ -1768,35 +1801,39 @@ async function sendOpeningSmsAlerts({
       });
 
       successfulOfferIds.push(offer.id);
-      messageRecords.push({
-        organization_id: organization.id,
-        customer_id: offer.customer_id,
-        opening_id: openingId,
-        message_type: "opening_alert",
-        direction: "outbound" as const,
+      sentMessageIds.push(pendingMessage.id);
+
+      const { error: messageUpdateError } = await supabase
+        .from("sms_messages")
+        .update({
         provider: sendResult.provider,
         provider_message_id: sendResult.providerMessageId,
         from_number: sendResult.fromNumber,
-        to_number: customer.phone_e164,
-        body: messageBody,
         status: sendResult.status
-      });
+        })
+        .eq("organization_id", organization.id)
+        .eq("id", pendingMessage.id);
+
+      if (messageUpdateError) {
+        failedReasons.push(messageUpdateError.message);
+      }
     } catch (error) {
-      failedReasons.push(getSafeProviderErrorMessage(error));
+      const safeError = getSafeProviderErrorMessage(error);
+      failedReasons.push(safeError);
+      await supabase
+        .from("sms_messages")
+        .update({
+          status: "failed",
+          error_message: safeError
+        })
+        .eq("organization_id", organization.id)
+        .eq("id", pendingMessage.id);
     }
   }
 
-  if (messageRecords.length === 0) {
+  if (sentMessageIds.length === 0) {
     const reason = failedReasons[0] ?? "No opted-in pending offers are available to send.";
     throw new Error(reason);
-  }
-
-  const { error: messagesError } = await supabase
-    .from("sms_messages")
-    .insert(messageRecords);
-
-  if (messagesError) {
-    throw new Error(messagesError.message);
   }
 
   const { error: updateError } = await supabase
@@ -1830,13 +1867,13 @@ async function sendOpeningSmsAlerts({
   await supabase.rpc("record_opening_broadcast_audit", {
     target_opening_id: openingId,
     provider_name: getSmsProvider(),
-    sent_count: messageRecords.length,
+    sent_count: sentMessageIds.length,
     failed_count: failedReasons.length,
     failure_reasons: [...new Set(failedReasons)].slice(0, 5)
   });
 
   return {
-    sent: messageRecords.length,
+    sent: sentMessageIds.length,
     failed: failedReasons.length,
     failureMessage:
       failedReasons.length > 0

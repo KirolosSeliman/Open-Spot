@@ -204,7 +204,8 @@ describe("organization SMS integration wiring", () => {
     expect(actions).toContain('role !== "super_admin"');
     expect(actions).not.toContain("TWILIO_AUTH_TOKEN");
     expect(dashboard).not.toContain("TWILIO_AUTH_TOKEN");
-    expect(page).toContain("Configuration SMS");
+    expect(page).toContain("SmsConfigurationShell");
+    expect(page).toContain("SmsPageHeader");
     expect(dashboard).toContain(
       "Les réponses positives ne confirment jamais automatiquement"
     );

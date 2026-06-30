@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { ResendAuthEmailForm } from "@/components/auth/resend-auth-email-form";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -31,7 +32,10 @@ const signInCopy = {
     password: "Mot de passe",
     submit: "Connexion",
     noAccount: "Pas encore de compte ?",
-    createAccount: "Créer un compte"
+    createAccount: "Créer un compte",
+    recoveryTitle: "Mot de passe oublié ?",
+    recoveryDescription:
+      "Entrez l'email approuvé de votre commerce pour recevoir un lien de réinitialisation sécurisé."
   },
   en: {
     eyebrow: "Sign in",
@@ -42,7 +46,10 @@ const signInCopy = {
     password: "Password",
     submit: "Sign in",
     noAccount: "No account yet?",
-    createAccount: "Create account"
+    createAccount: "Create account",
+    recoveryTitle: "Forgot your password?",
+    recoveryDescription:
+      "Enter the approved email for your business to receive a secure password reset link."
   }
 } as const;
 
@@ -159,6 +166,14 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
               {t.createAccount}
             </Link>
           </p>
+          <div className="mt-8 border-t border-[#DDE5F0] pt-6">
+            <ResendAuthEmailForm
+              defaultEmail={email ?? ""}
+              defaultMode="recovery"
+              description={t.recoveryDescription}
+              title={t.recoveryTitle}
+            />
+          </div>
         </Card>
       </section>
     </PageShell>

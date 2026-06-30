@@ -363,7 +363,6 @@ describe("public waitlist links and consent", () => {
 
     expect(operationsData).toContain(".from(\"waitlist_entry_services\")");
     expect(operationsData).toContain("serviceInterestNames");
-    expect(waitlistPage).toContain("Liste générale");
-    expect(waitlistPage).toContain("serviceInterestNames.map");
+    expect(waitlistPage).toContain('redirect("/dashboard/clients")');
   });
 });

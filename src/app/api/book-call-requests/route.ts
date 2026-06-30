@@ -5,6 +5,7 @@ import {
   validateBookCallRequestInput,
   type BookCallRequestFieldErrors
 } from "@/lib/book-call/validation";
+import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 import { sendBookCallConfirmationSms } from "@/lib/sms/book-call-confirmation";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 
@@ -32,6 +33,27 @@ function serverError() {
 }
 
 export async function POST(request: Request) {
+  const rateLimit = checkRateLimit({
+    key: `book-call:${getRequestIp(request)}`,
+    limit: 5,
+    windowMs: 15 * 60 * 1000
+  });
+
+  if (!rateLimit.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "RATE_LIMITED"
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds)
+        }
+      }
+    );
+  }
+
   const contentLength = Number(request.headers.get("content-length") ?? "0");
 
   if (contentLength > MAX_PAYLOAD_BYTES) {

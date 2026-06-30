@@ -53,17 +53,17 @@ describe("opening display value", () => {
   });
 
   it("uses computed display value and localized statuses on the cancellations page", () => {
-    const cancellationsPage = readFileSync(
-      join(process.cwd(), "src/app/dashboard/cancellations/page.tsx"),
+    const cancellationsTable = readFileSync(
+      join(process.cwd(), "src/components/dashboard/cancellations-history-table.tsx"),
       "utf8"
     );
 
-    expect(cancellationsPage).toContain("displayValueCents");
-    expect(cancellationsPage).toContain("formatOpeningStatus");
-    expect(cancellationsPage).not.toContain(
+    expect(cancellationsTable).toContain("displayValueCents");
+    expect(cancellationsTable).toContain("OpeningStatusBadge");
+    expect(cancellationsTable).not.toContain(
       "formatCurrency(opening.normal_price_cents)"
     );
-    expect(cancellationsPage).not.toContain(
+    expect(cancellationsTable).not.toContain(
       "<StatusBadge>{opening.status}</StatusBadge>"
     );
   });

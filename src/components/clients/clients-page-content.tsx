@@ -315,7 +315,9 @@ function ClientActionsMenu({
   });
 
   useEffect(() => {
-    setMounted(true);
+    const timer = window.setTimeout(() => setMounted(true), 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {

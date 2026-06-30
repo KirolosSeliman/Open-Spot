@@ -34,7 +34,7 @@ export function DayCalendarView({
     (_, index) => hourStart + index
   );
   const gridHeight = hours.length * CALENDAR_HOUR_HEIGHT;
-  const layouts = layoutOverlappingEvents(appointments, timezone);
+  const layouts = layoutOverlappingEvents(appointments);
 
   return (
     <div>

@@ -75,22 +75,34 @@ describe("real dashboard and demo dashboard separation", () => {
       join(process.cwd(), "src", "lib", "dashboard", "operations-data.ts"),
       "utf8"
     );
+    const responseQueries = readFileSync(
+      join(process.cwd(), "src", "lib", "responses", "queries.ts"),
+      "utf8"
+    );
+    const responsesFilters = readFileSync(
+      join(process.cwd(), "src", "components", "responses", "ResponsesFilters.tsx"),
+      "utf8"
+    );
+    const slotAlertCard = readFileSync(
+      join(process.cwd(), "src", "components", "responses", "SlotAlertCard.tsx"),
+      "utf8"
+    );
 
-    expect(responsesPage).toContain("loadAppointmentResponseCalendar");
+    expect(responsesPage).toContain("loadAppointmentCalendarItems");
     expect(responsesPage).toContain("loadOpeningResponseGroups");
-    expect(responsesPage).toContain("normalizeOpeningResponsesFilters");
-    expect(responsesPage).toContain("filterOpeningResponseGroups");
-    expect(responsesPage).toContain('name="range"');
-    expect(responsesPage).toContain('name="serviceId"');
-    expect(responsesPage).toContain('name="q"');
+    expect(responsesPage).toContain("normalizeExtendedOpeningFilters");
+    expect(responsesPage).toContain("filterOpeningGroupsExtended");
+    expect(responsesFilters).toContain('name="range"');
+    expect(responsesFilters).toContain('name="serviceId"');
+    expect(responsesFilters).toContain('name="q"');
     expect(responsesPage).toContain("appointments");
     expect(responsesPage).toContain("openings");
-    expect(responsesPage).toContain("copy.responses.openingsPanel.view");
+    expect(slotAlertCard).toContain("copy.responses.openingsPanel.view");
     expect(dashboardCopy.fr.responses.openingsPanel.view).toBe(
       "Voir / valider cette annulation"
     );
-    expect(operationsData).toContain(
-      "export async function loadAppointmentResponseCalendar"
+    expect(responseQueries).toContain(
+      "export async function loadAppointmentCalendarItems"
     );
     expect(operationsData).toContain(
       "export async function loadOpeningResponseGroups"

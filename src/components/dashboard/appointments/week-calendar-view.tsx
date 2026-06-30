@@ -90,7 +90,7 @@ export function WeekCalendarView({
 
           {days.map((day) => {
             const dayAppointments = grouped.get(day.dateKey) ?? [];
-            const layouts = layoutOverlappingEvents(dayAppointments, timezone);
+            const layouts = layoutOverlappingEvents(dayAppointments);
 
             return (
               <div

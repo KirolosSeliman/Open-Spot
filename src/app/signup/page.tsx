@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { CreateAccountForm } from "@/components/auth/create-account-form";
 import { PageShell } from "@/components/layout/page-shell";
 import { Card } from "@/components/ui/card";
 import { getRequestLocale } from "@/lib/i18n/locale";
@@ -8,18 +7,22 @@ import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current
 
 const copy = {
   fr: {
-    eyebrow: "Creation de compte",
-    title: "Creez votre compte Open Spot.",
+    eyebrow: "Acces par invitation",
+    title: "Votre compte est cree depuis votre invitation.",
     description:
-      "Utilisez le meme email que celui transmis lors de votre demande. Si votre commerce a ete accepte, vous pourrez creer votre acces.",
-    help: "Votre commerce doit d'abord avoir ete accepte par Open Spot."
+      "Pour proteger les donnees de chaque commerce, la creation de compte public est desactivee.",
+    help: "Ouvrez le lien d'invitation ou de reinitialisation envoye par Open Spot. Si le lien a expire, demandez un nouveau lien.",
+    signIn: "Vous avez deja un compte ? Connexion",
+    requestLink: "Demander un lien d'acces"
   },
   en: {
-    eyebrow: "Account creation",
-    title: "Create your Open Spot account.",
+    eyebrow: "Invitation access",
+    title: "Your account is created from your invitation.",
     description:
-      "Use the same email you shared during your request. If your business was accepted, you can create your access.",
-    help: "Your business must first have been accepted by Open Spot."
+      "To protect each business workspace, public account creation is disabled.",
+    help: "Open the invitation or password setup link sent by Open Spot. If the link expired, request a new one.",
+    signIn: "Already have an account? Sign in",
+    requestLink: "Request an access link"
   }
 } as const;
 
@@ -41,13 +44,24 @@ export default async function SignupPage() {
               className="font-black text-[var(--primary)] underline-offset-4 hover:underline"
               href="/sign-in"
             >
-              Vous avez deja un compte ? Connexion
+              {t.signIn}
             </Link>
           </p>
         </div>
 
         <Card className="p-5 sm:p-7">
-          <CreateAccountForm />
+          <div className="space-y-5">
+            <div className="rounded-2xl border border-[#DDE5F0] bg-[#F8FAFD] p-5">
+              <p className="text-sm font-black text-[#07142F]">{t.eyebrow}</p>
+              <p className="mt-3 text-sm leading-6 text-[#50617D]">{t.help}</p>
+            </div>
+            <Link
+              className="inline-flex h-12 w-full items-center justify-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white transition hover:bg-[var(--primary-strong)]"
+              href="/sign-in"
+            >
+              {t.requestLink}
+            </Link>
+          </div>
         </Card>
       </section>
     </PageShell>

@@ -35,12 +35,17 @@ export default async function AdminOrganizationBusinessInfoPage({
     notFound();
   }
 
-  const [overview, businessInfo, controlsPanel] = await Promise.all([
-    loadAdminOrganizationOverview({
-      admin: access.admin,
-      organizationId: id,
-      range: parseAdminDateRange({})
-    }),
+  const overview = await loadAdminOrganizationOverview({
+    admin: access.admin,
+    organizationId: id,
+    range: parseAdminDateRange({})
+  });
+
+  if (!overview) {
+    notFound();
+  }
+
+  const [businessInfo, controlsPanel] = await Promise.all([
     loadAdminOrganizationBusinessInfo(id),
     loadOrganizationAdminControlsPanel({
       admin: access.admin,
@@ -48,7 +53,7 @@ export default async function AdminOrganizationBusinessInfoPage({
     })
   ]);
 
-  if (!overview || !businessInfo || !controlsPanel) {
+  if (!businessInfo || !controlsPanel) {
     notFound();
   }
 

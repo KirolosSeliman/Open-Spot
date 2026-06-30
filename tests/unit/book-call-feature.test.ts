@@ -38,10 +38,11 @@ describe("book call request feature", () => {
     const route = source("src/app/api/book-call-requests/route.ts");
     const legacyBookCallPage = source("src/app/book-call/page.tsx");
 
-    expect(questionsPage).toContain('<OpenSpotBookingPage kind="questions"');
+    expect(questionsPage).toContain('kind="questions"');
     expect(bookingPage).toContain("Parlons de vos");
     expect(bookingPage).toContain("annulations.");
-    expect(bookingPage).toContain("Let's talk about your cancellations.");
+    expect(bookingPage).toContain("Let's talk about your");
+    expect(bookingPage).toContain("cancellations.");
     expect(bookingPage).toContain("<BookCallRequestForm");
     expect(form).toContain("Nom complet");
     expect(form).toContain("Message / preferred time");

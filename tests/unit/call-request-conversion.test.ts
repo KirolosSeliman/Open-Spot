@@ -72,8 +72,9 @@ describe("call request client conversion", () => {
     const setPasswordPage = source("src/app/auth/set-password/page.tsx");
     const conversionCard = source("src/components/admin/call-request-conversion-card.tsx");
 
-    expect(signupPage).toContain("CreateAccountForm");
-    expect(signupPage).toContain("Creez votre compte Open Spot");
+    expect(signupPage).not.toContain("CreateAccountForm");
+    expect(signupPage).toContain("creation de compte public est desactivee");
+    expect(signupPage).toContain("Votre compte est cree depuis votre invitation");
     expect(authActions).toContain("Public signup is disabled");
     expect(callbackHandler).toContain("exchangeCodeForSession");
     expect(callbackHandler).toContain("getSafeInternalRedirectPath");

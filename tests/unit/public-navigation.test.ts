@@ -1087,7 +1087,7 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-floating-pill span");
     expect(mobileStyles).toContain("max-width: 100%");
-    expect(mobileStyles).toContain("width: min(100%, 13.5rem)");
+    expect(mobileStyles).toContain("width: min(22rem, calc(100% - 1.5rem))");
   });
 
   it("matches the mobile reference hero with a controlled phone scene", () => {
@@ -1095,45 +1095,45 @@ describe("public navigation", () => {
     const mobileStyles = styles.slice(styles.indexOf("@media (max-width: 767px)"));
 
     expect(mobileStyles).toContain(".reference-navbar {");
-    expect(mobileStyles).toContain("top: 24px");
+    expect(mobileStyles).toContain("top: clamp(0.75rem, 3.2vw, 1.1rem)");
     expect(mobileStyles).toContain(".reference-navbar-shell {");
-    expect(mobileStyles).toContain("height: 76px");
+    expect(mobileStyles).toContain("height: clamp(3.5rem, 14.5vw, 3.95rem)");
     expect(mobileStyles).toContain("border-radius: 999px");
 
     expect(mobileStyles).toContain(".reference-hero-section {");
-    expect(mobileStyles).toContain("min-height: 1680px");
-    expect(mobileStyles).toContain("padding-top: 158px");
+    expect(mobileStyles).toContain("min-height: clamp(54rem, 95vw, 68rem)");
+    expect(mobileStyles).toContain("padding-top: clamp(6rem, 10vw, 8rem)");
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
-    expect(mobileStyles).toContain("height: 705px");
+    expect(styles).toContain("height: var(--phone-height)");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
     expect(mobileStyles).toContain(".reference-phone {");
     expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("left: calc(50% - min(42.5vw, 165px))");
+    expect(mobileStyles).toContain("left: 0");
     expect(mobileStyles).toContain("transform: none");
-    expect(mobileStyles).toContain("width: min(85vw, 330px)");
+    expect(mobileStyles).toContain("width: min(76vw, 306px)");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
     expect(mobileStyles).toContain(".reference-floating-card {");
     expect(mobileStyles).toContain("position: absolute");
     expect(mobileStyles).toContain("z-index: 24");
 
-    expect(mobileStyles).toContain(".reference-phone-fade {");
-    expect(mobileStyles).toContain("display: block");
-    expect(mobileStyles).toContain("top: 885px");
+    expect(mobileStyles).toContain(".reference-mobile-phone-fade {");
+    expect(mobileStyles).toContain("display: block !important");
+    expect(mobileStyles).toContain("bottom: -0.55rem");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
-    expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("top: 1198px");
+    expect(mobileStyles).toContain("position: relative");
+    expect(mobileStyles).toContain("top: auto !important");
 
     expect(mobileStyles).toContain(".reference-trust-row {");
     expect(mobileStyles).toContain("flex-direction: row");
 
     expect(mobileStyles).toContain(".reference-hero-actions {");
     expect(mobileStyles).toContain("flex-direction: column");
-    expect(mobileStyles).toContain("width: min(342px, calc(100vw - 48px))");
+    expect(mobileStyles).toContain("width: min(21.375rem, calc(100% - 2rem))");
   });
 
   it("uses a long blue-to-white gradient before the Why Open Spot section", () => {
@@ -1208,7 +1208,10 @@ describe("public navigation", () => {
 
   it("links sign-in and signup pages to each other", () => {
     expect(source("src/app/sign-in/page.tsx")).toContain('href="/signup"');
-    expect(source("src/app/signup/page.tsx")).toContain("CreateAccountForm");
+    expect(source("src/app/signup/page.tsx")).not.toContain("CreateAccountForm");
+    expect(source("src/app/signup/page.tsx")).toContain(
+      "creation de compte public est desactivee"
+    );
   });
 
   it("keeps the sign-in page focused on authentication without the promo control card", () => {

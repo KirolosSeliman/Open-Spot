@@ -1,11 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 import { updateAppointmentAction } from "@/lib/dashboard/actions";
 import type {
   AppointmentView,
-  CustomerWithConsent,
   ServiceRow
 } from "@/lib/dashboard/operations-data";
 import { toDateTimeLocalValue } from "@/lib/appointments/date-format";

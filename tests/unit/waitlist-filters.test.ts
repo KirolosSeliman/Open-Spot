@@ -146,10 +146,10 @@ describe("waitlist server-side consent safety", () => {
     );
 
     expect(source).toContain('select("status")');
-    expect(source).toContain('consent?.status !== "opted_in"');
-    expect(source).toContain("Only clients with opted-in SMS consent");
+    expect(source).toContain("filterEligibleOpeningRecipients");
+    expect(source).toContain('consentByCustomer.get(entry.customer_id) ?? "needs_consent"');
     expect(source).toContain('.eq("organization_id", organization.id)');
     expect(source).toContain('.eq("active", true)');
-    expect(source).toContain("already active on the waitlist");
+    expect(source).toContain("Client is already active.");
   });
 });

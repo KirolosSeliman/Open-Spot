@@ -1,6 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { sendOrganizationSms } from "@/lib/sms/organization-sms";
+import {
+  getOrganizationSmsRuntimeProviderName,
+  resolveOrganizationSmsFromNumber,
+  sendOrganizationSms
+} from "@/lib/sms/organization-sms";
 import { isOrganizationSmsPaused } from "@/lib/admin/organization-controls";
 import type { Database } from "@/types/database";
 
@@ -284,39 +288,82 @@ async function processOneScheduledMessage({
           : ""
       });
 
-    const sendResult = await sendOrganizationSms({
-      organizationId: claimed.organization_id,
-      to: customer.phone_e164,
-      body,
-      messageType: claimed.appointment_id ? "appointment_reminder" : "opening_alert",
-      openingId: claimed.opening_id,
-      appointmentId: claimed.appointment_id,
-      customerId: claimed.customer_id,
-      consentStatus: "opted_in",
-      metadata: {
-        scheduledMessageId: claimed.id,
-        organizationId: claimed.organization_id
-      }
+    const messageType = claimed.appointment_id
+      ? "appointment_reminder"
+      : claimed.opening_id
+        ? "opening_alert"
+        : "system";
+    const outboundProvider = getOrganizationSmsRuntimeProviderName();
+    const outboundFromNumber = await resolveOrganizationSmsFromNumber({
+      organizationId: claimed.organization_id
     });
-
-    await supabase.from("sms_messages").insert({
+    const { data: pendingSmsMessage, error: pendingSmsMessageError } = await supabase
+      .from("sms_messages")
+      .insert({
       organization_id: claimed.organization_id,
       customer_id: claimed.customer_id,
       opening_id: claimed.opening_id,
       appointment_id: claimed.appointment_id,
-      message_type: claimed.appointment_id
-        ? "appointment_reminder"
-        : claimed.opening_id
-          ? "opening_alert"
-          : "system",
+      message_type: messageType,
       direction: "outbound",
-      provider: sendResult.provider,
-      provider_message_id: sendResult.providerMessageId,
-      from_number: sendResult.fromNumber,
+      provider: outboundProvider,
+      provider_message_id: null,
+      from_number: outboundFromNumber,
       to_number: customer.phone_e164,
       body,
-      status: sendResult.status
-    });
+      status: "pending_send"
+      })
+      .select("id")
+      .single();
+
+    if (pendingSmsMessageError || !pendingSmsMessage) {
+      throw (
+        pendingSmsMessageError ??
+        new Error("Scheduled SMS outbox persistence failed.")
+      );
+    }
+
+    let sendResult;
+
+    try {
+      sendResult = await sendOrganizationSms({
+        organizationId: claimed.organization_id,
+        to: customer.phone_e164,
+        body,
+        messageType,
+        openingId: claimed.opening_id,
+        appointmentId: claimed.appointment_id,
+        customerId: claimed.customer_id,
+        consentStatus: "opted_in",
+        metadata: {
+          scheduledMessageId: claimed.id,
+          organizationId: claimed.organization_id
+        }
+      });
+    } catch (error) {
+      await supabase
+        .from("sms_messages")
+        .update({
+          status: "failed",
+          error_message:
+            error instanceof Error ? error.message : "Scheduled SMS send failed."
+        })
+        .eq("organization_id", claimed.organization_id)
+        .eq("id", pendingSmsMessage.id);
+
+      throw error;
+    }
+
+    await supabase
+      .from("sms_messages")
+      .update({
+        provider: sendResult.provider,
+        provider_message_id: sendResult.providerMessageId,
+        from_number: sendResult.fromNumber,
+        status: sendResult.status
+      })
+      .eq("organization_id", claimed.organization_id)
+      .eq("id", pendingSmsMessage.id);
 
     await supabase
       .from("scheduled_messages")

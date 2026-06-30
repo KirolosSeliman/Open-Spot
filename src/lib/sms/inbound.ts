@@ -1,6 +1,7 @@
 export type InboundSmsContext = "appointment" | "waitlist" | "consent" | "unknown";
 export type InboundSmsClassification =
   | "opt_out"
+  | "sms_help"
   | "consent_opt_in"
   | "consent_decline"
   | "appointment_confirm"
@@ -20,6 +21,7 @@ const optOutKeywords = new Set([
   "revoke",
   "optout"
 ]);
+const helpKeywords = new Set(["help", "aide", "info"]);
 const positiveKeywords = new Set(["oui", "yes", "1"]);
 const consentPositiveKeywords = new Set([
   "oui",
@@ -75,19 +77,31 @@ export function classifyInboundSmsBody(
     return "unknown";
   }
 
-  if (context === "appointment" && appointmentCancelKeywords.has(normalized)) {
+  if (
+    context === "appointment" &&
+    (appointmentCancelKeywords.has(normalized) ||
+      appointmentCancelKeywords.has(firstToken))
+  ) {
     return "appointment_cancel";
   }
 
-  if (optOutKeywords.has(normalized)) {
+  if (optOutKeywords.has(normalized) || optOutKeywords.has(firstToken)) {
     return "opt_out";
   }
 
-  if (context === "appointment" && appointmentConfirmKeywords.has(normalized)) {
+  if (helpKeywords.has(normalized) || helpKeywords.has(firstToken)) {
+    return "sms_help";
+  }
+
+  if (
+    context === "appointment" &&
+    (appointmentConfirmKeywords.has(normalized) ||
+      appointmentConfirmKeywords.has(firstToken))
+  ) {
     return "appointment_confirm";
   }
 
-  if (positiveKeywords.has(normalized)) {
+  if (positiveKeywords.has(normalized) || positiveKeywords.has(firstToken)) {
     return "waitlist_positive";
   }
 

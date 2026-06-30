@@ -218,10 +218,14 @@ export type OverlapLayout = {
   columnCount: number;
 };
 
-export function layoutOverlappingEvents<T extends { id: string; starts_at: string; ends_at: string | null; durationMinutes?: number | null }>(
-  events: T[],
-  timezone: string
-): Map<string, OverlapLayout> {
+export function layoutOverlappingEvents<
+  T extends {
+    id: string;
+    starts_at: string;
+    ends_at: string | null;
+    durationMinutes?: number | null;
+  }
+>(events: T[]): Map<string, OverlapLayout> {
   const sorted = [...events].sort(
     (left, right) =>
       new Date(left.starts_at).getTime() - new Date(right.starts_at).getTime()

@@ -61,6 +61,13 @@ describe("platform SMS integration wiring", () => {
       join(process.cwd(), "src/lib/sms/platform-sms.ts"),
       "utf8"
     );
+    const manualBillingPanel = readFileSync(
+      join(
+        process.cwd(),
+        "src/components/admin/company-detail/company-manual-billing-panel.tsx"
+      ),
+      "utf8"
+    );
     const billingButton = readFileSync(
       join(process.cwd(), "src/components/admin/billing-payment-reminder-button.tsx"),
       "utf8"
@@ -75,7 +82,8 @@ describe("platform SMS integration wiring", () => {
     expect(platformSms).toContain("sendPlatformSms");
     expect(platformSms).toContain("platform_sms_messages");
     expect(platformSms).toContain("withinHours: 24");
-    expect(billingPage).toContain("BillingPaymentReminderButton");
+    expect(billingPage).toContain("paymentReminder={paymentReminder}");
+    expect(manualBillingPanel).toContain("BillingPaymentReminderButton");
     expect(billingButton).toContain("Envoyer un rappel de paiement");
   });
 

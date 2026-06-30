@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { recordPlatformAdminAuditLog } from "@/lib/admin/audit";
+import { assertAdminCanAccessOrganization } from "@/lib/admin/access";
 import {
   getOrCreateOrganizationSmsSender,
   loadOrganizationSmsSender,
@@ -497,6 +498,7 @@ export async function approveSmsComplianceAction(
   try {
     const organizationId = stringField(formData, "organizationId");
     const admin = await requirePlatformAdmin();
+    await assertAdminCanAccessOrganization({ admin, organizationId });
     const sender = await loadOrganizationSmsSender(organizationId);
 
     if (!sender) {

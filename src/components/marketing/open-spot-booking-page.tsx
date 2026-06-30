@@ -148,7 +148,6 @@ function ContextIcon({ type }: { type: "chart" | "calendar" | "users" | "message
 }
 
 export function OpenSpotBookingPage({
-  kind: _kind,
   initialLocale = "fr"
 }: {
   kind: BookingKind;

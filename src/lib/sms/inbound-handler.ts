@@ -29,6 +29,10 @@ type InboundContext = {
   message_type: string | null;
 };
 
+type SupabaseServiceClient = NonNullable<
+  ReturnType<typeof createSupabaseServiceClient>
+>;
+
 function getInboundContextType(context: InboundContext | null) {
   if (context?.message_type === "consent_request") {
     return "consent" as const;
@@ -43,6 +47,49 @@ function getInboundContextType(context: InboundContext | null) {
   }
 
   return "unknown" as const;
+}
+
+async function optOutCustomersByPhone({
+  supabase,
+  fromNumber
+}: {
+  supabase: SupabaseServiceClient;
+  fromNumber: string;
+}) {
+  const { data: customers, error: customersError } = await supabase
+    .from("customers")
+    .select("id, organization_id")
+    .eq("phone_e164", fromNumber)
+    .limit(100);
+
+  if (customersError) {
+    throw new Error(customersError.message);
+  }
+
+  if (!customers || customers.length === 0) {
+    return 0;
+  }
+
+  const now = new Date().toISOString();
+  const { error: consentError } = await supabase.from("sms_consents").upsert(
+    customers.map((customer) => ({
+      organization_id: customer.organization_id,
+      customer_id: customer.id,
+      phone_e164: fromNumber,
+      status: "opted_out",
+      source: "sms_opt_out_reply",
+      consent_text: null,
+      consented_at: null,
+      unsubscribed_at: now
+    })),
+    { onConflict: "organization_id,customer_id" }
+  );
+
+  if (consentError) {
+    throw new Error(consentError.message);
+  }
+
+  return customers.length;
 }
 
 export async function handleInboundSmsRequest(
@@ -228,7 +275,7 @@ export async function handleInboundSmsRequest(
       .not("customer_id", "is", null)
       .or("opening_id.not.is.null,appointment_id.not.is.null,message_type.eq.consent_request")
       .order("created_at", { ascending: false })
-      .limit(1);
+      .limit(5);
 
     if (contextError) {
       return NextResponse.json(
@@ -237,7 +284,10 @@ export async function handleInboundSmsRequest(
       );
     }
 
-    context = contextRows?.[0] ?? null;
+    const organizationIds = new Set(
+      (contextRows ?? []).map((row) => row.organization_id).filter(Boolean)
+    );
+    context = organizationIds.size === 1 ? (contextRows?.[0] ?? null) : null;
   }
 
   const contextType = getInboundContextType(context);
@@ -274,6 +324,8 @@ export async function handleInboundSmsRequest(
           );
         }
 
+        let optOutCustomerCount = 0;
+
         if (classification === "opt_out" && customer?.id) {
           const now = new Date().toISOString();
 
@@ -290,6 +342,12 @@ export async function handleInboundSmsRequest(
             },
             { onConflict: "organization_id,customer_id" }
           );
+          optOutCustomerCount = 1;
+        } else if (classification === "opt_out") {
+          optOutCustomerCount = await optOutCustomersByPhone({
+            supabase,
+            fromNumber
+          });
         }
 
         await recordSmsWebhookEvent({
@@ -306,7 +364,8 @@ export async function handleInboundSmsRequest(
           http_status: 202,
           body_preview: buildSmsBodyPreview(inbound.body),
           payload_summary: {
-            reason: "Dedicated sender matched without outbound context."
+            reason: "Dedicated sender matched without outbound context.",
+            optOutCustomerCount
           }
         });
 
@@ -316,6 +375,7 @@ export async function handleInboundSmsRequest(
           organizationId: organizationSender.organization_id,
           customerId: customer?.id ?? null,
           messageId: inboundMessage.id,
+          optOutCustomerCount,
           warning: "Dedicated sender matched without outbound context."
         });
       } catch (organizationPersistError) {
@@ -326,6 +386,38 @@ export async function handleInboundSmsRequest(
                 ? organizationPersistError.message
                 : "Organization inbound persistence failed."
           },
+          { status: 500 }
+        );
+      }
+    }
+
+    let optOutCustomerCount = 0;
+
+    if (classification === "opt_out") {
+      try {
+        optOutCustomerCount = await optOutCustomersByPhone({
+          supabase,
+          fromNumber
+        });
+      } catch (optOutError) {
+        await recordSmsWebhookEvent({
+          provider: providerName,
+          event_type: providerName === "simulator" ? "simulator_inbound" : "inbound",
+          processing_status: "persistence_failed",
+          provider_message_id: inbound.providerMessageId ?? null,
+          from_number: fromNumber,
+          to_number: toNumber,
+          classification,
+          http_status: 500,
+          error_message:
+            optOutError instanceof Error
+              ? optOutError.message
+              : "Unlinked opt-out persistence failed.",
+          body_preview: buildSmsBodyPreview(inbound.body)
+        });
+
+        return NextResponse.json(
+          { error: "Unlinked opt-out persistence failed." },
           { status: 500 }
         );
       }
@@ -342,7 +434,8 @@ export async function handleInboundSmsRequest(
       http_status: 202,
       body_preview: buildSmsBodyPreview(inbound.body),
       payload_summary: {
-        reason: "No prior outbound message context matched this sender."
+        reason: "No prior outbound message context matched this sender.",
+        optOutCustomerCount
       }
     });
 
@@ -350,6 +443,7 @@ export async function handleInboundSmsRequest(
       {
         classification,
         status: "received_unlinked",
+        optOutCustomerCount,
         warning: "No prior outbound message context matched this sender."
       },
       { status: 202 }
@@ -464,6 +558,30 @@ export async function handleInboundSmsRequest(
     http_status: 200,
     body_preview: inbound.body
   });
+
+  if (classification === "sms_help") {
+    await supabase.from("audit_logs").insert({
+      organization_id: context.organization_id,
+      action: "sms.help.received",
+      entity_type: "sms_messages",
+      entity_id: inboundMessage.id,
+      metadata: {
+        customer_id: context.customer_id,
+        phone_e164: fromNumber
+      }
+    });
+
+    return NextResponse.json({
+      classification,
+      status: "received_linked",
+      action: "help_requested",
+      organizationId: context.organization_id,
+      customerId: context.customer_id,
+      openingId: context.opening_id,
+      appointmentId: context.appointment_id,
+      messageId: inboundMessage.id
+    });
+  }
 
   if (classification === "opt_out") {
     const { error: consentError } = await supabase

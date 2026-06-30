@@ -87,7 +87,7 @@ export async function signInAction(formData: FormData) {
   );
 }
 
-export async function signUpAction(_formData: FormData) {
+export async function signUpAction() {
   authErrorRedirect(
     "/signup",
     "Public signup is disabled. Accounts are created by invitation only."

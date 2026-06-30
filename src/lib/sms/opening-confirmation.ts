@@ -3,7 +3,11 @@ import "server-only";
 import { requireOrganizationSmsNotPaused } from "@/lib/admin/organization-controls";
 import type { ActiveOrganization } from "@/lib/organization/current";
 import { getOpeningSmsDateTimeLabels } from "@/lib/sms/message-generator";
-import { sendOrganizationSms } from "@/lib/sms/organization-sms";
+import {
+  getOrganizationSmsRuntimeProviderName,
+  resolveOrganizationSmsFromNumber,
+  sendOrganizationSms
+} from "@/lib/sms/organization-sms";
 import { resolveOpeningConfirmationSmsBody } from "@/lib/sms/organization-templates";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -224,22 +228,11 @@ export async function sendOpeningConfirmationSmsAfterValidation({
         includeOptOut: true
       }
     });
-    const sendResult = await sendOrganizationSms({
-      organizationId: organization.id,
-      to: customer.phone_e164,
-      body: messageBody,
-      messageType: "opening_confirmation",
-      openingId,
-      customerId: offer.customer_id,
-      consentStatus: "opted_in",
-      metadata: {
-        openingId,
-        organizationId: organization.id,
-        customerId: offer.customer_id,
-        bookingRequestId
-      }
+    const outboundProvider = getOrganizationSmsRuntimeProviderName();
+    const outboundFromNumber = await resolveOrganizationSmsFromNumber({
+      organizationId: organization.id
     });
-    const { data: smsMessage, error: messageError } = await supabase
+    const { data: pendingSmsMessage, error: pendingMessageError } = await supabase
       .from("sms_messages")
       .insert({
         organization_id: organization.id,
@@ -247,13 +240,66 @@ export async function sendOpeningConfirmationSmsAfterValidation({
         opening_id: openingId,
         message_type: "opening_confirmation",
         direction: "outbound",
+        provider: outboundProvider,
+        provider_message_id: null,
+        from_number: outboundFromNumber,
+        to_number: customer.phone_e164,
+        body: messageBody,
+        status: "pending_send"
+      })
+      .select("id")
+      .single();
+
+    if (pendingMessageError || !pendingSmsMessage) {
+      return (
+        pendingMessageError?.message ??
+        "Client confirmé, mais le SMS de confirmation n'a pas pu être préparé."
+      );
+    }
+
+    let sendResult;
+
+    try {
+      sendResult = await sendOrganizationSms({
+        organizationId: organization.id,
+        to: customer.phone_e164,
+        body: messageBody,
+        messageType: "opening_confirmation",
+        openingId,
+        customerId: offer.customer_id,
+        consentStatus: "opted_in",
+        metadata: {
+          openingId,
+          organizationId: organization.id,
+          customerId: offer.customer_id,
+          bookingRequestId
+        }
+      });
+    } catch (error) {
+      const safeError = getSafeProviderErrorMessage(error);
+
+      await supabase
+        .from("sms_messages")
+        .update({
+          status: "failed",
+          error_message: safeError
+        })
+        .eq("organization_id", organization.id)
+        .eq("id", pendingSmsMessage.id);
+
+      return safeError;
+    }
+
+    const { data: smsMessage, error: messageError } = await supabase
+      .from("sms_messages")
+      .update({
         provider: sendResult.provider,
         provider_message_id: sendResult.providerMessageId,
         from_number: sendResult.fromNumber,
-        to_number: customer.phone_e164,
-        body: messageBody,
         status: sendResult.status
       })
+      .eq("organization_id", organization.id)
+      .eq("id", pendingSmsMessage.id)
       .select("id")
       .single();
 

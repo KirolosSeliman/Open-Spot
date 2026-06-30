@@ -7,11 +7,29 @@ export const LEGAL_ROUTES = {
 /** Commercial name displayed on legal pages — not necessarily the incorporated legal entity name. */
 export const LEGAL_ENTITY_NAME = "Open Spot";
 
-/** TODO: Replace with the official legal contact email once confirmed by the business. */
-export const LEGAL_CONTACT_EMAIL = "À compléter";
+function readRequiredProductionLegalValue(name: string, fallback: string) {
+  const value = process.env[name]?.trim();
 
-/** TODO: Replace with the official business address once confirmed, if applicable. */
-export const LEGAL_ADDRESS = "À compléter, si applicable";
+  if (value) {
+    return value;
+  }
+
+  if (process.env.VERCEL_ENV === "production") {
+    throw new Error(`${name} must be configured before publishing legal pages.`);
+  }
+
+  return fallback;
+}
+
+export const LEGAL_CONTACT_EMAIL = readRequiredProductionLegalValue(
+  "LEGAL_CONTACT_EMAIL",
+  "legal-contact-required@example.invalid"
+);
+
+export const LEGAL_ADDRESS = readRequiredProductionLegalValue(
+  "LEGAL_BUSINESS_ADDRESS",
+  "Adresse légale à configurer avant production"
+);
 
 /** Last update date for all legal pages (French format). */
 export const LEGAL_LAST_UPDATED = "25 juin 2026";

@@ -34,6 +34,11 @@ const rangeOptions = [
   { value: "custom", label: "Personnalisé" }
 ] as const;
 
+const defaultAuditTo = formatAdminDateInput(new Date());
+const defaultAuditFrom = formatAdminDateInput(
+  new Date(new Date(defaultAuditTo).getTime() - 29 * 24 * 60 * 60 * 1000)
+);
+
 function SelectField({
   id,
   label,
@@ -75,9 +80,8 @@ export function AuditFilters({
   filters: AuditLogFilters;
   rangeLabel: string;
 }) {
-  const defaultFrom =
-    filters.from ?? formatAdminDateInput(new Date(Date.now() - 29 * 24 * 60 * 60 * 1000));
-  const defaultTo = filters.to ?? formatAdminDateInput(new Date());
+  const defaultFrom = filters.from ?? defaultAuditFrom;
+  const defaultTo = filters.to ?? defaultAuditTo;
 
   return (
     <form

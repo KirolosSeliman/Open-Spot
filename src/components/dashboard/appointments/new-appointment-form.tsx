@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { RecurrenceFields } from "@/components/dashboard/appointments/recurrence-fields";
 import { createAppointmentAction } from "@/lib/dashboard/actions";
@@ -53,13 +53,7 @@ export function NewAppointmentForm({
   );
   const smsDisabled = selectedCustomer?.consentStatus === "opted_out";
 
-  const defaultDuration = useMemo(() => {
-    if (!selectedService?.duration_minutes) {
-      return 60;
-    }
-
-    return selectedService.duration_minutes;
-  }, [selectedService?.duration_minutes]);
+  const defaultDuration = selectedService?.duration_minutes ?? 60;
 
   function handleStartsAtChange(value: string) {
     setStartsAt(value);

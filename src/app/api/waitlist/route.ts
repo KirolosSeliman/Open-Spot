@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 
+import { checkRateLimit, getRequestIp } from "@/lib/rate-limit";
 import { createSupabaseServiceClient } from "@/lib/supabase/service";
 import { buildWaitlistSignupRpcArgs } from "@/lib/waitlist/rpc";
 import { createWaitlistSubmissionPayload } from "@/lib/waitlist/submission";
 
 export async function POST(request: Request) {
+  const requestIp = getRequestIp(request);
   const formData = await request.formData();
   const parsed = createWaitlistSubmissionPayload({
     organizationSlug: String(formData.get("organizationSlug") ?? ""),
@@ -24,6 +26,24 @@ export async function POST(request: Request) {
 
   if (!parsed.ok) {
     return NextResponse.json({ errors: parsed.errors }, { status: 400 });
+  }
+
+  const rateLimit = checkRateLimit({
+    key: `waitlist:${requestIp}:${parsed.payload.organizationSlug}`,
+    limit: 8,
+    windowMs: 15 * 60 * 1000
+  });
+
+  if (!rateLimit.ok) {
+    return NextResponse.json(
+      { errors: ["Too many submissions. Please wait a few minutes and try again."] },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(rateLimit.retryAfterSeconds)
+        }
+      }
+    );
   }
 
   const supabase = createSupabaseServiceClient();
