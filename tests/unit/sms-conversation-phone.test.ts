@@ -32,8 +32,8 @@ describe("SMS conversation phone marketing preview", () => {
       "To confirm"
     ]);
     expect(smsConversationPhoneCopy.fr.floatingBadges.map((badge) => badge.label)).toEqual([
-      "Revision manuelle",
-      "Reponses SMS"
+      "Révision manuelle",
+      "Réponses SMS"
     ]);
   });
 

@@ -23,14 +23,14 @@ export function ImportExportPanel({
           <div>
             <h2 className="text-base font-black">Import CSV</h2>
             <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              Selectionnez un fichier CSV, verifiez la preview, puis confirmez
-              l&apos;import. Aucune donnee n&apos;est ecrite avant confirmation.
+              Sélectionnez un fichier CSV, vérifiez l&apos;aperçu, puis confirmez
+              l&apos;import. Aucune donnée n&apos;est écrite avant confirmation.
             </p>
           </div>
           <label className="grid min-h-40 cursor-pointer place-items-center rounded-2xl border border-dashed border-[var(--primary)] bg-[var(--primary-soft)] p-5 text-center text-sm font-bold text-[var(--primary-strong)]">
             <span>Choisir un fichier CSV</span>
             <span className="mt-1 text-xs font-semibold text-[var(--muted)]">
-              Formats acceptes: .csv, text/csv
+              Formats acceptés : .csv, text/csv
             </span>
             <input
               accept=".csv,text/csv"
@@ -54,14 +54,14 @@ export function ImportExportPanel({
                 if (!isCsv) {
                   setFileName(file.name);
                   setCsv("");
-                  setError("Unsupported file type. Please choose a CSV file.");
+                  setError("Type de fichier non pris en charge. Choisissez un fichier CSV.");
                   return;
                 }
 
                 setFileName(file.name);
                 void file.text().then(setCsv).catch(() => {
                   setCsv("");
-                  setError("Unable to read this CSV file.");
+                  setError("Impossible de lire ce fichier CSV.");
                 });
               }}
               type="file"
@@ -69,7 +69,7 @@ export function ImportExportPanel({
           </label>
           {fileName ? (
             <p className="rounded-xl border border-[var(--line)] bg-[#fbfaf7] px-3 py-2 text-sm font-bold">
-              Fichier selectionne: {fileName}
+              Fichier sélectionné : {fileName}
             </p>
           ) : null}
           {error ? (
@@ -83,7 +83,7 @@ export function ImportExportPanel({
             disabled={!csv || Boolean(error)}
             type="submit"
           >
-            Preview import
+            Prévisualiser l&apos;import
           </button>
         </div>
       </form>
@@ -91,28 +91,28 @@ export function ImportExportPanel({
       <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-sm">
         <h2 className="text-base font-black">Export clients</h2>
         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          Telecharge les clients de votre organisation seulement, pour backup,
+          Téléchargez seulement les clients de votre organisation, pour sauvegarde,
           audit, corrections ou migration.
         </p>
         <a
           className="mt-5 inline-flex min-h-11 items-center rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
           href="/dashboard/import/export/customers"
         >
-          Download client CSV
+          Télécharger le CSV clients
         </a>
       </section>
 
       <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-4 shadow-sm">
-        <h2 className="text-base font-black">Template import</h2>
+        <h2 className="text-base font-black">Modèle d&apos;import</h2>
         <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-          Telecharge les colonnes attendues pour preparer un fichier propre
+          Téléchargez les colonnes attendues pour préparer un fichier propre
           avant l&apos;import.
         </p>
         <a
           className="mt-5 inline-flex min-h-11 items-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black"
           href="/dashboard/import/export/template"
         >
-          Download CSV template
+          Télécharger le modèle CSV
         </a>
       </section>
     </div>

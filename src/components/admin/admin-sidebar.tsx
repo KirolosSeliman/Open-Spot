@@ -289,7 +289,7 @@ export function AdminSidebar({ admin }: { admin: AdminInfo }) {
             className="rounded-xl border border-[#e1e9f5] bg-white px-4 py-2.5 text-center text-sm font-semibold text-[#0b1328] transition hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
             href="/dashboard"
           >
-            Retour au dashboard marchand
+            Retour au tableau de bord marchand
           </Link>
           <form action={signOutAction}>
             <button

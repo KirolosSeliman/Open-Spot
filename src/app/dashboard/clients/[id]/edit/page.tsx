@@ -145,7 +145,7 @@ export default async function EditClientPage({
             className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--foreground)] transition hover:bg-[#f1f3ef]"
             href={deleted ? "/dashboard/clients?tab=deleted" : "/dashboard/clients"}
           >
-            Back to clients
+            Retour aux clients
           </Link>
         }
         description={
@@ -153,7 +153,7 @@ export default async function EditClientPage({
             ? "Ce client est supprimé. Les données historiques restent visibles en lecture seule."
             : "Modifiez explicitement un client existant. Le numéro de téléphone reste unique par organisation."
         }
-        title={`${deleted ? "Client supprimé" : "Edit client"}: ${customer.full_name}`}
+        title={`${deleted ? "Client supprimé" : "Modifier le client"} : ${customer.full_name}`}
       />
       <Panel
         description={
@@ -161,20 +161,20 @@ export default async function EditClientPage({
             ? "Restaurer le client ne change pas son consentement SMS et ne le remet pas automatiquement sur la liste d'attente."
             : "Les changements de téléphone synchronisent le consentement SMS du même client. Les messages historiques restent inchangés."
         }
-        title="Client details"
+        title="Détails du client"
       >
         <Feedback {...feedback} />
         {deleted ? (
           <div className="grid gap-4">
             <div className="grid gap-3 rounded-lg border border-[#f4cf8c] bg-[#fff9ed] p-4 text-sm">
               <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge>Deleted</StatusBadge>
+                <StatusBadge>Supprimé</StatusBadge>
                 <span className="font-bold text-[#7a4a00]">
                   Supprimé le {formatDeletedAt(customer.deleted_at)}
                 </span>
               </div>
               <p className="text-[#5f3b00]">
-                Raison: {customer.deleted_reason ?? "Non précisée"}
+                Raison : {customer.deleted_reason ?? "Non précisée"}
               </p>
             </div>
             <dl className="grid gap-3 text-sm md:grid-cols-2">
@@ -187,8 +187,8 @@ export default async function EditClientPage({
                 <dd className="font-black">{customer.phone_e164}</dd>
               </div>
               <div>
-                <dt className="font-bold text-[var(--muted)]">Email</dt>
-                <dd className="font-black">{customer.email ?? "N/A"}</dd>
+                <dt className="font-bold text-[var(--muted)]">Courriel</dt>
+                <dd className="font-black">{customer.email ?? "Non renseigné"}</dd>
               </div>
               <div>
                 <dt className="font-bold text-[var(--muted)]">Consentement</dt>
@@ -241,7 +241,7 @@ export default async function EditClientPage({
               required
             />
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
-              Email
+              Courriel
               <input
                 className="min-h-11 rounded-xl border border-[var(--line)] bg-white px-3"
                 defaultValue={customer.email ?? ""}
@@ -257,7 +257,7 @@ export default async function EditClientPage({
                 name="preferredLanguage"
               >
                 <option value="fr">Français</option>
-                <option value="en">English</option>
+                <option value="en">Anglais</option>
               </select>
             </label>
             <label className="grid gap-2 text-sm font-bold md:col-span-2">
@@ -311,13 +311,13 @@ export default async function EditClientPage({
                 className="min-h-11 rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white"
                 type="submit"
               >
-                Save client
+              Enregistrer le client
               </button>
               <Link
                 className="inline-flex min-h-11 items-center justify-center rounded-full border border-[var(--line)] bg-white px-5 text-sm font-black text-[var(--foreground)]"
                 href="/dashboard/clients"
               >
-                Cancel
+                Annuler
               </Link>
             </div>
           </form>
@@ -327,7 +327,7 @@ export default async function EditClientPage({
       {!deleted ? (
         <Panel
           description="Supprimer ce client le retirera des listes actives et des futurs SMS. L'historique des messages et rendez-vous restera conservé."
-          title="Danger zone"
+          title="Zone sensible"
         >
           <form action={deleteCustomerAction} className="grid gap-4 md:grid-cols-3">
             <input name="customerId" type="hidden" value={customer.id} />

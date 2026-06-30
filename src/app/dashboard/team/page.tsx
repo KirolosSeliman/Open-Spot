@@ -10,20 +10,20 @@ import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 
 const permissions = [
   {
-    role: "Owner",
-    text: "Manage everything, including billing, settings, team, SMS and confirmations."
+    role: "Propriétaire",
+    text: "Gère la facturation, les paramètres, l'équipe, les SMS et les confirmations."
   },
   {
-    role: "Manager",
-    text: "Send SMS, confirm clients, view analytics, manage services and clients."
+    role: "Gestionnaire",
+    text: "Envoie des SMS, confirme les clients, consulte les statistiques et gère les services."
   },
   {
-    role: "Employee",
-    text: "Send SMS and confirm clients. No billing or core settings access."
+    role: "Employé",
+    text: "Envoie des SMS et confirme les clients, sans accès à la facturation ni aux paramètres sensibles."
   },
   {
-    role: "Read-only",
-    text: "View limited dashboard information without sending SMS or confirming clients."
+    role: "Lecture seule",
+    text: "Consulte des informations limitées sans envoyer de SMS ni confirmer de clients."
   }
 ];
 
@@ -46,19 +46,19 @@ export default async function TeamPage() {
             className="rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-black text-white"
             type="button"
           >
-            Invite member
+            Inviter un membre
           </button>
         }
-        description="Controlez qui peut envoyer des SMS, confirmer un client, gerer les services ou acceder aux parametres sensibles."
-        title="Equipe"
+        description="Contrôlez qui peut envoyer des SMS, confirmer un client, gérer les services ou accéder aux paramètres sensibles."
+        title="Équipe"
       />
       <Panel title="Membres">
         <TableShell>
           <thead>
             <tr>
-              <th className={tableHeadClass}>Email</th>
-              <th className={tableHeadClass}>Role</th>
-              <th className={tableHeadClass}>Status</th>
+              <th className={tableHeadClass}>Courriel</th>
+              <th className={tableHeadClass}>Rôle</th>
+              <th className={tableHeadClass}>Statut</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-[var(--line)] bg-white">
@@ -75,7 +75,7 @@ export default async function TeamPage() {
             ) : (
               <tr>
                 <td className={tableCellClass} colSpan={3}>
-                  Supabase non configure.
+                  Supabase n&apos;est pas configuré.
                 </td>
               </tr>
             )}

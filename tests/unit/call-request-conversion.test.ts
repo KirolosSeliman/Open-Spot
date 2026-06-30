@@ -73,15 +73,15 @@ describe("call request client conversion", () => {
     const conversionCard = source("src/components/admin/call-request-conversion-card.tsx");
 
     expect(signupPage).not.toContain("CreateAccountForm");
-    expect(signupPage).toContain("creation de compte public est desactivee");
-    expect(signupPage).toContain("Votre compte est cree depuis votre invitation");
+    expect(signupPage).toContain("création de compte public est désactivée");
+    expect(signupPage).toContain("Votre compte est créé depuis votre invitation");
     expect(authActions).toContain("Public signup is disabled");
     expect(callbackHandler).toContain("exchangeCodeForSession");
     expect(callbackHandler).toContain("getSafeInternalRedirectPath");
     expect(setPasswordPage).toContain("SetPasswordForm");
     expect(setPasswordForm).toContain("setPasswordAction");
     expect(setPasswordForm).toContain("Créez votre mot de passe");
-    expect(conversionCard).toContain("Renvoyer l'email");
+    expect(conversionCard).toContain("Renvoyer le courriel");
   });
 
   it("validates conversion eligibility from persisted request data", () => {

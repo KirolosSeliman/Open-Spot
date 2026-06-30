@@ -20,17 +20,17 @@ describe("import/export dashboard UI", () => {
   it("uses a CSV file picker instead of a merchant-facing CSV textarea", () => {
     expect(importPanelSource).toContain('type="file"');
     expect(importPanelSource).toContain('accept=".csv,text/csv"');
-    expect(importPanelSource).toContain("Fichier selectionne");
-    expect(importPanelSource).toContain("Unsupported file type");
-    expect(importPanelSource).toContain("Preview import");
+    expect(importPanelSource).toContain("Fichier sélectionné");
+    expect(importPanelSource).toContain("Type de fichier non pris en charge");
+    expect(importPanelSource).toContain("Prévisualiser");
     expect(importPageSource).not.toContain("<textarea");
     expect(settingsPageSource).toContain("<ImportExportPanel");
     expect(settingsPageSource).not.toContain('fields: ["CSV import", "Client export", "Template export"]');
   });
 
   it("shows client and template export as clear actions", () => {
-    expect(importPanelSource).toContain("Download client CSV");
-    expect(importPanelSource).toContain("Download CSV template");
+    expect(importPanelSource).toContain("Télécharger le CSV clients");
+    expect(importPanelSource).toContain("Télécharger le modèle CSV");
     expect(importPanelSource).toContain("/dashboard/import/export/customers");
     expect(importPanelSource).toContain("/dashboard/import/export/template");
   });

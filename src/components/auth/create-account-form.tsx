@@ -30,7 +30,7 @@ export function CreateAccountForm() {
       if (result.status === "success") {
         setFeedbackTone("success");
         setFeedback(
-          "Compte cree avec succes. Vous pouvez maintenant vous connecter."
+          "Compte créé avec succès. Vous pouvez maintenant vous connecter."
         );
         return;
       }
@@ -55,7 +55,7 @@ export function CreateAccountForm() {
       ) : null}
 
       <form className="grid gap-5" onSubmit={handleSubmit}>
-        <FormField htmlFor="register-email" label="Email" required>
+        <FormField htmlFor="register-email" label="Adresse courriel" required>
           <Input
             id="register-email"
             name="email"
@@ -90,15 +90,15 @@ export function CreateAccountForm() {
         <Button
           className="w-full"
           isLoading={isPending}
-          loadingText="Creation en cours..."
+          loadingText="Création en cours..."
           type="submit"
         >
-          Creer mon compte
+          Créer mon compte
         </Button>
       </form>
 
       <p className="text-sm leading-6 text-[var(--muted)]">
-        Vous avez deja un compte ?{" "}
+        Vous avez déjà un compte ?{" "}
         <Link
           className="font-black text-[var(--primary)] underline-offset-4 hover:underline"
           href="/sign-in"

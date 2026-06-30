@@ -16,7 +16,7 @@ describe("platform SMS", () => {
     });
 
     expect(message.body).toContain("Bonjour Marie");
-    expect(message.body).toContain("Open Spot a bien recu votre demande d'appel");
+    expect(message.body).toContain("Open Spot a bien reçu votre demande d'appel");
     expect(message.body).toContain("STOP");
   });
 

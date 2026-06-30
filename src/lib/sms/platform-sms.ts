@@ -169,7 +169,7 @@ export async function sendPlatformSms(
       return {
         ok: false,
         error:
-          "Un rappel de paiement a deja ete envoye pour cette facture dans les dernieres 24 heures."
+          "Un rappel de paiement a déjà été envoyé pour cette facture dans les dernières 24 heures."
       };
     }
   }

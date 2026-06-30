@@ -18,7 +18,7 @@ import {
 
 function formatDate(value: string | null) {
   if (!value) {
-    return "Non renseigne";
+    return "Non renseigné";
   }
 
   return new Intl.DateTimeFormat("fr-CA", {
@@ -47,7 +47,7 @@ function getResendButtonLabel(request: BookCallRequestRow) {
     request.invitation_status === "sent" ||
     request.last_invitation_attempt_at
   ) {
-    return "Renvoyer l'email";
+    return "Renvoyer le courriel";
   }
 
   return "Envoyer l'invitation";
@@ -81,7 +81,7 @@ export function CallRequestConversionCard({
       if (resendResult.status === "sent") {
         setResendTone("success");
         setResendMessage(
-          "Email renvoye. Demandez au client de verifier sa boite de reception."
+          "Courriel renvoyé. Demandez au client de vérifier sa boîte de réception."
         );
       } else {
         setResendTone("error");
@@ -98,8 +98,8 @@ export function CallRequestConversionCard({
         <div>
           <h2 className="text-xl font-black">Conversion en client</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-            Cree le commerce officiel, rattache le proprietaire et envoie une invitation
-            securisee pour creer le mot de passe.
+            Crée le commerce officiel, rattache le propriétaire et envoie une invitation
+            sécurisée pour créer le mot de passe.
           </p>
         </div>
         {converted ? (
@@ -115,11 +115,11 @@ export function CallRequestConversionCard({
           <dd className="mt-1 text-[var(--muted)]">{request.business_name}</dd>
         </div>
         <div>
-          <dt className="font-black text-[var(--foreground)]">Proprietaire</dt>
+          <dt className="font-black text-[var(--foreground)]">Propriétaire</dt>
           <dd className="mt-1 text-[var(--muted)]">{request.full_name}</dd>
         </div>
         <div className="sm:col-span-2">
-          <dt className="font-black text-[var(--foreground)]">Email d&apos;invitation</dt>
+          <dt className="font-black text-[var(--foreground)]">Courriel d&apos;invitation</dt>
           <dd className="mt-1 break-all text-[var(--muted)]">{request.email}</dd>
         </div>
         {converted ? (
@@ -159,10 +159,10 @@ export function CallRequestConversionCard({
           role="status"
         >
           {result.status === "completed" && result.invitationSent
-            ? `Client cree avec succes. Une invitation a ete envoyee a ${result.email}.`
+            ? `Client créé avec succès. Une invitation a été envoyée à ${result.email}.`
             : null}
           {result.status === "completed" && !result.invitationSent && result.existingUser
-            ? `Le commerce a ete ajoute comme client. Le compte existant ${result.email} a ete rattache a l'organisation.`
+            ? `Le commerce a été ajouté comme client. Le compte existant ${result.email} a été rattaché à l'organisation.`
             : null}
           {result.status === "partial"
             ? result.errorMessage
@@ -174,7 +174,7 @@ export function CallRequestConversionCard({
             ? result.errorMessage
             : null}
           {result.status === "already_converted"
-            ? "Cette demande est deja convertie."
+            ? "Cette demande est déjà convertie."
             : null}
         </p>
       ) : null}
@@ -196,27 +196,27 @@ export function CallRequestConversionCard({
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         {!converted ? (
           <ConfirmModal
-            confirmLabel="Creer le client et envoyer l'invitation"
+            confirmLabel="Créer le client et envoyer l'invitation"
             description={
               <>
                 <p>Cette action va :</p>
                 <ol className="list-decimal space-y-2 pl-5">
-                  <li>creer le commerce comme client officiel;</li>
+                  <li>créer le commerce comme client officiel;</li>
                   <li>
-                    creer ou rattacher le compte proprietaire pour {request.email};
+                    créer ou rattacher le compte propriétaire pour {request.email};
                   </li>
                   <li>
-                    envoyer un lien securise permettant de creer le mot de passe;
+                    envoyer un lien sécurisé permettant de créer le mot de passe;
                   </li>
                   <li>marquer cette demande comme convertie.</li>
                 </ol>
                 <p>
-                  L&apos;envoi SMS ne sera pas automatiquement active.
+                  L&apos;envoi SMS ne sera pas activé automatiquement.
                 </p>
               </>
             }
             disabled={!canConvert}
-            loadingLabel="Creation en cours..."
+            loadingLabel="Création en cours..."
             onConfirm={handleConvert}
             title={`Ajouter ${request.business_name} comme client ?`}
             triggerDisabled={!canConvert}
@@ -255,7 +255,7 @@ export function CallRequestConversionCard({
 
       {!canConvert && !converted ? (
         <p className="mt-4 text-sm font-semibold text-[var(--muted)]">
-          Conversion indisponible : verifiez l&apos;email et le nom du commerce.
+          Conversion indisponible : vérifiez le courriel et le nom du commerce.
         </p>
       ) : null}
     </section>

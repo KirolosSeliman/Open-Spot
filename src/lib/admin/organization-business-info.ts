@@ -55,7 +55,7 @@ export function parseOrganizationBusinessInfoInput(input: {
   if (!organizationPayload.ok) {
     for (const error of organizationPayload.errors) {
       if (error.includes("Business email must be valid")) {
-        errors.push("Veuillez entrer une adresse email valide.");
+        errors.push("Veuillez entrer une adresse courriel valide.");
       } else if (error.includes("phone number")) {
         errors.push("Veuillez entrer un numéro de téléphone valide.");
       } else if (

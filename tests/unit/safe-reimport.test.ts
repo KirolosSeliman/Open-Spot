@@ -27,8 +27,8 @@ describe("safe manual re-import", () => {
   });
 
   it("shows an import result report after confirmation", () => {
-    expect(importPageSource).toContain("Created:");
-    expect(importPageSource).toContain("Updated:");
-    expect(importPageSource).toContain("Opted-out");
+    expect(importPageSource).toContain("Créés :");
+    expect(importPageSource).toContain("Mis à jour :");
+    expect(importPageSource).toContain("Désinscrits");
   });
 });

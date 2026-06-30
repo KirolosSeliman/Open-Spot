@@ -47,34 +47,34 @@ function formatSmsProvider(provider: string | null) {
     process.env.VERCEL_ENV === "production";
 
   if (provider === "simulator" && deployedEnvironment) {
-    return "Not configured";
+    return "Non configuré";
   }
 
-  return provider ?? "Not sent";
+  return provider ?? "Non envoyé";
 }
 
 function getSmsDeliveryLabel(status: string | null) {
   switch (status) {
     case "accepted":
-      return "Accepted by Twilio";
+      return "Accepté par Twilio";
     case "queued":
-      return "Queued by Twilio";
+      return "En file d'attente chez Twilio";
     case "sending":
-      return "Sending";
+      return "Envoi en cours";
     case "sent":
-      return "Sent to carrier";
+      return "Envoyé à l'opérateur";
     case "delivered":
-      return "Delivered to client";
+      return "Livré au client";
     case "undelivered":
-      return "Undelivered";
+      return "Non livré";
     case "failed":
-      return "Failed";
+      return "Échec";
     case "submitted_to_provider":
-      return "Submitted to Twilio";
+      return "Soumis à Twilio";
     case "simulated":
-      return "Simulated";
+      return "Simulé";
     default:
-      return status ?? "Pending";
+      return status ?? "En attente";
   }
 }
 
@@ -155,7 +155,7 @@ export default async function CancellationDetailPage({
       : rejectedOffers.length > 0 && pendingOffers.length === 0
         ? uiLocale === "fr"
           ? "La validation est terminée pour ce créneau."
-          : "Validation is complete for this opening."
+            : "Validation is complete for this opening."
         : respondedOffers.length > 0
           ? uiLocale === "fr"
             ? "En attente des réponses clients et de la validation marchande."
@@ -229,16 +229,16 @@ export default async function CancellationDetailPage({
         </p>
       ) : null}
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <Panel title="Appointment details">
+        <Panel title={uiLocale === "fr" ? "Détails du rendez-vous" : "Appointment details"}>
           <dl className="grid gap-4 text-sm sm:grid-cols-2">
             <div>
-              <dt className="font-black">Start</dt>
+              <dt className="font-black">{uiLocale === "fr" ? "Début" : "Start"}</dt>
               <dd className="mt-1 text-[var(--muted)]">
                 {new Date(opening.start_time).toLocaleString("fr-CA")}
               </dd>
             </div>
             <div>
-              <dt className="font-black">End</dt>
+              <dt className="font-black">{uiLocale === "fr" ? "Fin" : "End"}</dt>
               <dd className="mt-1 text-[var(--muted)]">
                 {new Date(opening.end_time).toLocaleString("fr-CA")}
               </dd>
@@ -252,12 +252,12 @@ export default async function CancellationDetailPage({
               </dd>
             </div>
             <div>
-              <dt className="font-black">Offers prepared</dt>
+              <dt className="font-black">{uiLocale === "fr" ? "Offres préparées" : "Offers prepared"}</dt>
               <dd className="mt-1 text-[var(--muted)]">{offers.length}</dd>
             </div>
           </dl>
         </Panel>
-        <Panel title="SMS preview">
+        <Panel title={uiLocale === "fr" ? "Aperçu SMS" : "SMS preview"}>
           <div className="grid gap-3">
             <p className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4 text-sm font-bold leading-6 text-[var(--foreground)]">
               {smsPreview.body}
@@ -268,7 +268,7 @@ export default async function CancellationDetailPage({
             </div>
             {smsPreview.warnings.length > 0 ? (
               <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-xs font-bold text-[#74510f]">
-                Review suggested: {smsPreview.warnings.join(", ")}
+                {uiLocale === "fr" ? "Relecture suggérée" : "Review suggested"}: {smsPreview.warnings.join(", ")}
               </p>
             ) : null}
             <p className="text-xs font-bold text-[var(--muted)]">
@@ -277,7 +277,7 @@ export default async function CancellationDetailPage({
           </div>
         </Panel>
       </div>
-      <Panel title="Prepared offers">
+      <Panel title={uiLocale === "fr" ? "Offres préparées" : "Prepared offers"}>
         {offers.length > 0 ? (
           <div className="grid gap-3">
             {pendingOffers.length > 0 && smsStatus.canSendOpeningAlerts ? (
@@ -327,26 +327,27 @@ export default async function CancellationDetailPage({
                     </p>
                   </div>
                   <p className="mt-1 text-sm text-[var(--muted)]">
-                    Offer state:{" "}
+                    {uiLocale === "fr" ? "État de l'offre" : "Offer state"}:{" "}
                     {formatOpeningOfferStatus(offer.status, previewLanguage)}.
-                    This means the alert was submitted/sent for this offer, not
-                    that the SMS was delivered.
+                    {uiLocale === "fr"
+                      ? "Cela signifie que l'alerte a été soumise ou envoyée pour cette offre, pas que le SMS a été livré."
+                      : "This means the alert was submitted/sent for this offer, not that the SMS was delivered."}
                   </p>
                   <dl className="grid gap-2 rounded-xl border border-[var(--line)] bg-white p-3 text-xs font-bold text-[var(--muted)] sm:grid-cols-2">
                     <div>
-                      <dt>SMS provider</dt>
+                      <dt>{uiLocale === "fr" ? "Fournisseur SMS" : "SMS provider"}</dt>
                       <dd>{formatSmsProvider(offer.lastOutboundProvider)}</dd>
                     </div>
                     <div>
-                      <dt>SMS delivery status</dt>
+                      <dt>{uiLocale === "fr" ? "Statut de livraison SMS" : "SMS delivery status"}</dt>
                       <dd>{deliveryLabel}</dd>
                     </div>
                     <div>
-                      <dt>Submitted time</dt>
+                      <dt>{uiLocale === "fr" ? "Heure de soumission" : "Submitted time"}</dt>
                       <dd>
                         {offer.lastOutboundSentAt
                           ? new Date(offer.lastOutboundSentAt).toLocaleString("fr-CA")
-                          : "Not sent"}
+                          : uiLocale === "fr" ? "Non envoyé" : "Not sent"}
                       </dd>
                     </div>
                     <div>
@@ -354,42 +355,42 @@ export default async function CancellationDetailPage({
                       <dd>{offer.lastOutboundToNumber ?? offer.customerPhone}</dd>
                     </div>
                     <div>
-                      <dt>From</dt>
-                      <dd>{offer.lastOutboundFromNumber ?? "Not sent"}</dd>
+                      <dt>{uiLocale === "fr" ? "De" : "From"}</dt>
+                      <dd>{offer.lastOutboundFromNumber ?? (uiLocale === "fr" ? "Non envoyé" : "Not sent")}</dd>
                     </div>
                     <div>
-                      <dt>Last status callback</dt>
+                      <dt>{uiLocale === "fr" ? "Dernier rappel de statut" : "Last status callback"}</dt>
                       <dd>
                         {offer.lastOutboundStatusCallbackReceivedAt
                           ? new Date(
                               offer.lastOutboundStatusCallbackReceivedAt
                             ).toLocaleString("fr-CA")
-                          : "No callback received"}
+                          : uiLocale === "fr" ? "Aucun rappel reçu" : "No callback received"}
                       </dd>
                     </div>
                     <div>
-                      <dt>Delivered time</dt>
+                      <dt>{uiLocale === "fr" ? "Heure de livraison" : "Delivered time"}</dt>
                       <dd>
                         {offer.lastOutboundDeliveredAt
                           ? new Date(
                               offer.lastOutboundDeliveredAt
                             ).toLocaleString("fr-CA")
-                          : "Not delivered yet"}
+                          : uiLocale === "fr" ? "Pas encore livré" : "Not delivered yet"}
                       </dd>
                     </div>
                     <div>
-                      <dt>Failed/undelivered time</dt>
+                      <dt>{uiLocale === "fr" ? "Heure d'échec ou de non-livraison" : "Failed/undelivered time"}</dt>
                       <dd>
                         {offer.lastOutboundFailedAt
                           ? new Date(offer.lastOutboundFailedAt).toLocaleString(
                               "fr-CA"
                             )
-                          : "No failure reported"}
+                          : uiLocale === "fr" ? "Aucun échec signalé" : "No failure reported"}
                       </dd>
                     </div>
                     {offer.lastOutboundProviderMessageId ? (
                       <div className="sm:col-span-2">
-                        <dt>Twilio Message SID / Provider message ID</dt>
+                      <dt>{uiLocale === "fr" ? "SID Twilio / ID du message fournisseur" : "Twilio Message SID / Provider message ID"}</dt>
                         <dd className="break-all">
                           {offer.lastOutboundProviderMessageId}
                         </dd>
@@ -399,7 +400,7 @@ export default async function CancellationDetailPage({
                   {offer.lastOutboundMessageStatus === "failed" ||
                   offer.lastOutboundMessageStatus === "undelivered" ? (
                     <p className="rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
-                      Twilio reports this SMS was not delivered.
+                      {uiLocale === "fr" ? "Twilio indique que ce SMS n'a pas été livré." : "Twilio reports this SMS was not delivered."}
                       {offer.lastOutboundErrorCode
                         ? ` Error ${offer.lastOutboundErrorCode}.`
                         : ""}
@@ -410,18 +411,19 @@ export default async function CancellationDetailPage({
                   ) : null}
                   {offer.lastOutboundMessageStatus === "sent" ? (
                     <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
-                      Sent to carrier. Delivery not confirmed yet.
+                      {uiLocale === "fr" ? "Envoyé à l'opérateur. Livraison pas encore confirmée." : "Sent to carrier. Delivery not confirmed yet."}
                     </p>
                   ) : null}
                   {missingDeliveryCallback ? (
                     <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
-                      No delivery callback received yet. Verify Twilio status
-                      callback configuration.
+                      {uiLocale === "fr"
+                        ? "Aucun rappel de livraison reçu pour le moment. Vérifiez la configuration du rappel de statut Twilio."
+                        : "No delivery callback received yet. Verify Twilio status callback configuration."}
                     </p>
                   ) : null}
                   {offer.lastOutboundMessageStatus === "delivered" ? (
                     <p className="rounded-xl border border-[#b8e0c0] bg-[#f1fff4] p-3 text-sm font-bold text-[#245d30]">
-                      Twilio confirmed this SMS was delivered to the client.
+                      {uiLocale === "fr" ? "Twilio confirme que ce SMS a été livré au client." : "Twilio confirmed this SMS was delivered to the client."}
                     </p>
                   ) : null}
                   <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm leading-6 text-[var(--foreground)]">
@@ -440,7 +442,7 @@ export default async function CancellationDetailPage({
                         className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                         type="submit"
                       >
-                        Manually validate this respondent
+                        {uiLocale === "fr" ? "Valider manuellement ce répondant" : "Manually validate this respondent"}
                       </button>
                     </form>
                   ) : null}
@@ -450,7 +452,7 @@ export default async function CancellationDetailPage({
           </div>
         ) : (
           <p className="text-sm text-[var(--muted)]">
-            Aucun client admissible n&apos;a encore ete prepare pour ce creneau.
+            Aucun client admissible n&apos;a encore été préparé pour ce créneau.
           </p>
         )}
       </Panel>

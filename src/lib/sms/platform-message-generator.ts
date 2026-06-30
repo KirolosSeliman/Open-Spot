@@ -38,7 +38,7 @@ export function generateBookCallConfirmationSmsMessage(
 
   const body =
     language === "fr"
-      ? `${greeting}Open Spot a bien recu votre demande d'appel. On vous recontactera bientot pour discuter de vos annulations et voir comment recuperer vos rendez-vous perdus. Repondez STOP pour vous desinscrire.`
+      ? `${greeting}Open Spot a bien reçu votre demande d'appel. Nous vous recontacterons bientôt pour discuter de vos annulations et voir comment récupérer vos rendez-vous perdus. Répondez STOP pour vous désinscrire.`
       : `${greeting}Open Spot has received your call request. We'll contact you soon to discuss your cancellations and how to recover lost appointments. Reply STOP to unsubscribe.`;
 
   return {
@@ -81,7 +81,7 @@ export function generateBillingPaymentReminderSmsMessage(
 
   const body =
     language === "fr"
-      ? `${greeting}rappel Open Spot : la facture de ${businessName} pour ${billingPeriod} est prete. Montant du : ${amountDue}. Merci de proceder au paiement des que possible${paymentLinkSentence}. Repondez STOP pour vous desinscrire.`
+      ? `${greeting}rappel Open Spot : la facture de ${businessName} pour ${billingPeriod} est prête. Montant dû : ${amountDue}. Merci de procéder au paiement dès que possible${paymentLinkSentence}. Répondez STOP pour vous désinscrire.`
       : `${greeting}Open Spot reminder: the invoice for ${businessName} for ${billingPeriod} is ready. Amount due: ${amountDue}. Please complete payment when possible${paymentLinkSentence}. Reply STOP to unsubscribe.`;
 
   return {
@@ -102,13 +102,13 @@ export function formatBillingPeriodLabel({
   language: PlatformSmsLanguage;
 }) {
   if (!periodStart) {
-    return language === "fr" ? "la periode en cours" : "the current period";
+    return language === "fr" ? "la période en cours" : "the current period";
   }
 
   const date = new Date(periodStart);
 
   if (Number.isNaN(date.getTime())) {
-    return language === "fr" ? "la periode en cours" : "the current period";
+    return language === "fr" ? "la période en cours" : "the current period";
   }
 
   return date.toLocaleDateString(language === "fr" ? "fr-CA" : "en-CA", {

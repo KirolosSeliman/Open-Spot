@@ -7,13 +7,13 @@ export type AuthErrorCode =
 export function getAuthErrorMessage(code: string | null | undefined) {
   switch (code) {
     case "expired_or_invalid_link":
-      return "Ce lien a expire ou a deja ete utilise. Vous pouvez demander un nouvel email.";
+      return "Ce lien a expiré ou a déjà été utilisé. Vous pouvez demander un nouveau courriel.";
     case "missing_token":
-      return "Le lien ouvert ne contient pas les informations necessaires. Demandez un nouvel email.";
+      return "Le lien ouvert ne contient pas les informations nécessaires. Demandez un nouveau courriel.";
     case "network_error":
-      return "Impossible de verifier le lien pour le moment. Reessayez dans quelques secondes.";
+      return "Impossible de vérifier le lien pour le moment. Réessayez dans quelques secondes.";
     case "confirmed":
-      return "Votre email est confirme. Vous pouvez maintenant vous connecter.";
+      return "Votre courriel est confirmé. Vous pouvez maintenant vous connecter.";
     default:
       return null;
   }

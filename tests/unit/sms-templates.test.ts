@@ -25,6 +25,6 @@ describe("renderOpeningOfferSms", () => {
         serviceName: "coupe",
         offerText: ""
       })
-    ).toContain("STOP pour arreter");
+    ).toContain("STOP pour arrêter");
   });
 });

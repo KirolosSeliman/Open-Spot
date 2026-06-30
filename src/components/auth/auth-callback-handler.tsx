@@ -202,7 +202,7 @@ export function AuthCallbackHandler() {
     return (
       <AuthStateCard
         action={<AuthBackToSignInLink />}
-        description="Ce lien a peut-être expiré ou déjà été utilisé. Demandez à l'administrateur Open Spot de renvoyer l'invitation depuis la page Company Overview."
+        description="Ce lien a peut-être expiré ou déjà été utilisé. Demandez à l'administrateur Open Spot de renvoyer l'invitation depuis la page d'aperçu de la compagnie."
         title="Lien expiré ou invalide"
       />
     );
@@ -211,7 +211,7 @@ export function AuthCallbackHandler() {
   return (
     <AuthStateCard
       action={<AuthBackToSignInLink />}
-      description="Le lien ouvert ne contient pas les informations nécessaires. Demandez à l'administrateur Open Spot de renvoyer l'invitation depuis la page Company Overview."
+      description="Le lien ouvert ne contient pas les informations nécessaires. Demandez à l'administrateur Open Spot de renvoyer l'invitation depuis la page d'aperçu de la compagnie."
       title="Lien incomplet"
     />
   );

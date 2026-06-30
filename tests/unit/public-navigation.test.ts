@@ -1210,7 +1210,7 @@ describe("public navigation", () => {
     expect(source("src/app/sign-in/page.tsx")).toContain('href="/signup"');
     expect(source("src/app/signup/page.tsx")).not.toContain("CreateAccountForm");
     expect(source("src/app/signup/page.tsx")).toContain(
-      "creation de compte public est desactivee"
+      "création de compte public est désactivée"
     );
   });
 

@@ -20,9 +20,9 @@ type ResendAuthEmailFormProps = {
 export function ResendAuthEmailForm({
   defaultEmail = "",
   defaultMode = "signup",
-  description = "Entrez votre email pour recevoir un nouveau lien.",
+  description = "Entrez votre adresse courriel pour recevoir un nouveau lien.",
   showModeSwitch = false,
-  title = "Lien expire ou invalide"
+  title = "Lien expiré ou invalide"
 }: ResendAuthEmailFormProps) {
   const [email, setEmail] = useState(defaultEmail);
   const [mode, setMode] = useState<ResendAuthEmailMode>(defaultMode);
@@ -46,7 +46,7 @@ export function ResendAuthEmailForm({
       if (result.status === "sent") {
         setFeedbackTone("success");
         setFeedback(
-          "Email envoye. Verifiez votre boite de reception et vos courriers indesirables."
+          "Courriel envoyé. Vérifiez votre boîte de réception et vos courriers indésirables."
         );
         return;
       }
@@ -59,7 +59,7 @@ export function ResendAuthEmailForm({
   return (
     <div className="grid gap-5">
       <div>
-        <p className="os-kicker">Acces securise</p>
+        <p className="os-kicker">Accès sécurisé</p>
         <h1 className="os-page-title mt-4">{title}</h1>
         <p className="os-body-large mt-4">{description}</p>
       </div>
@@ -77,7 +77,7 @@ export function ResendAuthEmailForm({
       ) : null}
 
       <form className="grid gap-5" onSubmit={handleSubmit}>
-        <FormField htmlFor="resend-email" label="Email" required>
+        <FormField htmlFor="resend-email" label="Adresse courriel" required>
           <Input
             id="resend-email"
             name="email"
@@ -96,7 +96,7 @@ export function ResendAuthEmailForm({
               type="button"
               variant={mode === "signup" ? "primary" : "outline"}
             >
-              Email de creation de compte
+              Courriel de création de compte
             </Button>
             <Button
               className="w-full"
@@ -104,7 +104,7 @@ export function ResendAuthEmailForm({
               type="button"
               variant={mode === "recovery" ? "primary" : "outline"}
             >
-              Lien de reinitialisation
+              Lien de réinitialisation
             </Button>
           </div>
         ) : null}
@@ -116,7 +116,7 @@ export function ResendAuthEmailForm({
           type="submit"
           variant={showModeSwitch ? "secondary" : "primary"}
         >
-          Renvoyer l&apos;email
+          Renvoyer le courriel
         </Button>
       </form>
     </div>

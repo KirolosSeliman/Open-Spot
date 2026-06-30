@@ -71,7 +71,7 @@ export default async function CallRequestsPage({
             Boîte de demandes
           </h2>
           <p className="mt-1 text-xs italic leading-5 text-[#64748b] xl:text-sm xl:leading-6">
-            Les liens SMS et email servent au suivi manuel seulement. Aucun SMS
+            Les liens SMS et courriel servent au suivi manuel seulement. Aucun SMS
             marketing et aucune validation de rendez-vous ne part depuis cette
             page.
           </p>

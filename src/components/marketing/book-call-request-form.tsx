@@ -15,7 +15,7 @@ const formCopy = {
     labels: {
       fullName: "Nom complet",
       businessName: "Nom du commerce",
-      email: "Email",
+      email: "Adresse courriel",
       phone: "Téléphone",
       businessType: "Type de commerce",
       currentBookingSystem: "Système de rendez-vous actuel",
@@ -33,12 +33,12 @@ const formCopy = {
     errors: {
       fullName: "Veuillez entrer votre nom complet.",
       businessName: "Veuillez entrer le nom de votre commerce.",
-      email: "Veuillez entrer une adresse email valide.",
+      email: "Veuillez entrer une adresse courriel valide.",
       phone: "Veuillez entrer un numéro de téléphone valide.",
       consentSmsEmail: "Veuillez accepter d’être contacté pour réserver un appel."
     },
     consent:
-      "J’accepte d’être contacté par Open Spot par SMS et email au sujet de ma demande d’appel et du produit. Je comprends que je peux me désinscrire à tout moment.",
+      "J’accepte d’être contacté par Open Spot par SMS et courriel au sujet de ma demande d’appel et du produit. Je comprends que je peux me désinscrire à tout moment.",
     consentNote:
       "Nous utiliserons vos informations seulement pour faire le suivi de votre demande Open Spot.",
     submit: "Réserver un appel",

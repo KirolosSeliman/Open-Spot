@@ -95,14 +95,14 @@ export async function createApprovedClientAccount({
   if (!normalizedEmail) {
     return {
       status: "error",
-      message: "Entrez votre adresse email."
+      message: "Entrez votre adresse courriel."
     };
   }
 
   if (!emailPattern.test(normalizedEmail)) {
     return {
       status: "error",
-      message: "Cette adresse email ne semble pas valide."
+      message: "Cette adresse courriel ne semble pas valide."
     };
   }
 
@@ -116,7 +116,7 @@ export async function createApprovedClientAccount({
   if (password.length < 8) {
     return {
       status: "error",
-      message: "Le mot de passe doit contenir au moins 8 caracteres."
+      message: "Le mot de passe doit contenir au moins 8 caractères."
     };
   }
 
@@ -142,7 +142,7 @@ export async function createApprovedClientAccount({
     return {
       status: "error",
       message:
-        "Impossible de creer le compte pour le moment. Reessayez dans quelques secondes."
+        "Impossible de créer le compte pour le moment. Réessayez dans quelques secondes."
     };
   }
 
@@ -150,7 +150,7 @@ export async function createApprovedClientAccount({
     return {
       status: "error",
       message:
-        "Aucun client accepte n'est associe a cet email. Verifiez l'email utilise ou contactez Open Spot."
+        "Aucun client accepté n'est associé à ce courriel. Vérifiez le courriel utilisé ou contactez Open Spot."
     };
   }
 
@@ -188,14 +188,14 @@ export async function createApprovedClientAccount({
           return {
             status: "error",
             message:
-              "Un compte existe deja avec cet email. Connectez-vous ou reinitialisez votre mot de passe."
+              "Un compte existe déjà avec ce courriel. Connectez-vous ou réinitialisez votre mot de passe."
           };
         }
 
         return {
           status: "error",
           message:
-            "Impossible de creer le compte pour le moment. Reessayez dans quelques secondes."
+            "Impossible de créer le compte pour le moment. Réessayez dans quelques secondes."
         };
       }
 
@@ -205,7 +205,7 @@ export async function createApprovedClientAccount({
         return {
           status: "error",
           message:
-            "Un compte existe deja avec cet email. Connectez-vous ou reinitialisez votre mot de passe."
+            "Un compte existe déjà avec ce courriel. Connectez-vous ou réinitialisez votre mot de passe."
         };
       }
 
@@ -227,9 +227,9 @@ export async function createApprovedClientAccount({
 
       if (activeMember?.status === "active" && activeMember.joined_at) {
         return {
-          status: "error",
-          message:
-            "Un compte existe deja avec cet email. Connectez-vous ou reinitialisez votre mot de passe."
+        status: "error",
+        message:
+          "Un compte existe déjà avec ce courriel. Connectez-vous ou réinitialisez votre mot de passe."
         };
       }
 
@@ -245,7 +245,7 @@ export async function createApprovedClientAccount({
         return {
           status: "error",
           message:
-            "Impossible de creer le compte pour le moment. Reessayez dans quelques secondes."
+            "Impossible de créer le compte pour le moment. Réessayez dans quelques secondes."
         };
       }
     }
@@ -282,7 +282,7 @@ export async function createApprovedClientAccount({
     return {
       status: "error",
       message:
-        "Impossible de creer le compte pour le moment. Reessayez dans quelques secondes."
+        "Impossible de créer le compte pour le moment. Réessayez dans quelques secondes."
     };
   }
 }

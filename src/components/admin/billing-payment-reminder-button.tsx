@@ -55,7 +55,7 @@ export function BillingPaymentReminderButton({
         description={
           <div className="grid gap-3 text-sm">
             <p>
-              Un SMS sera envoye au contact de facturation de cette compagnie.
+              Un SMS sera envoyé au contact de facturation de cette compagnie.
             </p>
             <dl className="grid gap-2 rounded-2xl border border-[var(--line)] bg-slate-50 p-4">
               <div>
@@ -74,13 +74,13 @@ export function BillingPaymentReminderButton({
               </div>
               <div>
                 <dt className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
-                  Periode
+                  Période
                 </dt>
                 <dd className="mt-1 font-black">{billingPeriod}</dd>
               </div>
               <div>
                 <dt className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--muted)]">
-                  Montant du
+                  Montant dû
                 </dt>
                 <dd className="mt-1 font-black">{amountDue}</dd>
               </div>
@@ -117,7 +117,7 @@ export function BillingPaymentReminderButton({
 
       {formattedLastReminder ? (
         <p className="text-sm font-semibold text-[var(--muted)]">
-          Dernier rappel envoye : {formattedLastReminder}
+          Dernier rappel envoyé : {formattedLastReminder}
         </p>
       ) : null}
 

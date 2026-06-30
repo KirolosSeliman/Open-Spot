@@ -12,6 +12,6 @@ export async function registerApprovedClientAction(
   return {
     status: "error",
     message:
-      "La creation de compte public est desactivee. Utilisez le lien d'invitation recu par email ou demandez un nouveau lien."
+      "La création de compte public est désactivée. Utilisez le lien d'invitation reçu par courriel ou demandez un nouveau lien."
   };
 }

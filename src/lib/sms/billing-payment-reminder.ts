@@ -140,7 +140,7 @@ export async function loadBillingPaymentReminderContext({
   if (billing.billingStatus === "paid") {
     return {
       canSend: false,
-      disabledReason: "Cette facture est deja payee.",
+      disabledReason: "Cette facture est déjà payée.",
       contact: null,
       billingPeriod: "",
       amountDue: "",
@@ -171,7 +171,7 @@ export async function loadBillingPaymentReminderContext({
     return {
       canSend: false,
       disabledReason:
-        "Aucun numero de telephone de facturation n'est disponible pour cette compagnie.",
+        "Aucun numéro de téléphone de facturation n'est disponible pour cette compagnie.",
       contact: null,
       billingPeriod: "",
       amountDue: "",
@@ -209,7 +209,7 @@ export async function loadBillingPaymentReminderContext({
       return {
         canSend: false,
         disabledReason:
-          "Un rappel de paiement a deja ete envoye pour cette facture dans les dernieres 24 heures.",
+          "Un rappel de paiement a déjà été envoyé pour cette facture dans les dernières 24 heures.",
         contact,
         billingPeriod,
         amountDue,

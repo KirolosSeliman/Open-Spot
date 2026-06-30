@@ -120,21 +120,21 @@ export const smsConversationPhoneCopy = {
   },
   fr: {
     accessibilityLabel:
-      "Apercu Open Spot d'une file de reponses SMS et d'une confirmation manuelle par le commerce",
+      "Aperçu Open Spot d'une file de réponses SMS et d'une confirmation manuelle par le commerce",
     businessName: "Open Spot",
     statusTime: "9:41",
     floatingBadges: [
-      { label: "Revision manuelle", tone: "dark" },
-      { label: "Reponses SMS", tone: "dark" }
+      { label: "Révision manuelle", tone: "dark" },
+      { label: "Réponses SMS", tone: "dark" }
     ],
     metrics: {
       filled: {
-        eyebrow: "Creneaux remplis cette semaine",
+        eyebrow: "Créneaux remplis cette semaine",
         title: "18",
-        value: "+64% vs semaine derniere"
+        value: "+64% vs semaine dernière"
       },
       revenue: {
-        eyebrow: "Revenu recupere",
+        eyebrow: "Revenu récupéré",
         title: "2 340 $",
         value: "+28%"
       }
@@ -146,17 +146,17 @@ export const smsConversationPhoneCopy = {
     },
     controls: {
       menu: "Menu",
-      createOpening: "Creer un creneau"
+      createOpening: "Créer un créneau"
     },
     replies: {
-      title: "Reponses de la liste",
+      title: "Réponses de la liste",
       count: "7",
       items: [
         {
           initials: "SM",
           name: "Sarah M.",
           message: "Je peux venir",
-          status: "Reponse recue",
+          status: "Réponse reçue",
           tone: "green"
         },
         {
@@ -169,13 +169,13 @@ export const smsConversationPhoneCopy = {
         {
           initials: "JT",
           name: "Jessica T.",
-          message: "Interessee",
-          status: "A confirmer",
+          message: "Intéressée",
+          status: "À confirmer",
           tone: "neutral"
         }
       ],
       confirm: "Confirmer Sarah M.",
-      viewAll: "Voir toutes les reponses"
+      viewAll: "Voir toutes les réponses"
     }
   }
 } as const satisfies Record<Locale, SmsConversationPhoneCopy>;

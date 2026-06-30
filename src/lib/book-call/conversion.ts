@@ -340,7 +340,7 @@ export async function convertCallRequestToClient({
     return {
       status: "processing",
       errorMessage:
-        "Une conversion est deja en cours pour cette demande. Reessayez dans quelques minutes."
+        "Une conversion est déjà en cours pour cette demande. Réessayez dans quelques minutes."
     };
   }
 
@@ -395,7 +395,7 @@ export async function convertCallRequestToClient({
         errorCode: "invitation_failed",
         errorMessage:
           ownerResolution.invitationError ??
-          "Impossible d'inviter le proprietaire."
+          "Impossible d'inviter le propriétaire."
       };
     }
 
@@ -429,7 +429,7 @@ export async function convertCallRequestToClient({
       errorCode: invitationSent ? null : "invitation_failed",
       errorMessage: invitationSent
         ? null
-        : ownerResolution.invitationError ?? "Invitation non envoyee."
+        : ownerResolution.invitationError ?? "Invitation non envoyée."
     });
 
     await recordPlatformAdminAuditLog({
@@ -456,7 +456,7 @@ export async function convertCallRequestToClient({
         errorCode: "invitation_failed",
         errorMessage:
           ownerResolution.invitationError ??
-          "Le client a ete cree, mais l'invitation n'a pas pu etre envoyee.",
+          "Le client a été créé, mais l'invitation n'a pas pu être envoyée.",
         email
       };
     }
@@ -473,7 +473,7 @@ export async function convertCallRequestToClient({
     const message =
       error instanceof Error
         ? sanitizeErrorMessage(error.message)
-        : "Conversion echouee.";
+        : "Conversion échouée.";
 
     await markConversionFailed(request.id, "conversion_failed", message);
 
@@ -482,7 +482,7 @@ export async function convertCallRequestToClient({
         status: "failed",
         errorCode: "owner_has_organization",
         errorMessage:
-          "Ce compte appartient deja a une organisation. Rattachement impossible en mode mono-organisation."
+          "Ce compte appartient déjà à une organisation. Rattachement impossible en mode mono-organisation."
       };
     }
 
@@ -515,7 +515,7 @@ export async function resendCallRequestInvitation({
     return {
       status: "failed",
       errorCode: "not_converted",
-      errorMessage: "Cette demande n'a pas encore ete convertie."
+      errorMessage: "Cette demande n'a pas encore été convertie."
     };
   }
 
@@ -525,7 +525,7 @@ export async function resendCallRequestInvitation({
     return {
       status: "failed",
       errorCode: "missing_email",
-      errorMessage: "Aucun email d'invitation n'est associe a ce client."
+      errorMessage: "Aucun courriel d'invitation n'est associé à ce client."
     };
   }
 
@@ -537,7 +537,7 @@ export async function resendCallRequestInvitation({
       status: "failed",
       errorCode: "rate_limited",
       errorMessage:
-        "Un email vient d'etre envoye. Reessayez dans une minute."
+        "Un courriel vient d'être envoyé. Réessayez dans une minute."
     };
   }
 
@@ -571,7 +571,7 @@ export async function resendCallRequestInvitation({
       return {
         status: "failed",
         errorCode: "invitation_resend_failed",
-        errorMessage: "Impossible de renvoyer l'email pour le moment."
+        errorMessage: "Impossible de renvoyer le courriel pour le moment."
       };
     }
 
@@ -636,7 +636,7 @@ export async function resendCallRequestInvitation({
     return {
       status: "failed",
       errorCode: "invitation_resend_failed",
-      errorMessage: "Impossible de renvoyer l'email pour le moment."
+      errorMessage: "Impossible de renvoyer le courriel pour le moment."
     };
   }
 

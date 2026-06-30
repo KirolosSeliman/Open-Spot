@@ -72,7 +72,7 @@ export function SetPasswordForm() {
     return (
       <AuthStateCard
         action={<AuthBackToSignInLink />}
-        description="Demandez à l'administrateur Open Spot de renvoyer l'invitation depuis la page Company Overview."
+        description="Demandez à l'administrateur Open Spot de renvoyer l'invitation depuis la page d'aperçu de la compagnie."
         kicker="Création du mot de passe"
         title="Votre session a expiré"
       />

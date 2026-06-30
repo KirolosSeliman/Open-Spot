@@ -7,13 +7,13 @@ import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current
 
 const copy = {
   fr: {
-    eyebrow: "Acces par invitation",
-    title: "Votre compte est cree depuis votre invitation.",
+    eyebrow: "Accès par invitation",
+    title: "Votre compte est créé depuis votre invitation.",
     description:
-      "Pour proteger les donnees de chaque commerce, la creation de compte public est desactivee.",
-    help: "Ouvrez le lien d'invitation ou de reinitialisation envoye par Open Spot. Si le lien a expire, demandez un nouveau lien.",
-    signIn: "Vous avez deja un compte ? Connexion",
-    requestLink: "Demander un lien d'acces"
+      "Pour protéger les données de chaque commerce, la création de compte public est désactivée.",
+    help: "Ouvrez le lien d'invitation ou de réinitialisation envoyé par Open Spot. Si le lien a expiré, demandez un nouveau lien.",
+    signIn: "Vous avez déjà un compte ? Connexion",
+    requestLink: "Demander un lien d'accès"
   },
   en: {
     eyebrow: "Invitation access",

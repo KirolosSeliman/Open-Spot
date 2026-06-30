@@ -69,12 +69,12 @@ export default async function ImportPage({ searchParams }: ImportPageProps) {
       ) : null}
       {imported ? (
         <div className="rounded-xl border border-[#b7dfc5] bg-[#edf8f3] p-3 text-sm font-bold text-[var(--primary-strong)]">
-          <p>Import termine. Les doublons ont ete evites par telephone et organisation.</p>
+          <p>Import terminé. Les doublons ont été évités par téléphone et organisation.</p>
           <p className="mt-2 text-xs leading-5">
-            Created: {created ?? "0"} · Updated: {updated ?? "0"} · Invalid:
+            Créés : {created ?? "0"} · Mis à jour : {updated ?? "0"} · Invalides :
             {" "}
-            {invalid ?? "0"} · Duplicates: {duplicates ?? "0"} · Opted-out
-            preserved: {optedOutPreserved ?? "0"}
+            {invalid ?? "0"} · Doublons : {duplicates ?? "0"} · Désinscrits
+            préservés : {optedOutPreserved ?? "0"}
           </p>
         </div>
       ) : null}

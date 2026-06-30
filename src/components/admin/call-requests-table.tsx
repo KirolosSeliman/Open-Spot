@@ -126,7 +126,7 @@ function ContactActions({ request }: { request: BookCallRequestRow }) {
           className="inline-flex h-7 items-center justify-center gap-1 rounded-full border border-[#e3eaf5] bg-[#f8fafc] px-2 text-[10px] font-semibold text-[#94a3b8]"
         >
           <MailIcon className="h-3 w-3" />
-          Email
+          Courriel
         </span>
       ) : (
         <a
@@ -134,7 +134,7 @@ function ContactActions({ request }: { request: BookCallRequestRow }) {
           href={`mailto:${request.email}`}
         >
           <MailIcon className="h-3 w-3" />
-          Email
+          Courriel
         </a>
       )}
       {phoneDisabled ? (
@@ -143,7 +143,7 @@ function ContactActions({ request }: { request: BookCallRequestRow }) {
           className="inline-flex h-7 items-center justify-center gap-1 rounded-full border border-[#e3eaf5] bg-[#f8fafc] px-2 text-[10px] font-semibold text-[#94a3b8]"
         >
           <PhoneIcon className="h-3 w-3" />
-          Tel
+          Tél.
         </span>
       ) : (
         <a
@@ -151,7 +151,7 @@ function ContactActions({ request }: { request: BookCallRequestRow }) {
           href={`tel:${phone}`}
         >
           <PhoneIcon className="h-3 w-3" />
-          Tel
+          Tél.
         </a>
       )}
     </div>
@@ -283,7 +283,7 @@ function RequestCard({ request }: { request: BookCallRequestRow }) {
           {request.phone}
         </a>
         <p className="text-xs text-[#64748b]">
-          Consentement SMS/email: {request.consent_sms_email ? "oui" : "non"}
+          Consentement SMS/courriel : {request.consent_sms_email ? "oui" : "non"}
         </p>
       </div>
 
@@ -444,7 +444,7 @@ export function CallRequestsTable({
                           {request.phone}
                         </a>
                         <span className="text-[10px] leading-4 text-[#64748b] xl:text-[11px]">
-                          Consentement SMS/email:{" "}
+                          Consentement SMS/courriel :{" "}
                           {request.consent_sms_email ? "oui" : "non"}
                         </span>
                       </div>

@@ -68,11 +68,11 @@ describe("private route security", () => {
 
 describe("admin organization business info validation", () => {
   it("returns French validation messages for required commerce fields", () => {
-    expect(parseOrganizationBusinessInfoInput({ name: "", email: "bad" })).toEqual({
+    expect(parseOrganizationBusinessInfoInput({ name: "", email: "bad" })).toMatchObject({
       ok: false,
       errors: expect.arrayContaining([
         "Veuillez entrer un nom de commerce.",
-        "Veuillez entrer une adresse email valide."
+        "Veuillez entrer une adresse courriel valide."
       ])
     });
   });

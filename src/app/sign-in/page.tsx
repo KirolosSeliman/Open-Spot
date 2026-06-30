@@ -28,14 +28,14 @@ const signInCopy = {
     title: "Accédez à votre espace Open Spot.",
     description:
       "Connectez-vous pour gérer les ouvertures, les réponses SMS, la liste d’attente et la validation manuelle.",
-    email: "Email",
+    email: "Adresse courriel",
     password: "Mot de passe",
     submit: "Connexion",
     noAccount: "Pas encore de compte ?",
     createAccount: "Créer un compte",
     recoveryTitle: "Mot de passe oublié ?",
     recoveryDescription:
-      "Entrez l'email approuvé de votre commerce pour recevoir un lien de réinitialisation sécurisé."
+      "Entrez le courriel approuvé de votre commerce pour recevoir un lien de réinitialisation sécurisé."
   },
   en: {
     eyebrow: "Sign in",
@@ -116,7 +116,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
           {linkErrorMessage ? (
             <div className="mb-5 rounded-2xl border border-red-200 bg-red-50 p-4">
-              <p className="text-sm font-black text-red-800">Lien expire ou invalide</p>
+              <p className="text-sm font-black text-red-800">Lien expiré ou invalide</p>
               <p className="mt-2 text-sm font-bold text-red-700">{linkErrorMessage}</p>
               <p className="mt-3 text-sm leading-6 text-red-700/90">
                 Contactez Open Spot ou utilisez la page{" "}
@@ -124,9 +124,9 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
                   className="font-black underline underline-offset-4"
                   href="/signup"
                 >
-                  Creer un compte
+                  Créer un compte
                 </Link>{" "}
-                si votre commerce a deja ete accepte.
+                si votre commerce a déjà été accepté.
               </p>
             </div>
           ) : null}

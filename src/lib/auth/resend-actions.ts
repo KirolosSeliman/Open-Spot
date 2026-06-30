@@ -29,14 +29,14 @@ export async function resendAuthEmailAction(
   if (!email) {
     return {
       status: "error",
-      message: "Entrez votre adresse email pour renvoyer le lien."
+      message: "Entrez votre adresse courriel pour renvoyer le lien."
     };
   }
 
   if (!isValidEmail(email)) {
     return {
       status: "error",
-      message: "Cette adresse email ne semble pas valide."
+      message: "Cette adresse courriel ne semble pas valide."
     };
   }
 
@@ -44,7 +44,7 @@ export async function resendAuthEmailAction(
     return {
       status: "error",
       message:
-        "Aucun client accepte n'est associe a cet email. Verifiez l'email utilise ou contactez Open Spot."
+        "Aucun client accepté n'est associé à ce courriel. Vérifiez le courriel utilisé ou contactez Open Spot."
     };
   }
 
@@ -60,7 +60,7 @@ export async function resendAuthEmailAction(
       return {
         status: "error",
         message:
-          "Impossible d'envoyer le lien de reinitialisation pour le moment."
+          "Impossible d'envoyer le lien de réinitialisation pour le moment."
       };
     }
 
@@ -90,7 +90,7 @@ export async function resendAuthEmailAction(
   if (error) {
     return {
       status: "error",
-      message: "Impossible d'envoyer l'email de creation de compte pour le moment."
+      message: "Impossible d'envoyer le courriel de création de compte pour le moment."
     };
   }
 

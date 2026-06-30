@@ -793,7 +793,7 @@ export function ClientsPageContent({
               <input
                 className="h-11 w-full min-w-0 rounded-full border border-[#e2e8f0] bg-white py-2 pl-11 pr-10 text-sm text-[#07142f] placeholder:text-[#94a3b8] focus-visible:border-[#2563ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2563ff]/20"
                 onChange={(event) => updateFilter("search", event.target.value)}
-                placeholder="Rechercher un client (nom, téléphone, email...)"
+                placeholder="Rechercher un client (nom, téléphone, courriel...)"
                 type="search"
                 value={filters.search}
               />
@@ -923,7 +923,7 @@ export function ClientsPageContent({
                     <th className="w-[12%] px-4 py-3">Téléphone</th>
                     {tab === "active" ? (
                       <>
-                        <th className="w-[14%] px-4 py-3">Email</th>
+                        <th className="w-[14%] px-4 py-3">Courriel</th>
                         <th className="w-[7%] px-4 py-3">Langue</th>
                         <th className="w-[14%] px-4 py-3">Consentement SMS</th>
                         <th className="w-[8%] px-4 py-3">Services</th>
@@ -1142,7 +1142,7 @@ export function ClientsPageContent({
                 />
               </div>
               <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">
-                Email
+                Courriel
                 <input
                   className="h-11 w-full min-w-0 rounded-full border border-[#e2e8f0] bg-white px-4 text-sm"
                   name="email"
@@ -1160,7 +1160,7 @@ export function ClientsPageContent({
                   name="preferredLanguage"
                 >
                   <option value="fr">Français</option>
-                  <option value="en">English</option>
+                  <option value="en">Anglais</option>
                 </select>
               </label>
               <label className="grid min-w-0 gap-2 text-sm font-semibold text-[#07142f]">

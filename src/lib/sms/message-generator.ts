@@ -240,7 +240,7 @@ export function generateOpeningConfirmationSmsMessage(
     : "";
   const optOutSentence = includeOptOut
     ? language === "fr"
-      ? " Repondez AIDE pour de l'aide ou STOP pour vous desinscrire."
+      ? " Répondez AIDE pour de l'aide ou STOP pour vous désinscrire."
       : " Reply HELP for help or STOP to unsubscribe."
     : "";
 

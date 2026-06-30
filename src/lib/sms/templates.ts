@@ -12,7 +12,7 @@ export function renderOpeningOfferSms(input: OpeningOfferSmsInput) {
   const offerText = input.offerText?.trim() ? `${input.offerText.trim()} ` : "";
 
   if (input.locale === "fr") {
-    return `${input.businessName} : une place s'est liberee ${input.timeLabel} pour ${input.serviceName}. ${offerText}Repondez OUI pour demander la place. STOP pour arreter.`;
+    return `${input.businessName} : une place s'est libérée ${input.timeLabel} pour ${input.serviceName}. ${offerText}Répondez OUI pour demander la place. STOP pour arrêter.`;
   }
 
   return `${input.businessName}: a last-minute spot opened ${input.timeLabel} for ${input.serviceName}. ${offerText}Reply YES to request it. STOP to unsubscribe.`;

@@ -12,16 +12,16 @@ import {
 
 const statusLabels: Record<BookCallRequestStatus, string> = {
   new: "Nouveau",
-  contacted: "Contacte",
-  qualified: "Qualifie",
-  closed: "Ferme",
+  contacted: "Contacté",
+  qualified: "Qualifié",
+  closed: "Fermé",
   spam: "Spam",
   converted: "Converti"
 };
 
 function formatDate(value: string | null) {
   if (!value) {
-    return "Non renseigne";
+    return "Non renseigné";
   }
 
   return new Intl.DateTimeFormat("fr-CA", {
@@ -55,7 +55,7 @@ function StatusPill({ status }: { status: BookCallRequestStatus }) {
 
 function QuickActions({ request }: { request: BookCallRequestRow }) {
   const phone = contactPhone(request);
-  const smsBody = `Bonjour ${request.full_name.split(" ")[0] || request.full_name}, ici Open Spot. Merci pour votre demande d'appel. Quel moment vous convient pour discuter? Repondez STOP pour vous desinscrire.`;
+  const smsBody = `Bonjour ${request.full_name.split(" ")[0] || request.full_name}, ici Open Spot. Merci pour votre demande d'appel. Quel moment vous convient pour discuter ? Répondez STOP pour vous désinscrire.`;
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -63,13 +63,13 @@ function QuickActions({ request }: { request: BookCallRequestRow }) {
         className="inline-flex min-h-9 items-center justify-center rounded-full bg-[var(--primary)] px-3 text-xs font-black text-white"
         href={`mailto:${request.email}`}
       >
-        Email
+        Courriel
       </a>
       <a
         className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3 text-xs font-black text-[var(--foreground)]"
         href={`tel:${phone}`}
       >
-        Tel
+        Tél.
       </a>
       <a
         className="inline-flex min-h-9 items-center justify-center rounded-full border border-[var(--line)] bg-white px-3 text-xs font-black text-[var(--foreground)]"
@@ -129,11 +129,11 @@ export function CallRequestDetailView({
             </div>
             <p className="mt-2 text-lg font-semibold text-[var(--muted)]">{request.full_name}</p>
             <p className="mt-2 text-sm text-[var(--muted)]">
-              Demande recue le {formatDate(request.created_at)}
+              Demande reçue le {formatDate(request.created_at)}
             </p>
           </div>
           <ButtonLink href="/admin/call-requests" variant="outline">
-            Retour a la boite de demandes
+            Retour à la boîte de demandes
           </ButtonLink>
         </div>
       </header>
@@ -152,7 +152,7 @@ export function CallRequestDetailView({
       <div className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
         <div className="grid gap-6">
           <section className="rounded-[1.5rem] border border-[var(--line)] bg-white p-5 shadow-sm sm:p-6">
-            <h2 className="text-xl font-black">Coordonnees</h2>
+            <h2 className="text-xl font-black">Coordonnées</h2>
             <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
               <div>
                 <dt className="font-black">Nom complet</dt>
@@ -163,17 +163,17 @@ export function CallRequestDetailView({
                 <dd className="mt-1 text-[var(--muted)]">{request.business_name}</dd>
               </div>
               <div>
-                <dt className="font-black">Email</dt>
+                <dt className="font-black">Courriel</dt>
                 <dd className="mt-1 break-all text-[var(--muted)]">{request.email}</dd>
               </div>
               <div>
-                <dt className="font-black">Telephone</dt>
+                <dt className="font-black">Téléphone</dt>
                 <dd className="mt-1 text-[var(--muted)]">{request.phone}</dd>
               </div>
               <div>
                 <dt className="font-black">Type de commerce</dt>
                 <dd className="mt-1 text-[var(--muted)]">
-                  {request.business_type ?? "Non renseigne"}
+                  {request.business_type ?? "Non renseigné"}
                 </dd>
               </div>
             </dl>
@@ -186,15 +186,15 @@ export function CallRequestDetailView({
             <h2 className="text-xl font-black">Besoins du commerce</h2>
             <dl className="mt-4 grid gap-4 text-sm">
               <div>
-                <dt className="font-black">Systeme actuellement utilise</dt>
+                <dt className="font-black">Système actuellement utilisé</dt>
                 <dd className="mt-1 text-[var(--muted)]">
-                  {request.current_booking_system ?? "Non renseigne"}
+                  {request.current_booking_system ?? "Non renseigné"}
                 </dd>
               </div>
               <div>
                 <dt className="font-black">Annulations par semaine</dt>
                 <dd className="mt-1 text-[var(--muted)]">
-                  {request.cancellation_volume ?? "Non renseigne"}
+                  {request.cancellation_volume ?? "Non renseigné"}
                 </dd>
               </div>
               <div>
@@ -217,7 +217,7 @@ export function CallRequestDetailView({
             <h2 className="text-xl font-black">Consentement</h2>
             <dl className="mt-4 grid gap-3 text-sm">
               <div>
-                <dt className="font-black">Consentement SMS/email (prise de contact)</dt>
+                <dt className="font-black">Consentement SMS/courriel (prise de contact)</dt>
                 <dd className="mt-1 text-[var(--muted)]">
                   {request.consent_sms_email ? "Oui" : "Non"}
                 </dd>
@@ -226,7 +226,7 @@ export function CallRequestDetailView({
                 <dt className="font-black">Note</dt>
                 <dd className="mt-1 text-[var(--muted)]">
                   Ce consentement couvre le suivi manuel de la demande d&apos;appel, pas le
-                  marketing SMS automatise.
+                  marketing SMS automatisé.
                 </dd>
               </div>
             </dl>
@@ -259,12 +259,12 @@ export function CallRequestDetailView({
                   defaultValue={request.internal_notes ?? ""}
                   maxLength={2000}
                   name="internalNotes"
-                  placeholder="Disponibilites, qualification, prochaine action..."
+                  placeholder="Disponibilités, qualification, prochaine action..."
                 />
               </label>
               <Button type="submit">Enregistrer</Button>
               <p className="text-xs text-[var(--muted)]">
-                Derniere modification : {formatDate(request.updated_at)}
+                Dernière modification : {formatDate(request.updated_at)}
               </p>
             </form>
           </section>
