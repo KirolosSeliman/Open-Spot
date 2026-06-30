@@ -111,5 +111,6 @@ describe("real dashboard and demo dashboard separation", () => {
     expect(operationsData).toContain(".from(\"sms_messages\")");
     expect(operationsData).toContain(".eq(\"organization_id\", organizationId)");
     expect(operationsData).toContain(".in(\"status\", [\"sent\", \"responded\", \"selected\", \"rejected\"])");
+    expect(responseQueries).toContain(".eq(\"organization_id\", organizationId)");
   });
 });

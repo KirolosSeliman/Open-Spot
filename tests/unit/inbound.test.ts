@@ -8,6 +8,19 @@ describe("classifyInboundSmsBody", () => {
     expect(classifyInboundSmsBody("ARRÊT")).toBe("opt_out");
   });
 
+  it("recognizes HELP and AIDE requests", () => {
+    expect(classifyInboundSmsBody("HELP")).toBe("sms_help");
+    expect(classifyInboundSmsBody("aide")).toBe("sms_help");
+    expect(classifyInboundSmsBody("INFO")).toBe("sms_help");
+  });
+
+  it("recognizes UNSTOP and START as re-subscribe outside consent context", () => {
+    expect(classifyInboundSmsBody("UNSTOP")).toBe("sms_unstop");
+    expect(classifyInboundSmsBody("start")).toBe("sms_unstop");
+    expect(classifyInboundSmsBody("START", "consent")).toBe("consent_opt_in");
+    expect(classifyInboundSmsBody("UNSTOP", "consent")).toBe("consent_opt_in");
+  });
+
   it("recognizes positive booking request replies", () => {
     expect(classifyInboundSmsBody("oui")).toBe("waitlist_positive");
     expect(classifyInboundSmsBody("YES")).toBe("waitlist_positive");

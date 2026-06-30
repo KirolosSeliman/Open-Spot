@@ -216,8 +216,15 @@ describe("organization SMS integration wiring", () => {
       join(process.cwd(), "src/app/api/webhooks/twilio/inbound/route.ts"),
       "utf8"
     );
+    const legacyInboundRoute = readFileSync(
+      join(process.cwd(), "src/app/api/sms/inbound/route.ts"),
+      "utf8"
+    );
 
     expect(inboundRoute).toContain("validateTwilioWebhookRequestForAccountSid");
     expect(inboundRoute).toContain("resolveTwilioAuthTokenForAccountSid");
+    expect(legacyInboundRoute).toContain("validateTwilioWebhookRequestForAccountSid");
+    expect(legacyInboundRoute).toContain("resolveTwilioAuthTokenForAccountSid");
+    expect(legacyInboundRoute).toContain("handleInboundSmsRequest");
   });
 });

@@ -28,6 +28,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ errors: parsed.errors }, { status: 400 });
   }
 
+  const phoneRateLimit = checkRateLimit({
+    key: `waitlist:phone:${parsed.payload.phoneE164}:${parsed.payload.organizationSlug}`,
+    limit: 4,
+    windowMs: 60 * 60 * 1000
+  });
+
+  if (!phoneRateLimit.ok) {
+    return NextResponse.json(
+      { errors: ["Too many submissions for this phone number. Please wait and try again."] },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(phoneRateLimit.retryAfterSeconds)
+        }
+      }
+    );
+  }
+
   const rateLimit = checkRateLimit({
     key: `waitlist:${requestIp}:${parsed.payload.organizationSlug}`,
     limit: 8,

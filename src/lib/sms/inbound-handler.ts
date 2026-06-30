@@ -325,6 +325,7 @@ export async function handleInboundSmsRequest(
         }
 
         let optOutCustomerCount = 0;
+        let optedInByUnstop = false;
 
         if (classification === "opt_out" && customer?.id) {
           const now = new Date().toISOString();
@@ -348,6 +349,34 @@ export async function handleInboundSmsRequest(
             supabase,
             fromNumber
           });
+        } else if (classification === "sms_unstop" && customer?.id) {
+          const now = new Date().toISOString();
+
+          await supabase.from("sms_consents").upsert(
+            {
+              organization_id: organizationSender.organization_id,
+              customer_id: customer.id,
+              phone_e164: fromNumber,
+              status: "opted_in",
+              source: "sms_unstop_reply",
+              consent_text: inbound.body.trim().slice(0, 240),
+              consented_at: now,
+              unsubscribed_at: null
+            },
+            { onConflict: "organization_id,customer_id" }
+          );
+          optedInByUnstop = true;
+        } else if (classification === "sms_help") {
+          await supabase.from("audit_logs").insert({
+            organization_id: organizationSender.organization_id,
+            action: "sms.help.received",
+            entity_type: "sms_messages",
+            entity_id: inboundMessage.id,
+            metadata: {
+              customer_id: customer?.id ?? null,
+              phone_e164: fromNumber
+            }
+          });
         }
 
         await recordSmsWebhookEvent({
@@ -365,7 +394,8 @@ export async function handleInboundSmsRequest(
           body_preview: buildSmsBodyPreview(inbound.body),
           payload_summary: {
             reason: "Dedicated sender matched without outbound context.",
-            optOutCustomerCount
+            optOutCustomerCount,
+            optedInByUnstop
           }
         });
 
@@ -376,6 +406,12 @@ export async function handleInboundSmsRequest(
           customerId: customer?.id ?? null,
           messageId: inboundMessage.id,
           optOutCustomerCount,
+          action:
+            classification === "sms_help"
+              ? "help_requested"
+              : classification === "sms_unstop" && optedInByUnstop
+                ? "opted_in_by_unstop"
+                : undefined,
           warning: "Dedicated sender matched without outbound context."
         });
       } catch (organizationPersistError) {
@@ -575,6 +611,50 @@ export async function handleInboundSmsRequest(
       classification,
       status: "received_linked",
       action: "help_requested",
+      organizationId: context.organization_id,
+      customerId: context.customer_id,
+      openingId: context.opening_id,
+      appointmentId: context.appointment_id,
+      messageId: inboundMessage.id
+    });
+  }
+
+  if (classification === "sms_unstop") {
+    const { error: consentError } = await supabase.from("sms_consents").upsert(
+      {
+        organization_id: context.organization_id,
+        customer_id: context.customer_id,
+        phone_e164: fromNumber,
+        status: "opted_in",
+        source: "sms_unstop_reply",
+        consent_text: inbound.body.trim().slice(0, 240),
+        consented_at: now,
+        unsubscribed_at: null
+      },
+      {
+        onConflict: "organization_id,customer_id"
+      }
+    );
+
+    if (consentError) {
+      return NextResponse.json({ error: "Consent update failed." }, { status: 500 });
+    }
+
+    await supabase.from("audit_logs").insert({
+      organization_id: context.organization_id,
+      action: "sms.unstop.opted_in",
+      entity_type: "customers",
+      entity_id: context.customer_id,
+      metadata: {
+        sms_message_id: inboundMessage.id,
+        phone_last4: fromNumber.slice(-4)
+      }
+    });
+
+    return NextResponse.json({
+      classification,
+      status: "received_linked",
+      action: "opted_in_by_unstop",
       organizationId: context.organization_id,
       customerId: context.customer_id,
       openingId: context.opening_id,

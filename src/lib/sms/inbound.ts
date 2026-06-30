@@ -2,6 +2,7 @@ export type InboundSmsContext = "appointment" | "waitlist" | "consent" | "unknow
 export type InboundSmsClassification =
   | "opt_out"
   | "sms_help"
+  | "sms_unstop"
   | "consent_opt_in"
   | "consent_decline"
   | "appointment_confirm"
@@ -22,6 +23,7 @@ const optOutKeywords = new Set([
   "optout"
 ]);
 const helpKeywords = new Set(["help", "aide", "info"]);
+const reSubscribeKeywords = new Set(["unstop", "start"]);
 const positiveKeywords = new Set(["oui", "yes", "1"]);
 const consentPositiveKeywords = new Set([
   "oui",
@@ -91,6 +93,13 @@ export function classifyInboundSmsBody(
 
   if (helpKeywords.has(normalized) || helpKeywords.has(firstToken)) {
     return "sms_help";
+  }
+
+  if (
+    reSubscribeKeywords.has(normalized) ||
+    reSubscribeKeywords.has(firstToken)
+  ) {
+    return "sms_unstop";
   }
 
   if (

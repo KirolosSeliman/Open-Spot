@@ -9,6 +9,17 @@
 - P0-04 reclassé : la migration `supabase/migrations/20260627190000_organization_sms_senders.sql` existe déjà et couvre les tables SMS sender/test runs avec RLS et révocations.
 - P0-05 corrigé côté code : les placeholders `À compléter` sont supprimés; `LEGAL_CONTACT_EMAIL` et `LEGAL_BUSINESS_ADDRESS` sont obligatoires en production Vercel.
 - P1 corrigés ou fortement réduits : consent request SMS autorisé uniquement pour `needs_consent`, route inbound legacy alignée sur la validation Twilio account-aware, rate limiting public ajouté, reset password self-service exposé, lint/typecheck/tests/build verts, parsing HELP/STOP/OUI durci, idempotence inbound ajoutée via migration unique.
+- P1-01 à P1-10 corrigés et couverts par tests dédiés :
+  - P1-01 : chemin `consent_request` + `needs_consent` dans `sendOrganizationSms`, outbox consent avant envoi.
+  - P1-02 : `npm run lint`, `npm run typecheck`, `npm test`, `npm run build` verts.
+  - P1-03 : `/api/sms/send-opening` désactivé en `410` sans service role ni `organizationId` client.
+  - P1-04 : pattern outbox `pending_send` avant provider dans opening, confirmation et consent.
+  - P1-05 : throttling IP + email + téléphone sur book-call; IP + slug + téléphone sur waitlist.
+  - P1-06 : classification HELP/AIDE/UNSTOP/START; audit `sms.help.received` et re-opt-in `sms.unstop.opted_in`.
+  - P1-07 : flux « Mot de passe oublié » visible sur `/sign-in` via `ResendAuthEmailForm`.
+  - P1-08 : tests dashboard réel alignés + assertion `organization_id` dans les requêtes responses.
+  - P1-09 : quotas journaliers/mensuels appliqués dans `sendOrganizationSms` avant simulateur et Twilio.
+  - P1-10 : `/api/sms/inbound` aligné sur `validateTwilioWebhookRequestForAccountSid` comme la route canonique.
 - Point non vérifiable localement : les variables légales officielles et les migrations doivent encore être appliquées/configurées en environnement de production Supabase/Vercel avant client réel.
 
 ## A. Verdict global

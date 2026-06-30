@@ -94,6 +94,48 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true }, { status: 201 });
   }
 
+  const emailRateLimit = checkRateLimit({
+    key: `book-call:email:${validation.value.email}`,
+    limit: 3,
+    windowMs: 60 * 60 * 1000
+  });
+
+  if (!emailRateLimit.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "RATE_LIMITED"
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(emailRateLimit.retryAfterSeconds)
+        }
+      }
+    );
+  }
+
+  const phoneRateLimit = checkRateLimit({
+    key: `book-call:phone:${validation.value.phone}`,
+    limit: 3,
+    windowMs: 60 * 60 * 1000
+  });
+
+  if (!phoneRateLimit.ok) {
+    return NextResponse.json(
+      {
+        ok: false,
+        code: "RATE_LIMITED"
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(phoneRateLimit.retryAfterSeconds)
+        }
+      }
+    );
+  }
+
   const supabase = createSupabaseServiceClient();
 
   if (!supabase) {

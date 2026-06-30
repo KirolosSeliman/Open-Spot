@@ -204,6 +204,15 @@ export async function sendOrganizationSms(
     }
   }
 
+  const supabase = createSupabaseServiceClient();
+
+  if (supabase) {
+    await assertSmsWithinOrganizationLimits({
+      organizationId: input.organizationId,
+      supabase
+    });
+  }
+
   if (usesOrganizationSmsSimulator(env)) {
     const provider = createSimulatorSmsProvider();
     const sendResult = await provider.sendSms({
@@ -224,8 +233,6 @@ export async function sendOrganizationSms(
     throw new Error("Organization SMS requires SMS_PROVIDER=twilio for real sends.");
   }
 
-  const supabase = createSupabaseServiceClient();
-
   if (!supabase) {
     throw new Error("Supabase service client is not configured.");
   }
@@ -236,10 +243,6 @@ export async function sendOrganizationSms(
   ]);
 
   assertOrganizationSmsSenderReady(sender, organizationReadiness);
-  await assertSmsWithinOrganizationLimits({
-    organizationId: input.organizationId,
-    supabase
-  });
 
   const readiness = computeSmsSenderReadiness({
     sender,

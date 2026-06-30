@@ -15,8 +15,7 @@ const rangeOptions: Array<{ key: SmsChartRange; label: string; param: string }> 
 ];
 
 const PLOT_HEIGHT = 200;
-const BAR_WIDTH = 28;
-const BAR_GAP = 10;
+const MAX_BAR_WIDTH = 28;
 
 function formatAxisValue(value: number) {
   if (value >= 1000) {
@@ -53,6 +52,18 @@ function getBarHeight(count: number, chartTop: number) {
   return Math.max(Math.round((count / chartTop) * PLOT_HEIGHT), 4);
 }
 
+function getChartGap(total: number) {
+  if (total > 60) {
+    return 2;
+  }
+
+  if (total > 31) {
+    return 4;
+  }
+
+  return 8;
+}
+
 export function AdminSmsActivityCard({
   range,
   points,
@@ -67,7 +78,8 @@ export function AdminSmsActivityCard({
   const chartMax = Math.max(...points.map((point) => point.count), maxCount, 1);
   const yAxis = buildYAxis(chartMax);
   const chartTop = yAxis[0] ?? 1;
-  const chartWidth = points.length * (BAR_WIDTH + BAR_GAP);
+  const chartGap = getChartGap(points.length);
+  const chartGridTemplateColumns = `repeat(${points.length}, minmax(0, 1fr))`;
 
   return (
     <AdminOverviewPanel className={className}>
@@ -114,7 +126,7 @@ export function AdminSmsActivityCard({
           ))}
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="min-w-0">
           {points.length === 0 ? (
             <div
               className="flex items-center justify-center rounded-[18px] border border-[#edf2f9] text-sm text-[#657492]"
@@ -123,25 +135,30 @@ export function AdminSmsActivityCard({
               Aucune activité SMS sur cette période
             </div>
           ) : (
-            <div style={{ minWidth: Math.max(chartWidth, 280) }}>
+            <div className="min-w-0">
               <div
                 className="relative rounded-[18px] border border-[#edf2f9] bg-[linear-gradient(to_top,rgba(226,232,240,0.45)_1px,transparent_1px)] bg-size-[100%_25%] px-3 pt-3"
                 style={{ height: PLOT_HEIGHT }}
               >
-                <div className="flex h-full items-end gap-[10px]">
+                <div
+                  className="grid h-full items-end"
+                  style={{
+                    columnGap: chartGap,
+                    gridTemplateColumns: chartGridTemplateColumns
+                  }}
+                >
                   {points.map((point) => {
                     const barHeight = getBarHeight(point.count, chartTop);
 
                     return (
                       <div
-                        className="flex shrink-0 flex-col items-center justify-end"
+                        className="flex min-w-0 flex-col items-center justify-end"
                         key={point.date}
-                        style={{ width: BAR_WIDTH }}
                         title={`${point.label}: ${point.count} SMS`}
                       >
                         <div
                           className="w-full rounded-t-[10px] bg-[#2563ff]"
-                          style={{ height: barHeight }}
+                          style={{ height: barHeight, maxWidth: MAX_BAR_WIDTH }}
                         />
                       </div>
                     );
@@ -149,12 +166,17 @@ export function AdminSmsActivityCard({
                 </div>
               </div>
 
-              <div className="mt-2 flex gap-[10px] px-3">
+              <div
+                className="mt-2 grid px-3"
+                style={{
+                  columnGap: chartGap,
+                  gridTemplateColumns: chartGridTemplateColumns
+                }}
+              >
                 {points.map((point, index) => (
                   <div
-                    className="shrink-0 text-center text-[11px] font-medium text-[#94a3b8]"
+                    className="min-w-0 text-center text-[11px] font-medium leading-4 text-[#94a3b8]"
                     key={`${point.date}-label`}
-                    style={{ width: BAR_WIDTH }}
                   >
                     {shouldShowLabel(index, points.length) ? point.label : ""}
                   </div>
