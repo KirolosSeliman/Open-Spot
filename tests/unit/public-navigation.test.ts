@@ -32,13 +32,13 @@ describe("public navigation", () => {
     const mainMarkup = homepage.slice(homepage.indexOf("<main>"), homepage.indexOf("</main>"));
 
     expect(funnel).toContain("LuneraOpenSpotTemplate");
-    expect(funnel).toContain("getRequestLocale");
-    expect(funnel).toContain("SiteHeader");
+    expect(funnel).toContain("MarketingReferenceHeader");
     expect(funnel).toContain("withExternalHeader");
     expect(funnel).not.toContain("getMarketingLocale");
+    expect(funnel).not.toContain("getRequestLocale");
     expect(funnel).not.toContain("localeCookieName");
     expect(funnel).not.toContain("OpenSpotMetricsShowcase");
-    expect(funnel).toContain("locale={locale}");
+    expect(funnel).toContain('locale="en"');
 
     expect(mainMarkup).toContain("<Hero");
     expect(mainMarkup).toContain("<OpenSpotMetricsShowcase");
@@ -236,15 +236,16 @@ describe("public navigation", () => {
     expect(styles).toContain("@media (max-width: 1023px)");
   });
 
-  it("uses the shared public SiteHeader on the homepage funnel", () => {
+  it("uses the reference marketing header on the homepage funnel", () => {
     const homepage = source(homepagePath);
     const funnel = source("src/components/marketing/open-spot-funnel.tsx");
     const siteHeader = source("src/components/layout/site-header.tsx");
 
-    expect(funnel).toContain("<SiteHeader />");
+    expect(funnel).toContain("<MarketingReferenceHeader />");
     expect(funnel).toContain("withExternalHeader");
     expect(homepage).not.toContain("FloatingNavbar");
-    expect(homepage).not.toContain("reference-navbar");
+    expect(funnel).toContain("reference-navbar");
+    expect(funnel).toContain("reference-login-link");
     expect(siteHeader).toContain('href="/sign-in"');
     expect(siteHeader).toContain('href="/signup"');
     expect(siteHeader).toContain("LanguageSwitcher");
@@ -1067,12 +1068,15 @@ describe("public navigation", () => {
     expect(styles).toContain("@media (max-width: 767px)");
   });
 
-  it("keeps the mobile sign-in CTA in the shared public header", () => {
+  it("keeps the mobile sign-in CTA in the public marketing header", () => {
     const funnel = source("src/components/marketing/open-spot-funnel.tsx");
     const siteHeader = source("src/components/layout/site-header.tsx");
     const styles = source("src/app/globals.css");
 
-    expect(funnel).toContain("<SiteHeader />");
+    expect(funnel).toContain("<MarketingReferenceHeader />");
+    expect(funnel).toContain('href="/sign-in"');
+    expect(funnel).toContain("Log in");
+    expect(funnel).not.toContain("LanguageSwitcher");
     expect(siteHeader).toContain('href="/sign-in"');
     expect(siteHeader).toContain('href="/signup"');
     expect(siteHeader).toContain("LanguageSwitcher");

@@ -288,6 +288,7 @@ function FilledSpotsGauge({
   label: string;
   value: string;
 }) {
+  const stableCoordinate = (coordinate: number) => coordinate.toFixed(4);
   const ticks = Array.from({ length: 42 }).map((_, index) => {
     const startAngle = -180;
     const endAngle = 0;
@@ -299,10 +300,10 @@ function FilledSpotsGauge({
 
     return {
       active: index < 30,
-      x1: center + Math.cos(radians) * innerRadius,
-      x2: center + Math.cos(radians) * outerRadius,
-      y1: center + Math.sin(radians) * innerRadius,
-      y2: center + Math.sin(radians) * outerRadius
+      x1: stableCoordinate(center + Math.cos(radians) * innerRadius),
+      x2: stableCoordinate(center + Math.cos(radians) * outerRadius),
+      y1: stableCoordinate(center + Math.sin(radians) * innerRadius),
+      y2: stableCoordinate(center + Math.sin(radians) * outerRadius)
     };
   });
 
