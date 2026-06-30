@@ -1,6 +1,4 @@
 import {
-  LEGAL_ADDRESS,
-  LEGAL_CONTACT_EMAIL,
   LEGAL_ENTITY_NAME,
   LEGAL_EYEBROW,
   LEGAL_LAST_UPDATED,
@@ -13,9 +11,7 @@ const contactBlock = (heading?: string) =>
   ({
     type: "contact",
     heading,
-    entity: LEGAL_ENTITY_NAME,
-    email: LEGAL_CONTACT_EMAIL,
-    address: LEGAL_ADDRESS
+    entity: LEGAL_ENTITY_NAME
   }) as const;
 
 export const privacyPolicyPage: LegalPageDefinition = {

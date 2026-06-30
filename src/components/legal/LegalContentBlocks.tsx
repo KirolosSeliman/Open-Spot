@@ -1,15 +1,24 @@
 import type { LegalContentBlock } from "@/lib/legal/types";
+import {
+  getLegalBusinessAddress,
+  getLegalContactEmail
+} from "@/lib/legal/constants";
 
 function isEmailPlaceholder(email: string) {
-  return email === "À compléter" || email.includes("compléter");
+  return (
+    email === "À compléter" ||
+    email.includes("compléter") ||
+    email.endsWith("@example.invalid")
+  );
 }
 
 function ContactBlock({
-  address,
-  email,
   entity,
   heading
 }: Extract<LegalContentBlock, { type: "contact" }>) {
+  const email = getLegalContactEmail();
+  const address = getLegalBusinessAddress();
+
   return (
     <div className="mt-1 rounded-2xl border border-[#DDE5F0] bg-[#F8FAFD] px-5 py-4">
       {heading ? <p className="text-sm font-bold text-[#07142F]">{heading}</p> : null}

@@ -1,7 +1,7 @@
 export type LegalContentBlock =
   | { type: "paragraph"; text: string }
   | { type: "list"; items: string[] }
-  | { type: "contact"; heading?: string; entity: string; email: string; address: string };
+  | { type: "contact"; heading?: string; entity: string };
 
 export type LegalSection = {
   id: string;

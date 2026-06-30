@@ -7,29 +7,52 @@ export const LEGAL_ROUTES = {
 /** Commercial name displayed on legal pages — not necessarily the incorporated legal entity name. */
 export const LEGAL_ENTITY_NAME = "Open Spot";
 
-function readRequiredProductionLegalValue(name: string, fallback: string) {
-  const value = process.env[name]?.trim();
+const DEV_FALLBACK_EMAIL = "legal-contact-required@example.invalid";
+const DEV_FALLBACK_ADDRESS = "Adresse légale à configurer avant production";
+
+function isProductionLegalRuntime() {
+  return (
+    process.env.VERCEL_ENV === "production" &&
+    process.env.NEXT_PHASE !== "phase-production-build"
+  );
+}
+
+export function getLegalContactEmail() {
+  const value = process.env.LEGAL_CONTACT_EMAIL?.trim();
 
   if (value) {
     return value;
   }
 
-  if (process.env.VERCEL_ENV === "production") {
-    throw new Error(`${name} must be configured before publishing legal pages.`);
+  if (isProductionLegalRuntime()) {
+    throw new Error(
+      "LEGAL_CONTACT_EMAIL must be configured before publishing legal pages."
+    );
   }
 
-  return fallback;
+  return DEV_FALLBACK_EMAIL;
 }
 
-export const LEGAL_CONTACT_EMAIL = readRequiredProductionLegalValue(
-  "LEGAL_CONTACT_EMAIL",
-  "legal-contact-required@example.invalid"
-);
+export function getLegalBusinessAddress() {
+  const value = process.env.LEGAL_BUSINESS_ADDRESS?.trim();
 
-export const LEGAL_ADDRESS = readRequiredProductionLegalValue(
-  "LEGAL_BUSINESS_ADDRESS",
-  "Adresse légale à configurer avant production"
-);
+  if (value) {
+    return value;
+  }
+
+  if (isProductionLegalRuntime()) {
+    throw new Error(
+      "LEGAL_BUSINESS_ADDRESS must be configured before publishing legal pages."
+    );
+  }
+
+  return DEV_FALLBACK_ADDRESS;
+}
+
+export function assertProductionLegalConfig() {
+  getLegalContactEmail();
+  getLegalBusinessAddress();
+}
 
 /** Last update date for all legal pages (French format). */
 export const LEGAL_LAST_UPDATED = "25 juin 2026";
