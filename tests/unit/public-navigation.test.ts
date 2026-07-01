@@ -1127,11 +1127,13 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("--mpx: calc(100vw / var(--mobile-ref-w))");
 
     expect(mobileStyles).toContain(".reference-hero-section {");
-    expect(mobileStyles).toContain("--mobile-phone-width: calc(240 * var(--mpx))");
+    expect(mobileStyles).toContain("--mobile-phone-width: calc(268 * var(--mpx))");
+    expect(mobileStyles).toContain("height: 100svh");
+    expect(mobileStyles).toContain("min-height: 100svh");
 
     expect(mobileStyles).toContain(".reference-hero-mobile-shell {");
     expect(mobileStyles).toContain("display: block");
-    expect(mobileStyles).toContain("min-height: calc(800 * var(--mpx))");
+    expect(mobileStyles).toContain("height: 100%");
 
     expect(mobileStyles).toContain(".reference-hero-copy {");
     expect(mobileStyles).toContain("top: calc(92 * var(--mpx))");
@@ -1150,7 +1152,7 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("left: auto");
     expect(mobileStyles).toContain("aspect-ratio: 393 / 852");
     expect(mobileStyles).not.toContain("rotateY(-1.1deg) rotateZ(0.28deg)");
-    expect(mobileStyles).toContain("width: 100%");
+    expect(mobileStyles).toContain("var(--mobile-phone-width) !important");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
     expect(mobileStyles).toContain(".reference-floating-card {");
@@ -1159,11 +1161,11 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain(".reference-mobile-hero-gradient {");
     expect(mobileStyles).toContain("display: block");
     expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("top: calc(555 * var(--mpx))");
+    expect(mobileStyles).toContain("bottom: 0");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
-    expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("top: calc(620 * var(--mpx))");
+    expect(mobileStyles).toContain("top: auto !important");
+    expect(mobileStyles).toContain("bottom: calc(22 * var(--mpx) + env(safe-area-inset-bottom))");
 
     expect(mobileStyles).toContain(".landing-mobile-login-pill {");
 
