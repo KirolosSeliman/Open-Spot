@@ -544,30 +544,49 @@ select {
 }
 
 .open-spot-metrics-showcase-page .open-spot-filled-card {
-  display: flex;
-  flex-direction: column;
+  column-gap: clamp(1rem, 2.5vw, 1.75rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10.5rem, 0.82fr);
+  grid-template-rows: auto auto 1fr;
+}
+
+.open-spot-filled-card .open-spot-metric-card-heading {
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .open-spot-filled-card .open-spot-metric-description {
+  grid-column: 1;
+  grid-row: 2;
   max-width: 20.5rem;
 }
 
 .open-spot-filled-card .open-spot-metric-visual {
-  bottom: 1rem;
-  position: absolute;
-  right: clamp(1.6rem, 3vw, 2.4rem);
-  top: 1.55rem;
-  width: min(17rem, 42%);
+  align-self: center;
+  grid-column: 2;
+  grid-row: 1 / -1;
+  margin-top: 0;
+  min-height: 0;
+  position: relative;
+  width: 100%;
 }
 
 .open-spot-filled-gauge-wrap {
-  height: 100%;
-  min-height: 13rem;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.open-spot-filled-gauge-chart {
   position: relative;
+  width: 100%;
 }
 
 .open-spot-filled-gauge {
-  height: 100%;
+  display: block;
+  height: auto;
   width: 100%;
 }
 
@@ -584,30 +603,32 @@ select {
   align-items: center;
   display: flex;
   flex-direction: column;
-  left: 50%;
+  inset: 0;
+  justify-content: flex-end;
+  padding-bottom: 0.15rem;
+  pointer-events: none;
   position: absolute;
   text-align: center;
-  top: 54%;
-  transform: translate(-50%, -50%);
 }
 
 .open-spot-filled-gauge-copy p {
-  font-size: clamp(3rem, 5vw, 3.8rem);
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
 }
 
 .open-spot-filled-gauge-copy span {
   color: #66728a;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 560;
-  margin-top: 0.45rem;
+  margin-top: 0.25rem;
   white-space: nowrap;
 }
 
-.open-spot-filled-gauge-copy strong {
+.open-spot-filled-gauge-trend {
   color: #0a9f4d;
   font-size: 0.9rem;
   font-weight: 820;
-  margin-top: 0.75rem;
+  line-height: 1.2;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -872,16 +893,20 @@ select {
   }
 
   .open-spot-metrics-showcase-page .open-spot-filled-card {
-    display: flex;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .open-spot-filled-card .open-spot-metric-card-heading,
+  .open-spot-filled-card .open-spot-metric-description,
+  .open-spot-filled-card .open-spot-metric-visual {
+    grid-column: 1;
   }
 
   .open-spot-filled-card .open-spot-metric-visual {
-    bottom: 0;
-    left: 0;
+    grid-row: 3;
     margin-top: 1.25rem;
-    position: relative;
-    right: auto;
-    top: auto;
+    max-width: 16rem;
     width: 100%;
   }
 

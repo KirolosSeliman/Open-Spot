@@ -309,24 +309,26 @@ function FilledSpotsGauge({
 
   return (
     <div className="open-spot-filled-gauge-wrap">
-      <svg aria-hidden="true" className="open-spot-filled-gauge" viewBox="0 0 220 120">
-        {ticks.map((tick, index) => (
-          <line
-            className={cn("open-spot-filled-gauge-tick", tick.active && "is-active")}
-            key={index}
-            strokeLinecap="round"
-            x1={tick.x1}
-            x2={tick.x2}
-            y1={tick.y1}
-            y2={tick.y2}
-          />
-        ))}
-      </svg>
-      <div className="open-spot-filled-gauge-copy">
-        <p>{value}</p>
-        <span>{label}</span>
-        <strong>↑ {improvement}</strong>
+      <div className="open-spot-filled-gauge-chart">
+        <svg aria-hidden="true" className="open-spot-filled-gauge" viewBox="0 0 220 120">
+          {ticks.map((tick, index) => (
+            <line
+              className={cn("open-spot-filled-gauge-tick", tick.active && "is-active")}
+              key={index}
+              strokeLinecap="round"
+              x1={tick.x1}
+              x2={tick.x2}
+              y1={tick.y1}
+              y2={tick.y2}
+            />
+          ))}
+        </svg>
+        <div className="open-spot-filled-gauge-copy">
+          <p>{value}</p>
+          <span>{label}</span>
+        </div>
       </div>
+      <strong className="open-spot-filled-gauge-trend">↑ {improvement}</strong>
     </div>
   );
 }
