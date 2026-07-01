@@ -272,8 +272,10 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("2e Chance RDV");
     expect(homepage).toContain("Fill last-minute");
     expect(homepage).toContain("cancellations by SMS.");
-    expect(homepage).toContain("Comblez les annulations");
-    expect(homepage).toContain("de dernière minute par SMS.");
+    expect(homepage).toContain("Comblez les");
+    expect(homepage).toContain("annulations");
+    expect(homepage).toContain("de dernière minute");
+    expect(homepage).toContain("par SMS.");
     expect(homepage).toContain(
       "Open Spot alerts interested clients, collects replies, and lets your team choose who to confirm"
     );
@@ -1121,18 +1123,25 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("height: clamp(3.5rem, 14.5vw, 3.95rem)");
     expect(mobileStyles).toContain("border-radius: 999px");
 
+    expect(mobileStyles).toContain("--mobile-ref-w: 432");
+    expect(mobileStyles).toContain("--mpx: calc(100vw / var(--mobile-ref-w))");
+
     expect(mobileStyles).toContain(".reference-hero-section {");
-    expect(mobileStyles).toContain("height: 100svh");
-    expect(mobileStyles).toContain("--mobile-phone-width: 17.125rem");
+    expect(mobileStyles).toContain("--mobile-phone-width: calc(240 * var(--mpx))");
 
     expect(mobileStyles).toContain(".reference-hero-mobile-shell {");
-    expect(mobileStyles).toContain("display: flex");
-    expect(mobileStyles).toContain("flex-direction: column");
-    expect(mobileStyles).toContain("height: 100%");
+    expect(mobileStyles).toContain("display: block");
+    expect(mobileStyles).toContain("min-height: calc(800 * var(--mpx))");
+
+    expect(mobileStyles).toContain(".reference-hero-copy {");
+    expect(mobileStyles).toContain("top: calc(92 * var(--mpx))");
+
+    expect(mobileStyles).toContain(".reference-hero-phone-zone {");
+    expect(mobileStyles).toContain("top: calc(292 * var(--mpx))");
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
     expect(styles).toContain("height: var(--phone-height)");
-    expect(mobileStyles).toContain("height: 100%");
+    expect(mobileStyles).toContain("height: auto");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
@@ -1140,8 +1149,8 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("position: relative");
     expect(mobileStyles).toContain("left: auto");
     expect(mobileStyles).toContain("aspect-ratio: 393 / 852");
-    expect(mobileStyles).toContain("rotateY(-1.1deg) rotateZ(0.28deg)");
-    expect(mobileStyles).toContain("width: var(--mobile-phone-width)");
+    expect(mobileStyles).not.toContain("rotateY(-1.1deg) rotateZ(0.28deg)");
+    expect(mobileStyles).toContain("width: 100%");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
     expect(mobileStyles).toContain(".reference-floating-card {");
@@ -1150,12 +1159,11 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain(".reference-mobile-hero-gradient {");
     expect(mobileStyles).toContain("display: block");
     expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("height: 52%");
+    expect(mobileStyles).toContain("top: calc(555 * var(--mpx))");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
     expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("top: auto !important");
-    expect(mobileStyles).toContain("bottom: calc(0.85rem + env(safe-area-inset-bottom))");
+    expect(mobileStyles).toContain("top: calc(620 * var(--mpx))");
 
     expect(mobileStyles).toContain(".landing-mobile-login-pill {");
 
@@ -1164,7 +1172,7 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-hero-actions {");
     expect(mobileStyles).toContain("flex-direction: column");
-    expect(mobileStyles).toContain("width: 100%");
+    expect(mobileStyles).toContain("calc(260 * var(--mpx))");
   });
 
   it("uses a long blue-to-white gradient before the Why Open Spot section", () => {
@@ -1201,7 +1209,7 @@ describe("public navigation", () => {
     }
 
     expect(homepage).toContain("Trusted by clinics, salons & studios");
-    expect(homepage).toContain("Adopte par des cliniques, salons et studios");
+    expect(homepage).toContain("Adopté par des cliniques, salons et studios");
     expect(homepage).toContain("Get started");
     expect(homepage).toContain("Commencer");
     expect(homepage).toContain("Book a call");

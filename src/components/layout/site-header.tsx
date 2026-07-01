@@ -38,7 +38,10 @@ export async function SiteHeader({ locale: localeOverride, variant = "default" }
   }
 
   return (
-    <SiteHeaderShell innerClassName={cn(isLanding && "landing-site-header-card")}>
+    <SiteHeaderShell
+      className={cn(isLanding && "landing-site-header")}
+      innerClassName={cn(isLanding && "landing-site-header-card")}
+    >
       {isLanding ? (
         <>
           <div className="flex items-center justify-between gap-3 md:hidden">

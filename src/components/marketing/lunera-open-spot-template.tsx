@@ -381,10 +381,10 @@ const openSpotFrCopy = {
   },
   hero: {
     ...openSpotCopy.hero,
-    title: ["Comblez les annulations", "de dernière minute par SMS."],
+    title: ["Comblez les", "annulations", "de dernière minute", "par SMS."],
     subtitle:
       "Open Spot alerte les clients intéressés, recueille les réponses et laisse votre équipe choisir qui confirmer — sans remplacer votre système de réservation.",
-    socialProof: "Adopte par des cliniques, salons et studios",
+    socialProof: "Adopté par des cliniques, salons et studios",
     primary: "Commencer",
     secondary: "Réserver un appel",
     floatingAlert: "Envoyer l'alerte à la liste d'attente",
