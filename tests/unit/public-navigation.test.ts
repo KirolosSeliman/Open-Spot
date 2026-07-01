@@ -35,10 +35,10 @@ describe("public navigation", () => {
     expect(funnel).toContain("SiteHeader");
     expect(funnel).toContain("withExternalHeader");
     expect(funnel).not.toContain("getMarketingLocale");
-    expect(funnel).not.toContain("getRequestLocale");
+    expect(funnel).toContain("getRequestLocale");
     expect(funnel).not.toContain("localeCookieName");
     expect(funnel).not.toContain("OpenSpotMetricsShowcase");
-    expect(funnel).toContain('locale="en"');
+    expect(funnel).toContain("locale={locale}");
 
     expect(mainMarkup).toContain("<Hero");
     expect(mainMarkup).toContain("<OpenSpotMetricsShowcase");
@@ -241,7 +241,8 @@ describe("public navigation", () => {
     const funnel = source("src/components/marketing/open-spot-funnel.tsx");
     const siteHeader = source("src/components/layout/site-header.tsx");
 
-    expect(funnel).toContain("<SiteHeader />");
+    expect(funnel).toContain('variant="landing"');
+    expect(funnel).toContain("locale={locale}");
     expect(funnel).toContain("withExternalHeader");
     expect(homepage).not.toContain("FloatingNavbar");
     expect(funnel).not.toContain("MarketingReferenceHeader");
@@ -1076,7 +1077,8 @@ describe("public navigation", () => {
     const siteHeader = source("src/components/layout/site-header.tsx");
     const styles = source("src/app/globals.css");
 
-    expect(funnel).toContain("<SiteHeader />");
+    expect(funnel).toContain('variant="landing"');
+    expect(funnel).toContain("locale={locale}");
     expect(funnel).not.toContain("MarketingReferenceHeader");
     expect(funnel).not.toContain("Log in");
     expect(siteHeader).toContain('href="/sign-in"');
@@ -1120,16 +1122,17 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("border-radius: 999px");
 
     expect(mobileStyles).toContain(".reference-hero-section {");
-    expect(mobileStyles).toContain("min-height: max(50rem, 100svh)");
-    expect(mobileStyles).toContain("--mobile-phone-width: min(70.25vw, 17.125rem)");
+    expect(mobileStyles).toContain("height: 100svh");
+    expect(mobileStyles).toContain("--mobile-phone-width: 17.125rem");
 
     expect(mobileStyles).toContain(".reference-hero-mobile-shell {");
     expect(mobileStyles).toContain("display: flex");
     expect(mobileStyles).toContain("flex-direction: column");
+    expect(mobileStyles).toContain("height: 100%");
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
     expect(styles).toContain("height: var(--phone-height)");
-    expect(mobileStyles).toContain("height: auto");
+    expect(mobileStyles).toContain("height: 100%");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
@@ -1137,7 +1140,7 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("position: relative");
     expect(mobileStyles).toContain("left: auto");
     expect(mobileStyles).toContain("aspect-ratio: 393 / 852");
-    expect(mobileStyles).toContain("rotateY(-1.15deg) rotateZ(0.3deg)");
+    expect(mobileStyles).toContain("rotateY(-1.1deg) rotateZ(0.28deg)");
     expect(mobileStyles).toContain("width: var(--mobile-phone-width)");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
@@ -1146,19 +1149,22 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-mobile-hero-gradient {");
     expect(mobileStyles).toContain("display: block");
-    expect(mobileStyles).toContain("margin-top: clamp(-10.5rem, -34vw, -8.75rem)");
+    expect(mobileStyles).toContain("position: absolute");
+    expect(mobileStyles).toContain("height: 52%");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
-    expect(mobileStyles).toContain("position: relative");
+    expect(mobileStyles).toContain("position: absolute");
     expect(mobileStyles).toContain("top: auto !important");
-    expect(mobileStyles).toContain("padding-top: clamp(0.85rem, 3.5vw, 1.35rem)");
+    expect(mobileStyles).toContain("bottom: calc(0.85rem + env(safe-area-inset-bottom))");
+
+    expect(mobileStyles).toContain(".landing-mobile-login-pill {");
 
     expect(mobileStyles).toContain(".reference-trust-row {");
     expect(mobileStyles).toContain("flex-direction: row");
 
     expect(mobileStyles).toContain(".reference-hero-actions {");
     expect(mobileStyles).toContain("flex-direction: column");
-    expect(mobileStyles).toContain("width: min(21.375rem, calc(100% - 1.5rem))");
+    expect(mobileStyles).toContain("width: 100%");
   });
 
   it("uses a long blue-to-white gradient before the Why Open Spot section", () => {
