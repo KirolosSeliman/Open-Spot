@@ -1561,6 +1561,30 @@ select {
   z-index: 2;
 }
 
+.reference-phone-side-button-left {
+  background: linear-gradient(90deg, #111318, #737985, #20242b);
+  border-radius: 999px;
+  display: none;
+  height: 2.35rem;
+  left: -0.42rem;
+  position: absolute;
+  width: 0.34rem;
+  z-index: 2;
+}
+
+.reference-phone-side-button-volume-up {
+  top: 7.5rem;
+}
+
+.reference-phone-side-button-volume-down {
+  top: 10.75rem;
+}
+
+.reference-phone-side-button-action {
+  height: 3.25rem;
+  top: 14.5rem;
+}
+
 .reference-phone-screen {
   background: #ffffff;
   border-radius: 48px;
@@ -1576,22 +1600,92 @@ select {
   align-items: center;
   background: #000000;
   border-radius: 999px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   display: flex;
+  gap: 0.45rem;
   height: 31px;
-  justify-content: flex-end;
-  left: calc(50% - 7px);
-  padding-right: 11px;
+  justify-content: center;
+  left: 50%;
+  padding-inline: 0.55rem;
   position: absolute;
   top: 12px;
   transform: translateX(-50%);
   width: 96px;
+  z-index: 6;
 }
 
-.reference-dynamic-island span {
+.reference-dynamic-island-lens {
   background: radial-gradient(circle at 38% 38%, #31415d, #05070a 62%);
   border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   height: 16px;
   width: 16px;
+}
+
+.reference-dynamic-island-sensor {
+  background: radial-gradient(circle at 40% 40%, #1a2230, #030408 70%);
+  border-radius: 999px;
+  height: 10px;
+  width: 10px;
+}
+
+.reference-phone-status-bar {
+  align-items: center;
+  color: #050505;
+  display: none;
+  font-size: 0.72rem;
+  font-weight: 760;
+  justify-content: space-between;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+  padding-inline: 0.35rem;
+  position: relative;
+  z-index: 4;
+}
+
+.reference-phone-status-icons {
+  align-items: center;
+  display: flex;
+  gap: 0.28rem;
+}
+
+.reference-phone-status-signal {
+  border-bottom: 2px solid #050505;
+  border-right: 2px solid #050505;
+  height: 0.55rem;
+  width: 0.72rem;
+}
+
+.reference-phone-status-wifi {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  border-top-color: #050505;
+  height: 0.45rem;
+  width: 0.72rem;
+}
+
+.reference-phone-status-battery {
+  background: linear-gradient(90deg, #050505 0 72%, transparent 72%);
+  border: 1.5px solid #050505;
+  border-radius: 0.18rem;
+  height: 0.58rem;
+  position: relative;
+  width: 1.05rem;
+}
+
+.reference-phone-status-battery::after {
+  background: #050505;
+  border-radius: 0 1px 1px 0;
+  content: "";
+  height: 0.28rem;
+  position: absolute;
+  right: -0.18rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.12rem;
 }
 
 .reference-phone-app-header {
@@ -6573,17 +6667,17 @@ select {
   .reference-hero-section {
     background:
       linear-gradient(180deg, rgba(116, 204, 244, 0.2) 0%, rgba(255, 255, 255, 0.06) 42%, rgba(255, 255, 255, 0) 70%),
-      url("/lunera-style/sky-clouds.png") center calc(100% + 2rem) / min(920px, 145vw) auto no-repeat,
+      url("/lunera-style/sky-clouds.png") center calc(100% + 4rem) / min(920px, 145vw) auto no-repeat,
       radial-gradient(ellipse at 50% 54%, rgba(255, 255, 255, 0.66) 0%, rgba(232, 246, 255, 0.38) 36%, transparent 59%),
       linear-gradient(180deg, #b4d7f3 0%, #cce7f8 34%, #edf7fd 68%, #ffffff 94%);
     min-height: auto;
     overflow: hidden;
-    padding: clamp(5.85rem, 24vw, 7rem) 20px calc(4.25rem + env(safe-area-inset-bottom));
+    padding: clamp(7.35rem, 24vw, 8.35rem) 20px calc(5.25rem + env(safe-area-inset-bottom));
     position: relative;
   }
 
   .lunera-template--with-site-header .reference-hero-section {
-    padding-top: clamp(6.25rem, 20vw, 7.25rem);
+    padding-top: clamp(7.65rem, 22vw, 8.75rem);
   }
 
   .reference-hero-cloud,
@@ -6630,18 +6724,18 @@ select {
   }
 
   .reference-hero-stage {
-    --mobile-phone-fade-height: clamp(13rem, 48vw, 17rem);
-    --mobile-phone-fade-opacity: 0.94;
+    --mobile-phone-fade-height: clamp(11.5rem, 42vw, 14.5rem);
+    --mobile-phone-fade-opacity: 0.9;
     --mobile-phone-fade-progress: 0;
-    --mobile-phone-mask-height: clamp(8.5rem, 30vw, 11rem);
-    --mobile-phone-mask-mid-height: clamp(3.9rem, 14vw, 5.2rem);
+    --mobile-phone-mask-height: clamp(5.75rem, 20vw, 7.5rem);
+    --mobile-phone-mask-mid-height: clamp(2.8rem, 10vw, 3.75rem);
     --mobile-phone-scale: 1;
     --mobile-phone-y: 0px;
     align-items: flex-start;
     display: flex;
-    height: clamp(20.75rem, 84vw, 28rem);
+    height: clamp(23.5rem, 90vw, 30.5rem);
     justify-content: center;
-    margin: clamp(1.95rem, 7vw, 2.65rem) auto 0;
+    margin: clamp(2.35rem, 8.5vw, 3.15rem) auto clamp(0.75rem, 3vw, 1.25rem);
     max-width: min(390px, 100%);
     overflow: visible;
     position: relative;
@@ -6650,22 +6744,23 @@ select {
   }
 
   .lunera-template[data-locale="fr"] .reference-hero-stage {
-    margin-top: clamp(1.15rem, 4.8vw, 1.55rem);
+    margin-top: clamp(1.85rem, 6.5vw, 2.35rem);
   }
 
   .reference-mobile-phone-fade {
     background:
-      radial-gradient(ellipse at 2% 82%, rgba(255, 255, 255, 0.98) 0 4.5rem, rgba(255, 255, 255, 0.72) 6.4rem, rgba(255, 255, 255, 0) 9rem),
-      radial-gradient(ellipse at 98% 82%, rgba(255, 255, 255, 0.98) 0 4.9rem, rgba(255, 255, 255, 0.72) 6.8rem, rgba(255, 255, 255, 0) 9.35rem),
+      radial-gradient(ellipse at 2% 88%, rgba(255, 255, 255, 0.98) 0 4.5rem, rgba(255, 255, 255, 0.72) 6.4rem, rgba(255, 255, 255, 0) 9rem),
+      radial-gradient(ellipse at 98% 88%, rgba(255, 255, 255, 0.98) 0 4.9rem, rgba(255, 255, 255, 0.72) 6.8rem, rgba(255, 255, 255, 0) 9.35rem),
       linear-gradient(
         180deg,
         rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.58) 24%,
-        rgba(255, 255, 255, 0.96) 56%,
-        #ffffff 82%,
+        rgba(255, 255, 255, 0.12) 18%,
+        rgba(255, 255, 255, 0.58) 38%,
+        rgba(255, 255, 255, 0.96) 62%,
+        #ffffff 84%,
         #ffffff 100%
       );
-    bottom: -8rem;
+    bottom: -13.5rem;
     display: block !important;
     height: var(--mobile-phone-fade-height);
     left: 50%;
@@ -6684,39 +6779,41 @@ select {
   }
 
   .reference-phone {
+    aspect-ratio: 393 / 852;
     background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.24) 0%, transparent 18%),
       linear-gradient(92deg, #06070a 0%, #252932 45%, #07080a 72%, #616873 100%);
-    border-radius: clamp(2.5rem, 10vw, 3.4rem);
+    border-radius: clamp(2.65rem, 10.5vw, 3.55rem);
     box-shadow:
-      0 26px 60px rgba(20, 33, 45, 0.24),
-      0 10px 22px rgba(0, 0, 0, 0.24),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
+      0 28px 64px rgba(20, 33, 45, 0.26),
+      0 12px 24px rgba(0, 0, 0, 0.22),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.55),
       inset 0 0 0 7px #08090c;
-    height: min(128vw, 528px);
+    height: auto;
     left: auto;
     margin: 0 auto;
-    max-height: 528px;
-    max-width: 292px;
+    max-height: 580px;
+    max-width: 320px;
     overflow: visible;
-    padding: clamp(0.58rem, 2.5vw, 0.78rem);
+    padding: clamp(0.62rem, 2.6vw, 0.82rem);
     position: relative;
     top: auto;
-    transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale)) perspective(1500px) rotateY(-1.4deg) rotateZ(0.45deg);
+    transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale)) perspective(1500px) rotateY(-1.2deg) rotateZ(0.35deg);
     transform-origin: 50% 6%;
-    width: min(68vw, 292px);
+    width: min(78vw, 320px);
     z-index: 14;
     -webkit-mask-image: linear-gradient(
       to bottom,
       #000 0%,
       #000 calc(100% - var(--mobile-phone-mask-height)),
-      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0.76) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
     mask-image: linear-gradient(
       to bottom,
       #000 0%,
       #000 calc(100% - var(--mobile-phone-mask-height)),
-      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0.76) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
     -webkit-mask-size: 100% 100%;
@@ -6732,32 +6829,75 @@ select {
     width: 1.125rem;
   }
 
-  .reference-phone-side-button {
+  .reference-phone-side-button-power {
     height: 6.25rem;
     right: -0.5rem;
     top: 42%;
     width: 0.5rem;
   }
 
+  .reference-phone-side-button-volume-up {
+    top: 28%;
+  }
+
+  .reference-phone-side-button-volume-down {
+    top: 36%;
+  }
+
+  .reference-phone-side-button-action {
+    height: 3.25rem;
+    top: 45%;
+  }
+
   .reference-phone-screen {
-    background: #ffffff;
-    border-radius: clamp(2.25rem, 9vw, 3rem);
-    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
-    padding: clamp(2.2rem, 9vw, 2.55rem) clamp(0.75rem, 3.3vw, 0.95rem) 1rem;
+    background:
+      linear-gradient(180deg, #ffffff 0%, #ffffff 74%, #f5f6f8 100%);
+    border-radius: clamp(2.2rem, 9vw, 2.95rem);
+    box-shadow:
+      inset 0 0 0 1px rgba(15, 23, 42, 0.05),
+      inset 0 18px 34px rgba(255, 255, 255, 0.62);
+    overflow: hidden;
+    padding: clamp(2.45rem, 9.5vw, 2.85rem) clamp(0.75rem, 3.3vw, 0.95rem) 1rem;
   }
 
   .reference-dynamic-island {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+    box-shadow:
+      0 4px 12px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
     height: clamp(1.55rem, 6.8vw, 1.78rem);
-    left: calc(50% - 0.2rem);
-    top: 0.75rem;
+    left: 50%;
+    top: 0.72rem;
     transform: translateX(-50%);
-    width: clamp(4.85rem, 22vw, 5.55rem);
+    width: clamp(5.1rem, 23vw, 5.85rem);
   }
 
-  .reference-dynamic-island span {
+  .reference-dynamic-island-lens {
     height: 1rem;
     width: 1rem;
+  }
+
+  .reference-dynamic-island-sensor {
+    height: 0.62rem;
+    width: 0.62rem;
+  }
+
+  .reference-phone-status-bar {
+    font-size: 0.68rem;
+    margin-bottom: 0.5rem;
+    padding-inline: 0.2rem;
+  }
+
+  .reference-phone-status-battery {
+    height: 0.52rem;
+    width: 0.95rem;
+  }
+
+  .reference-phone-status-bar {
+    display: flex;
+  }
+
+  .reference-phone-side-button-left {
+    display: block;
   }
 
   .reference-phone-app-header {
@@ -6863,7 +7003,7 @@ select {
     display: grid;
     justify-items: center;
     left: auto;
-    margin: clamp(1.55rem, 6.5vw, 2.15rem) auto 0;
+    margin: clamp(2.85rem, 11vw, 3.85rem) auto 0;
     max-width: min(21.375rem, calc(100% - 2rem));
     position: relative;
     right: auto;
@@ -6911,7 +7051,7 @@ select {
     flex-direction: column;
     gap: 0.875rem;
     justify-content: center;
-    margin-top: clamp(1.5rem, 6.5vw, 2.3125rem);
+    margin-top: clamp(2rem, 8vw, 2.75rem);
     width: min(21.375rem, calc(100% - 2rem));
   }
 
@@ -6939,11 +7079,11 @@ select {
 
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
   .reference-hero-stage {
-    --mobile-phone-fade-height: 175px;
-    --mobile-phone-fade-opacity: 0.82;
-    --mobile-phone-fade-progress: 0.5;
-    --mobile-phone-mask-height: 142px;
-    --mobile-phone-mask-mid-height: 68px;
+    --mobile-phone-fade-height: 168px;
+    --mobile-phone-fade-opacity: 0.84;
+    --mobile-phone-fade-progress: 0;
+    --mobile-phone-mask-height: 72px;
+    --mobile-phone-mask-mid-height: 34px;
     --mobile-phone-scale: 1;
     --mobile-phone-y: 0px;
   }
@@ -6987,7 +7127,7 @@ select {
   }
 
   .lunera-template--with-site-header .reference-hero-section {
-    padding-top: 8.5rem;
+    padding-top: 8.75rem;
   }
 
   .reference-hero-copy,
@@ -7008,13 +7148,13 @@ select {
   }
 
   .reference-hero-stage {
-    height: 32rem;
-    margin-top: 4rem;
+    height: 31.5rem;
+    margin-top: 3.25rem;
     max-width: min(32rem, 100%);
   }
 
   .reference-hero-footer {
-    margin-top: 1.85rem;
+    margin-top: 3.25rem;
     max-width: min(25rem, calc(100% - 2rem));
   }
 

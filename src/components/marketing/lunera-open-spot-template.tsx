@@ -847,23 +847,11 @@ export function LuneraOpenSpotTemplate({
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(0.82, 175, 0.5, 0, 1, 142);
+          setFadeValues(0.84, 168, 0, 0, 1, 72);
           return;
         }
 
-        const rect = fadeStage.getBoundingClientRect();
-        const start = window.innerHeight * 0.66;
-        const end = window.innerHeight * 0.18;
-        const rawProgress = (start - rect.top) / Math.max(1, start - end);
-        const progress = Math.min(1, Math.max(0, rawProgress));
-        const easedProgress = progress * progress * (3 - 2 * progress);
-        const opacity = 0.65 + easedProgress * 0.35;
-        const height = 145 + easedProgress * 60;
-        const phoneY = easedProgress * -16;
-        const phoneRatio = 1 - easedProgress * 0.015;
-        const maskHeight = 118 + easedProgress * 54;
-
-        setFadeValues(opacity, height, progress, phoneY, phoneRatio, maskHeight);
+        setFadeValues(0.9, 172, 0, 0, 1, 68);
       });
     }
 
@@ -1009,11 +997,23 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
   return (
     <div className="reference-phone" data-reference-part="mobile-phone">
       <div aria-hidden="true" className="reference-phone-side-rail" />
-      <div aria-hidden="true" className="reference-phone-side-button" />
+      <div aria-hidden="true" className="reference-phone-side-button reference-phone-side-button-power" />
+      <div aria-hidden="true" className="reference-phone-side-button-left reference-phone-side-button-volume-up" />
+      <div aria-hidden="true" className="reference-phone-side-button-left reference-phone-side-button-volume-down" />
+      <div aria-hidden="true" className="reference-phone-side-button-left reference-phone-side-button-action" />
       <div className="reference-phone-screen">
         <div aria-hidden="true" className="reference-phone-glare" />
         <div className="reference-dynamic-island" data-reference-part="dynamic-island">
-          <span />
+          <span className="reference-dynamic-island-lens" />
+          <span className="reference-dynamic-island-sensor" />
+        </div>
+        <div aria-hidden="true" className="reference-phone-status-bar">
+          <span className="reference-phone-status-time">9:41</span>
+          <div className="reference-phone-status-icons">
+            <span className="reference-phone-status-signal" />
+            <span className="reference-phone-status-wifi" />
+            <span className="reference-phone-status-battery" />
+          </div>
         </div>
         <div className="reference-phone-app-header">
           <MenuIcon />

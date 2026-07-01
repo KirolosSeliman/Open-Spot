@@ -1115,34 +1115,35 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("border-radius: 999px");
 
     expect(mobileStyles).toContain(".reference-hero-section {");
-    expect(mobileStyles).toContain("min-height: clamp(54rem, 95vw, 68rem)");
-    expect(mobileStyles).toContain("padding-top: clamp(6rem, 10vw, 8rem)");
+    expect(mobileStyles).toContain("min-height: auto");
+    expect(mobileStyles).toContain("padding: clamp(7.35rem, 24vw, 8.35rem) 20px");
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
     expect(styles).toContain("height: var(--phone-height)");
-    expect(mobileStyles).toContain("height: clamp(20.75rem, 84vw, 28rem)");
+    expect(mobileStyles).toContain("height: clamp(23.5rem, 90vw, 30.5rem)");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
     expect(mobileStyles).toContain(".reference-phone {");
     expect(mobileStyles).toContain("position: relative");
     expect(mobileStyles).toContain("left: auto");
-    expect(mobileStyles).toContain("rotateY(-1.4deg) rotateZ(0.45deg)");
-    expect(mobileStyles).toContain("width: min(68vw, 292px)");
+    expect(mobileStyles).toContain("aspect-ratio: 393 / 852");
+    expect(mobileStyles).toContain("rotateY(-1.2deg) rotateZ(0.35deg)");
+    expect(mobileStyles).toContain("width: min(78vw, 320px)");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
     expect(mobileStyles).toContain(".reference-floating-card {");
-    expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("z-index: 24");
+    expect(mobileStyles).toContain("display: none");
 
     expect(mobileStyles).toContain(".reference-mobile-phone-fade {");
     expect(mobileStyles).toContain("display: block !important");
-    expect(mobileStyles).toContain("--mobile-phone-fade-opacity: 0.94");
-    expect(mobileStyles).toContain("bottom: -8rem");
+    expect(mobileStyles).toContain("--mobile-phone-fade-opacity: 0.9");
+    expect(mobileStyles).toContain("bottom: -13.5rem");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
     expect(mobileStyles).toContain("position: relative");
     expect(mobileStyles).toContain("top: auto !important");
+    expect(mobileStyles).toContain("margin: clamp(2.85rem, 11vw, 3.85rem) auto 0");
 
     expect(mobileStyles).toContain(".reference-trust-row {");
     expect(mobileStyles).toContain("flex-direction: row");

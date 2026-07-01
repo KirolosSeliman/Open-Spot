@@ -41,7 +41,7 @@ export async function SiteHeader() {
 
         <nav
           aria-label={locale === "fr" ? "Navigation principale" : "Main navigation"}
-          className="order-3 flex w-full gap-1 overflow-x-auto pb-1 md:order-2 md:w-auto md:overflow-visible md:pb-0"
+          className="order-3 hidden w-full gap-1 overflow-x-auto pb-1 md:order-2 md:flex md:w-auto md:overflow-visible md:pb-0"
         >
           {navItems.map((item) => (
             <Link
