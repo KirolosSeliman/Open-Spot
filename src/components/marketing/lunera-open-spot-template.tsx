@@ -381,10 +381,10 @@ const openSpotFrCopy = {
   },
   hero: {
     ...openSpotCopy.hero,
-    title: ["Comblez les annulations", "de dernière minute par SMS."],
+    title: ["Comblez les", "annulations", "de dernière minute", "par SMS."],
     subtitle:
       "Open Spot alerte les clients intéressés, recueille les réponses et laisse votre équipe choisir qui confirmer — sans remplacer votre système de réservation.",
-    socialProof: "Adopte par des cliniques, salons et studios",
+    socialProof: "Adopté par des cliniques, salons et studios",
     primary: "Commencer",
     secondary: "Réserver un appel",
     floatingAlert: "Envoyer l'alerte à la liste d'attente",
@@ -847,23 +847,11 @@ export function LuneraOpenSpotTemplate({
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(0.82, 175, 0.5, 0, 1, 142);
+          setFadeValues(0.84, 168, 0, 0, 1, 72);
           return;
         }
 
-        const rect = fadeStage.getBoundingClientRect();
-        const start = window.innerHeight * 0.66;
-        const end = window.innerHeight * 0.18;
-        const rawProgress = (start - rect.top) / Math.max(1, start - end);
-        const progress = Math.min(1, Math.max(0, rawProgress));
-        const easedProgress = progress * progress * (3 - 2 * progress);
-        const opacity = 0.65 + easedProgress * 0.35;
-        const height = 145 + easedProgress * 60;
-        const phoneY = easedProgress * -16;
-        const phoneRatio = 1 - easedProgress * 0.015;
-        const maskHeight = 118 + easedProgress * 54;
-
-        setFadeValues(opacity, height, progress, phoneY, phoneRatio, maskHeight);
+        setFadeValues(0.9, 172, 0, 0, 1, 68);
       });
     }
 
@@ -921,24 +909,29 @@ function Hero({ t }: { locale: Locale; t: TemplateCopy }) {
     >
       <div className="reference-hero-cloud reference-hero-cloud-left" aria-hidden="true" />
       <div className="reference-hero-cloud reference-hero-cloud-right" aria-hidden="true" />
-      <div className="reference-hero-copy">
-        <h1 className="reference-hero-title" data-lunera-reveal data-reference-part="mobile-title">
-          {t.hero.title.map((line) => (
-            <span key={line}>
-              {line}
-            </span>
-          ))}
-        </h1>
-        <p className="reference-hero-subtitle" data-lunera-reveal data-reference-part="mobile-subtitle">
-          {t.hero.subtitle}
-        </p>
+      <div className="reference-hero-mobile-shell">
+        <div className="reference-hero-copy">
+          <h1 className="reference-hero-title" data-lunera-reveal data-reference-part="mobile-title">
+            {t.hero.title.map((line) => (
+              <span key={line}>
+                {line}
+              </span>
+            ))}
+          </h1>
+          <p className="reference-hero-subtitle" data-lunera-reveal data-reference-part="mobile-subtitle">
+            {t.hero.subtitle}
+          </p>
+        </div>
+        <div className="reference-hero-phone-zone">
+          <ReferenceHeroStage t={t} />
+        </div>
+        <div className="reference-mobile-hero-gradient" aria-hidden="true" />
+        <div className="reference-hero-footer">
+          <TrustRow label={t.hero.socialProof} />
+          <HeroActions t={t} />
+        </div>
       </div>
-      <ReferenceHeroStage t={t} />
       <div className="reference-phone-fade" aria-hidden="true" />
-      <div className="reference-hero-footer">
-        <TrustRow label={t.hero.socialProof} />
-        <HeroActions t={t} />
-      </div>
     </section>
   );
 }
@@ -961,7 +954,6 @@ function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
       />
       <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
       <PhoneProductMockup phone={t.hero.phone} />
-      <div className="reference-mobile-phone-fade" aria-hidden="true" />
     </div>
   );
 }
@@ -1009,11 +1001,23 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
   return (
     <div className="reference-phone" data-reference-part="mobile-phone">
       <div aria-hidden="true" className="reference-phone-side-rail" />
-      <div aria-hidden="true" className="reference-phone-side-button" />
+      <div aria-hidden="true" className="reference-phone-side-button reference-phone-side-button-power" />
+      <div aria-hidden="true" className="reference-phone-side-button-left reference-phone-side-button-volume-up" />
+      <div aria-hidden="true" className="reference-phone-side-button-left reference-phone-side-button-volume-down" />
+      <div aria-hidden="true" className="reference-phone-side-button-left reference-phone-side-button-action" />
       <div className="reference-phone-screen">
         <div aria-hidden="true" className="reference-phone-glare" />
         <div className="reference-dynamic-island" data-reference-part="dynamic-island">
-          <span />
+          <span className="reference-dynamic-island-lens" />
+          <span className="reference-dynamic-island-sensor" />
+        </div>
+        <div aria-hidden="true" className="reference-phone-status-bar">
+          <span className="reference-phone-status-time">9:41</span>
+          <div className="reference-phone-status-icons">
+            <span className="reference-phone-status-signal" />
+            <span className="reference-phone-status-wifi" />
+            <span className="reference-phone-status-battery" />
+          </div>
         </div>
         <div className="reference-phone-app-header">
           <MenuIcon />

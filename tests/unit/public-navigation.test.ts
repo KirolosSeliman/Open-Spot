@@ -35,10 +35,10 @@ describe("public navigation", () => {
     expect(funnel).toContain("SiteHeader");
     expect(funnel).toContain("withExternalHeader");
     expect(funnel).not.toContain("getMarketingLocale");
-    expect(funnel).not.toContain("getRequestLocale");
+    expect(funnel).toContain("getRequestLocale");
     expect(funnel).not.toContain("localeCookieName");
     expect(funnel).not.toContain("OpenSpotMetricsShowcase");
-    expect(funnel).toContain('locale="en"');
+    expect(funnel).toContain("locale={locale}");
 
     expect(mainMarkup).toContain("<Hero");
     expect(mainMarkup).toContain("<OpenSpotMetricsShowcase");
@@ -241,7 +241,8 @@ describe("public navigation", () => {
     const funnel = source("src/components/marketing/open-spot-funnel.tsx");
     const siteHeader = source("src/components/layout/site-header.tsx");
 
-    expect(funnel).toContain("<SiteHeader />");
+    expect(funnel).toContain('variant="landing"');
+    expect(funnel).toContain("locale={locale}");
     expect(funnel).toContain("withExternalHeader");
     expect(homepage).not.toContain("FloatingNavbar");
     expect(funnel).not.toContain("MarketingReferenceHeader");
@@ -271,8 +272,10 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("2e Chance RDV");
     expect(homepage).toContain("Fill last-minute");
     expect(homepage).toContain("cancellations by SMS.");
-    expect(homepage).toContain("Comblez les annulations");
-    expect(homepage).toContain("de dernière minute par SMS.");
+    expect(homepage).toContain("Comblez les");
+    expect(homepage).toContain("annulations");
+    expect(homepage).toContain("de dernière minute");
+    expect(homepage).toContain("par SMS.");
     expect(homepage).toContain(
       "Open Spot alerts interested clients, collects replies, and lets your team choose who to confirm"
     );
@@ -802,18 +805,18 @@ describe("public navigation", () => {
       homepage.indexOf("function Hero("),
       homepage.indexOf("function ReferenceHeroStage(")
     );
-    const fadeIndex = heroFunction.indexOf("reference-phone-fade");
+    const gradientIndex = heroFunction.indexOf("reference-mobile-hero-gradient");
     const footerIndex = heroFunction.indexOf("reference-hero-footer");
     const socialIndex = heroFunction.indexOf("<TrustRow");
     const ctaIndex = heroFunction.indexOf("<HeroActions");
 
-    expect(fadeIndex).toBeGreaterThan(-1);
-    expect(footerIndex).toBeGreaterThan(fadeIndex);
+    expect(gradientIndex).toBeGreaterThan(-1);
+    expect(footerIndex).toBeGreaterThan(gradientIndex);
     expect(socialIndex).toBeGreaterThan(footerIndex);
     expect(socialIndex).toBeLessThan(ctaIndex);
     expect(heroFunction).not.toContain("lunera-hero-lower-content");
 
-    expect(styles).toContain(".reference-phone-fade");
+    expect(styles).toContain(".reference-mobile-hero-gradient");
     expect(styles).toContain(".reference-hero-footer");
     expect(styles).toContain(".reference-avatar-stack");
     expect(styles).toContain(".reference-stars");
@@ -1076,7 +1079,8 @@ describe("public navigation", () => {
     const siteHeader = source("src/components/layout/site-header.tsx");
     const styles = source("src/app/globals.css");
 
-    expect(funnel).toContain("<SiteHeader />");
+    expect(funnel).toContain('variant="landing"');
+    expect(funnel).toContain("locale={locale}");
     expect(funnel).not.toContain("MarketingReferenceHeader");
     expect(funnel).not.toContain("Log in");
     expect(siteHeader).toContain('href="/sign-in"');
@@ -1105,8 +1109,13 @@ describe("public navigation", () => {
   });
 
   it("matches the mobile reference hero with a controlled phone scene", () => {
+    const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
     const mobileStyles = styles.slice(styles.indexOf("@media (max-width: 767px)"));
+
+    expect(homepage).toContain("reference-hero-mobile-shell");
+    expect(homepage).toContain("reference-hero-phone-zone");
+    expect(homepage).toContain("reference-mobile-hero-gradient");
 
     expect(mobileStyles).toContain(".reference-navbar {");
     expect(mobileStyles).toContain("top: clamp(0.75rem, 3.2vw, 1.1rem)");
@@ -1114,42 +1123,58 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("height: clamp(3.5rem, 14.5vw, 3.95rem)");
     expect(mobileStyles).toContain("border-radius: 999px");
 
+    expect(mobileStyles).toContain("--mobile-ref-w: 432");
+    expect(mobileStyles).toContain("--mpx: calc(100vw / var(--mobile-ref-w))");
+
     expect(mobileStyles).toContain(".reference-hero-section {");
-    expect(mobileStyles).toContain("min-height: clamp(54rem, 95vw, 68rem)");
-    expect(mobileStyles).toContain("padding-top: clamp(6rem, 10vw, 8rem)");
+    expect(mobileStyles).toContain("--mobile-phone-width: calc(268 * var(--mpx))");
+    expect(mobileStyles).toContain("height: 100svh");
+    expect(mobileStyles).toContain("min-height: 100svh");
+
+    expect(mobileStyles).toContain(".reference-hero-mobile-shell {");
+    expect(mobileStyles).toContain("display: block");
+    expect(mobileStyles).toContain("height: 100%");
+
+    expect(mobileStyles).toContain(".reference-hero-copy {");
+    expect(mobileStyles).toContain("top: calc(92 * var(--mpx))");
+
+    expect(mobileStyles).toContain(".reference-hero-phone-zone {");
+    expect(mobileStyles).toContain("top: calc(292 * var(--mpx))");
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
     expect(styles).toContain("height: var(--phone-height)");
-    expect(mobileStyles).toContain("height: clamp(20.75rem, 84vw, 28rem)");
+    expect(mobileStyles).toContain("height: auto");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
     expect(mobileStyles).toContain(".reference-phone {");
     expect(mobileStyles).toContain("position: relative");
     expect(mobileStyles).toContain("left: auto");
-    expect(mobileStyles).toContain("rotateY(-1.4deg) rotateZ(0.45deg)");
-    expect(mobileStyles).toContain("width: min(68vw, 292px)");
+    expect(mobileStyles).toContain("aspect-ratio: 393 / 852");
+    expect(mobileStyles).not.toContain("rotateY(-1.1deg) rotateZ(0.28deg)");
+    expect(mobileStyles).toContain("var(--mobile-phone-width) !important");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
     expect(mobileStyles).toContain(".reference-floating-card {");
-    expect(mobileStyles).toContain("position: absolute");
-    expect(mobileStyles).toContain("z-index: 24");
+    expect(mobileStyles).toContain("display: none");
 
-    expect(mobileStyles).toContain(".reference-mobile-phone-fade {");
-    expect(mobileStyles).toContain("display: block !important");
-    expect(mobileStyles).toContain("--mobile-phone-fade-opacity: 0.94");
-    expect(mobileStyles).toContain("bottom: -8rem");
+    expect(mobileStyles).toContain(".reference-mobile-hero-gradient {");
+    expect(mobileStyles).toContain("display: block");
+    expect(mobileStyles).toContain("position: absolute");
+    expect(mobileStyles).toContain("bottom: 0");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
-    expect(mobileStyles).toContain("position: relative");
     expect(mobileStyles).toContain("top: auto !important");
+    expect(mobileStyles).toContain("bottom: calc(22 * var(--mpx) + env(safe-area-inset-bottom))");
+
+    expect(mobileStyles).toContain(".landing-mobile-login-pill {");
 
     expect(mobileStyles).toContain(".reference-trust-row {");
     expect(mobileStyles).toContain("flex-direction: row");
 
     expect(mobileStyles).toContain(".reference-hero-actions {");
     expect(mobileStyles).toContain("flex-direction: column");
-    expect(mobileStyles).toContain("width: min(21.375rem, calc(100% - 2rem))");
+    expect(mobileStyles).toContain("calc(260 * var(--mpx))");
   });
 
   it("uses a long blue-to-white gradient before the Why Open Spot section", () => {
@@ -1186,7 +1211,7 @@ describe("public navigation", () => {
     }
 
     expect(homepage).toContain("Trusted by clinics, salons & studios");
-    expect(homepage).toContain("Adopte par des cliniques, salons et studios");
+    expect(homepage).toContain("Adopté par des cliniques, salons et studios");
     expect(homepage).toContain("Get started");
     expect(homepage).toContain("Commencer");
     expect(homepage).toContain("Book a call");
