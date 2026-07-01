@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { ResendAuthEmailForm } from "@/components/auth/resend-auth-email-form";
 import { PageShell } from "@/components/layout/page-shell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -33,9 +32,7 @@ const signInCopy = {
     submit: "Connexion",
     noAccount: "Pas encore de compte ?",
     createAccount: "Créer un compte",
-    recoveryTitle: "Mot de passe oublié ?",
-    recoveryDescription:
-      "Entrez le courriel approuvé de votre commerce pour recevoir un lien de réinitialisation sécurisé."
+    forgotPassword: "Mot de passe oublié ?"
   },
   en: {
     eyebrow: "Sign in",
@@ -47,9 +44,7 @@ const signInCopy = {
     submit: "Sign in",
     noAccount: "No account yet?",
     createAccount: "Create account",
-    recoveryTitle: "Forgot your password?",
-    recoveryDescription:
-      "Enter the approved email for your business to receive a secure password reset link."
+    forgotPassword: "Forgot your password?"
   }
 } as const;
 
@@ -157,7 +152,7 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
               {t.submit}
             </Button>
           </form>
-          <p className="mt-6 text-sm leading-6 text-[var(--muted)]">
+          <p className="mt-6 text-center text-sm leading-6 text-[var(--muted)] sm:text-left">
             {t.noAccount}{" "}
             <Link
               className="font-black text-[var(--primary)] underline-offset-4 hover:underline"
@@ -165,15 +160,14 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             >
               {t.createAccount}
             </Link>
+            <span aria-hidden="true"> · </span>
+            <Link
+              className="font-black text-[var(--primary)] underline-offset-4 hover:underline"
+              href="/forgot-password"
+            >
+              {t.forgotPassword}
+            </Link>
           </p>
-          <div className="mt-8 border-t border-[#DDE5F0] pt-6">
-            <ResendAuthEmailForm
-              defaultEmail={email ?? ""}
-              defaultMode="recovery"
-              description={t.recoveryDescription}
-              title={t.recoveryTitle}
-            />
-          </div>
         </Card>
       </section>
     </PageShell>

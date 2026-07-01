@@ -13,6 +13,7 @@ type ResendAuthEmailFormProps = {
   defaultEmail?: string;
   defaultMode?: ResendAuthEmailMode;
   description?: string;
+  showHeader?: boolean;
   showModeSwitch?: boolean;
   title?: string;
 };
@@ -21,6 +22,7 @@ export function ResendAuthEmailForm({
   defaultEmail = "",
   defaultMode = "signup",
   description = "Entrez votre adresse courriel pour recevoir un nouveau lien.",
+  showHeader = true,
   showModeSwitch = false,
   title = "Lien expiré ou invalide"
 }: ResendAuthEmailFormProps) {
@@ -58,11 +60,13 @@ export function ResendAuthEmailForm({
 
   return (
     <div className="grid gap-5">
-      <div>
-        <p className="os-kicker">Accès sécurisé</p>
-        <h1 className="os-page-title mt-4">{title}</h1>
-        <p className="os-body-large mt-4">{description}</p>
-      </div>
+      {showHeader ? (
+        <div>
+          <p className="os-kicker">Accès sécurisé</p>
+          <h1 className="os-page-title mt-4">{title}</h1>
+          <p className="os-body-large mt-4">{description}</p>
+        </div>
+      ) : null}
 
       {feedback ? (
         <p

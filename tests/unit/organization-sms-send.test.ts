@@ -81,9 +81,16 @@ describe("organization SMS send guards", () => {
     expect(inboundHandlerSource).toContain("sms.unstop.opted_in");
   });
 
-  it("exposes password recovery on the sign-in page", () => {
-    expect(signInPageSource).toContain("ResendAuthEmailForm");
-    expect(signInPageSource).toContain('defaultMode="recovery"');
-    expect(signInPageSource).toContain("recoveryTitle");
+  it("exposes password recovery on a dedicated forgot-password page", () => {
+    const forgotPasswordPage = readFileSync(
+      join(process.cwd(), "src", "app", "forgot-password", "page.tsx"),
+      "utf8"
+    );
+
+    expect(signInPageSource).toContain('href="/forgot-password"');
+    expect(signInPageSource).not.toContain("ResendAuthEmailForm");
+    expect(forgotPasswordPage).toContain("ResendAuthEmailForm");
+    expect(forgotPasswordPage).toContain('defaultMode="recovery"');
+    expect(forgotPasswordPage).toContain("Mot de passe oublié ?");
   });
 });
