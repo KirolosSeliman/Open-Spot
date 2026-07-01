@@ -909,24 +909,29 @@ function Hero({ t }: { locale: Locale; t: TemplateCopy }) {
     >
       <div className="reference-hero-cloud reference-hero-cloud-left" aria-hidden="true" />
       <div className="reference-hero-cloud reference-hero-cloud-right" aria-hidden="true" />
-      <div className="reference-hero-copy">
-        <h1 className="reference-hero-title" data-lunera-reveal data-reference-part="mobile-title">
-          {t.hero.title.map((line) => (
-            <span key={line}>
-              {line}
-            </span>
-          ))}
-        </h1>
-        <p className="reference-hero-subtitle" data-lunera-reveal data-reference-part="mobile-subtitle">
-          {t.hero.subtitle}
-        </p>
+      <div className="reference-hero-mobile-shell">
+        <div className="reference-hero-copy">
+          <h1 className="reference-hero-title" data-lunera-reveal data-reference-part="mobile-title">
+            {t.hero.title.map((line) => (
+              <span key={line}>
+                {line}
+              </span>
+            ))}
+          </h1>
+          <p className="reference-hero-subtitle" data-lunera-reveal data-reference-part="mobile-subtitle">
+            {t.hero.subtitle}
+          </p>
+        </div>
+        <div className="reference-hero-phone-zone">
+          <ReferenceHeroStage t={t} />
+        </div>
+        <div className="reference-mobile-hero-gradient" aria-hidden="true" />
+        <div className="reference-hero-footer">
+          <TrustRow label={t.hero.socialProof} />
+          <HeroActions t={t} />
+        </div>
       </div>
-      <ReferenceHeroStage t={t} />
       <div className="reference-phone-fade" aria-hidden="true" />
-      <div className="reference-hero-footer">
-        <TrustRow label={t.hero.socialProof} />
-        <HeroActions t={t} />
-      </div>
     </section>
   );
 }
@@ -949,7 +954,6 @@ function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
       />
       <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
       <PhoneProductMockup phone={t.hero.phone} />
-      <div className="reference-mobile-phone-fade" aria-hidden="true" />
     </div>
   );
 }

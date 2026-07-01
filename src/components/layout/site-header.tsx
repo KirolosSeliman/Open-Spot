@@ -30,8 +30,8 @@ export async function SiteHeader() {
   }
 
   return (
-    <SiteHeaderShell>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <SiteHeaderShell innerClassName="landing-site-header-card">
+      <div className="flex flex-wrap items-center justify-between gap-2 max-md:flex-nowrap max-md:gap-1.5">
         <Link
           className="rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
@@ -54,7 +54,7 @@ export async function SiteHeader() {
           ))}
         </nav>
 
-        <div className="order-2 flex shrink-0 items-center gap-2 md:order-3">
+        <div className="order-2 flex shrink-0 items-center gap-1.5 max-md:gap-1 md:order-3">
           {isSignedIn ? (
             <>
               <Link
@@ -75,13 +75,13 @@ export async function SiteHeader() {
           ) : (
             <>
               <Link
-                className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-sm font-bold text-[var(--foreground)] transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                className="rounded-full border border-[var(--line)] bg-white px-2.5 py-1.5 text-xs font-bold text-[var(--foreground)] transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] max-md:px-2.5 max-md:py-1.5 max-md:text-[0.72rem] md:px-3 md:py-2 md:text-sm"
                 href="/sign-in"
               >
                 {t.auth.signIn}
               </Link>
               <Link
-                className="rounded-full bg-[var(--primary)] px-3 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                className="rounded-full bg-[var(--primary)] px-2.5 py-1.5 text-xs font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.22)] transition hover:bg-[var(--primary-strong)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] max-md:px-2.5 max-md:py-1.5 max-md:text-[0.72rem] md:px-3 md:py-2 md:text-sm"
                 href="/signup"
               >
                 {t.auth.createAccount}
