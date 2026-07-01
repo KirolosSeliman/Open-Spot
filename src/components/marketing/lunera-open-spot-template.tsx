@@ -381,10 +381,10 @@ const openSpotFrCopy = {
   },
   hero: {
     ...openSpotCopy.hero,
-    title: ["Comblez les annulations", "de dernière minute par SMS."],
+    title: ["Comblez les", "annulations de", "dernière minute", "par SMS."],
     subtitle:
       "Open Spot alerte les clients intéressés, recueille les réponses et laisse votre équipe choisir qui confirmer — sans remplacer votre système de réservation.",
-    socialProof: "Adopte par des cliniques, salons et studios",
+    socialProof: "Adopté par des cliniques, salons et studios",
     primary: "Commencer",
     secondary: "Réserver un appel",
     floatingAlert: "Envoyer l'alerte à la liste d'attente",
@@ -396,24 +396,23 @@ const openSpotFrCopy = {
     phone: {
       title: "Open Spot",
       cancellationTitle: "Annulation détectée",
-      cancellationTime: "Demain · 10 h",
-      cancellationService: "Soin du visage · 60 min",
+      cancellationTime: "Aujourd'hui · 15 h 30",
+      cancellationService: "Coupe + Brushing",
       smsTitle: "SMS à la liste d'attente (156 personnes)",
       smsMessage: [
-        "Une place s'est libérée demain",
-        "à 10 h.",
-        "Répondez OUI si cela vous intéresse."
+        "Une place vient de se libérer aujourd'hui",
+        "à 15 h 30 pour coupe + brushing.",
+        "Répondez OUI si vous êtes intéressé."
       ],
       smsCounter: "128 / 160",
       send: "Envoyer",
-      replyQueue: "File de réponses",
-      replyCount: "12",
+      replyQueue: "Réponses reçues",
+      replyCount: "2",
       yes: "OUI",
       confirm: "Confirmer",
       replies: [
-        { avatar: "/testimonials/sophie-clinic-coordinator.webp", name: "Sophie M.", time: "il y a 2 min" },
-        { avatar: "/testimonials/amelie-spa-receptionist.webp", name: "Ava L.", time: "il y a 3 min" },
-        { avatar: "/testimonials/karim-barber-manager.webp", name: "Jordan K.", time: "il y a 5 min" }
+        { avatar: "/testimonials/sophie-clinic-coordinator.webp", name: "Léa D.", time: "1 min" },
+        { avatar: "/testimonials/amelie-spa-receptionist.webp", name: "Marie L.", time: "2 min" }
       ]
     },
     categories: [
@@ -1012,6 +1011,14 @@ function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] })
       <div aria-hidden="true" className="reference-phone-side-button" />
       <div className="reference-phone-screen">
         <div aria-hidden="true" className="reference-phone-glare" />
+        <div className="reference-phone-status" aria-hidden="true">
+          <span>09:41</span>
+          <span>
+            <SignalIcon />
+            <WifiIcon />
+            <BatteryIcon />
+          </span>
+        </div>
         <div className="reference-dynamic-island" data-reference-part="dynamic-island">
           <span />
         </div>
@@ -1116,6 +1123,38 @@ function MenuIcon() {
   return (
     <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
       <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+function SignalIcon() {
+  return (
+    <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
+      <rect height="5" rx="1" width="3" x="4" y="14" />
+      <rect height="8" rx="1" width="3" x="9" y="11" />
+      <rect height="11" rx="1" width="3" x="14" y="8" />
+      <rect height="14" rx="1" width="3" x="19" y="5" />
+    </svg>
+  );
+}
+
+function WifiIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
+      <path d="M4.5 9.2a11.8 11.8 0 0 1 15 0" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+      <path d="M7.8 12.4a6.9 6.9 0 0 1 8.4 0" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+      <path d="M10.7 15.5a2.2 2.2 0 0 1 2.6 0" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
+      <path d="M12 18.2h.01" stroke="currentColor" strokeLinecap="round" strokeWidth="3" />
+    </svg>
+  );
+}
+
+function BatteryIcon() {
+  return (
+    <svg aria-hidden="true" fill="none" viewBox="0 0 28 14">
+      <rect height="10" rx="2.4" stroke="currentColor" strokeWidth="1.5" width="22" x="1" y="2" />
+      <path d="M24.5 5v4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
+      <rect fill="currentColor" height="6" rx="1.2" width="16" x="4" y="4" />
     </svg>
   );
 }

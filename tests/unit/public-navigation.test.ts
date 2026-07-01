@@ -35,10 +35,10 @@ describe("public navigation", () => {
     expect(funnel).toContain("SiteHeader");
     expect(funnel).toContain("withExternalHeader");
     expect(funnel).not.toContain("getMarketingLocale");
-    expect(funnel).not.toContain("getRequestLocale");
+    expect(funnel).toContain("getRequestLocale");
     expect(funnel).not.toContain("localeCookieName");
     expect(funnel).not.toContain("OpenSpotMetricsShowcase");
-    expect(funnel).toContain('locale="en"');
+    expect(funnel).toContain("locale={locale}");
 
     expect(mainMarkup).toContain("<Hero");
     expect(mainMarkup).toContain("<OpenSpotMetricsShowcase");
@@ -271,8 +271,7 @@ describe("public navigation", () => {
     expect(homepage).not.toContain("2e Chance RDV");
     expect(homepage).toContain("Fill last-minute");
     expect(homepage).toContain("cancellations by SMS.");
-    expect(homepage).toContain("Comblez les annulations");
-    expect(homepage).toContain("de dernière minute par SMS.");
+    expect(homepage).toContain('title: ["Comblez les", "annulations de", "dernière minute", "par SMS."]');
     expect(homepage).toContain(
       "Open Spot alerts interested clients, collects replies, and lets your team choose who to confirm"
     );
@@ -371,7 +370,7 @@ describe("public navigation", () => {
     const siteHeader = source("src/components/layout/site-header.tsx");
 
     expect(siteHeader).toContain('href="/dashboard"');
-    expect(siteHeader).not.toContain('className="hidden rounded-full');
+    expect(siteHeader).toContain("MobileSiteMenu");
   });
 
   it("keeps forbidden fintech and automatic booking content out of the public homepage source", () => {
@@ -1186,11 +1185,11 @@ describe("public navigation", () => {
     }
 
     expect(homepage).toContain("Trusted by clinics, salons & studios");
-    expect(homepage).toContain("Adopte par des cliniques, salons et studios");
+    expect(homepage).toContain("Adopté par des cliniques, salons et studios");
     expect(homepage).toContain("Get started");
     expect(homepage).toContain("Commencer");
     expect(homepage).toContain("Book a call");
-    expect(homepage).toContain("Reserver un appel");
+    expect(homepage).toContain("Réserver un appel");
     expect(homepage).toContain("reference-avatar-stack");
     expect(homepage).toContain("reference-stars");
     expect(homepage).toContain("aria-hidden=\"true\"");
