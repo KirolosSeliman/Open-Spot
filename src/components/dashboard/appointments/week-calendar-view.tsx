@@ -43,7 +43,7 @@ export function WeekCalendarView({
   const gridHeight = hours.length * CALENDAR_HOUR_HEIGHT;
 
   return (
-    <div className="overflow-x-auto">
+    <div className="os-mobile-calendar-scroll max-w-full min-w-0">
       <div className="min-w-[920px]">
         <div className="grid grid-cols-[72px_repeat(7,minmax(0,1fr))] border-b border-[#e3eaf5]">
           <div />

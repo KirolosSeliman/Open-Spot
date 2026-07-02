@@ -49,7 +49,7 @@ export function EligibleCustomersPanel({
   const totalCount = customers.length;
 
   return (
-    <section className="flex h-full flex-col rounded-[24px] border border-[#e5edf7] bg-white p-7 shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-8">
+    <section className="flex h-full flex-col rounded-[24px] border border-[#e5edf7] bg-white p-[clamp(1rem,4vw,1.75rem)] shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-8">
       <div className="mb-6 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef5ff] text-[#0052ff]">

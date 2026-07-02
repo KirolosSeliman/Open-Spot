@@ -44,7 +44,7 @@ export function NewCancellationFormCard({
   const noteMax = 500;
 
   return (
-    <section className="rounded-[24px] border border-[#e5edf7] bg-white p-7 shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-8">
+    <section className="rounded-[24px] border border-[#e5edf7] bg-white p-[clamp(1rem,4vw,1.75rem)] shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-8">
       <div className="mb-7 flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#eef5ff] text-[#0052ff]">
           <CalendarIcon />
@@ -111,7 +111,7 @@ export function NewCancellationFormCard({
           </div>
         </div>
 
-        <div className="grid gap-2 sm:w-1/2">
+        <div className="grid w-full gap-2 sm:w-1/2">
           <label className={labelClasses} htmlFor="endTime">
             {commonCopy.end}
             <span className="text-[#dc2626]"> *</span>

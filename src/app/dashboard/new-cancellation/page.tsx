@@ -33,7 +33,7 @@ export default async function NewCancellationPage({
   ];
 
   return (
-    <div className="min-w-0 rounded-[28px] bg-[#f8fafc] p-4 sm:p-6 lg:p-8">
+    <div className="min-w-0 rounded-[28px] bg-[#f8fafc] p-[clamp(12px,4vw,20px)] sm:p-6 lg:p-8">
       <header className="mb-8 lg:mb-10">
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#0052ff]">
           {copy.newCancellation.eyebrow}

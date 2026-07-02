@@ -61,7 +61,7 @@ export function CalendarControls({
         >
           <ChevronIcon direction="left" />
         </Link>
-        <h2 className="min-w-[12rem] px-1 text-lg font-bold text-[#0b1328]">
+        <h2 className="min-w-0 max-w-[min(100%,14rem)] flex-1 truncate px-1 text-base font-bold text-[#0b1328] sm:max-w-none sm:text-lg md:min-w-[12rem]">
           {formatCalendarPeriodTitle({ view, dateKey, locale, timezone })}
         </h2>
         <Link
@@ -79,10 +79,10 @@ export function CalendarControls({
         </Link>
       </div>
 
-      <div className="inline-flex rounded-xl border border-[#e3eaf5] bg-white p-1">
+      <div className="flex w-full max-w-full flex-wrap rounded-xl border border-[#e3eaf5] bg-white p-1 md:inline-flex md:w-auto">
         {views.map((item) => (
           <Link
-            className={`rounded-lg px-4 py-2 text-sm font-semibold transition ${
+            className={`min-w-0 flex-1 rounded-lg px-2 py-2 text-center text-xs font-semibold transition sm:px-4 sm:text-sm md:flex-none ${
               view === item
                 ? "bg-[#eff6ff] text-[#2563eb]"
                 : "text-[#64748b] hover:text-[#0b1328]"

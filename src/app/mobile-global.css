@@ -200,4 +200,74 @@
     max-width: 100%;
     height: auto;
   }
+
+  /* Safe area for fixed bottom UI */
+  .open-spot-dashboard-theme main,
+  main {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Dashboard page roots */
+  .open-spot-dashboard-theme .grid,
+  .open-spot-dashboard-theme [data-dashboard-surface] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* Internal table scroll — page must not scroll horizontally */
+  .os-mobile-table-scroll {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Calendar views: contain wide grids inside wrapper only */
+  .os-mobile-calendar-scroll {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Long URLs in copy bars */
+  .os-mobile-url-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Settings / key-value rows */
+  .os-mobile-kv-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .os-mobile-kv-row > :last-child {
+    max-width: 100%;
+    min-width: 0;
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  /* Response action buttons */
+  .os-mobile-action-row {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  /* Appointment list rows */
+  .os-mobile-appointment-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .os-mobile-appointment-row > :last-child {
+    align-self: flex-start;
+  }
 }

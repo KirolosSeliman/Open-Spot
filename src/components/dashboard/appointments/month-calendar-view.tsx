@@ -38,7 +38,7 @@ export function MonthCalendarView({
   const weekdayLabels = getWeekdayHeaderLabels(locale);
 
   return (
-    <div className="overflow-x-auto">
+    <div className="os-mobile-calendar-scroll max-w-full min-w-0">
       <div className="min-w-[760px]">
         <div className="grid grid-cols-7 border-b border-[#e3eaf5]">
           {weekdayLabels.map((label) => (

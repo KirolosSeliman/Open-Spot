@@ -6,7 +6,7 @@ import { ExternalLinkIcon, QrLinkIcon } from "./icons";
 export function QrCodePanel({ publicUrl, qrUrl }: { publicUrl: string; qrUrl: string }) {
   return (
     <section
-      className="flex min-h-[420px] flex-col rounded-[22px] border border-[#e2e8f0] bg-white p-8 shadow-[0_18px_55px_rgba(15,23,42,0.06)]"
+      className="flex min-h-0 flex-col rounded-[22px] border border-[#e2e8f0] bg-white p-[clamp(1rem,4vw,2rem)] shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:min-h-[420px] md:p-8"
       data-dashboard-surface="panel"
     >
       <div className="mb-6 flex items-center gap-3">

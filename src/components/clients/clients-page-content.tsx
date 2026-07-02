@@ -718,7 +718,7 @@ export function ClientsPageContent({
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="grid min-w-0 max-w-full gap-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
           <h1 className="text-3xl font-black tracking-tight text-[#07142f]">
@@ -915,8 +915,8 @@ export function ClientsPageContent({
 
         {paginatedCustomers.length > 0 ? (
           <>
-            <div className="w-full overflow-x-auto overscroll-x-contain [-ms-overflow-style:auto] [scrollbar-gutter:stable]">
-              <table className="w-full min-w-[920px] table-fixed text-left text-sm">
+            <div className="os-mobile-table-scroll w-full max-w-full min-w-0">
+              <table className="w-full min-w-[920px] table-fixed text-left text-sm lg:min-w-[920px]">
                 <thead className="bg-[#f8fafc] text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748b]">
                   <tr>
                     <th className="w-[18%] px-4 py-3">Nom</th>

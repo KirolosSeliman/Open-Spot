@@ -54,7 +54,7 @@ export function UpcomingAppointmentsCard({
 
             return (
               <div
-                className="flex items-start gap-4 border-b border-[#e3eaf5] pb-4 last:border-b-0 last:pb-0"
+                className="os-mobile-appointment-row flex items-start gap-4 border-b border-[#e3eaf5] pb-4 last:border-b-0 last:pb-0 sm:flex-row"
                 key={appointment.id}
               >
                 <div className="min-w-[56px] text-center">
@@ -64,7 +64,7 @@ export function UpcomingAppointmentsCard({
                   </p>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-[#0b1328]">
+                  <p className="min-w-0 break-words text-sm font-bold text-[#0b1328]">
                     {formatShortTime(appointment.starts_at, locale, timezone)}{" "}
                     {appointment.customerName}
                   </p>

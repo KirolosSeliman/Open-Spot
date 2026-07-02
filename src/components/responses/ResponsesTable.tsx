@@ -42,7 +42,7 @@ export function ResponsesTable({
           Réponses ({group.customers.length})
         </h3>
       </div>
-      <div className="overflow-x-auto">
+      <div className="os-mobile-table-scroll max-w-full min-w-0 overflow-x-auto">
         <table className="min-w-full text-left text-sm">
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/80">
@@ -67,17 +67,17 @@ export function ResponsesTable({
 
               return (
                 <tr className="hover:bg-slate-50/60" key={customer.offerId}>
-                  <td className="px-4 py-3.5">
-                    <div className="flex items-center gap-3">
+                  <td className="min-w-0 px-4 py-3.5">
+                    <div className="flex min-w-0 items-center gap-3">
                       <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-xs font-black text-slate-600">
                         {getInitials(customer.customerName)}
                       </span>
-                      <span className="font-bold text-[var(--foreground)]">
+                      <span className="min-w-0 truncate font-bold text-[var(--foreground)]">
                         {customer.customerName}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 font-semibold text-slate-600">
+                  <td className="min-w-0 truncate px-4 py-3.5 font-semibold text-slate-600">
                     {customer.customerPhone || copy.common.phoneUnknown}
                   </td>
                   <td className="px-4 py-3.5 font-bold text-slate-600">

@@ -111,7 +111,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
                   <td className={tableCellClass}>
                     <form
                       action={updateServiceAction}
-                      className="grid min-w-56 gap-2"
+                      className="grid min-w-0 w-full gap-2 md:min-w-56"
                       id={`service-update-${service.id}`}
                     >
                       <input name="serviceId" type="hidden" value={service.id} />

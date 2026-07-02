@@ -52,7 +52,7 @@ export function Panel({
   return (
     <section
       className={cn(
-        "rounded-[1.6rem] border border-[var(--line)] bg-white/90 p-5 shadow-[var(--card-shadow)]",
+        "min-w-0 rounded-[1.6rem] border border-[var(--line)] bg-white/90 p-5 shadow-[var(--card-shadow)]",
         className
       )}
       data-dashboard-surface="panel"
@@ -159,7 +159,7 @@ export function MobileCardTable({
 export function TableShell({ children }: { children: ReactNode }) {
   return (
     <div
-      className="max-w-full overflow-x-auto rounded-[1.5rem] border border-[var(--line)] bg-white [-webkit-overflow-scrolling:touch]"
+      className="max-w-full min-w-0 overflow-x-auto rounded-[1.5rem] border border-[var(--line)] bg-white [-webkit-overflow-scrolling:touch]"
       data-dashboard-table
     >
       <table className="min-w-full divide-y divide-[var(--line)] text-left text-sm">

@@ -182,15 +182,15 @@ export default async function SettingsPage() {
               <ul className="mt-4 grid gap-2 text-sm">
                 {bundle.settings.map((setting) => (
                   <li
-                    className="flex items-start justify-between gap-3 rounded-2xl bg-white px-3 py-2"
+                    className="os-mobile-kv-row flex flex-col gap-2 rounded-2xl bg-white px-3 py-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3"
                     key={setting}
                   >
-                    <span className="text-[var(--muted)]">
+                    <span className="min-w-0 text-[var(--muted)]">
                       {setting in settingLabels
                         ? settingLabels[setting as keyof AutomationSettings]
                         : copy.settings.future}
                     </span>
-                    <span className="shrink-0 font-black text-[var(--foreground)]">
+                    <span className="max-w-full shrink-0 font-black text-[var(--foreground)] sm:shrink-0">
                       {setting in settingLabels
                         ? formatSettingValue({
                             disabledLabel: copy.settings.disabled,
@@ -214,10 +214,10 @@ export default async function SettingsPage() {
         <div className="grid gap-3 md:grid-cols-2">
           {settingKeys.map((key) => (
             <label
-              className="flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-[var(--line)] bg-slate-50 px-4 py-3 text-sm"
+              className="flex min-h-14 flex-col gap-2 rounded-2xl border border-[var(--line)] bg-slate-50 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3"
               key={key}
             >
-              <span className="font-bold text-[var(--foreground)]">
+              <span className="min-w-0 font-bold text-[var(--foreground)]">
                 {settingLabels[key]}
               </span>
               {typeof automationSettings[key] === "boolean" ? (

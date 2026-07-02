@@ -86,7 +86,7 @@ export function OpeningResponseRowActions({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center gap-2">
+      <div className="os-mobile-action-row flex items-center gap-2">
         <button
           aria-label={`${confirmLabel} ${customer.customerName}`}
           className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-3 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-45 ${
