@@ -9,7 +9,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "twilio:smoke": "node scripts/twilio-smoke-test.mjs"
+    "twilio:smoke": "node scripts/twilio-smoke-test.mjs",
+    "seo:indexing-urls": "node scripts/seo/list-indexing-urls.mjs",
+    "seo:indexnow": "node scripts/seo/submit-indexnow.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

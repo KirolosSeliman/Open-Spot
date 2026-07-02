@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
+
 import { PageShell } from "@/components/layout/page-shell";
+import { createPublicPageMetadata } from "@/lib/seo/metadata";
+
+export const metadata: Metadata = createPublicPageMetadata({
+  title: "Secteurs visés",
+  description:
+    "Open Spot s'adresse d'abord aux salons, barbiers, spas et cliniques beauté, avec une approche adaptable à d'autres commerces à rendez-vous.",
+  path: "/industries"
+});
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { Card } from "@/components/ui/card";
 

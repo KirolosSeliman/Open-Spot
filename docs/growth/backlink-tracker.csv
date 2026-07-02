@@ -1,0 +1,9 @@
+Status,Priority,Source Type,Source Name,URL,Target Page,Anchor Text,Contact,Submitted Date,Live Date,Notes
+Planned,High,Owned profile,LinkedIn Company Page,,https://open-spot.ca,Open Spot,,,,"Create company page using docs/brand/brand-profile-kit.md"
+Planned,High,Owned profile,Google Business Profile,,https://open-spot.ca,Open Spot,,,,"Only if real service-area business; no fake address"
+Planned,High,Owned profile,GitHub repository,,https://open-spot.ca,Open Spot,,,,"Add official website link in README/profile"
+Planned,Medium,Owned profile,X / Twitter,,https://open-spot.ca,Open Spot,,,,"Use bio from brand profile kit"
+Planned,Medium,Directory,Local Québec business directory,,https://open-spot.ca,Open Spot — 2e Chance RDV,,,,"Example row — replace with a real directory"
+Planned,Medium,Directory,Startup directory,,https://open-spot.ca/solution-annulations-rdv,logiciel SMS pour annulations de rendez-vous,,,,"Example row — replace with a real directory"
+Planned,Low,Partner,Web/marketing agency serving salons,,https://open-spot.ca/contact,Open Spot,,,,"Outreach only with real relationship"
+Planned,Low,Client site,Future client website,,https://open-spot.ca,Open Spot,,,,"Only after real client relationship and approval"

@@ -1,5 +1,9 @@
 # Open Spot
 
+Official website: https://open-spot.ca
+
+Open Spot / 2e Chance RDV helps appointment-based businesses fill last-minute cancellations by SMS while keeping final confirmation manual.
+
 Open Spot is a bilingual SMS-first cancellation recovery SaaS for appointment-based local businesses. It helps merchants fill last-minute openings by sending SMS offers to customers who have explicitly opted into a waitlist.
 
 The next planned product expansion adds appointment reminder automation: 24-hour reminders, YES/OUI confirmation, NO/NON cancellation handling, and optional conversion of SMS-confirmed cancellations into recoverable openings. This expansion must keep Open Spot focused as an SMS automation layer, not a full booking platform or generic CRM.

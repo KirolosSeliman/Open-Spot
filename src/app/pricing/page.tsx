@@ -1,8 +1,18 @@
 import Link from "next/link";
 
+import type { Metadata } from "next";
+
 import { PageShell } from "@/components/layout/page-shell";
 import { Card } from "@/components/ui/card";
 import { getRequestLocale } from "@/lib/i18n/locale";
+import { createPublicPageMetadata } from "@/lib/seo/metadata";
+
+export const metadata: Metadata = createPublicPageMetadata({
+  title: "Tarifs",
+  description:
+    "Tarification Open Spot adaptée aux salons, barbiers, spas et cliniques beauté. Modèle discuté après un appel selon le volume d'annulations et l'usage SMS.",
+  path: "/pricing"
+});
 
 const pricingCopy = {
   fr: {

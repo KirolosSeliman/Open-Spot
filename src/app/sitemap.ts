@@ -1,26 +1,16 @@
 import type { MetadataRoute } from "next";
 
+import { buildPublicPageUrl, PUBLIC_INDEXABLE_PAGES } from "@/lib/seo/public-pages";
 import { resolveConfiguredSiteUrl } from "@/lib/site-url";
-
-const publicPaths = [
-  "/",
-  "/book-call",
-  "/pricing",
-  "/how-it-works",
-  "/sign-in",
-  "/signup",
-  "/privacy",
-  "/terms"
-] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = resolveConfiguredSiteUrl();
   const lastModified = new Date();
 
-  return publicPaths.map((path) => ({
-    url: path === "/" ? siteUrl : `${siteUrl}${path}`,
+  return PUBLIC_INDEXABLE_PAGES.map((page) => ({
+    url: buildPublicPageUrl(siteUrl, page.path),
     lastModified,
-    changeFrequency: path === "/" ? "weekly" : "monthly",
-    priority: path === "/" ? 1 : 0.7
+    changeFrequency: page.changeFrequency,
+    priority: page.priority
   }));
 }

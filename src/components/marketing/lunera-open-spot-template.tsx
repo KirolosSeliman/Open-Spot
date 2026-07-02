@@ -359,6 +359,14 @@ const openSpotCopy = {
           { label: "Terms", href: "/conditions-utilisation" },
           { label: "SMS consent", href: "/consentement-sms" }
         ]
+      },
+      {
+        title: "Company",
+        links: [
+          { label: "About", href: "/about" },
+          { label: "Contact", href: "/contact" },
+          { label: "Guide", href: "/guides/remplir-annulations-rdv-sms" }
+        ]
       }
     ]
   }
@@ -695,6 +703,14 @@ const openSpotFrCopy = {
           { label: "Confidentialité", href: "/politique-confidentialite" },
           { label: "Conditions", href: "/conditions-utilisation" },
           { label: "Consentement SMS", href: "/consentement-sms" }
+        ]
+      },
+      {
+        title: "Entreprise",
+        links: [
+          { label: "À propos", href: "/about" },
+          { label: "Contact", href: "/contact" },
+          { label: "Guide", href: "/guides/remplir-annulations-rdv-sms" }
         ]
       }
     ]

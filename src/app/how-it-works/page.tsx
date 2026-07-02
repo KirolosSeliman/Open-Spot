@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
+
 import { PageShell } from "@/components/layout/page-shell";
+import { createPublicPageMetadata } from "@/lib/seo/metadata";
+
+export const metadata: Metadata = createPublicPageMetadata({
+  title: "Comment ça marche",
+  description:
+    "Découvrez le flux Open Spot : consentement SMS, alerte d'annulation, réponses clients et validation manuelle par le marchand.",
+  path: "/how-it-works"
+});
 import { SectionHeading } from "@/components/marketing/section-heading";
 import { Card } from "@/components/ui/card";
 
