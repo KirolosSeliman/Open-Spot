@@ -19,8 +19,8 @@ export function AuthStateCard({
   title
 }: AuthStateCardProps) {
   return (
-    <section className="os-container-wide py-12 sm:py-16 lg:py-24">
-      <Card className="mx-auto max-w-lg p-5 sm:p-7">
+    <section className="os-container-wide min-w-0 py-12 sm:py-16 lg:py-24">
+      <Card className="mx-auto min-w-0 max-w-lg p-5 sm:p-7">
         <p className="os-kicker">{kicker}</p>
         <h1 className="os-page-title mt-4">{title}</h1>
         <p className="os-body-large mt-4">{description}</p>

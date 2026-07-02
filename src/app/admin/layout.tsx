@@ -34,14 +34,14 @@ export default async function AdminLayout({
 
         <div className="min-w-0 flex-1">
           <SiteHeaderShell className="lg:hidden">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <Link className="text-base font-black" href="/admin">
+            <div className="flex min-w-0 items-center justify-between gap-2">
+              <Link className="min-w-0 truncate text-sm font-black sm:text-base" href="/admin">
                 Admin Open Spot
               </Link>
               <AdminMobileNav />
             </div>
           </SiteHeaderShell>
-          <main className="w-full px-2 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-8 lg:pt-8">
+          <main className="w-full min-w-0 max-w-full px-[clamp(12px,4vw,20px)] pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-4 lg:px-0 lg:pb-8 lg:pt-8">
             {children}
           </main>
         </div>

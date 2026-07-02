@@ -40,11 +40,11 @@ export default async function PlatformAdminLayout({
                 Admin plateforme
               </h1>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-sm font-bold">
+            <div className="platform-admin-meta-badges flex flex-wrap items-center gap-2 text-sm font-bold">
               <span className="rounded-full border border-[var(--line)] bg-[#fbfaf7] px-3 py-2">
                 Lecture seule
               </span>
-              <span className="rounded-full border border-[var(--line)] bg-[#fbfaf7] px-3 py-2">
+              <span className="max-w-full truncate rounded-full border border-[var(--line)] bg-[#fbfaf7] px-3 py-2">
                 {admin.email ?? admin.userId}
               </span>
               <span className="rounded-full border border-[var(--line)] bg-[#fbfaf7] px-3 py-2">
@@ -52,10 +52,10 @@ export default async function PlatformAdminLayout({
               </span>
             </div>
           </div>
-          <nav className="flex gap-2 overflow-x-auto pb-1">
+          <nav className="platform-admin-nav flex gap-2 overflow-x-auto pb-1 lg:flex-nowrap">
             {navItems.map((item) => (
               <Link
-                className="whitespace-nowrap rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black transition hover:border-[var(--primary)] hover:text-[var(--primary-strong)]"
+                className="rounded-full border border-[var(--line)] bg-white px-4 py-2 text-sm font-black transition hover:border-[var(--primary)] hover:text-[var(--primary-strong)] lg:whitespace-nowrap"
                 href={item.href}
                 key={item.href}
               >
@@ -65,7 +65,7 @@ export default async function PlatformAdminLayout({
           </nav>
         </div>
       </SiteHeaderShell>
-      <main className="mx-auto w-full max-w-7xl px-4 pb-8 pt-[calc(var(--header-height)+5rem)] sm:px-6 lg:px-8">
+      <main className="mx-auto w-full min-w-0 max-w-7xl px-[clamp(12px,4vw,20px)] pb-8 pt-[calc(var(--header-height)+5rem)] sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

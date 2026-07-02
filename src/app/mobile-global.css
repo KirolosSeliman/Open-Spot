@@ -1,0 +1,203 @@
+/* Global mobile responsive layer — scoped to max-width: 767px only. Desktop unchanged. */
+
+@media (max-width: 767px) {
+  :root {
+    --page-x: clamp(12px, 4vw, 20px);
+  }
+
+  /* Marketing / auth containers */
+  .os-container,
+  .os-container-wide {
+    box-sizing: border-box;
+    margin-inline: auto;
+    max-width: 100%;
+    padding-inline: var(--page-x);
+    width: min(100%, 100vw);
+  }
+
+  .os-page-title {
+    font-size: clamp(1.85rem, 8.5vw, 2.5rem);
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+  }
+
+  .os-section-title {
+    font-size: clamp(1.55rem, 6.5vw, 2rem);
+    overflow-wrap: anywhere;
+  }
+
+  .os-body-large {
+    font-size: clamp(0.95rem, 3.8vw, 1.05rem);
+    line-height: 1.65;
+  }
+
+  .os-primary-cta,
+  .os-secondary-cta,
+  .os-light-cta,
+  .os-dark-secondary-cta {
+    max-width: 100%;
+    min-height: 2.75rem;
+    padding-inline: clamp(0.9rem, 4vw, 1.15rem);
+    white-space: normal;
+  }
+
+  .os-chip {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  /* Page shells */
+  main {
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  /* Marketing cards — avoid double-shrink inside padded sections */
+  .open-spot-dashboard-card,
+  .open-spot-setup-card,
+  .open-spot-pricing-panel,
+  .lunera-card {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  /* Dashboard theme */
+  .open-spot-dashboard-theme {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .open-spot-dashboard-theme main {
+    box-sizing: border-box;
+    max-width: 100%;
+    padding-inline: var(--page-x);
+  }
+
+  .open-spot-dashboard-theme [data-dashboard-surface="hero"] h1 {
+    font-size: clamp(1.35rem, 6.5vw, 1.75rem);
+    overflow-wrap: anywhere;
+  }
+
+  .open-spot-dashboard-theme [data-dashboard-surface="hero"] .flex.flex-col {
+    gap: 1rem;
+  }
+
+  .open-spot-dashboard-theme [data-dashboard-surface="hero"] .shrink-0 {
+    flex-shrink: 1;
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .open-spot-dashboard-theme [data-dashboard-surface="hero"] .shrink-0 > * {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .open-spot-dashboard-theme [data-dashboard-metric] p {
+    overflow-wrap: anywhere;
+  }
+
+  .open-spot-dashboard-theme [data-dashboard-table] {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  .open-spot-dashboard-theme [data-dashboard-table] table {
+    min-width: 0;
+  }
+
+  /* Public site header actions row */
+  .open-spot-site-header-shell > div {
+    align-items: center;
+    gap: clamp(0.35rem, 2vw, 0.65rem);
+    min-width: 0;
+  }
+
+  .open-spot-site-header-shell > div > a[href="/"] {
+    min-width: 0;
+  }
+
+  .open-spot-site-header-shell > div > div:last-child {
+    flex-shrink: 0;
+    gap: clamp(0.25rem, 1.5vw, 0.5rem);
+    min-width: 0;
+  }
+
+  /* Mobile menu panel stays in viewport */
+  .open-spot-mobile-menu-panel {
+    max-width: min(18rem, calc(100vw - 2rem));
+    min-width: 0;
+    right: 0;
+    width: max-content;
+  }
+
+  /* Legal pages */
+  .legal-mobile-content {
+    min-width: 0;
+  }
+
+  /* Utility: responsive tab bars */
+  .os-mobile-tab-scroll {
+    -webkit-overflow-scrolling: touch;
+    gap: clamp(1rem, 5vw, 2rem);
+    margin-inline: calc(var(--page-x) * -1);
+    max-width: 100vw;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding-inline: var(--page-x);
+    scrollbar-width: none;
+  }
+
+  .os-mobile-tab-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .os-mobile-tab-scroll > * {
+    flex-shrink: 0;
+  }
+
+  /* Platform admin header badges */
+  .platform-admin-meta-badges {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .platform-admin-meta-badges > span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .platform-admin-nav {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+
+  .platform-admin-nav > a {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: min(100%, 9.5rem);
+    text-align: center;
+    white-space: normal;
+  }
+
+  /* Forms */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]),
+  select,
+  textarea {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /* Images & media */
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+  }
+}

@@ -491,7 +491,7 @@ export function DashboardShell({
               </div>
             </div>
           ) : null}
-          <main className="mx-auto w-full px-4 pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-6 lg:px-8 lg:pb-8 lg:pt-8 lg:py-8">
+          <main className="mx-auto w-full max-w-full min-w-0 px-[clamp(12px,4vw,20px)] pb-6 pt-[calc(var(--header-height)+1.25rem)] sm:px-6 lg:px-8 lg:pb-8 lg:pt-8 lg:py-8">
             {children}
           </main>
         </div>

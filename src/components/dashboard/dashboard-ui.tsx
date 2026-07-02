@@ -16,8 +16,8 @@ export function DashboardPageHeader({
       className="rounded-[2rem] border border-[var(--line)] bg-white/82 p-5 shadow-[var(--card-shadow)] sm:p-6"
       data-dashboard-surface="hero"
     >
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="max-w-3xl">
+      <div className="flex flex-col gap-4 max-md:gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0 max-w-3xl">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--primary)]">
             Open Spot
           </p>
@@ -28,7 +28,11 @@ export function DashboardPageHeader({
             {description}
           </p>
         </div>
-        {action ? <div className="shrink-0">{action}</div> : null}
+        {action ? (
+          <div className="w-full min-w-0 shrink max-md:[&>*]:w-full sm:shrink-0 sm:w-auto">
+            {action}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -155,7 +159,7 @@ export function MobileCardTable({
 export function TableShell({ children }: { children: ReactNode }) {
   return (
     <div
-      className="overflow-x-auto rounded-[1.5rem] border border-[var(--line)] bg-white"
+      className="max-w-full overflow-x-auto rounded-[1.5rem] border border-[var(--line)] bg-white [-webkit-overflow-scrolling:touch]"
       data-dashboard-table
     >
       <table className="min-w-full divide-y divide-[var(--line)] text-left text-sm">

@@ -26,7 +26,7 @@ export function SmsTabs({ activeTab }: { activeTab: SmsConfigurationTab }) {
   return (
     <nav
       aria-label="Sections SMS"
-      className="overflow-x-auto border-b border-[#e1e9f5]"
+      className="max-w-full overflow-x-auto border-b border-[#e1e9f5] [-webkit-overflow-scrolling:touch]"
     >
       <ul className="flex min-w-max gap-1">
         {tabs.map((tab) => {

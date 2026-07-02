@@ -33,7 +33,7 @@ export default async function SignupPage() {
 
   return (
     <PageShell>
-      <section className="os-container-wide grid gap-8 py-12 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:py-24">
+      <section className="os-container-wide grid min-w-0 gap-8 py-12 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:py-24">
         <div>
           <p className="os-kicker">{t.eyebrow}</p>
           <h1 className="os-page-title mt-5">{t.title}</h1>
@@ -49,7 +49,7 @@ export default async function SignupPage() {
           </p>
         </div>
 
-        <Card className="p-5 sm:p-7">
+        <Card className="min-w-0 p-5 sm:p-7">
           <div className="space-y-5">
             <div className="rounded-2xl border border-[#DDE5F0] bg-[#F8FAFD] p-5">
               <p className="text-sm font-black text-[#07142F]">{t.eyebrow}</p>

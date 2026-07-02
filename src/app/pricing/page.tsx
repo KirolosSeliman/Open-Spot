@@ -57,12 +57,12 @@ export default async function PricingPage() {
 
   return (
     <PageShell>
-      <section className="os-container-wide py-14 sm:py-20 lg:py-24">
+      <section className="os-container-wide min-w-0 py-14 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-3xl text-center">
           <p className="os-kicker">{t.eyebrow}</p>
           <h1 className="os-page-title mt-5">{t.title}</h1>
           <p className="os-body-large mt-6">{t.description}</p>
-          <Link className="os-primary-cta mt-8" href="/book-call">
+          <Link className="os-primary-cta mt-8 w-full max-w-full sm:inline-flex sm:w-auto" href="/book-call">
             {t.cta}
           </Link>
         </div>
