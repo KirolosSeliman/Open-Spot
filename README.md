@@ -127,8 +127,9 @@ hosts.
 On Vercel, set the canonical public URL before printing or sharing QR codes:
 
 ```bash
-APP_BASE_URL=https://your-production-domain.com
-NEXT_PUBLIC_APP_URL=https://your-production-domain.com
+APP_BASE_URL=https://open-spot.ca
+NEXT_PUBLIC_SITE_URL=https://open-spot.ca
+NEXT_PUBLIC_APP_URL=https://open-spot.ca
 ```
 
 `APP_BASE_URL` is the preferred server-side source for production links.
@@ -206,11 +207,13 @@ TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 TWILIO_AUTH_TOKEN=your-auth-token
 TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 TWILIO_SOURCE_NUMBER=+1XXXXXXXXXX
-TWILIO_STATUS_CALLBACK_URL=https://project-name.vercel.app/api/webhooks/twilio/status
-APP_BASE_URL=https://project-name.vercel.app
+TWILIO_STATUS_CALLBACK_URL=https://open-spot.ca/api/webhooks/twilio/status
+APP_BASE_URL=https://open-spot.ca
 ```
 
-`APP_BASE_URL` can be a Vercel-generated URL. A custom domain is not required. Keep all Twilio values server-only; none should use a `NEXT_PUBLIC_` prefix. Real Twilio sending stays disabled unless both `SMS_PROVIDER=twilio` and `ALLOW_REAL_SMS_SENDS=true` are set. If `TWILIO_MESSAGING_SERVICE_SID` is configured, Open Spot sends through the Messaging Service. `TWILIO_SOURCE_NUMBER` is still required so outbound `sms_messages.from_number` can be stored reliably for inbound reply matching.
+`APP_BASE_URL` must be the canonical HTTPS production domain (`https://open-spot.ca`).
+A Vercel-generated preview URL must not be used for customer-facing links, emails,
+SMS, or webhooks in production. Keep all Twilio values server-only; none should use a `NEXT_PUBLIC_` prefix. Real Twilio sending stays disabled unless both `SMS_PROVIDER=twilio` and `ALLOW_REAL_SMS_SENDS=true` are set. If `TWILIO_MESSAGING_SERVICE_SID` is configured, Open Spot sends through the Messaging Service. `TWILIO_SOURCE_NUMBER` is still required so outbound `sms_messages.from_number` can be stored reliably for inbound reply matching.
 
 Twilio Console setup after deployment:
 

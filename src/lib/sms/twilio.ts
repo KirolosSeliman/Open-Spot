@@ -1,6 +1,7 @@
 import twilio from "twilio";
 
 import type { SmsProviderClient } from "@/lib/sms/provider";
+import { resolveConfiguredSiteUrl } from "@/lib/site-url";
 
 type TwilioEnv = Partial<Record<string, string | undefined>>;
 const knownTwilioDeliveryStatuses = new Set([
@@ -14,11 +15,7 @@ const knownTwilioDeliveryStatuses = new Set([
 ]);
 
 function getTwilioWebhookUrl(request: Request, env: TwilioEnv = process.env) {
-  const configuredBaseUrl = env.APP_BASE_URL?.replace(/\/$/, "");
-
-  if (!configuredBaseUrl) {
-    return request.url;
-  }
+  const configuredBaseUrl = resolveConfiguredSiteUrl(env);
 
   return `${configuredBaseUrl}${new URL(request.url).pathname}`;
 }

@@ -53,10 +53,13 @@ describe("environment configuration", () => {
     expect(envExample).toContain("SALES_REPLY_TO_EMAIL=");
     expect(envExample).toContain("SALES_OWNER_EMAIL=");
     expect(envExample).toContain(
-      "APP_BASE_URL=https://your-production-domain.com"
+      "APP_BASE_URL=https://open-spot.ca"
     );
     expect(envExample).toContain(
-      "NEXT_PUBLIC_APP_URL=https://your-production-domain.com"
+      "NEXT_PUBLIC_SITE_URL=https://open-spot.ca"
+    );
+    expect(envExample).toContain(
+      "NEXT_PUBLIC_APP_URL=https://open-spot.ca"
     );
     expect(envExample).not.toContain("NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY");
   });

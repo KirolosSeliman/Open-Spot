@@ -1,6 +1,7 @@
 export const clientEnvKeys = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "NEXT_PUBLIC_SITE_URL",
   "NEXT_PUBLIC_APP_URL"
 ] as const;
 

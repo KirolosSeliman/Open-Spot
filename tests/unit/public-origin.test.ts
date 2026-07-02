@@ -1,17 +1,30 @@
 import { describe, expect, it } from "vitest";
 
 import { getPublicAppOrigin } from "@/lib/url/public-origin";
+import { PRODUCTION_SITE_URL } from "@/lib/site-url";
 
 describe("public app origin resolver", () => {
   it("uses APP_BASE_URL and normalizes trailing slash", () => {
     expect(
       getPublicAppOrigin({
-        env: { APP_BASE_URL: "https://example.com/" }
+        env: { APP_BASE_URL: "https://open-spot.ca/" }
       })
     ).toMatchObject({
-      origin: "https://example.com",
+      origin: "https://open-spot.ca",
       isReady: true,
       source: "APP_BASE_URL"
+    });
+  });
+
+  it("uses NEXT_PUBLIC_SITE_URL when APP_BASE_URL is missing", () => {
+    expect(
+      getPublicAppOrigin({
+        env: { NEXT_PUBLIC_SITE_URL: "https://open-spot.ca" }
+      })
+    ).toMatchObject({
+      origin: "https://open-spot.ca",
+      isReady: true,
+      source: "NEXT_PUBLIC_SITE_URL"
     });
   });
 
@@ -58,24 +71,33 @@ describe("public app origin resolver", () => {
     });
   });
 
-  it("normalizes Vercel deployment URLs to HTTPS", () => {
+  it("falls back to production domain when no origin is configured in production", () => {
     expect(
       getPublicAppOrigin({
-        env: { VERCEL_URL: "open-spot.vercel.app" }
+        env: {
+          NODE_ENV: "production",
+          VERCEL: "1"
+        }
       })
     ).toMatchObject({
-      origin: "https://open-spot.vercel.app",
+      origin: PRODUCTION_SITE_URL,
       isReady: true,
-      source: "VERCEL_URL"
+      source: "PRODUCTION_FALLBACK"
     });
   });
 
-  it("returns a blocking state when no origin exists", () => {
-    expect(getPublicAppOrigin({ env: {} })).toMatchObject({
-      origin: null,
-      isReady: false,
-      source: "none",
-      blockingReasons: ["Public origin is missing or invalid."]
+  it("does not use VERCEL_URL for customer-facing links", () => {
+    expect(
+      getPublicAppOrigin({
+        env: {
+          NODE_ENV: "production",
+          VERCEL: "1",
+          VERCEL_URL: "open-spot-lemon.vercel.app"
+        }
+      })
+    ).toMatchObject({
+      origin: PRODUCTION_SITE_URL,
+      source: "PRODUCTION_FALLBACK"
     });
   });
 

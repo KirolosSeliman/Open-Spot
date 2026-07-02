@@ -44,7 +44,7 @@ describe("Twilio webhook foundation", () => {
     expect(packageJson).toContain('"twilio"');
     expect(twilioProviderSource).toContain('import twilio from "twilio"');
     expect(twilioProviderSource).toContain("twilio.validateRequest");
-    expect(twilioProviderSource).toContain("APP_BASE_URL");
+    expect(twilioProviderSource).toContain("resolveConfiguredSiteUrl");
     expect(twilioProviderSource).toContain("x-twilio-signature");
   });
 

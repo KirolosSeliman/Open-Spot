@@ -21,9 +21,12 @@ describe("company owner invitation resend", () => {
   it("builds callback redirect through site url helper", () => {
     const invitationUrl = source("src/lib/book-call/invitation-url.ts");
     const siteUrl = source("src/lib/auth/site-url.ts");
+    const sharedSiteUrl = source("src/lib/site-url.ts");
 
     expect(invitationUrl).toContain("buildAuthCallbackUrl");
-    expect(siteUrl).toContain("VERCEL_URL");
+    expect(siteUrl).toContain("resolveConfiguredSiteUrl");
+    expect(sharedSiteUrl).toContain("PRODUCTION_SITE_URL");
+    expect(sharedSiteUrl).toContain("https://open-spot.ca");
     expect(siteUrl).toContain("/auth/callback?next=");
   });
 

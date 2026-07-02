@@ -1,8 +1,16 @@
+import {
+  LOCAL_DEV_SITE_URL,
+  PRODUCTION_SITE_URL,
+  isLocalDevelopment
+} from "@/lib/site-url";
+
 export type PublicOriginSource =
   | "APP_BASE_URL"
+  | "NEXT_PUBLIC_SITE_URL"
   | "NEXT_PUBLIC_APP_URL"
   | "VERCEL_PROJECT_PRODUCTION_URL"
-  | "VERCEL_URL"
+  | "PRODUCTION_FALLBACK"
+  | "LOCAL_DEV_FALLBACK"
   | "request"
   | "none";
 
@@ -159,13 +167,13 @@ export function getPublicAppOrigin({
 }: PublicOriginOptions = {}): PublicOriginStatus {
   const candidates: OriginCandidate[] = [
     { source: "APP_BASE_URL", value: env.APP_BASE_URL },
+    { source: "NEXT_PUBLIC_SITE_URL", value: env.NEXT_PUBLIC_SITE_URL },
     { source: "NEXT_PUBLIC_APP_URL", value: env.NEXT_PUBLIC_APP_URL },
     {
       source: "VERCEL_PROJECT_PRODUCTION_URL",
       value: env.VERCEL_PROJECT_PRODUCTION_URL,
       addHttpsIfMissing: true
     },
-    { source: "VERCEL_URL", value: env.VERCEL_URL, addHttpsIfMissing: true },
     { source: "request", value: getRequestOrigin(requestHeaders) }
   ];
 
@@ -191,11 +199,21 @@ export function getPublicAppOrigin({
     };
   }
 
+  if (isLocalDevelopment(env) && allowLocalhostInDevelopment) {
+    return {
+      origin: LOCAL_DEV_SITE_URL,
+      isReady: true,
+      source: "LOCAL_DEV_FALLBACK",
+      isProductionSafe: false,
+      blockingReasons: []
+    };
+  }
+
   return {
-    origin: null,
-    isReady: false,
-    source: "none",
-    isProductionSafe: false,
-    blockingReasons: ["Public origin is missing or invalid."]
+    origin: PRODUCTION_SITE_URL,
+    isReady: true,
+    source: "PRODUCTION_FALLBACK",
+    isProductionSafe: true,
+    blockingReasons: []
   };
 }

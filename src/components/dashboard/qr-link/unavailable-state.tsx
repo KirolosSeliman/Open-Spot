@@ -34,8 +34,10 @@ export function PublicOriginConfigState({
           ))}
         </ul>
         <p>
-          Configurez <span className="font-black">APP_BASE_URL</span> dans Vercel
-          avec l&apos;URL publique HTTPS de production, puis redeployez.
+          Configurez <span className="font-black">NEXT_PUBLIC_SITE_URL</span> ou{" "}
+          <span className="font-black">APP_BASE_URL</span> dans Vercel avec
+          l&apos;URL publique HTTPS de production (https://open-spot.ca), puis
+          redeployez.
         </p>
       </div>
     </section>

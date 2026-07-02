@@ -1,11 +1,12 @@
 import type { OrganizationSmsSenderRow } from "@/lib/sms/organization-sender-types";
 import { resolveTwilioSenderOptions } from "@/lib/sms/twilio";
 import { validateE164, validateTwilioMessagingServiceSid } from "@/lib/sms/twilio-validation";
+import { resolveConfiguredSiteUrl } from "@/lib/site-url";
 
 type TwilioEnv = Partial<Record<string, string | undefined>>;
 
 function getAppBaseUrl(env: TwilioEnv = process.env) {
-  return env.APP_BASE_URL?.replace(/\/$/, "") ?? null;
+  return resolveConfiguredSiteUrl(env);
 }
 
 export function buildTwilioWebhookUrls(env: TwilioEnv = process.env) {

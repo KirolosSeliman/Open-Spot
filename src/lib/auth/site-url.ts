@@ -1,14 +1,12 @@
 import { headers } from "next/headers";
 
-export function getConfiguredPublicSiteUrl() {
-  const vercelUrl = process.env.VERCEL_URL?.replace(/\/$/, "");
+import {
+  normalizeSiteUrl,
+  resolveConfiguredSiteUrl
+} from "@/lib/site-url";
 
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    process.env.APP_BASE_URL ??
-    (vercelUrl ? `https://${vercelUrl}` : "")
-  ).replace(/\/$/, "");
+export function getConfiguredPublicSiteUrl() {
+  return resolveConfiguredSiteUrl();
 }
 
 export async function getRequestSiteUrl() {
@@ -26,16 +24,15 @@ export async function getRequestSiteUrl() {
     return "";
   }
 
-  return `${protocol}://${host}`.replace(/\/$/, "");
+  return normalizeSiteUrl(`${protocol}://${host}`);
 }
 
 export function buildAuthCallbackUrl(
   nextPath = "/auth/set-password",
   siteUrlOverride?: string
 ) {
-  const siteUrl = (siteUrlOverride ?? getConfiguredPublicSiteUrl()).replace(
-    /\/$/,
-    ""
+  const siteUrl = normalizeSiteUrl(
+    siteUrlOverride ?? getConfiguredPublicSiteUrl()
   );
 
   if (!siteUrl) {
