@@ -396,23 +396,24 @@ const openSpotFrCopy = {
     phone: {
       title: "Open Spot",
       cancellationTitle: "Annulation détectée",
-      cancellationTime: "Aujourd'hui · 15 h 30",
-      cancellationService: "Coupe + Brushing",
+      cancellationTime: "Demain · 10 h",
+      cancellationService: "Soin du visage · 60 min",
       smsTitle: "SMS à la liste d'attente (156 personnes)",
       smsMessage: [
-        "Une place vient de se libérer aujourd'hui",
-        "à 15 h 30 pour coupe + brushing.",
-        "Répondez OUI si vous êtes intéressé."
+        "Une place s'est libérée demain",
+        "à 10 h.",
+        "Répondez OUI si cela vous intéresse."
       ],
       smsCounter: "128 / 160",
       send: "Envoyer",
-      replyQueue: "Réponses reçues",
-      replyCount: "2",
+      replyQueue: "File de réponses",
+      replyCount: "12",
       yes: "OUI",
       confirm: "Confirmer",
       replies: [
-        { avatar: "/testimonials/sophie-clinic-coordinator.webp", name: "Léa D.", time: "1 min" },
-        { avatar: "/testimonials/amelie-spa-receptionist.webp", name: "Marie L.", time: "2 min" }
+        { avatar: "/testimonials/sophie-clinic-coordinator.webp", name: "Sophie M.", time: "il y a 2 min" },
+        { avatar: "/testimonials/amelie-spa-receptionist.webp", name: "Ava L.", time: "il y a 3 min" },
+        { avatar: "/testimonials/karim-barber-manager.webp", name: "Jordan K.", time: "il y a 5 min" }
       ]
     },
     categories: [
