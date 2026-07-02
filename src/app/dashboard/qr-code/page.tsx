@@ -56,7 +56,7 @@ export default async function DashboardQrCodePage() {
   );
 
   return (
-    <div className="grid gap-6 bg-[#f8fbff] pb-16 lg:gap-6">
+    <div className="grid min-w-0 max-w-full gap-6 bg-[#f8fbff] pb-16 lg:gap-6">
       <QrLinkHero />
 
       {!publicOrigin.isReady ? (
@@ -66,7 +66,7 @@ export default async function DashboardQrCodePage() {
       {publicOrigin.isReady && !hasValidSlug ? <PublicLinkUnavailableState /> : null}
 
       {canRenderPublicLinks && links ? (
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
+        <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
           <QrCodePanel publicUrl={links.publicLink} qrUrl={links.qrLink} />
           <InstructionsPanel
             kioskUrl={links.kioskLink}

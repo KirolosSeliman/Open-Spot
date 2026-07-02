@@ -1,14 +1,14 @@
 export function QrLinkHero() {
   return (
     <section
-      className="relative overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white p-9 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-11"
+      className="relative min-w-0 overflow-hidden rounded-[24px] border border-[#e2e8f0] bg-white p-[clamp(1rem,4vw,2.75rem)] shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-11"
       data-dashboard-surface="hero"
     >
-      <div className="relative z-10 max-w-[520px]">
+      <div className="relative z-10 min-w-0 max-w-[520px]">
         <p className="text-[13px] font-extrabold uppercase tracking-[0.2em] text-[#2563ff]">
           OPEN SPOT
         </p>
-        <h1 className="mt-3 text-[clamp(1.85rem,3.2vw,2.625rem)] font-extrabold leading-[1.1] tracking-tight text-[#07142f]">
+        <h1 className="os-mobile-page-title mt-3 text-[clamp(1.85rem,3.2vw,2.625rem)] font-extrabold leading-[1.1] tracking-tight text-[#07142f]">
           QR code et lien public
         </h1>
         <p className="mt-4 text-base leading-[1.6] text-[#64748b] sm:text-[17px]">

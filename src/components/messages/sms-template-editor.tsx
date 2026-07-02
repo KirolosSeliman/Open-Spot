@@ -336,9 +336,9 @@ export function SmsTemplateEditor({
     <>
       <Toast toast={toast} />
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] xl:gap-8">
-        <section className="rounded-[1.35rem] border border-[#dde5f0] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.05)] sm:p-8">
-          <div className="mb-6 flex flex-wrap gap-2">
+      <div className="grid min-w-0 max-w-full gap-8 xl:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)] xl:gap-8">
+        <section className="min-w-0 rounded-[1.35rem] border border-[#dde5f0] bg-white p-[clamp(1rem,4vw,2rem)] shadow-[0_10px_30px_rgba(15,23,42,0.05)] sm:p-8">
+          <div className="os-mobile-template-tabs mb-6 flex flex-wrap gap-2">
             {templateOptions.map((option) => {
               const isActive = option.key === templateKey;
 

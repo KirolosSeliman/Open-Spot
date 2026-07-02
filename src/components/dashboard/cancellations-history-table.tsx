@@ -6,6 +6,11 @@ import { createPortal } from "react-dom";
 
 import { OpeningStatusBadge } from "@/components/dashboard/opening-status-badge";
 import {
+  DashboardMobileCard,
+  DashboardMobileField,
+  MobileCardTable
+} from "@/components/dashboard/dashboard-ui";
+import {
   formatHistoryPaginationRange,
   formatOpeningCurrency,
   formatOpeningDateTime
@@ -267,6 +272,47 @@ export function CancellationsHistoryTable({
       <h2 className="text-lg font-black text-[#071026]">{copy.tableTitle}</h2>
 
       <div className="mt-5 overflow-hidden rounded-[1.25rem] border border-[#e2e8f0] bg-white">
+        <MobileCardTable className="p-4">
+          {paginatedOpenings.map((opening) => {
+            const statusPresentation = getOpeningStatusBadgePresentation(
+              opening.status,
+              locale
+            );
+
+            return (
+              <DashboardMobileCard key={opening.id}>
+                <Link
+                  className="break-words font-bold text-[#071026] underline-offset-4 transition hover:text-[#2563ff] hover:underline"
+                  href={`/dashboard/cancellations/${opening.id}`}
+                >
+                  {opening.title}
+                </Link>
+                <div className="mt-3 grid gap-2.5">
+                  <DashboardMobileField label={copy.columns.start}>
+                    {formatOpeningDateTime(opening.start_time)}
+                  </DashboardMobileField>
+                  <DashboardMobileField label={copy.columns.end}>
+                    {formatOpeningDateTime(opening.end_time)}
+                  </DashboardMobileField>
+                  <DashboardMobileField label={copy.columns.status}>
+                    <OpeningStatusBadge presentation={statusPresentation} />
+                  </DashboardMobileField>
+                  <DashboardMobileField label={copy.columns.estimatedValue}>
+                    {formatOpeningCurrency(opening.displayValueCents, locale)}
+                  </DashboardMobileField>
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <HistoryRowActionsMenu
+                    copy={copy.rowActions}
+                    openingId={opening.id}
+                  />
+                </div>
+              </DashboardMobileCard>
+            );
+          })}
+        </MobileCardTable>
+
+        <div className="hidden md:block">
         <div className="overflow-x-auto">
           <table className="min-w-full text-left text-sm">
             <thead>
@@ -339,6 +385,7 @@ export function CancellationsHistoryTable({
               })}
             </tbody>
           </table>
+        </div>
         </div>
 
         <HistoryPagination

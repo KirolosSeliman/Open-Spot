@@ -1,6 +1,10 @@
 import {
+  DashboardMobileCard,
+  DashboardMobileField,
   DashboardPageHeader,
+  DesktopTableOnly,
   EmptyState,
+  MobileCardTable,
   Panel,
   StatusBadge,
   TableShell,
@@ -38,7 +42,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
   ]);
 
   return (
-    <div className="grid gap-6">
+    <div className="grid min-w-0 max-w-full gap-6">
       <DashboardPageHeader
         description="Ajoutez les services réels qui alimentent les annulations, les clients admissibles et les statistiques."
         title="Services"
@@ -50,7 +54,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
           </p>
         ) : null}
         <form action={createServiceAction} className="grid gap-4 md:grid-cols-4">
-          <label className="grid gap-2 text-sm font-bold md:col-span-2">
+          <label className="grid min-w-0 gap-2 text-sm font-bold md:col-span-2">
             Nom
             <input
               className="min-h-11 rounded-2xl border border-[var(--line)] bg-white px-3"
@@ -86,7 +90,7 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
             />
           </label>
           <button
-            className="min-h-11 self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
+            className="min-h-11 w-full self-end rounded-full bg-[var(--primary)] px-5 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)] md:w-auto"
             type="submit"
           >
             Ajouter le service
@@ -95,6 +99,100 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
       </Panel>
       <Panel title="Catalogue de services">
         {services.length > 0 ? (
+          <>
+            <MobileCardTable>
+              {services.map((service) => (
+                <DashboardMobileCard key={service.id}>
+                  <form
+                    action={updateServiceAction}
+                    className="grid min-w-0 gap-4"
+                    id={`service-update-mobile-${service.id}`}
+                  >
+                    <input name="serviceId" type="hidden" value={service.id} />
+                    <input
+                      name="active"
+                      type="hidden"
+                      value={service.active ? "true" : "false"}
+                    />
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <StatusBadge>{service.active ? "Actif" : "Inactif"}</StatusBadge>
+                    </div>
+                    <label className="grid min-w-0 gap-1 text-xs font-bold">
+                      Nom
+                      <input
+                        className="min-h-10 w-full rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
+                        defaultValue={service.name}
+                        name="name"
+                        required
+                      />
+                    </label>
+                    <label className="grid min-w-0 gap-1 text-xs font-bold">
+                      Description
+                      <input
+                        className="min-h-10 w-full rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
+                        defaultValue={service.description ?? ""}
+                        name="description"
+                      />
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="grid min-w-0 gap-1 text-xs font-bold">
+                        Durée (min)
+                        <input
+                          className="min-h-10 w-full rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
+                          defaultValue={service.duration_minutes}
+                          min="1"
+                          name="durationMinutes"
+                          required
+                          type="number"
+                        />
+                      </label>
+                      <label className="grid min-w-0 gap-1 text-xs font-bold">
+                        CAD
+                        <input
+                          className="min-h-10 w-full rounded-2xl border border-[var(--line)] bg-white px-3 text-sm"
+                          defaultValue={
+                            service.normal_price_cents === null
+                              ? ""
+                              : String(service.normal_price_cents / 100)
+                          }
+                          min="0"
+                          name="normalPrice"
+                          step="0.01"
+                          type="number"
+                        />
+                      </label>
+                    </div>
+                    <DashboardMobileField label="Prix estimé">
+                      {formatCurrency(service.normal_price_cents)}
+                    </DashboardMobileField>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        className="min-h-11 w-full rounded-full bg-[var(--primary)] px-4 text-xs font-black text-white shadow-[0_10px_20px_rgba(79,125,243,0.18)] transition hover:bg-[var(--primary-strong)]"
+                        type="submit"
+                      >
+                        Enregistrer
+                      </button>
+                    </div>
+                  </form>
+                  <form action={toggleServiceActiveAction} className="mt-2">
+                    <input name="serviceId" type="hidden" value={service.id} />
+                    <input
+                      name="active"
+                      type="hidden"
+                      value={service.active ? "false" : "true"}
+                    />
+                    <button
+                      className="min-h-11 w-full rounded-full border border-[var(--line)] bg-white px-4 text-xs font-black"
+                      type="submit"
+                    >
+                      {service.active ? "Désactiver" : "Réactiver"}
+                    </button>
+                  </form>
+                </DashboardMobileCard>
+              ))}
+            </MobileCardTable>
+
+            <DesktopTableOnly>
           <TableShell>
             <thead>
               <tr>
@@ -206,6 +304,8 @@ export default async function ServicesPage({ searchParams }: ServicesPageProps) 
               ))}
             </tbody>
           </TableShell>
+            </DesktopTableOnly>
+          </>
         ) : (
           <EmptyState
             description="Ajoutez les services vendus par le commerce afin de personnaliser les alertes SMS et les analyses."

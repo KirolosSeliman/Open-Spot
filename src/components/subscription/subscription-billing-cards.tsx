@@ -15,14 +15,14 @@ export function SubscriptionMetricCard({
   detail?: string | null;
 }) {
   return (
-    <article className="rounded-[18px] border border-[#e2e8f0] bg-white p-7 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.04)]">
-      <div className="flex items-center gap-3">
+    <article className="rounded-[18px] border border-[#e2e8f0] bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_rgba(15,23,42,0.04)] sm:p-7">
+      <div className="flex min-w-0 items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[#2563eb]">
           {icon}
         </div>
-        <p className="text-sm font-medium leading-snug text-[#64748b]">{label}</p>
+        <p className="min-w-0 text-sm font-medium leading-snug text-[#64748b]">{label}</p>
       </div>
-      <p className="mt-5 text-[2rem] font-black leading-none tracking-tight text-[#07142f]">
+      <p className="mt-4 text-[clamp(1.5rem,6vw,2rem)] font-black leading-none tracking-tight text-[#07142f] sm:mt-5 sm:text-[2rem]">
         {value}
       </p>
       {detail ? (
@@ -42,14 +42,14 @@ export function SubscriptionTotalCard({
   icon: ReactNode;
 }) {
   return (
-    <section className="min-h-[132px] rounded-[18px] border border-[#dbeafe] bg-gradient-to-r from-[#f0f6ff] via-[#f7faff] to-white px-6 py-5 shadow-[0_8px_30px_rgba(37,99,235,0.08)] sm:px-7 sm:py-6">
-      <div className="flex h-full items-center gap-5">
-        <div className="flex h-[4.5rem] w-[4.5rem] shrink-0 items-center justify-center rounded-[16px] border border-[#dbeafe] bg-white text-[#2563eb] shadow-[0_10px_24px_rgba(37,99,235,0.12)]">
+    <section className="min-h-0 rounded-[18px] border border-[#dbeafe] bg-gradient-to-r from-[#f0f6ff] via-[#f7faff] to-white px-4 py-4 shadow-[0_8px_30px_rgba(37,99,235,0.08)] sm:min-h-[132px] sm:px-7 sm:py-6">
+      <div className="flex h-full flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center self-start rounded-[16px] border border-[#dbeafe] bg-white text-[#2563eb] shadow-[0_10px_24px_rgba(37,99,235,0.12)] sm:h-[4.5rem] sm:w-[4.5rem]">
           {icon}
         </div>
         <div className="min-w-0">
           <p className="text-sm font-medium text-[#50617d]">{label}</p>
-          <p className="mt-1 break-words text-[2.5rem] font-black leading-none tracking-tight text-[#2563eb] sm:text-[2.75rem]">
+          <p className="mt-1 break-words text-[clamp(1.75rem,7vw,2.5rem)] font-black leading-none tracking-tight text-[#2563eb] sm:text-[2.75rem]">
             {value}
           </p>
         </div>
@@ -96,13 +96,13 @@ export function SubscriptionBillingDetails({
         {rows.map((row, index) => (
           <div
             className={cn(
-              "flex items-center justify-between gap-4 px-4 py-4 sm:px-5",
+              "os-mobile-kv-row flex items-center justify-between gap-4 px-4 py-4 sm:px-5",
               index > 0 && "border-t border-[#e8eef5]",
               row.emphasis && "bg-[#f5f9ff]"
             )}
             key={row.label}
           >
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <span
                 className={cn(
                   "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
@@ -124,7 +124,7 @@ export function SubscriptionBillingDetails({
             </div>
             <span
               className={cn(
-                "shrink-0 text-right text-sm font-black sm:text-base",
+                "max-md:text-left max-md:whitespace-normal max-md:break-words shrink-0 text-right text-sm font-black sm:text-base",
                 row.emphasis ? "text-[#2563eb]" : "text-[#07142f]"
               )}
             >

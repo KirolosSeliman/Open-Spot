@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
+import {
+  DashboardMobileCard,
+  DashboardMobileField,
+  MobileCardTable
+} from "@/components/dashboard/dashboard-ui";
+
 import type {
   InsightsDualSeriesPoint,
   InsightsFilters,
@@ -80,8 +86,8 @@ function ChartCard({
   subtitle?: React.ReactNode;
 }) {
   return (
-    <article className="rounded-[18px] border border-[#e2e8f0] bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
-      <div className="flex items-start justify-between gap-3">
+    <article className="os-mobile-chart-card min-w-0 rounded-[18px] border border-[#e2e8f0] bg-white p-5 shadow-[0_8px_30px_rgba(15,23,42,0.04)]">
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <h2 className="text-base font-black text-[#07142f]">{title}</h2>
@@ -539,7 +545,36 @@ function ServicesTable({ services }: { services: InsightsServiceRow[] }) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="min-w-0">
+      <MobileCardTable>
+        {services.map((service) => (
+          <DashboardMobileCard key={service.serviceId}>
+            <p className="break-words font-semibold text-[#07142f]">
+              {service.serviceName}
+            </p>
+            <div className="mt-3 grid gap-2">
+              <DashboardMobileField label="Annulations">
+                {service.cancellations}
+              </DashboardMobileField>
+              <DashboardMobileField label="Taux de réponse">
+                {service.responseRate.toLocaleString("fr-CA", {
+                  maximumFractionDigits: 1
+                })}
+                %
+              </DashboardMobileField>
+              <DashboardMobileField label="Rendez-vous récupérés">
+                {service.recoveredAppointments}
+              </DashboardMobileField>
+              <DashboardMobileField label="Revenus récupérés">
+                {formatCurrency(service.recoveredRevenueCents)}
+              </DashboardMobileField>
+            </div>
+          </DashboardMobileCard>
+        ))}
+      </MobileCardTable>
+
+      <div className="hidden md:block">
+      <div className="overflow-x-auto">
       <table className="min-w-full text-left text-sm">
         <thead>
           <tr className="border-b border-[#e2e8f0] text-xs font-bold uppercase tracking-[0.08em] text-[#64748b]">
@@ -573,6 +608,8 @@ function ServicesTable({ services }: { services: InsightsServiceRow[] }) {
           ))}
         </tbody>
       </table>
+      </div>
+      </div>
       <Link
         className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-[#2563ff] hover:underline"
         href="/dashboard/services"

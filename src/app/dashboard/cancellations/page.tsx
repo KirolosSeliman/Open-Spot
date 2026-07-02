@@ -13,14 +13,14 @@ export default async function CancellationsPage() {
   const copy = getDashboardCopy(locale).history;
 
   return (
-    <div className="grid gap-8">
+    <div className="grid min-w-0 max-w-full gap-8">
       <section className="rounded-[2rem] border border-[#e2e8f0] bg-white/95 p-6 shadow-[0_8px_30px_rgba(15,23,42,0.05)] sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#2563ff]">
               {copy.eyebrow}
             </p>
-            <h1 className="mt-3 text-3xl font-black tracking-tight text-[#071026] sm:text-[2.5rem] sm:leading-[1.05]">
+            <h1 className="os-mobile-page-title mt-3 text-3xl font-black tracking-tight text-[#071026] sm:text-[2.5rem] sm:leading-[1.05]">
               {copy.title}
             </h1>
             <p className="mt-4 text-sm leading-6 text-[#64748b] sm:text-[15px]">

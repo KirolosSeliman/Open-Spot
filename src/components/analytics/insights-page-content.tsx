@@ -6,10 +6,10 @@ import type { InsightsData } from "@/lib/analytics/types";
 
 export function InsightsPageContent({ data }: { data: InsightsData }) {
   return (
-    <div className="grid gap-6">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-3xl">
-          <h1 className="text-3xl font-black tracking-tight text-[#07142f] sm:text-4xl">
+    <div className="grid min-w-0 max-w-full gap-6">
+      <header className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0 max-w-3xl">
+          <h1 className="os-mobile-page-title text-3xl font-black tracking-tight text-[#07142f] sm:text-4xl">
             Insights &amp; rapports
           </h1>
           <p className="mt-3 text-sm leading-6 text-[#64748b] sm:text-base">
@@ -17,7 +17,9 @@ export function InsightsPageContent({ data }: { data: InsightsData }) {
             vos résultats.
           </p>
         </div>
-        <InsightsExportButton payload={data.exportPayload} />
+        <div className="w-full min-w-0 shrink-0 max-md:[&>*]:w-full lg:w-auto">
+          <InsightsExportButton payload={data.exportPayload} />
+        </div>
       </header>
 
       <InsightsFiltersBar

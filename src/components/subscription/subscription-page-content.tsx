@@ -124,7 +124,7 @@ export function SubscriptionPageContent({ data }: { data: SubscriptionPageData }
   const unitCommissionValue = formatMoney(totals.unitCommissionCents);
 
   return (
-    <div className="overflow-hidden rounded-[22px] border border-[#dde5f0] bg-white shadow-[0_10px_40px_rgba(15,23,42,0.05)]">
+    <div className="os-mobile-subscription-root min-w-0 max-w-full overflow-hidden rounded-[22px] border border-[#dde5f0] bg-white shadow-[0_10px_40px_rgba(15,23,42,0.05)]">
       <SubscriptionPageHeader description={copy.description} title={copy.title} />
 
       <div className="grid items-start gap-6 border-t border-[#eef2f7] px-5 py-6 sm:px-7 sm:py-7 lg:px-9 lg:py-8 xl:grid-cols-[240px_minmax(0,1fr)] xl:gap-8">

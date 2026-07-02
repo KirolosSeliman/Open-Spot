@@ -12,14 +12,14 @@ export function InstructionsPanel({
 }) {
   return (
     <section
-      className="min-h-[420px] rounded-[22px] border border-[#e2e8f0] bg-white p-8 shadow-[0_18px_55px_rgba(15,23,42,0.06)]"
+      className="os-mobile-qr-panel min-h-0 rounded-[22px] border border-[#e2e8f0] bg-white p-[clamp(1rem,4vw,2rem)] shadow-[0_18px_55px_rgba(15,23,42,0.06)] md:min-h-[420px] md:p-8"
       data-dashboard-surface="panel"
     >
       <div className="mb-6 flex items-center gap-3">
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#eef4ff] text-[#2563ff]">
           <SendIcon className="h-[18px] w-[18px]" />
         </span>
-        <h2 className="text-lg font-extrabold text-[#07142f]">
+        <h2 className="min-w-0 break-words text-lg font-extrabold text-[#07142f]">
           Instructions d&apos;impression et de partage
         </h2>
       </div>
@@ -45,7 +45,7 @@ export function InstructionsPanel({
         <ShareLinkRow
           action={
             <a
-              className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[#e2e8f0] bg-white px-4 text-sm font-bold text-[#2563ff] transition hover:bg-[#f8fbff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-[#e2e8f0] bg-white px-4 text-sm font-bold text-[#2563ff] transition hover:bg-[#f8fbff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff] sm:w-auto"
               href={kioskUrl}
               rel="noopener noreferrer"
               target="_blank"
@@ -85,7 +85,7 @@ function ShareLinkRow({
           <p className="mt-1 break-all text-sm text-[#64748b]">{url}</p>
         </div>
       </div>
-      <div className="shrink-0 sm:ml-auto">{action}</div>
+      <div className="shrink-0 max-md:w-full sm:ml-auto">{action}</div>
     </div>
   );
 }

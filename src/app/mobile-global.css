@@ -270,4 +270,51 @@
   .os-mobile-appointment-row > :last-child {
     align-self: flex-start;
   }
+
+  /* Dashboard page titles — avoid oversized mobile typography */
+  .open-spot-dashboard-theme h1 {
+    overflow-wrap: anywhere;
+  }
+
+  .os-mobile-page-title {
+    font-size: clamp(1.5rem, 6.5vw, 2rem);
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+  }
+
+  /* Subscription / billing card containment */
+  .os-mobile-subscription-root {
+    border-radius: 1rem;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .os-mobile-subscription-root > div:last-child {
+    padding-inline: clamp(0.85rem, 4vw, 1.25rem);
+  }
+
+  /* Analytics chart cards */
+  .os-mobile-chart-card {
+    min-width: 0;
+    padding: clamp(0.85rem, 4vw, 1.25rem);
+  }
+
+  /* QR / instructions panels */
+  .os-mobile-qr-panel {
+    min-height: 0;
+    padding: clamp(1rem, 4vw, 2rem);
+  }
+
+  /* SMS template editor type tabs */
+  .os-mobile-template-tabs {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .os-mobile-template-tabs > button {
+    flex: 1 1 calc(50% - 0.25rem);
+    min-width: 0;
+    text-align: center;
+    white-space: normal;
+  }
 }

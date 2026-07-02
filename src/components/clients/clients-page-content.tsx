@@ -6,6 +6,11 @@ import { createPortal } from "react-dom";
 
 import { PhoneNumberField } from "@/components/forms/phone-number-field";
 import {
+  DashboardMobileCard,
+  DashboardMobileField,
+  MobileCardTable
+} from "@/components/dashboard/dashboard-ui";
+import {
   createCustomerAction,
   deleteCustomerAction,
   restoreCustomerAction
@@ -720,8 +725,8 @@ export function ClientsPageContent({
   return (
     <div className="grid min-w-0 max-w-full gap-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="max-w-2xl">
-          <h1 className="text-3xl font-black tracking-tight text-[#07142f]">
+        <div className="max-w-2xl min-w-0">
+          <h1 className="os-mobile-page-title text-3xl font-black tracking-tight text-[#07142f] md:text-3xl">
             Gestion des clients
           </h1>
           <p className="mt-2 text-sm leading-6 text-[#64748b] sm:text-base">
@@ -915,6 +920,88 @@ export function ClientsPageContent({
 
         {paginatedCustomers.length > 0 ? (
           <>
+            <MobileCardTable>
+              {paginatedCustomers.map((customer) => {
+                const clientStatus = getClientStatus(customer);
+                const consentRequest = formatConsentRequestStatus(
+                  customer.latestConsentRequestStatus
+                );
+                const consentTitle =
+                  consentRequest &&
+                  (customer.consentStatus === "needs_consent" ||
+                    customer.consentStatus === "missing")
+                    ? `Demande : ${consentRequest}`
+                    : undefined;
+
+                return (
+                  <DashboardMobileCard key={customer.id}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef4ff] text-[11px] font-black text-[#2563ff]">
+                          {getInitials(customer.full_name)}
+                        </span>
+                        <p className="min-w-0 break-words font-bold text-[#07142f]">
+                          {customer.full_name}
+                        </p>
+                      </div>
+                      <ClientActionsMenu customer={customer} tab={tab} />
+                    </div>
+                    <div className="mt-4 grid gap-3">
+                      <DashboardMobileField label="Téléphone">
+                        {formatPhoneForDisplay(customer.phone_e164)}
+                      </DashboardMobileField>
+                      {tab === "active" ? (
+                        <>
+                          {customer.email ? (
+                            <DashboardMobileField label="Courriel">
+                              {customer.email}
+                            </DashboardMobileField>
+                          ) : null}
+                          <div className="flex flex-wrap gap-2">
+                            <span className="inline-flex rounded-full bg-[#eef4ff] px-2 py-0.5 text-[10px] font-bold uppercase text-[#2563ff]">
+                              {customer.preferred_language}
+                            </span>
+                            <span
+                              className={cn(
+                                "inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold",
+                                getConsentBadgeClass(customer.consentStatus)
+                              )}
+                              title={consentTitle}
+                            >
+                              {formatConsentStatus(customer.consentStatus)}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#07142f]">
+                              <span
+                                aria-hidden="true"
+                                className={cn(
+                                  "h-2 w-2 shrink-0 rounded-full",
+                                  getStatusDotClass(clientStatus)
+                                )}
+                              />
+                              {getStatusLabel(clientStatus)}
+                            </span>
+                          </div>
+                          <DashboardMobileField label="Dernière activité">
+                            {formatLastActivity(customer.updated_at)}
+                          </DashboardMobileField>
+                        </>
+                      ) : (
+                        <>
+                          <DashboardMobileField label="Supprimé le">
+                            {formatDeletedAt(customer.deleted_at)}
+                          </DashboardMobileField>
+                          <DashboardMobileField label="Raison">
+                            {customer.deleted_reason ?? "Non précisée"}
+                          </DashboardMobileField>
+                        </>
+                      )}
+                    </div>
+                  </DashboardMobileCard>
+                );
+              })}
+            </MobileCardTable>
+
+            <div className="hidden md:block">
             <div className="os-mobile-table-scroll w-full max-w-full min-w-0">
               <table className="w-full min-w-[920px] table-fixed text-left text-sm lg:min-w-[920px]">
                 <thead className="bg-[#f8fafc] text-[11px] font-bold uppercase tracking-[0.06em] text-[#64748b]">
@@ -1052,6 +1139,7 @@ export function ClientsPageContent({
                   })}
                 </tbody>
               </table>
+            </div>
             </div>
             <PaginationControls
               currentPage={safePage}

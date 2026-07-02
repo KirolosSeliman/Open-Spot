@@ -153,7 +153,53 @@ export function MobileCardTable({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={cn("grid gap-3", className)}>{children}</div>;
+  return (
+    <div className={cn("grid min-w-0 gap-3 md:hidden", className)}>{children}</div>
+  );
+}
+
+export function DashboardMobileCard({
+  children,
+  className
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <article
+      className={cn(
+        "min-w-0 rounded-2xl border border-[var(--line)] bg-white p-4 shadow-sm",
+        className
+      )}
+    >
+      {children}
+    </article>
+  );
+}
+
+export function DashboardMobileField({
+  label,
+  children,
+  className
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("grid min-w-0 gap-1", className)}>
+      <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--muted)]">
+        {label}
+      </p>
+      <div className="min-w-0 break-words text-sm text-[var(--foreground)]">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export function DesktopTableOnly({ children }: { children: ReactNode }) {
+  return <div className="hidden min-w-0 md:block">{children}</div>;
 }
 
 export function TableShell({ children }: { children: ReactNode }) {

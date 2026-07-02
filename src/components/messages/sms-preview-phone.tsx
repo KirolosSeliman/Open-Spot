@@ -161,8 +161,8 @@ export function SmsPreviewPhone({
   className?: string;
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-[280px]", className)}>
-      <div className="relative mx-auto w-[280px]">
+    <div className={cn("mx-auto w-full max-w-[min(280px,100%)]", className)}>
+      <div className="relative mx-auto w-full max-w-[280px]">
         <div className="pointer-events-none absolute -left-[2px] top-[104px] h-[20px] w-[3px] rounded-full bg-[#d1d1d6]" />
         <div className="pointer-events-none absolute -left-[2px] top-[138px] h-[36px] w-[3px] rounded-full bg-[#d1d1d6]" />
         <div className="pointer-events-none absolute -left-[2px] top-[182px] h-[36px] w-[3px] rounded-full bg-[#d1d1d6]" />
@@ -194,7 +194,7 @@ export function SmsPreviewPanel({
   previewMessage: string;
 }) {
   return (
-    <section className="rounded-[1.35rem] border border-[#dde5f0] bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.05)] sm:p-7">
+    <section className="min-w-0 rounded-[1.35rem] border border-[#dde5f0] bg-white p-[clamp(1rem,4vw,1.75rem)] shadow-[0_10px_30px_rgba(15,23,42,0.05)] sm:p-7">
       <div className="mb-6">
         <h2 className="text-[1.35rem] font-black leading-tight tracking-tight text-[#07142f]">
           Aperçu du SMS

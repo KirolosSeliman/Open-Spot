@@ -21,7 +21,7 @@ export function InsightsExportButton({
 
   return (
     <button
-      className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-[#dbeafe] bg-white px-4 py-2.5 text-sm font-semibold text-[#2563ff] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+      className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-2xl border border-[#dbeafe] bg-white px-4 py-2.5 text-sm font-semibold text-[#2563ff] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:bg-[#eff6ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff] sm:w-auto"
       onClick={handleExport}
       type="button"
     >
