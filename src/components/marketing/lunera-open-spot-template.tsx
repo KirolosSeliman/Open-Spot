@@ -961,7 +961,7 @@ function HeroSection({ className, t }: { className: string; t: TemplateCopy }) {
           {t.hero.subtitle}
         </p>
       </div>
-      <ReferenceHeroStage t={t} />
+      <ReferenceHeroStage showStatusBar={className === "reference-hero-mobile-only"} t={t} />
       <div className="reference-phone-fade" aria-hidden="true" />
       <div className="reference-hero-footer">
         <TrustRow label={t.hero.socialProof} />
@@ -971,7 +971,13 @@ function HeroSection({ className, t }: { className: string; t: TemplateCopy }) {
   );
 }
 
-function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
+function ReferenceHeroStage({
+  showStatusBar = false,
+  t
+}: {
+  showStatusBar?: boolean;
+  t: TemplateCopy;
+}) {
   return (
     <div className="reference-hero-stage" aria-hidden="true" data-lunera-reveal>
       <FloatingPill className="reference-pill-alert" icon={<PaperPlaneIcon />} label={t.hero.floatingAlert} />
@@ -988,7 +994,7 @@ function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
         label={t.hero.repliesLabel}
       />
       <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
-      <PhoneProductMockup phone={t.hero.phone} />
+      <PhoneProductMockup phone={t.hero.phone} showStatusBar={showStatusBar} />
       <div className="reference-mobile-phone-fade" aria-hidden="true" />
     </div>
   );
@@ -1033,21 +1039,29 @@ function MetricCard({
   );
 }
 
-function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] }) {
+function PhoneProductMockup({
+  phone,
+  showStatusBar = false
+}: {
+  phone: TemplateCopy["hero"]["phone"];
+  showStatusBar?: boolean;
+}) {
   return (
     <div className="reference-phone" data-reference-part="mobile-phone">
       <div aria-hidden="true" className="reference-phone-side-rail" />
       <div aria-hidden="true" className="reference-phone-side-button" />
       <div className="reference-phone-screen">
         <div aria-hidden="true" className="reference-phone-glare" />
-        <div className="reference-phone-status" aria-hidden="true">
-          <span>09:41</span>
-          <span>
-            <SignalIcon />
-            <WifiIcon />
-            <BatteryIcon />
-          </span>
-        </div>
+        {showStatusBar ? (
+          <div className="reference-phone-status" aria-hidden="true">
+            <span>09:41</span>
+            <span>
+              <SignalIcon />
+              <WifiIcon />
+              <BatteryIcon />
+            </span>
+          </div>
+        ) : null}
         <div className="reference-dynamic-island" data-reference-part="dynamic-island">
           <span />
         </div>

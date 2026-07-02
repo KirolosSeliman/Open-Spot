@@ -1279,6 +1279,10 @@ select {
   display: none;
 }
 
+.reference-phone-status {
+  display: none;
+}
+
 .reference-navbar {
   pointer-events: none;
 }

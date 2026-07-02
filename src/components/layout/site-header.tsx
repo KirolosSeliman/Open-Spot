@@ -38,7 +38,7 @@ export async function SiteHeader() {
 
   return (
     <SiteHeaderShell className="open-spot-site-header" innerClassName="open-spot-site-header-shell">
-      <div className="flex items-center justify-between gap-3 md:flex-wrap">
+      <div className="flex flex-wrap items-center justify-between gap-3 max-md:flex-nowrap">
         <Link
           className="rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
