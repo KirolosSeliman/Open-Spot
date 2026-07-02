@@ -1100,7 +1100,16 @@ function TrustRow({ label }: { label: string }) {
             <StarIcon key={index} />
           ))}
         </div>
-        <p>{label}</p>
+        <p>
+          {label === "Adopté par des cliniques, salons et studios" ? (
+            <>
+              <span className="reference-trust-line">Adopté par des</span>
+              <span className="reference-trust-line">cliniques, salons et studios</span>
+            </>
+          ) : (
+            label
+          )}
+        </p>
       </div>
     </div>
   );

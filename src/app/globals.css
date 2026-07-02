@@ -7030,7 +7030,7 @@ select {
 @media (max-width: 767px) {
   .open-spot-site-header {
     padding-inline: 0;
-    padding-top: clamp(0.88rem, 3.8vw, 1.12rem);
+    padding-top: clamp(0.75rem, 3.1vw, 0.95rem);
   }
 
   .open-spot-site-header > div {
@@ -7044,8 +7044,8 @@ select {
     border: 1px solid rgba(255, 255, 255, 0.72);
     border-radius: 999px;
     box-shadow: 0 18px 42px rgba(42, 92, 128, 0.16);
-    height: clamp(4.05rem, 15.2vw, 4.75rem);
-    padding: 0.62rem 0.66rem 0.62rem 1.08rem;
+    height: clamp(3.78rem, 14vw, 4.25rem);
+    padding: 0.52rem 0.58rem 0.52rem 0.98rem;
   }
 
   .open-spot-site-header-shell a[href="/"] {
@@ -7058,13 +7058,13 @@ select {
   }
 
   .open-spot-site-header-shell a[href="/"] img {
-    height: clamp(2.15rem, 8vw, 2.38rem);
-    width: clamp(2.15rem, 8vw, 2.38rem);
+    height: clamp(1.92rem, 7.1vw, 2.12rem);
+    width: clamp(1.92rem, 7.1vw, 2.12rem);
   }
 
   .open-spot-site-header-shell a[href="/"] .open-spot-logo-wordmark {
     color: #05070a;
-    font-size: clamp(1.04rem, 4.4vw, 1.24rem);
+    font-size: clamp(0.96rem, 3.85vw, 1.08rem);
     font-weight: 900;
     letter-spacing: -0.02em;
     overflow: hidden;
@@ -7080,12 +7080,12 @@ select {
     box-shadow: 0 10px 22px rgba(0, 0, 0, 0.22);
     color: #ffffff;
     display: inline-flex;
-    font-size: clamp(0.82rem, 3.35vw, 0.95rem);
+    font-size: clamp(0.76rem, 2.95vw, 0.86rem);
     font-weight: 760;
-    height: clamp(2.62rem, 10.2vw, 3rem);
+    height: clamp(2.38rem, 9.1vw, 2.65rem);
     justify-content: center;
-    min-width: clamp(5.95rem, 25vw, 7rem);
-    padding-inline: clamp(0.9rem, 3.6vw, 1.18rem);
+    min-width: clamp(5.35rem, 22vw, 6.2rem);
+    padding-inline: clamp(0.78rem, 3vw, 1rem);
   }
 
   .open-spot-mobile-menu {
@@ -7101,15 +7101,15 @@ select {
     color: #05070a;
     cursor: pointer;
     display: inline-flex;
-    height: clamp(2.38rem, 9.4vw, 2.75rem);
+    height: clamp(2.12rem, 8.2vw, 2.45rem);
     justify-content: center;
     padding: 0;
-    width: clamp(2.38rem, 9.4vw, 2.75rem);
+    width: clamp(2.12rem, 8.2vw, 2.45rem);
   }
 
   .open-spot-mobile-menu-button svg {
-    height: 1.55rem;
-    width: 1.55rem;
+    height: 1.38rem;
+    width: 1.38rem;
   }
 
   .open-spot-mobile-menu-panel {
@@ -7142,7 +7142,7 @@ select {
   }
 
   .lunera-template--with-site-header .reference-hero-section {
-    padding-top: clamp(7.05rem, 27vw, 8.25rem);
+    padding-top: clamp(6.25rem, 23.5vw, 7.1rem);
   }
 
   .reference-hero-section {
@@ -7162,7 +7162,7 @@ select {
 
   .reference-hero-title {
     color: #060917;
-    font-size: clamp(2.56rem, 10.85vw, 2.94rem);
+    font-size: clamp(2.42rem, 10.1vw, 2.74rem);
     font-weight: 900;
     letter-spacing: -0.055em;
     line-height: 0.96;
@@ -7170,28 +7170,39 @@ select {
   }
 
   .lunera-template[data-locale="fr"] .reference-hero-title {
-    font-size: clamp(2.44rem, 10.45vw, 2.84rem);
-    line-height: 0.96;
-    max-width: min(390px, calc(100% - 28px));
+    font-size: clamp(2.34rem, 9.8vw, 2.62rem);
+    line-height: 0.97;
+    max-width: min(360px, calc(100% - 36px));
   }
 
   .reference-hero-subtitle,
   .lunera-template[data-locale="fr"] .reference-hero-subtitle {
     color: #42546a;
-    font-size: clamp(0.99rem, 3.9vw, 1.1rem);
+    font-size: clamp(0.91rem, 3.45vw, 1rem);
     line-height: 1.48;
-    margin-top: clamp(1.18rem, 4.8vw, 1.45rem);
-    max-width: min(360px, calc(100% - 40px));
+    margin-top: clamp(1rem, 3.9vw, 1.2rem);
+    max-width: min(342px, calc(100% - 48px));
   }
 
   .reference-hero-stage,
   .lunera-template[data-locale="fr"] .reference-hero-stage {
-    --mobile-phone-fade-height: clamp(13.5rem, 50vw, 16.8rem) !important;
-    --mobile-phone-mask-height: clamp(14rem, 52vw, 16.2rem) !important;
-    --mobile-phone-mask-mid-height: clamp(7.8rem, 29vw, 9.2rem) !important;
-    height: clamp(22.5rem, 86vw, 24.2rem);
-    margin-top: clamp(1.55rem, 6.2vw, 2rem);
+    --mobile-phone-fade-height: clamp(18.5rem, 70vw, 21rem) !important;
+    --mobile-phone-mask-height: clamp(12.5rem, 45vw, 14.5rem) !important;
+    --mobile-phone-mask-mid-height: clamp(6rem, 21vw, 7.2rem) !important;
+    height: clamp(24rem, 90vw, 25.8rem);
+    margin-top: clamp(1.35rem, 5.2vw, 1.7rem);
     max-width: min(430px, 100%);
+  }
+
+  .reference-hero-stage::after {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 24%, #ffffff 100%);
+    bottom: clamp(-15.25rem, -51vw, -12.5rem);
+    content: "";
+    height: clamp(21rem, 78vw, 24rem);
+    inset-inline: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 22;
   }
 
   .reference-phone {
@@ -7201,16 +7212,32 @@ select {
       0 12px 26px rgba(0, 0, 0, 0.27),
       inset 0 0 0 1px rgba(255, 255, 255, 0.52),
       inset 0 0 0 8px #08090c;
-    height: min(137vw, 590px);
+    height: min(138vw, 590px);
     max-height: 590px;
     max-width: 342px;
     padding: clamp(0.62rem, 2.45vw, 0.82rem);
-    width: clamp(18.1rem, 70.2vw, 19.85rem);
+    width: clamp(18.2rem, 70.8vw, 19.95rem);
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 66%,
+      rgba(0, 0, 0, 0.58) 74%,
+      rgba(0, 0, 0, 0) 84%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      #000 0%,
+      #000 66%,
+      rgba(0, 0, 0, 0.58) 74%,
+      rgba(0, 0, 0, 0) 84%,
+      rgba(0, 0, 0, 0) 100%
+    );
   }
 
   .reference-phone-screen {
     border-radius: clamp(2.45rem, 9.8vw, 3.15rem);
-    padding: clamp(3.05rem, 12vw, 3.42rem) clamp(0.9rem, 3.55vw, 1.08rem) 1rem;
+    padding: clamp(2.82rem, 10.6vw, 3.12rem) clamp(0.82rem, 3.15vw, 0.96rem) 1rem;
   }
 
   .reference-phone-status {
@@ -7245,66 +7272,163 @@ select {
   }
 
   .reference-dynamic-island {
-    height: clamp(1.55rem, 6.4vw, 1.82rem);
-    top: clamp(0.9rem, 3.8vw, 1.08rem);
-    width: clamp(5.15rem, 22vw, 5.9rem);
+    height: clamp(1.36rem, 5.4vw, 1.55rem);
+    top: clamp(0.88rem, 3.45vw, 1rem);
+    width: clamp(4.65rem, 19.4vw, 5.25rem);
     z-index: 7;
   }
 
   .reference-phone-app-header {
-    grid-template-columns: 1.45rem 1fr 1.45rem;
-    margin-bottom: clamp(0.88rem, 3.8vw, 1.1rem);
+    grid-template-columns: 1.28rem 1fr 1.28rem;
+    margin-bottom: clamp(0.65rem, 2.6vw, 0.82rem);
+  }
+
+  .reference-phone-app-header svg {
+    height: 1.12rem;
+    width: 1.12rem;
+  }
+
+  .reference-phone-logo img {
+    height: 1.08rem;
+    width: 1.08rem;
+  }
+
+  .reference-phone-logo .open-spot-logo-wordmark {
+    font-size: 0.82rem;
   }
 
   .reference-detected-card {
-    min-height: clamp(4.65rem, 18.5vw, 5.35rem);
-    padding: clamp(0.72rem, 3vw, 0.9rem);
+    gap: 0.62rem;
+    min-height: clamp(3.35rem, 12.6vw, 3.85rem);
+    padding: clamp(0.5rem, 1.95vw, 0.6rem);
+  }
+
+  .reference-detected-icon {
+    height: clamp(2.35rem, 9.2vw, 2.7rem);
+    width: clamp(2.35rem, 9.2vw, 2.7rem);
+  }
+
+  .reference-detected-icon svg {
+    height: 1.08rem;
+    width: 1.08rem;
   }
 
   .reference-detected-card strong {
-    font-size: clamp(0.78rem, 3.15vw, 0.95rem);
+    font-size: clamp(0.64rem, 2.45vw, 0.72rem);
+    margin-bottom: 0.18rem;
   }
 
   .reference-detected-card p {
-    font-size: clamp(0.68rem, 2.75vw, 0.8rem);
+    font-size: clamp(0.53rem, 2.05vw, 0.6rem);
+    line-height: 1.25;
   }
 
   .reference-sms-card {
-    margin-top: 0.78rem;
+    border-radius: 0.92rem;
+    margin-top: 0.46rem;
+    padding: 0.45rem 0.52rem 0.36rem;
+  }
+
+  .reference-sms-card > strong {
+    font-size: 0.58rem;
+    margin-bottom: 0.36rem;
   }
 
   .reference-sms-message {
-    font-size: clamp(0.68rem, 2.8vw, 0.8rem);
-    min-height: clamp(4.35rem, 17vw, 5rem);
+    border-radius: 0.55rem;
+    font-size: clamp(0.5rem, 1.95vw, 0.58rem);
+    line-height: 1.32;
+    min-height: clamp(2.58rem, 9.9vw, 3rem);
+    padding: 0.48rem;
+  }
+
+  .reference-sms-actions {
+    gap: 0.52rem;
+    margin-top: 0.3rem;
+  }
+
+  .reference-mini-icon {
+    height: 0.8rem;
+    width: 0.8rem;
+  }
+
+  .reference-sms-counter {
+    font-size: 0.52rem;
+  }
+
+  .reference-send-pill {
+    border-radius: 0.72rem;
+    font-size: 0.54rem;
+    height: 1.36rem;
+    width: 2.45rem;
   }
 
   .reference-reply-card {
-    margin-top: 0.62rem;
+    border-radius: 0.92rem;
+    margin-top: 0.42rem;
+    padding: 0.5rem;
+  }
+
+  .reference-reply-heading {
+    margin-bottom: 0.45rem;
+  }
+
+  .reference-reply-heading strong {
+    font-size: 0.64rem;
+  }
+
+  .reference-reply-list {
+    gap: 0.38rem;
+  }
+
+  .reference-reply-item {
+    gap: 0.42rem;
+    grid-template-columns: 1.35rem minmax(2.7rem, 1fr) auto auto auto;
+  }
+
+  .reference-reply-item img {
+    height: 1.35rem;
+    width: 1.35rem;
+  }
+
+  .reference-reply-item strong {
+    font-size: 0.58rem;
+  }
+
+  .reference-yes-badge,
+  .reference-reply-time {
+    font-size: 0.48rem;
+  }
+
+  .reference-confirm-pill {
+    font-size: 0.5rem;
+    min-width: 3.4rem;
+    padding: 0.32rem 0.46rem;
   }
 
   .reference-mobile-phone-fade {
     background:
       radial-gradient(ellipse at -2% 78%, rgba(255, 255, 255, 0.98) 0 4.8rem, rgba(255, 255, 255, 0.78) 6.7rem, rgba(255, 255, 255, 0) 9.7rem),
       radial-gradient(ellipse at 102% 78%, rgba(255, 255, 255, 0.98) 0 5.2rem, rgba(255, 255, 255, 0.76) 7.1rem, rgba(255, 255, 255, 0) 10rem),
-      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.82) 24%, #ffffff 42%, #ffffff 100%);
-    bottom: clamp(-5.7rem, -20vw, -4.35rem);
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.82) 15%, #ffffff 28%, #ffffff 100%);
+    bottom: clamp(-9.4rem, -31vw, -7.6rem);
     opacity: 1 !important;
   }
 
   .reference-hero-footer {
-    margin-top: clamp(-8rem, -24vw, -6.5rem);
+    margin-top: clamp(-5.8rem, -18vw, -4.65rem);
     max-width: min(390px, calc(100% - 32px));
   }
 
   .reference-trust-row {
-    gap: clamp(1rem, 5vw, 1.55rem);
-    max-width: min(390px, calc(100% - 32px));
+    gap: clamp(0.9rem, 3.9vw, 1.18rem);
+    max-width: min(360px, calc(100% - 34px));
   }
 
   .reference-avatar-stack span {
-    height: clamp(3.1rem, 12.2vw, 3.38rem);
-    margin-left: -0.76rem;
-    width: clamp(3.1rem, 12.2vw, 3.38rem);
+    height: clamp(2.85rem, 10.8vw, 3.08rem);
+    margin-left: -0.68rem;
+    width: clamp(2.85rem, 10.8vw, 3.08rem);
   }
 
   .reference-stars {
@@ -7312,27 +7436,33 @@ select {
   }
 
   .reference-stars svg {
-    height: clamp(1.05rem, 4.6vw, 1.25rem);
-    width: clamp(1.05rem, 4.6vw, 1.25rem);
+    height: clamp(0.94rem, 3.8vw, 1.08rem);
+    width: clamp(0.94rem, 3.8vw, 1.08rem);
   }
 
   .reference-trust-row p {
     color: #40536a;
-    font-size: clamp(0.98rem, 4.3vw, 1.18rem);
-    line-height: 1.18;
+    font-size: clamp(0.82rem, 3.35vw, 0.94rem);
+    line-height: 1.22;
+    max-width: 13rem;
+  }
+
+  .reference-trust-line {
+    display: block;
+    white-space: nowrap;
   }
 
   .reference-hero-actions {
-    gap: clamp(0.86rem, 3.8vw, 1rem);
-    margin-top: clamp(1.65rem, 6.8vw, 2.15rem);
-    width: min(340px, calc(100% - 90px));
+    gap: clamp(0.72rem, 3vw, 0.88rem);
+    margin-top: clamp(1.45rem, 5.6vw, 1.78rem);
+    width: min(330px, calc(100% - 88px));
   }
 
   .reference-cta-primary,
   .reference-cta-secondary {
-    font-size: clamp(1.02rem, 4.2vw, 1.18rem);
+    font-size: clamp(0.98rem, 3.85vw, 1.1rem);
     font-weight: 760;
-    height: clamp(3.72rem, 14.5vw, 4.32rem);
+    height: clamp(3.36rem, 12.8vw, 3.78rem);
   }
 
   .reference-cta-primary {
