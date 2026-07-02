@@ -89,14 +89,14 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
 
   return (
     <PageShell>
-      <section className="os-container-wide grid gap-8 py-12 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:py-24">
+      <section className="os-container-wide grid min-w-0 gap-8 py-12 sm:py-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:py-24">
         <div>
           <p className="os-kicker">{t.eyebrow}</p>
           <h1 className="os-page-title mt-5">{t.title}</h1>
           <p className="os-body-large mt-6">{t.description}</p>
         </div>
 
-        <Card className="p-5 sm:p-7">
+        <Card className="min-w-0 p-5 sm:p-7">
           {successMessage ? (
             <p className="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
               {successMessage}

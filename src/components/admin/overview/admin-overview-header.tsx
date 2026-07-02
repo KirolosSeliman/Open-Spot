@@ -24,9 +24,9 @@ export function AdminOverviewHeader({
         </p>
       </div>
 
-      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex w-full min-w-0 shrink-0 flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
         <Link
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl bg-[#2563ff] px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(37,99,255,0.28)] transition hover:bg-[#1d4ed8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+          className="inline-flex h-11 w-full min-w-0 items-center justify-center gap-2 rounded-xl bg-[#2563ff] px-5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(37,99,255,0.28)] transition hover:bg-[#1d4ed8] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff] sm:w-auto lg:whitespace-nowrap"
           href="/admin/organizations"
         >
           <BuildingIcon className="h-4 w-4" />

@@ -54,7 +54,7 @@ export function MobileSiteMenu({ ariaLabel, items }: MobileSiteMenuProps) {
         </svg>
       </button>
       {isOpen ? (
-        <nav aria-label={ariaLabel} className="open-spot-mobile-menu-panel">
+        <nav aria-label={ariaLabel} className="open-spot-mobile-menu-panel max-w-[min(18rem,calc(100vw-2rem))]">
           {items.map((item) => (
             <Link href={item.href} key={item.href} onClick={() => setIsOpen(false)}>
               {item.label}

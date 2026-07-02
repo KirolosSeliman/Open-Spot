@@ -25,7 +25,7 @@ export function AdminExportButton({
 
   return (
     <button
-      className="inline-flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-[#dbe4f2] bg-white px-5 text-sm font-semibold text-[#0b1328] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:bg-[#f8fbff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+      className="inline-flex h-11 w-full min-w-0 items-center justify-center gap-2 rounded-xl border border-[#dbe4f2] bg-white px-5 text-sm font-semibold text-[#0b1328] shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition hover:bg-[#f8fbff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff] sm:w-auto lg:whitespace-nowrap"
       onClick={handleExport}
       type="button"
     >

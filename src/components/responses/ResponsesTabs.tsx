@@ -29,12 +29,12 @@ export function ResponsesTabs({
   return (
     <nav
       aria-label="Sections de la page Réponses"
-      className="flex gap-8 border-b border-slate-200"
+      className="os-mobile-tab-scroll flex border-b border-slate-200 max-md:gap-6 md:gap-8"
       role="tablist"
     >
       <Link
         aria-selected={activeTab === "openings"}
-        className={`-mb-px border-b-[3px] pb-3 text-sm font-black transition ${
+        className={`-mb-px shrink-0 border-b-[3px] pb-3 text-sm font-black transition ${
           activeTab === "openings"
             ? "border-[var(--primary)] text-[var(--primary)]"
             : "border-transparent text-slate-500 hover:text-[var(--foreground)]"
@@ -46,7 +46,7 @@ export function ResponsesTabs({
       </Link>
       <Link
         aria-selected={activeTab === "appointments"}
-        className={`-mb-px border-b-[3px] pb-3 text-sm font-black transition ${
+        className={`-mb-px shrink-0 border-b-[3px] pb-3 text-sm font-black transition ${
           activeTab === "appointments"
             ? "border-[var(--primary)] text-[var(--primary)]"
             : "border-transparent text-slate-500 hover:text-[var(--foreground)]"

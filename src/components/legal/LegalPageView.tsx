@@ -25,11 +25,11 @@ function CalendarIcon() {
 export function LegalPageView({ page }: { page: LegalPageDefinition }) {
   return (
     <div className="bg-[#F7F9FD] pb-16 pt-10 sm:pb-20 sm:pt-12 lg:pb-24 lg:pt-14">
-      <div className="mx-auto w-full max-w-[90rem] px-5 sm:px-6 lg:px-10">
+      <div className="mx-auto w-full min-w-0 max-w-[90rem] px-[clamp(12px,4vw,20px)] sm:px-6 lg:px-10">
         <div className="grid gap-10 lg:grid-cols-[minmax(17rem,19rem)_minmax(0,1fr)] lg:gap-16 xl:gap-20">
           <LegalSidebar note={page.sidebarNote} sections={page.sections} />
 
-          <div className="min-w-0">
+          <div className="min-w-0 legal-mobile-content">
             <header className="max-w-4xl">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#2563FF]">
                 {page.eyebrow}

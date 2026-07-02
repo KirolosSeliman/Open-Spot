@@ -38,9 +38,9 @@ export async function SiteHeader() {
 
   return (
     <SiteHeaderShell className="open-spot-site-header" innerClassName="open-spot-site-header-shell">
-      <div className="flex flex-wrap items-center justify-between gap-3 max-md:flex-nowrap">
+      <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-3">
         <Link
-          className="rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
+          className="min-w-0 shrink rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
         >
           <OpenSpotLogo size="sm" variant="lockup" />
@@ -61,7 +61,7 @@ export async function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 md:order-3">
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-2 md:order-3">
           {isSignedIn ? (
             <>
               <Link
@@ -82,7 +82,7 @@ export async function SiteHeader() {
           ) : (
             <>
               <Link
-                className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-sm font-bold text-[var(--foreground)] transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
+                className="inline-flex max-w-[min(100%,9.5rem)] items-center justify-center truncate rounded-full border border-[var(--line)] bg-white px-2.5 py-2 text-xs font-bold text-[var(--foreground)] transition hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)] sm:max-w-none sm:px-3 sm:text-sm"
                 href="/sign-in"
               >
                 {t.auth.signIn}
