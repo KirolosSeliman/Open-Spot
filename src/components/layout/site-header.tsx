@@ -14,7 +14,13 @@ import type { NavItem } from "@/types/app";
 export async function SiteHeader() {
   const locale = await getRequestLocale();
   const t = dictionaries[locale];
-  const navItems: NavItem[] = [
+  const desktopNavItems: NavItem[] = [
+    { href: "/#comment-ca-marche", label: t.marketing.howItWorks },
+    { href: "/#pourquoi-open-spot", label: t.marketing.whyOpenSpot },
+    { href: "/pricing", label: t.navigation.pricing },
+    { href: "/book-call/questions", label: t.marketing.bookCall }
+  ];
+  const mobileNavItems: NavItem[] = [
     { href: "/#how-it-works", label: t.marketing.howItWorks },
     { href: "/#features", label: t.marketing.whyOpenSpot },
     { href: "/#pricing", label: t.navigation.pricing },
@@ -32,7 +38,7 @@ export async function SiteHeader() {
 
   return (
     <SiteHeaderShell className="open-spot-site-header" innerClassName="open-spot-site-header-shell">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3 md:flex-wrap">
         <Link
           className="rounded-full px-2 py-1 text-base font-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--primary)]"
           href="/"
@@ -42,9 +48,9 @@ export async function SiteHeader() {
 
         <nav
           aria-label={locale === "fr" ? "Navigation principale" : "Main navigation"}
-          className="hidden gap-1 md:flex"
+          className="hidden gap-1 md:order-2 md:flex md:w-auto md:overflow-visible md:pb-0"
         >
-          {navItems.map((item) => (
+          {desktopNavItems.map((item) => (
             <Link
               className="shrink-0 rounded-full px-3 py-2 text-sm font-bold text-[var(--muted)] transition hover:bg-slate-100 hover:text-[var(--foreground)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--primary)]"
               href={item.href}
@@ -55,7 +61,7 @@ export async function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2 md:order-3">
           {isSignedIn ? (
             <>
               <Link
@@ -94,7 +100,7 @@ export async function SiteHeader() {
           </div>
           <MobileSiteMenu
             ariaLabel={locale === "fr" ? "Ouvrir le menu" : "Open menu"}
-            items={navItems}
+            items={mobileNavItems}
           />
         </div>
       </div>

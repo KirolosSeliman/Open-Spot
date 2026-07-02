@@ -1275,6 +1275,10 @@ select {
   --lunera-progress: 0;
 }
 
+.reference-hero-mobile-only {
+  display: none;
+}
+
 .reference-navbar {
   pointer-events: none;
 }
@@ -7028,6 +7032,14 @@ select {
 }
 
 @media (max-width: 767px) {
+  .reference-hero-desktop-only {
+    display: none;
+  }
+
+  .reference-hero-mobile-only {
+    display: block;
+  }
+
   .open-spot-site-header {
     padding-inline: 0;
     padding-top: clamp(0.75rem, 3.1vw, 0.95rem);

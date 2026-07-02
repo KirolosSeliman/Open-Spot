@@ -812,25 +812,37 @@ export function LuneraOpenSpotTemplate({
   useEffect(() => {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const mobile = window.matchMedia("(max-width: 767px)");
-    const stage = document.querySelector<HTMLElement>(".reference-hero-stage");
+    const getActiveStage = () =>
+      Array.from(document.querySelectorAll<HTMLElement>(".reference-hero-stage")).find((element) => {
+        const section = element.closest<HTMLElement>(".reference-hero-section");
+        return section ? window.getComputedStyle(section).display !== "none" : false;
+      });
+    let fadeStage = getActiveStage();
 
-    if (!stage) {
+    if (!fadeStage) {
       return;
     }
 
-    const fadeStage = stage;
     let animationFrame = 0;
 
-    function setFadeValues(opacity: number, height: number, progress: number, phoneY: number, phoneRatio: number, maskHeight: number) {
+    function setFadeValues(
+      stageElement: HTMLElement,
+      opacity: number,
+      height: number,
+      progress: number,
+      phoneY: number,
+      phoneRatio: number,
+      maskHeight: number
+    ) {
       const maskMidHeight = maskHeight * 0.48;
 
-      fadeStage.style.setProperty("--mobile-phone-fade-opacity", opacity.toFixed(3));
-      fadeStage.style.setProperty("--mobile-phone-fade-height", `${height.toFixed(1)}px`);
-      fadeStage.style.setProperty("--mobile-phone-fade-progress", progress.toFixed(3));
-      fadeStage.style.setProperty("--mobile-phone-y", `${phoneY.toFixed(1)}px`);
-      fadeStage.style.setProperty("--mobile-phone-scale", phoneRatio.toFixed(3));
-      fadeStage.style.setProperty("--mobile-phone-mask-height", `${maskHeight.toFixed(1)}px`);
-      fadeStage.style.setProperty("--mobile-phone-mask-mid-height", `${maskMidHeight.toFixed(1)}px`);
+      stageElement.style.setProperty("--mobile-phone-fade-opacity", opacity.toFixed(3));
+      stageElement.style.setProperty("--mobile-phone-fade-height", `${height.toFixed(1)}px`);
+      stageElement.style.setProperty("--mobile-phone-fade-progress", progress.toFixed(3));
+      stageElement.style.setProperty("--mobile-phone-y", `${phoneY.toFixed(1)}px`);
+      stageElement.style.setProperty("--mobile-phone-scale", phoneRatio.toFixed(3));
+      stageElement.style.setProperty("--mobile-phone-mask-height", `${maskHeight.toFixed(1)}px`);
+      stageElement.style.setProperty("--mobile-phone-mask-mid-height", `${maskMidHeight.toFixed(1)}px`);
     }
 
     function updatePhoneFade() {
@@ -840,14 +852,19 @@ export function LuneraOpenSpotTemplate({
 
       animationFrame = window.requestAnimationFrame(() => {
         animationFrame = 0;
+        fadeStage = getActiveStage();
+
+        if (!fadeStage) {
+          return;
+        }
 
         if (!mobile.matches) {
-          setFadeValues(0.65, 145, 0, 0, 1, 88);
+          setFadeValues(fadeStage, 0.65, 145, 0, 0, 1, 88);
           return;
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(0.82, 175, 0.5, 0, 1, 142);
+          setFadeValues(fadeStage, 0.82, 175, 0.5, 0, 1, 142);
           return;
         }
 
@@ -863,7 +880,7 @@ export function LuneraOpenSpotTemplate({
         const phoneRatio = 1 - easedProgress * 0.015;
         const maskHeight = 118 + easedProgress * 54;
 
-        setFadeValues(opacity, height, progress, phoneY, phoneRatio, maskHeight);
+        setFadeValues(fadeStage, opacity, height, progress, phoneY, phoneRatio, maskHeight);
       });
     }
 
@@ -913,11 +930,22 @@ export function LuneraOpenSpotTemplate({
 }
 
 function Hero({ t }: { locale: Locale; t: TemplateCopy }) {
+  const desktopT = openSpotCopy;
+
+  return (
+    <>
+      <HeroSection className="reference-hero-desktop-only" t={desktopT} />
+      <HeroSection className="reference-hero-mobile-only" t={t} />
+    </>
+  );
+}
+
+function HeroSection({ className, t }: { className: string; t: TemplateCopy }) {
   return (
     <section
-      className="reference-hero-section"
+      className={`reference-hero-section ${className}`}
       data-lunera-hero
-      id="features"
+      id={className === "reference-hero-mobile-only" ? "features" : undefined}
     >
       <div className="reference-hero-cloud reference-hero-cloud-left" aria-hidden="true" />
       <div className="reference-hero-cloud reference-hero-cloud-right" aria-hidden="true" />
