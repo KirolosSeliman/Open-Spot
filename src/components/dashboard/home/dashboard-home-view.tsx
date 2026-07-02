@@ -95,13 +95,13 @@ export function DashboardHomeView({
   const d = copy.dashboard;
 
   return (
-    <div className="grid gap-6 bg-[#f8fbff] pb-8">
-      <header className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <h1 className="text-[1.75rem] font-bold tracking-tight text-[#0b1328] sm:text-[2rem]">
+    <div className="grid min-w-0 gap-6 bg-[#f8fbff] pb-8">
+      <header className="flex min-w-0 flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="min-w-0 break-words text-[clamp(1.45rem,7.5vw,1.75rem)] font-bold tracking-tight text-[#0b1328] sm:text-[2rem]">
             {d.greeting(data.organizationName)}
           </h1>
-          <p className="mt-2 text-sm leading-6 text-[#64748b] sm:text-base">
+          <p className="mt-2 min-w-0 text-sm leading-6 text-[#64748b] sm:text-base">
             {d.subtitle}
           </p>
         </div>
@@ -119,7 +119,7 @@ export function DashboardHomeView({
         </Suspense>
       </header>
 
-      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <HomeKpiCard
           description={d.metrics.customers[1]}
           icon={<UsersIcon />}
@@ -187,7 +187,7 @@ export function DashboardHomeView({
         />
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
         <HomeSectionCard title={d.activityOverview}>
           <LineChart
             labels={data.dateAxisLabels}
@@ -209,25 +209,25 @@ export function DashboardHomeView({
 
         <HomeSectionCard title={d.keyPoints}>
           <ul className="grid gap-4">
-            <li className="flex gap-3 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-4">
+            <li className="flex min-w-0 gap-3 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-4">
               <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#ecfdf3] text-[#16a34a]">
                 <DollarIcon />
               </span>
-              <p className="text-sm leading-6 text-[#334155]">
+              <p className="min-w-0 text-sm leading-6 text-[#334155]">
                 {data.keyPoints.revenueText}
               </p>
             </li>
-            <li className="flex gap-3 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-4">
+            <li className="flex min-w-0 gap-3 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-4">
               <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#f5f3ff] text-[#7c3aed]">
                 <MessageIcon />
               </span>
-              <p className="text-sm leading-6 text-[#334155]">{data.keyPoints.smsText}</p>
+              <p className="min-w-0 text-sm leading-6 text-[#334155]">{data.keyPoints.smsText}</p>
             </li>
-            <li className="flex gap-3 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-4">
+            <li className="flex min-w-0 gap-3 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-4">
               <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#fffbeb] text-[#f59e0b]">
                 <ClockIcon />
               </span>
-              <p className="text-sm leading-6 text-[#334155]">
+              <p className="min-w-0 text-sm leading-6 text-[#334155]">
                 {data.keyPoints.responsesText}
               </p>
             </li>
@@ -235,7 +235,7 @@ export function DashboardHomeView({
         </HomeSectionCard>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-2">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-2">
         <HomeSectionCard
           action={
             <ViewAllLink href="/dashboard/responses" label={d.viewAll} />
@@ -342,7 +342,7 @@ export function DashboardHomeView({
           <ul className="relative grid gap-0">
             {data.activityLog.map((entry, index) => (
               <li
-                className="relative flex items-start gap-4 border-b border-[#eef2f7] py-4 last:border-b-0"
+                className="relative flex min-w-0 items-start gap-4 border-b border-[#eef2f7] py-4 last:border-b-0"
                 key={entry.id}
               >
                 {index < data.activityLog.length - 1 ? (
@@ -356,7 +356,7 @@ export function DashboardHomeView({
                   <p className="text-xs font-medium text-[#94a3b8]">
                     {entry.relativeTime}
                   </p>
-                  <p className="mt-1 text-sm leading-6 text-[#0b1328]">
+                  <p className="mt-1 min-w-0 text-sm leading-6 text-[#0b1328]">
                     {entry.message}
                   </p>
                 </div>
@@ -368,10 +368,10 @@ export function DashboardHomeView({
       </HomeSectionCard>
 
       <HomeSectionCard description={d.actions.description} title={d.actions.title}>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid min-w-0 gap-4 md:grid-cols-2">
           {actionItems.map((item) => (
             <Link
-              className="group flex items-center justify-between gap-4 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-5 transition hover:border-[#cbd5e1] hover:bg-white"
+              className="group flex min-w-0 items-center justify-between gap-4 rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-[clamp(1rem,4.5vw,1.25rem)] transition hover:border-[#cbd5e1] hover:bg-white sm:p-5"
               href={item.href}
               key={item.label}
             >
@@ -396,15 +396,15 @@ export function DashboardHomeView({
                   )}
                 </span>
                 <div className="min-w-0">
-                  <p className="font-semibold text-[#0b1328]">{item.label}</p>
-                  <p className="mt-1 text-sm leading-6 text-[#64748b]">
+                  <p className="min-w-0 font-semibold text-[#0b1328]">{item.label}</p>
+                  <p className="mt-1 min-w-0 text-sm leading-6 text-[#64748b]">
                     {item.description}
                   </p>
                 </div>
               </div>
               <span
                 className={cn(
-                  "flex h-12 min-w-12 items-center justify-center rounded-2xl px-3 text-xl font-bold text-[#0b1328]",
+                "flex h-12 min-w-12 shrink-0 items-center justify-center rounded-2xl px-3 text-xl font-bold text-[#0b1328]",
                   item.tone === "blue" && "bg-[#eff6ff]",
                   item.tone === "orange" && "bg-[#fff7ed]",
                   item.tone === "purple" && "bg-[#f5f3ff]",
@@ -422,7 +422,7 @@ export function DashboardHomeView({
         description={d.remindersPanel.description}
         title={d.remindersPanel.title}
       >
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <HomeKpiCard
             description={d.remindersPanel.next7Days[1]}
             icon={<CalendarCheckIcon />}
@@ -462,7 +462,7 @@ export function DashboardHomeView({
         description={d.recoveryPanel.description}
         title={d.recoveryPanel.title}
       >
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           <HomeKpiCard
             description={d.recoveryPanel.smsCancellations[1]}
             icon={<MessageIcon />}
@@ -518,11 +518,11 @@ export function DashboardHomeView({
         description={d.setup.description}
         title={d.setup.title}
       >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-5">
           {data.setupSteps.map((step) => (
             <Link
               className={cn(
-                "group relative flex min-h-[180px] flex-col rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-5 transition hover:border-[#cbd5e1] hover:bg-white",
+                "group relative flex min-h-[180px] min-w-0 flex-col rounded-[18px] border border-[#e2eaf5] bg-[#f8fbff] p-[clamp(1rem,4.5vw,1.25rem)] transition hover:border-[#cbd5e1] hover:bg-white sm:p-5",
                 step.completed && "border-[#dbeafe] bg-white"
               )}
               href={step.href}
@@ -539,8 +539,8 @@ export function DashboardHomeView({
               >
                 <BriefcaseIcon />
               </span>
-              <p className="mt-4 font-semibold text-[#0b1328]">{step.title}</p>
-              <p className="mt-2 flex-1 text-sm leading-6 text-[#64748b]">
+              <p className="mt-4 min-w-0 font-semibold text-[#0b1328]">{step.title}</p>
+              <p className="mt-2 min-w-0 flex-1 text-sm leading-6 text-[#64748b]">
                 {step.description}
               </p>
               <span className="mt-4 inline-flex h-9 w-9 items-center justify-center self-end rounded-full border border-[#e2eaf5] bg-white text-[#64748b] transition group-hover:border-[#2563ff] group-hover:text-[#2563ff]">

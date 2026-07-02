@@ -53,10 +53,6 @@ describe("dashboard sidebar active state", () => {
       shellSource.indexOf("function getDesktopNav"),
       shellSource.indexOf("function getMobileNav")
     );
-    const mobileNavSource = shellSource.slice(
-      shellSource.indexOf("function getMobileNav"),
-      shellSource.indexOf("function isActiveDashboardRoute")
-    );
 
     expect(
       desktopNavSource.match(/href: "\/dashboard\/appointments"/g) ?? []
@@ -65,6 +61,18 @@ describe("dashboard sidebar active state", () => {
     expect(dictionaries.fr.dashboard.appointmentsShort).toBe("RDV");
     expect(desktopNavSource).toContain("t.dashboard.appointments");
     expect(desktopNavSource).not.toContain("t.dashboard.appointmentsShort");
-    expect(mobileNavSource).toContain("t.dashboard.appointmentsShort");
+    expect(shellSource).toContain(
+      "const mobileSidebarNavItems = desktopNavItems"
+    );
+  });
+
+  it("uses a mobile drawer instead of header action buttons or bottom navigation", () => {
+    expect(shellSource).toContain("DashboardMobileSidebar");
+    expect(shellSource).toContain("setMobileSidebarOpen");
+    expect(shellSource).toContain('aria-label={mobileMenuLabel}');
+    expect(shellSource).toContain("mobileSidebarNavItems");
+    expect(shellSource).toContain("desktopNavItems");
+    expect(shellSource).not.toContain("fixed inset-x-3 bottom-3");
+    expect(shellSource).not.toContain("getMobileNav");
   });
 });

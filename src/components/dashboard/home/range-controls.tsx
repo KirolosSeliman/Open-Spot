@@ -70,12 +70,12 @@ export function DashboardRangeControls({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
-      <div className="relative">
+    <div className="flex w-full min-w-0 flex-wrap items-center gap-3 sm:w-auto">
+      <div className="relative min-w-0 flex-1 sm:flex-none">
         <button
           aria-expanded={rangeOpen}
           aria-haspopup="listbox"
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#e2eaf5] bg-white px-4 text-sm font-medium text-[#0b1328] shadow-sm transition hover:bg-[#f8fbff]"
+          className="inline-flex min-h-11 w-full min-w-0 items-center justify-between gap-2 rounded-xl border border-[#e2eaf5] bg-white px-4 text-sm font-medium text-[#0b1328] shadow-sm transition hover:bg-[#f8fbff] sm:w-auto"
           onClick={() => {
             setRangeOpen((open) => !open);
             setFiltersOpen(false);
@@ -83,12 +83,12 @@ export function DashboardRangeControls({
           type="button"
         >
           <CalendarIcon />
-          <span>{rangeLabel}</span>
+          <span className="min-w-0 truncate">{rangeLabel}</span>
           <ChevronIcon />
         </button>
         {rangeOpen ? (
           <div
-            className="absolute right-0 z-20 mt-2 min-w-[220px] overflow-hidden rounded-xl border border-[#e2eaf5] bg-white p-1 shadow-[0_20px_60px_rgba(15,23,42,0.12)]"
+            className="absolute left-0 z-20 mt-2 w-[min(72vw,220px)] overflow-hidden rounded-xl border border-[#e2eaf5] bg-white p-1 shadow-[0_20px_60px_rgba(15,23,42,0.12)] sm:left-auto sm:right-0 sm:min-w-[220px] sm:w-auto"
             role="listbox"
           >
             {rangeOptions.map((option) => (
@@ -111,10 +111,10 @@ export function DashboardRangeControls({
         ) : null}
       </div>
 
-      <div className="relative">
+      <div className="relative min-w-0 flex-1 sm:flex-none">
         <button
           aria-expanded={filtersOpen}
-          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-[#e2eaf5] bg-white px-4 text-sm font-medium text-[#0b1328] shadow-sm transition hover:bg-[#f8fbff]"
+          className="inline-flex min-h-11 w-full min-w-0 items-center justify-between gap-2 rounded-xl border border-[#e2eaf5] bg-white px-4 text-sm font-medium text-[#0b1328] shadow-sm transition hover:bg-[#f8fbff] sm:w-auto"
           onClick={() => {
             setFiltersOpen((open) => !open);
             setRangeOpen(false);
@@ -122,11 +122,11 @@ export function DashboardRangeControls({
           type="button"
         >
           <FilterIcon />
-          <span>{filtersLabel}</span>
+          <span className="min-w-0 truncate">{filtersLabel}</span>
           <ChevronIcon />
         </button>
         {filtersOpen ? (
-          <div className="absolute right-0 z-20 mt-2 w-64 rounded-xl border border-[#e2eaf5] bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
+          <div className="absolute right-0 z-20 mt-2 w-[min(78vw,16rem)] rounded-xl border border-[#e2eaf5] bg-white p-4 shadow-[0_20px_60px_rgba(15,23,42,0.12)]">
             <p className="text-sm leading-6 text-[#64748b]">
               Les filtres avancés seront disponibles prochainement. Utilisez le
               sélecteur de période pour ajuster les données affichées.

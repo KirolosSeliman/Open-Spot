@@ -74,8 +74,8 @@ export function HomeKpiCard({
       : Array.from({ length: 7 }, () => 0);
 
   return (
-    <article className="flex h-full flex-col rounded-[22px] border border-[#e2eaf5] bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-      <div className="flex items-start justify-between gap-3">
+    <article className="flex h-full min-w-0 flex-col rounded-[22px] border border-[#e2eaf5] bg-white p-[clamp(1rem,4.6vw,1.5rem)] shadow-[0_20px_60px_rgba(15,23,42,0.06)] sm:p-6">
+      <div className="flex min-w-0 items-start justify-between gap-3">
         <div
           className={cn(
             "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl",
@@ -86,21 +86,21 @@ export function HomeKpiCard({
         </div>
       </div>
 
-      <p className="mt-5 text-sm font-medium text-[#64748b]">{label}</p>
-      <p className="mt-2 text-[2rem] font-bold leading-none tracking-tight text-[#0b1328]">
+      <p className="mt-5 min-w-0 [overflow-wrap:anywhere] text-sm font-medium text-[#64748b]">{label}</p>
+      <p className="mt-2 min-w-0 break-words text-[clamp(1.65rem,8vw,2rem)] font-bold leading-none tracking-tight text-[#0b1328] sm:text-[2rem]">
         {value}
       </p>
-      <p className="mt-2 text-sm leading-5 text-[#64748b]">{description}</p>
+      <p className="mt-2 min-w-0 text-sm leading-5 text-[#64748b]">{description}</p>
 
-      <div className="mt-auto pt-5">
+      <div className="mt-auto min-w-0 pt-5">
         <Sparkline
           ariaLabel={`${label} trend`}
           data={formatValue ? displaySeries.map((v) => v / 100) : displaySeries}
           tone={tone}
         />
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2">
           <TrendBadge change={metric.change} tone={tone} />
-          <span className="text-xs text-[#94a3b8]">{metric.comparisonLabel}</span>
+          <span className="min-w-0 text-xs text-[#94a3b8]">{metric.comparisonLabel}</span>
         </div>
       </div>
     </article>
@@ -119,12 +119,12 @@ export function HomeSectionCard({
   action?: ReactNode;
 }) {
   return (
-    <section className="rounded-[22px] border border-[#e2eaf5] bg-white p-6 shadow-[0_20px_60px_rgba(15,23,42,0.06)] sm:p-7">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="text-lg font-bold text-[#0b1328] sm:text-xl">{title}</h2>
+    <section className="min-w-0 rounded-[22px] border border-[#e2eaf5] bg-white p-[clamp(1rem,4.6vw,1.5rem)] shadow-[0_20px_60px_rgba(15,23,42,0.06)] sm:p-7">
+      <div className="mb-5 flex min-w-0 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="min-w-0 text-lg font-bold text-[#0b1328] sm:text-xl">{title}</h2>
           {description ? (
-            <p className="mt-1 text-sm leading-6 text-[#64748b]">{description}</p>
+            <p className="mt-1 min-w-0 text-sm leading-6 text-[#64748b]">{description}</p>
           ) : null}
         </div>
         {action}
