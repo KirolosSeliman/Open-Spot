@@ -29,6 +29,8 @@ describe("environment configuration", () => {
     expect(clientEnvKeys).not.toContain("TWILIO_MESSAGING_SERVICE_SID");
     expect(clientEnvKeys).not.toContain("RESEND_API_KEY");
     expect(clientEnvKeys).not.toContain("SALES_OWNER_EMAIL");
+    expect(clientEnvKeys).toContain("NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION");
+    expect(clientEnvKeys).toContain("NEXT_PUBLIC_BING_SITE_VERIFICATION");
   });
 
   it("documents Supabase env placeholders without public service-role naming", () => {
@@ -61,6 +63,8 @@ describe("environment configuration", () => {
     expect(envExample).toContain(
       "NEXT_PUBLIC_APP_URL=https://open-spot.ca"
     );
+    expect(envExample).toContain("NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=");
+    expect(envExample).toContain("NEXT_PUBLIC_BING_SITE_VERIFICATION=");
     expect(envExample).not.toContain("NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY");
   });
 

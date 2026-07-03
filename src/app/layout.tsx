@@ -1,10 +1,15 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
+import { BingSiteVerificationMeta } from "@/components/seo/site-verification";
+import { GlobalStructuredData } from "@/components/seo/structured-data";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { resolveConfiguredSiteUrl } from "@/lib/site-url";
 
 import "./globals.css";
+
+const googleSiteVerification =
+  process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() || undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL(resolveConfiguredSiteUrl()),
@@ -14,7 +19,14 @@ export const metadata: Metadata = {
   icons: {
     apple: "/brand/open-spot-logo-mark.png",
     icon: "/brand/open-spot-logo-mark.png"
-  }
+  },
+  ...(googleSiteVerification
+    ? {
+        verification: {
+          google: googleSiteVerification
+        }
+      }
+    : {})
 };
 
 export const viewport: Viewport = {
@@ -29,6 +41,10 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang={locale}>
+      <head>
+        <BingSiteVerificationMeta />
+        <GlobalStructuredData />
+      </head>
       <body>{children}</body>
     </html>
   );

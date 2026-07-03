@@ -23,6 +23,15 @@ NEXT_PUBLIC_APP_URL=https://open-spot.ca
 PLATFORM_ADMIN_EMAILS=
 ```
 
+Optional search-engine verification (Production only; copy values from Google/Bing consoles — do not invent):
+
+```text
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=
+NEXT_PUBLIC_BING_SITE_VERIFICATION=
+```
+
+See [docs/seo/search-console-verification.md](./seo/search-console-verification.md) for setup steps.
+
 `APP_BASE_URL` is required for production QR codes, public waitlist links, and
 kiosk links. It must be the canonical HTTPS production domain
 (`https://open-spot.ca`). Do not set it to `http://localhost:3000` in production.
