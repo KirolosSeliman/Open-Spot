@@ -1119,7 +1119,7 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
     expect(styles).toContain("height: var(--phone-height)");
-    expect(mobileStyles).toContain("height: clamp(20.75rem, 84vw, 28rem)");
+    expect(mobileStyles).toContain("height: clamp(30.5rem, 112vw, 31.75rem)");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
@@ -1137,7 +1137,7 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain(".reference-mobile-phone-fade {");
     expect(mobileStyles).toContain("display: block !important");
     expect(mobileStyles).toContain("--mobile-phone-fade-opacity: 0.94");
-    expect(mobileStyles).toContain("bottom: -8rem");
+    expect(mobileStyles).toContain("bottom: clamp(-10.5rem, -38vw, -8.25rem)");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
     expect(mobileStyles).toContain("position: relative");
