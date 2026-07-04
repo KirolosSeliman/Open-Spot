@@ -6640,16 +6640,16 @@ select {
   }
 
   .reference-hero-stage {
-    --mobile-phone-fade-height: clamp(10.5rem, 38vw, 14rem);
-    --mobile-phone-fade-opacity: 0.94;
+    --mobile-phone-fade-height: clamp(12rem, 44vw, 16rem);
+    --mobile-phone-fade-opacity: 0.96;
     --mobile-phone-fade-progress: 0;
-    --mobile-phone-mask-height: clamp(4.25rem, 15vw, 5.75rem);
-    --mobile-phone-mask-mid-height: clamp(1.85rem, 6.5vw, 2.75rem);
+    --mobile-phone-mask-height: clamp(9rem, 34vw, 12rem);
+    --mobile-phone-mask-mid-height: clamp(4.5rem, 17vw, 6.5rem);
     --mobile-phone-scale: 1;
     --mobile-phone-y: 0px;
     align-items: flex-start;
     display: flex;
-    height: clamp(30.5rem, 112vw, 31.75rem);
+    height: clamp(34.5rem, 132vw, 38.5rem);
     justify-content: center;
     margin: clamp(1.95rem, 7vw, 2.65rem) auto 0;
     max-width: min(390px, 100%);
@@ -6694,22 +6694,33 @@ select {
     display: none;
   }
 
+  .reference-hero-mobile-only .reference-hero-stage {
+    --phone-width: clamp(17.25rem, 67vw, 19.5rem);
+    --phone-height: calc(var(--phone-width) * 1.625);
+    --phone-ui-scale: calc(var(--phone-width) / 24.5rem);
+  }
+
   .reference-hero-mobile-only .reference-phone {
+    --phone-width: clamp(17.25rem, 67vw, 19.5rem);
+    --phone-height: calc(var(--phone-width) * 1.625);
+    --phone-ui-scale: calc(var(--phone-width) / 24.5rem);
     background:
-      linear-gradient(92deg, #06070a 0%, #252932 45%, #07080a 72%, #616873 100%);
+      linear-gradient(118deg, rgba(255, 255, 255, 0.34) 0%, transparent 14%),
+      linear-gradient(92deg, #585f69 0%, #252932 20%, #07080a 42%, #323843 66%, #616873 100%);
     border-radius: calc(var(--phone-width) * 0.158);
     box-shadow:
-      0 34px 75px rgba(20, 33, 45, 0.22),
-      0 10px 20px rgba(0, 0, 0, 0.2),
-      inset 0 0 0 2px rgba(255, 255, 255, 0.42),
-      inset 0 0 0 calc(var(--phone-width) * 0.037) #08090c;
-    height: min(var(--phone-height), 31.25rem);
+      0 38px 82px rgba(20, 33, 45, 0.26),
+      0 12px 28px rgba(0, 0, 0, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.46),
+      inset 0 0 0 calc(3px * var(--phone-ui-scale)) rgba(255, 255, 255, 0.62),
+      inset 0 0 0 calc(13px * var(--phone-ui-scale)) #08090c;
+    height: var(--phone-height);
     left: auto;
     margin: 0 auto;
-    max-height: 31.25rem;
+    max-height: none;
     max-width: min(var(--phone-width), calc(100% - 2rem));
     overflow: visible;
-    padding: calc(var(--phone-width) * 0.027);
+    padding: calc(11px * var(--phone-ui-scale));
     position: relative;
     top: auto;
     transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale))
@@ -6721,14 +6732,14 @@ select {
       to bottom,
       #000 0%,
       #000 calc(100% - var(--mobile-phone-mask-height)),
-      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0.55) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
     mask-image: linear-gradient(
       to bottom,
       #000 0%,
       #000 calc(100% - var(--mobile-phone-mask-height)),
-      rgba(0, 0, 0, 0.72) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0.55) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
     -webkit-mask-size: 100% 100%;
@@ -6752,160 +6763,209 @@ select {
 
   .reference-hero-mobile-only .reference-phone-side-rail {
     bottom: calc(var(--phone-height) * 0.068);
-    right: calc(var(--phone-width) * -0.022);
+    right: calc(var(--phone-width) * -0.028);
     top: calc(var(--phone-height) * 0.068);
-    width: calc(var(--phone-width) * 0.029);
+    width: calc(var(--phone-width) * 0.035);
   }
 
   .reference-hero-mobile-only .reference-phone-side-rail::before,
   .reference-hero-mobile-only .reference-phone-side-rail::after {
-    height: calc(var(--phone-height) * 0.11);
-    right: calc(var(--phone-width) * 0.007);
-    width: calc(var(--phone-width) * 0.0065);
+    height: calc(2.8rem * var(--phone-ui-scale));
+    right: calc(0.18rem * var(--phone-ui-scale));
+    width: calc(0.16rem * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-phone-side-rail::before {
-    top: calc(var(--phone-height) * 0.216);
+    top: calc(5.5rem * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-phone-side-rail::after {
-    top: calc(var(--phone-height) * 0.392);
+    top: calc(10rem * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-phone-side-button {
-    height: calc(var(--phone-height) * 0.169);
-    right: calc(var(--phone-width) * -0.0204);
+    height: calc(100px * var(--phone-ui-scale));
+    right: calc(-8px * var(--phone-ui-scale));
     top: 42%;
-    width: calc(var(--phone-width) * 0.0204);
+    width: calc(8px * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-phone-screen {
     background: #ffffff;
-    border-radius: calc(var(--phone-width) * 0.122);
+    border-radius: calc(48px * var(--phone-ui-scale));
     box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
     height: 100%;
-    inset: auto;
     overflow: hidden;
     padding:
-      calc(var(--phone-height) * 0.068)
-      calc(var(--phone-width) * 0.105)
-      calc(var(--phone-height) * 0.051)
-      calc(var(--phone-width) * 0.054);
+      calc(40px * var(--phone-ui-scale))
+      calc(41px * var(--phone-ui-scale))
+      calc(30px * var(--phone-ui-scale))
+      calc(21px * var(--phone-ui-scale));
     position: relative;
-    transform: none;
     width: 100%;
   }
 
   .reference-hero-mobile-only .reference-dynamic-island {
-    height: calc(var(--phone-width) * 0.079);
-    left: calc(50% - calc(var(--phone-width) * 0.018));
-    padding-right: calc(var(--phone-width) * 0.028);
-    top: calc(var(--phone-height) * 0.02);
+    height: calc(31px * var(--phone-ui-scale));
+    left: calc(50% - calc(7px * var(--phone-ui-scale)));
+    padding-right: calc(11px * var(--phone-ui-scale));
+    top: calc(12px * var(--phone-ui-scale));
     transform: translateX(-50%);
-    width: calc(var(--phone-width) * 0.245);
+    width: calc(96px * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-dynamic-island span {
-    height: calc(var(--phone-width) * 0.041);
-    width: calc(var(--phone-width) * 0.041);
+    height: calc(16px * var(--phone-ui-scale));
+    width: calc(16px * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-phone-app-header {
-    grid-template-columns: 1.5rem 1fr 1.5rem;
-    margin-bottom: 1.125rem;
+    grid-template-columns: calc(24px * var(--phone-ui-scale)) 1fr calc(24px * var(--phone-ui-scale));
+    margin-bottom: calc(18px * var(--phone-ui-scale));
   }
 
-  .reference-phone-app-header svg {
-    height: 1.3125rem;
-    width: 1.3125rem;
+  .reference-hero-mobile-only .reference-phone-app-header svg {
+    height: calc(21px * var(--phone-ui-scale));
+    width: calc(21px * var(--phone-ui-scale));
   }
 
-  .reference-phone-logo img {
-    height: 1.35rem;
-    width: 1.35rem;
+  .reference-hero-mobile-only .reference-phone-logo img {
+    height: calc(21.6px * var(--phone-ui-scale));
+    width: calc(21.6px * var(--phone-ui-scale));
   }
 
-  .reference-phone-logo .open-spot-logo-wordmark {
-    font-size: 0.98rem;
+  .reference-hero-mobile-only .reference-phone-logo .open-spot-logo-wordmark {
+    font-size: calc(15.68px * var(--phone-ui-scale));
   }
 
-  .reference-detected-card {
-    border-radius: 1rem;
-    gap: 0.9rem;
-    min-height: 5.2rem;
-    padding: 0.85rem;
+  .reference-hero-mobile-only .reference-detected-card,
+  .reference-hero-mobile-only .reference-sms-card,
+  .reference-hero-mobile-only .reference-reply-card {
+    border-radius: calc(18px * var(--phone-ui-scale));
+    box-shadow: 0 calc(9px * var(--phone-ui-scale)) calc(22px * var(--phone-ui-scale)) rgba(15, 23, 42, 0.045);
   }
 
-  .reference-detected-icon {
-    height: 3.375rem;
-    width: 3.375rem;
+  .reference-hero-mobile-only .reference-detected-card {
+    gap: calc(18px * var(--phone-ui-scale));
+    min-height: calc(94px * var(--phone-ui-scale));
+    padding: calc(16px * var(--phone-ui-scale));
   }
 
-  .reference-detected-card strong {
-    font-size: 1rem;
+  .reference-hero-mobile-only .reference-detected-icon {
+    height: calc(54px * var(--phone-ui-scale));
+    width: calc(54px * var(--phone-ui-scale));
   }
 
-  .reference-detected-card p {
-    font-size: 0.8125rem;
+  .reference-hero-mobile-only .reference-detected-icon svg {
+    height: calc(25px * var(--phone-ui-scale));
+    width: calc(25px * var(--phone-ui-scale));
   }
 
-  .reference-sms-card {
-    border-radius: 1.125rem;
-    margin-top: 0.875rem;
-    padding: 0.6875rem 0.75rem 0.5rem;
+  .reference-hero-mobile-only .reference-detected-card strong {
+    font-size: calc(16px * var(--phone-ui-scale));
+    margin-bottom: calc(6px * var(--phone-ui-scale));
   }
 
-  .reference-sms-card > strong {
-    font-size: 0.75rem;
+  .reference-hero-mobile-only .reference-detected-card p {
+    font-size: calc(13px * var(--phone-ui-scale));
   }
 
-  .reference-sms-message {
-    border-radius: 0.625rem;
-    font-size: 0.8rem;
-    min-height: 5rem;
-    padding: 0.75rem;
+  .reference-hero-mobile-only .reference-sms-card {
+    margin-top: calc(14px * var(--phone-ui-scale));
+    padding:
+      calc(11px * var(--phone-ui-scale))
+      calc(12px * var(--phone-ui-scale))
+      calc(8px * var(--phone-ui-scale));
   }
 
-  .reference-send-pill {
-    font-size: 0.625rem;
-    height: 1.9375rem;
-    width: 3.125rem;
+  .reference-hero-mobile-only .reference-sms-card > strong {
+    font-size: calc(12px * var(--phone-ui-scale));
+    margin-bottom: calc(10px * var(--phone-ui-scale));
   }
 
-  .reference-reply-card {
-    border-radius: 1.125rem;
-    margin-top: 0.625rem;
-    padding: 0.8125rem 0.75rem 0.625rem;
+  .reference-hero-mobile-only .reference-sms-message {
+    border-radius: calc(10px * var(--phone-ui-scale));
+    font-size: calc(12.8px * var(--phone-ui-scale));
+    min-height: calc(80px * var(--phone-ui-scale));
+    padding: calc(12px * var(--phone-ui-scale));
   }
 
-  .reference-reply-heading strong {
-    font-size: 0.75rem;
+  .reference-hero-mobile-only .reference-sms-actions {
+    gap: calc(13px * var(--phone-ui-scale));
+    margin-top: calc(7px * var(--phone-ui-scale));
   }
 
-  .reference-reply-item {
-    grid-template-columns: 1.875rem minmax(3.5rem, 1fr) auto auto auto;
+  .reference-hero-mobile-only .reference-mini-icon {
+    height: calc(17px * var(--phone-ui-scale));
+    width: calc(17px * var(--phone-ui-scale));
   }
 
-  .reference-reply-item img {
-    height: 1.875rem;
-    width: 1.875rem;
+  .reference-hero-mobile-only .reference-sms-counter {
+    font-size: calc(10px * var(--phone-ui-scale));
   }
 
-  .reference-reply-item strong {
-    font-size: 0.72rem;
+  .reference-hero-mobile-only .reference-send-pill {
+    border-radius: calc(13px * var(--phone-ui-scale));
+    font-size: calc(10px * var(--phone-ui-scale));
+    height: calc(31px * var(--phone-ui-scale));
+    width: calc(50px * var(--phone-ui-scale));
   }
 
-  .reference-yes-badge {
-    font-size: 0.625rem;
+  .reference-hero-mobile-only .reference-reply-card {
+    margin-top: calc(10px * var(--phone-ui-scale));
+    padding:
+      calc(13px * var(--phone-ui-scale))
+      calc(12px * var(--phone-ui-scale))
+      calc(10px * var(--phone-ui-scale));
   }
 
-  .reference-reply-time {
-    font-size: 0.625rem;
+  .reference-hero-mobile-only .reference-reply-heading {
+    gap: calc(8px * var(--phone-ui-scale));
+    margin-bottom: calc(11px * var(--phone-ui-scale));
   }
 
-  .reference-confirm-pill {
-    font-size: 0.625rem;
-    padding: 0.4375rem 0.625rem;
+  .reference-hero-mobile-only .reference-reply-heading strong {
+    font-size: calc(12px * var(--phone-ui-scale));
+  }
+
+  .reference-hero-mobile-only .reference-reply-heading span {
+    font-size: calc(10px * var(--phone-ui-scale));
+    padding: calc(2px * var(--phone-ui-scale)) calc(6px * var(--phone-ui-scale));
+  }
+
+  .reference-hero-mobile-only .reference-reply-list {
+    gap: calc(8px * var(--phone-ui-scale));
+  }
+
+  .reference-hero-mobile-only .reference-reply-item {
+    gap: calc(8px * var(--phone-ui-scale));
+    grid-template-columns:
+      calc(30px * var(--phone-ui-scale))
+      minmax(calc(58px * var(--phone-ui-scale)), 1fr)
+      auto auto auto;
+  }
+
+  .reference-hero-mobile-only .reference-reply-item img {
+    height: calc(30px * var(--phone-ui-scale));
+    width: calc(30px * var(--phone-ui-scale));
+  }
+
+  .reference-hero-mobile-only .reference-reply-item strong {
+    font-size: calc(11.2px * var(--phone-ui-scale));
+  }
+
+  .reference-hero-mobile-only .reference-yes-badge {
+    font-size: calc(9.5px * var(--phone-ui-scale));
+    padding: calc(3px * var(--phone-ui-scale)) calc(5px * var(--phone-ui-scale));
+  }
+
+  .reference-hero-mobile-only .reference-reply-time {
+    font-size: calc(9.5px * var(--phone-ui-scale));
+  }
+
+  .reference-hero-mobile-only .reference-confirm-pill {
+    font-size: calc(10px * var(--phone-ui-scale));
+    padding: calc(6px * var(--phone-ui-scale)) calc(10px * var(--phone-ui-scale));
   }
 
   .reference-hero-footer {
@@ -6989,11 +7049,11 @@ select {
 
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
   .reference-hero-stage {
-    --mobile-phone-fade-height: 196px;
-    --mobile-phone-fade-opacity: 0.92;
+    --mobile-phone-fade-height: 208px;
+    --mobile-phone-fade-opacity: 0.96;
     --mobile-phone-fade-progress: 0;
-    --mobile-phone-mask-height: 58px;
-    --mobile-phone-mask-mid-height: 28px;
+    --mobile-phone-mask-height: 120px;
+    --mobile-phone-mask-mid-height: 58px;
     --mobile-phone-scale: 1;
     --mobile-phone-y: 0px;
   }
@@ -7244,102 +7304,26 @@ select {
 
   .reference-hero-stage,
   .lunera-template[data-locale="fr"] .reference-hero-stage {
-    --mobile-phone-fade-height: clamp(10.75rem, 40vw, 14.25rem) !important;
-    --mobile-phone-mask-height: clamp(4.5rem, 16vw, 6rem) !important;
-    --mobile-phone-mask-mid-height: clamp(2rem, 7vw, 3rem) !important;
-    height: clamp(30.5rem, 112vw, 31.75rem);
+    --mobile-phone-fade-height: clamp(13rem, 48vw, 17rem) !important;
+    --mobile-phone-mask-height: clamp(9rem, 34vw, 12rem) !important;
+    --mobile-phone-mask-mid-height: clamp(4.5rem, 17vw, 6.5rem) !important;
+    height: clamp(34.5rem, 132vw, 38.5rem);
     margin-top: clamp(1.55rem, 6.2vw, 2rem);
     max-width: min(430px, 100%);
   }
 
   .reference-hero-mobile-only .reference-hero-stage {
-    --phone-width: clamp(16.75rem, 65vw, 18.85rem);
-    --phone-height: calc(var(--phone-width) * 1.504);
-  }
-
-  .reference-hero-mobile-only .reference-phone-screen {
-    padding:
-      clamp(2.85rem, 11vw, 3.25rem)
-      calc(var(--phone-width) * 0.105)
-      calc(var(--phone-height) * 0.051)
-      calc(var(--phone-width) * 0.054);
-  }
-
-  .reference-phone-status {
-    align-items: center;
-    color: #05070a;
-    display: flex;
-    font-size: clamp(0.72rem, 2.9vw, 0.82rem);
-    font-weight: 820;
-    justify-content: space-between;
-    left: clamp(1.35rem, 5.5vw, 1.62rem);
-    pointer-events: none;
-    position: absolute;
-    right: clamp(1.28rem, 5.1vw, 1.52rem);
-    top: clamp(1.03rem, 4.15vw, 1.22rem);
-    z-index: 6;
-  }
-
-  .reference-phone-status > span:last-child {
-    align-items: center;
-    display: inline-flex;
-    gap: 0.18rem;
-  }
-
-  .reference-phone-status svg {
-    height: 0.86rem;
-    width: 0.86rem;
-  }
-
-  .reference-phone-status svg:last-child {
-    height: 0.8rem;
-    width: 1.6rem;
-  }
-
-  .reference-dynamic-island {
-    height: clamp(1.55rem, 6.4vw, 1.82rem);
-    top: clamp(0.9rem, 3.8vw, 1.08rem);
-    width: clamp(5.15rem, 22vw, 5.9rem);
-    z-index: 7;
-  }
-
-  .reference-phone-app-header {
-    grid-template-columns: 1.45rem 1fr 1.45rem;
-    margin-bottom: clamp(0.88rem, 3.8vw, 1.1rem);
-  }
-
-  .reference-detected-card {
-    min-height: clamp(4.65rem, 18.5vw, 5.35rem);
-    padding: clamp(0.72rem, 3vw, 0.9rem);
-  }
-
-  .reference-detected-card strong {
-    font-size: clamp(0.78rem, 3.15vw, 0.95rem);
-  }
-
-  .reference-detected-card p {
-    font-size: clamp(0.68rem, 2.75vw, 0.8rem);
-  }
-
-  .reference-sms-card {
-    margin-top: 0.78rem;
-  }
-
-  .reference-sms-message {
-    font-size: clamp(0.68rem, 2.8vw, 0.8rem);
-    min-height: clamp(4.35rem, 17vw, 5rem);
-  }
-
-  .reference-reply-card {
-    margin-top: 0.62rem;
+    --phone-width: clamp(17.25rem, 67vw, 19.5rem);
+    --phone-height: calc(var(--phone-width) * 1.625);
+    --phone-ui-scale: calc(var(--phone-width) / 24.5rem);
   }
 
   .reference-mobile-phone-fade {
     background:
       radial-gradient(ellipse at -2% 92%, rgba(255, 255, 255, 0.98) 0 4.8rem, rgba(255, 255, 255, 0.78) 6.7rem, rgba(255, 255, 255, 0) 9.7rem),
       radial-gradient(ellipse at 102% 92%, rgba(255, 255, 255, 0.98) 0 5.2rem, rgba(255, 255, 255, 0.76) 7.1rem, rgba(255, 255, 255, 0) 10rem),
-      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 36%, rgba(255, 255, 255, 0.78) 56%, #ffffff 76%, #ffffff 100%);
-    bottom: clamp(-10.25rem, -37vw, -8rem);
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0.72) 48%, rgba(255, 255, 255, 0.96) 68%, #ffffff 84%, #ffffff 100%);
+    bottom: clamp(-11.5rem, -42vw, -9rem);
     opacity: 1 !important;
     z-index: 20;
   }

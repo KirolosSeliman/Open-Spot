@@ -864,7 +864,7 @@ export function LuneraOpenSpotTemplate({
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(fadeStage, 0.92, 196, 0, 0, 1, 58);
+          setFadeValues(fadeStage, 0.96, 208, 0, 0, 1, 120);
           return;
         }
 
@@ -874,11 +874,11 @@ export function LuneraOpenSpotTemplate({
         const rawProgress = Math.min(1, Math.max(0, -heroTop / Math.max(1, heroHeight * 0.42)));
         const progress = rawProgress;
         const easedProgress = progress * progress * (3 - 2 * progress);
-        const opacity = 0.9 + easedProgress * 0.1;
-        const height = 168 + easedProgress * 52;
+        const opacity = 0.92 + easedProgress * 0.08;
+        const height = 192 + easedProgress * 56;
         const phoneY = easedProgress * -10;
         const phoneRatio = 1 - easedProgress * 0.012;
-        const maskHeight = 52 + easedProgress * 78;
+        const maskHeight = 120 + easedProgress * 72;
 
         setFadeValues(fadeStage, opacity, height, progress, phoneY, phoneRatio, maskHeight);
       });
@@ -961,7 +961,7 @@ function HeroSection({ className, t }: { className: string; t: TemplateCopy }) {
           {t.hero.subtitle}
         </p>
       </div>
-      <ReferenceHeroStage showStatusBar={className === "reference-hero-mobile-only"} t={t} />
+      <ReferenceHeroStage t={t} />
       <div className="reference-phone-fade" aria-hidden="true" />
       <div className="reference-hero-footer">
         <TrustRow label={t.hero.socialProof} />
@@ -971,13 +971,7 @@ function HeroSection({ className, t }: { className: string; t: TemplateCopy }) {
   );
 }
 
-function ReferenceHeroStage({
-  showStatusBar = false,
-  t
-}: {
-  showStatusBar?: boolean;
-  t: TemplateCopy;
-}) {
+function ReferenceHeroStage({ t }: { t: TemplateCopy }) {
   return (
     <div className="reference-hero-stage" aria-hidden="true" data-lunera-reveal>
       <FloatingPill className="reference-pill-alert" icon={<PaperPlaneIcon />} label={t.hero.floatingAlert} />
@@ -994,7 +988,7 @@ function ReferenceHeroStage({
         label={t.hero.repliesLabel}
       />
       <FloatingPill className="reference-pill-confirm" icon={<CheckIcon />} label={t.hero.confirmManual} />
-      <PhoneProductMockup phone={t.hero.phone} showStatusBar={showStatusBar} />
+      <PhoneProductMockup phone={t.hero.phone} />
       <div className="reference-mobile-phone-fade" aria-hidden="true" />
     </div>
   );
@@ -1039,29 +1033,13 @@ function MetricCard({
   );
 }
 
-function PhoneProductMockup({
-  phone,
-  showStatusBar = false
-}: {
-  phone: TemplateCopy["hero"]["phone"];
-  showStatusBar?: boolean;
-}) {
+function PhoneProductMockup({ phone }: { phone: TemplateCopy["hero"]["phone"] }) {
   return (
     <div className="reference-phone" data-reference-part="mobile-phone">
       <div aria-hidden="true" className="reference-phone-side-rail" />
       <div aria-hidden="true" className="reference-phone-side-button" />
       <div className="reference-phone-screen">
         <div aria-hidden="true" className="reference-phone-glare" />
-        {showStatusBar ? (
-          <div className="reference-phone-status" aria-hidden="true">
-            <span>09:41</span>
-            <span>
-              <SignalIcon />
-              <WifiIcon />
-              <BatteryIcon />
-            </span>
-          </div>
-        ) : null}
         <div className="reference-dynamic-island" data-reference-part="dynamic-island">
           <span />
         </div>
@@ -1175,38 +1153,6 @@ function MenuIcon() {
   return (
     <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
       <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8" />
-    </svg>
-  );
-}
-
-function SignalIcon() {
-  return (
-    <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
-      <rect height="5" rx="1" width="3" x="4" y="14" />
-      <rect height="8" rx="1" width="3" x="9" y="11" />
-      <rect height="11" rx="1" width="3" x="14" y="8" />
-      <rect height="14" rx="1" width="3" x="19" y="5" />
-    </svg>
-  );
-}
-
-function WifiIcon() {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 24 24">
-      <path d="M4.5 9.2a11.8 11.8 0 0 1 15 0" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-      <path d="M7.8 12.4a6.9 6.9 0 0 1 8.4 0" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-      <path d="M10.7 15.5a2.2 2.2 0 0 1 2.6 0" stroke="currentColor" strokeLinecap="round" strokeWidth="2" />
-      <path d="M12 18.2h.01" stroke="currentColor" strokeLinecap="round" strokeWidth="3" />
-    </svg>
-  );
-}
-
-function BatteryIcon() {
-  return (
-    <svg aria-hidden="true" fill="none" viewBox="0 0 28 14">
-      <rect height="10" rx="2.4" stroke="currentColor" strokeWidth="1.5" width="22" x="1" y="2" />
-      <path d="M24.5 5v4" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7" />
-      <rect fill="currentColor" height="6" rx="1.2" width="16" x="4" y="4" />
     </svg>
   );
 }
