@@ -1048,17 +1048,10 @@ function PhoneProductMockup({
 }) {
   return (
     <div className="reference-phone" data-reference-part="mobile-phone">
-      <div aria-hidden="true" className="reference-phone-chassis-edge" />
       <div aria-hidden="true" className="reference-phone-side-rail" />
       <div aria-hidden="true" className="reference-phone-side-button" />
-      <div aria-hidden="true" className="reference-phone-buttons-left">
-        <span className="reference-phone-button reference-phone-button--action" />
-        <span className="reference-phone-button reference-phone-button--volume" />
-        <span className="reference-phone-button reference-phone-button--volume" />
-      </div>
-      <div className="reference-phone-glass">
-        <div className="reference-phone-screen">
-          <div aria-hidden="true" className="reference-phone-glare" />
+      <div className="reference-phone-screen">
+        <div aria-hidden="true" className="reference-phone-glare" />
         {showStatusBar ? (
           <div className="reference-phone-status" aria-hidden="true">
             <span>09:41</span>
@@ -1121,8 +1114,6 @@ function PhoneProductMockup({
               </div>
             ))}
           </div>
-        </div>
-        <div aria-hidden="true" className="reference-phone-home-indicator" />
         </div>
       </div>
     </div>

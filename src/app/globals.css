@@ -1570,47 +1570,6 @@ select {
   z-index: 2;
 }
 
-.reference-phone-chassis-edge,
-.reference-phone-buttons-left,
-.reference-phone-home-indicator {
-  display: none;
-}
-
-.reference-phone-glass {
-  display: block;
-  height: 100%;
-  position: relative;
-  width: 100%;
-}
-
-.reference-phone-buttons-left {
-  flex-direction: column;
-  gap: 0.55rem;
-  pointer-events: none;
-  position: absolute;
-  z-index: 3;
-}
-
-.reference-phone-button {
-  background: linear-gradient(90deg, #0d0f13 0%, #565d68 48%, #101318 100%);
-  border-radius: 2px 0 0 2px;
-  box-shadow:
-    inset -1px 0 0 rgba(255, 255, 255, 0.14),
-    1px 0 4px rgba(0, 0, 0, 0.28);
-  display: block;
-}
-
-.reference-phone-home-indicator {
-  background: #0a0a0a;
-  border-radius: 999px;
-  left: 50%;
-  opacity: 0.88;
-  pointer-events: none;
-  position: absolute;
-  transform: translateX(-50%);
-  z-index: 6;
-}
-
 .reference-phone-screen {
   background: #ffffff;
   border-radius: 48px;
@@ -6695,9 +6654,7 @@ select {
     margin: clamp(1.95rem, 7vw, 2.65rem) auto 0;
     max-width: min(390px, 100%);
     overflow: visible;
-    perspective: 1200px;
     position: relative;
-    transform-style: preserve-3d;
     width: 100%;
     z-index: 12;
   }
@@ -6737,172 +6694,29 @@ select {
     display: none;
   }
 
-  .reference-phone {
-    --mobile-phone-rotate-y: -8.5deg;
-    --mobile-phone-rotate-z: 1.35deg;
-    --mobile-phone-rotate-x: 1.75deg;
+  .reference-hero-mobile-only .reference-phone {
     background:
-      linear-gradient(115deg, rgba(255, 255, 255, 0.28) 0%, transparent 18%),
-      linear-gradient(90deg, #07090e 0%, #1d2027 48%, #07090e 100%);
-    border: 0;
-    border-radius: clamp(2.65rem, 10.5vw, 3.55rem);
+      linear-gradient(92deg, #06070a 0%, #252932 45%, #07080a 72%, #616873 100%);
+    border-radius: calc(var(--phone-width) * 0.158);
     box-shadow:
-      0 46px 98px rgba(15, 23, 42, 0.32),
-      0 18px 38px rgba(0, 0, 0, 0.28),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.82),
-      inset 0 0 0 6px rgba(7, 9, 14, 0.96);
-    height: min(112vw, 500px);
-    isolation: isolate;
+      0 34px 75px rgba(20, 33, 45, 0.22),
+      0 10px 20px rgba(0, 0, 0, 0.2),
+      inset 0 0 0 2px rgba(255, 255, 255, 0.42),
+      inset 0 0 0 calc(var(--phone-width) * 0.037) #08090c;
+    height: min(var(--phone-height), 31.25rem);
     left: auto;
     margin: 0 auto;
-    max-height: 500px;
-    max-width: 318px;
+    max-height: 31.25rem;
+    max-width: min(var(--phone-width), calc(100% - 2rem));
     overflow: visible;
-    padding: 0;
+    padding: calc(var(--phone-width) * 0.027);
     position: relative;
     top: auto;
     transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale))
-      rotateX(var(--mobile-phone-rotate-x)) rotateY(var(--mobile-phone-rotate-y))
-      rotateZ(var(--mobile-phone-rotate-z));
+      perspective(1500px) rotateY(-3deg) rotateZ(1.35deg);
     transform-origin: 50% 6%;
-    transform-style: preserve-3d;
-    width: min(68vw, 292px);
+    width: var(--phone-width);
     z-index: 14;
-    will-change: transform;
-  }
-
-  .reference-phone::before {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.08) 18%, transparent 42%);
-    border-radius: inherit;
-    content: "";
-    inset: 0;
-    pointer-events: none;
-    position: absolute;
-    z-index: 6;
-  }
-
-  .reference-phone::after {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(88, 94, 104, 0.62) 44%, rgba(0, 0, 0, 0.62));
-    border-radius: 0 46% 46% 0;
-    bottom: 2.4rem;
-    content: "";
-    opacity: 1;
-    position: absolute;
-    right: -0.62rem;
-    top: 2.2rem;
-    transform: translateZ(-18px);
-    width: 0.95rem;
-    z-index: 0;
-  }
-
-  .reference-phone-chassis-edge {
-    border-radius: inherit;
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-      inset 0 18px 36px rgba(255, 255, 255, 0.06);
-    display: block;
-    inset: 0;
-    pointer-events: none;
-    position: absolute;
-    transform: translateZ(2px);
-    z-index: 5;
-  }
-
-  .reference-phone-side-rail {
-    background: linear-gradient(90deg, #101318 0%, #5d626a 42%, #15181d 100%);
-    border-radius: 0 clamp(2.2rem, 8.5vw, 2.85rem) clamp(2.2rem, 8.5vw, 2.85rem) 0;
-    bottom: 1.65rem;
-    box-shadow:
-      inset 5px 0 10px rgba(255, 255, 255, 0.22),
-      inset -5px 0 14px rgba(0, 0, 0, 0.52),
-      12px 20px 40px rgba(0, 0, 0, 0.28);
-    display: block;
-    position: absolute;
-    right: -0.88rem;
-    top: 1.65rem;
-    transform: translateZ(-24px);
-    width: 1.05rem;
-    z-index: 1;
-  }
-
-  .reference-phone-side-rail::before,
-  .reference-phone-side-rail::after {
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.22), rgba(0, 0, 0, 0.38));
-    border-radius: 999px;
-    content: "";
-    height: 2.65rem;
-    position: absolute;
-    right: 0.22rem;
-    width: 0.18rem;
-  }
-
-  .reference-phone-side-rail::before {
-    top: 4.6rem;
-  }
-
-  .reference-phone-side-rail::after {
-    top: 8.1rem;
-  }
-
-  .reference-phone-side-button {
-    background: linear-gradient(90deg, #12151a 0%, #737985 48%, #0d1014 100%);
-    border-radius: 999px;
-    box-shadow:
-      inset -1px 0 0 rgba(255, 255, 255, 0.16),
-      2px 0 6px rgba(0, 0, 0, 0.32);
-    display: block;
-    height: 3.85rem;
-    position: absolute;
-    right: -0.58rem;
-    top: 33%;
-    transform: translateZ(-14px);
-    width: 0.42rem;
-    z-index: 2;
-  }
-
-  .reference-phone-buttons-left {
-    display: flex;
-    flex-direction: column;
-    gap: 0.48rem;
-    left: -0.62rem;
-    pointer-events: none;
-    position: absolute;
-    top: 22%;
-    transform: translateZ(14px);
-    z-index: 2;
-  }
-
-  .reference-phone-button {
-    background: linear-gradient(90deg, #0d0f13 0%, #6a717c 46%, #101318 100%);
-    border-radius: 2px 0 0 2px;
-    box-shadow:
-      inset -1px 0 0 rgba(255, 255, 255, 0.18),
-      1px 0 5px rgba(0, 0, 0, 0.3);
-    display: block;
-  }
-
-  .reference-phone-button--action {
-    height: 1.65rem;
-    margin-bottom: 0.22rem;
-    width: 0.3rem;
-  }
-
-  .reference-phone-button--volume {
-    height: 1.28rem;
-    width: 0.28rem;
-  }
-
-  .reference-phone-glass {
-    background:
-      radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.92), transparent 28%),
-      linear-gradient(120deg, rgba(255, 255, 255, 0.92), #ffffff 55%, rgba(240, 245, 251, 0.96));
-    border-radius: clamp(2.35rem, 9.2vw, 3.05rem);
-    display: block;
-    inset: clamp(0.48rem, 2.1vw, 0.68rem);
-    overflow: hidden;
-    position: absolute;
-    transform: translateZ(8px);
-    z-index: 3;
     -webkit-mask-image: linear-gradient(
       to bottom,
       #000 0%,
@@ -6919,50 +6733,84 @@ select {
     );
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
+    will-change: transform;
   }
 
-  .reference-phone-screen {
-    background:
-      linear-gradient(180deg, #ffffff 0%, #ffffff 74%, #f5f6f8 100%);
-    border-radius: clamp(2.12rem, 8.4vw, 2.82rem);
-    box-shadow:
-      inset 0 0 0 1px rgba(15, 23, 42, 0.05),
-      inset 0 18px 38px rgba(255, 255, 255, 0.68);
-    height: 100%;
-    inset: 0;
-    overflow: hidden;
-    padding: clamp(2.2rem, 9vw, 2.55rem) clamp(0.75rem, 3.3vw, 0.95rem) 1.35rem;
+  .reference-hero-mobile-only .reference-phone::after {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.22), rgba(0, 0, 0, 0.45));
+    border-radius: 0 54px 54px 0;
+    bottom: calc(var(--phone-height) * 0.071);
+    content: "";
+    opacity: 1;
     position: absolute;
-    transform: translateZ(4px);
+    right: calc(var(--phone-width) * -0.013);
+    top: calc(var(--phone-height) * 0.064);
+    transform: none;
+    width: calc(var(--phone-width) * 0.046);
+    z-index: -1;
+  }
+
+  .reference-hero-mobile-only .reference-phone-side-rail {
+    bottom: calc(var(--phone-height) * 0.068);
+    right: calc(var(--phone-width) * -0.022);
+    top: calc(var(--phone-height) * 0.068);
+    width: calc(var(--phone-width) * 0.029);
+  }
+
+  .reference-hero-mobile-only .reference-phone-side-rail::before,
+  .reference-hero-mobile-only .reference-phone-side-rail::after {
+    height: calc(var(--phone-height) * 0.11);
+    right: calc(var(--phone-width) * 0.007);
+    width: calc(var(--phone-width) * 0.0065);
+  }
+
+  .reference-hero-mobile-only .reference-phone-side-rail::before {
+    top: calc(var(--phone-height) * 0.216);
+  }
+
+  .reference-hero-mobile-only .reference-phone-side-rail::after {
+    top: calc(var(--phone-height) * 0.392);
+  }
+
+  .reference-hero-mobile-only .reference-phone-side-button {
+    height: calc(var(--phone-height) * 0.169);
+    right: calc(var(--phone-width) * -0.0204);
+    top: 42%;
+    width: calc(var(--phone-width) * 0.0204);
+  }
+
+  .reference-hero-mobile-only .reference-phone-screen {
+    background: #ffffff;
+    border-radius: calc(var(--phone-width) * 0.122);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+    height: 100%;
+    inset: auto;
+    overflow: hidden;
+    padding:
+      calc(var(--phone-height) * 0.068)
+      calc(var(--phone-width) * 0.105)
+      calc(var(--phone-height) * 0.051)
+      calc(var(--phone-width) * 0.054);
+    position: relative;
+    transform: none;
     width: 100%;
-    z-index: 4;
   }
 
-  .reference-phone-home-indicator {
-    bottom: 0.42rem;
-    display: block;
-    height: 0.26rem;
-    width: 32%;
-  }
-
-  .reference-dynamic-island {
-    background: #000000;
-    box-shadow:
-      0 5px 14px rgba(0, 0, 0, 0.34),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    height: clamp(1.55rem, 6.8vw, 1.78rem);
-    left: calc(50% - 0.2rem);
-    top: 0.75rem;
+  .reference-hero-mobile-only .reference-dynamic-island {
+    height: calc(var(--phone-width) * 0.079);
+    left: calc(50% - calc(var(--phone-width) * 0.018));
+    padding-right: calc(var(--phone-width) * 0.028);
+    top: calc(var(--phone-height) * 0.02);
     transform: translateX(-50%);
-    width: clamp(4.85rem, 22vw, 5.55rem);
+    width: calc(var(--phone-width) * 0.245);
   }
 
-  .reference-dynamic-island span {
-    height: 1rem;
-    width: 1rem;
+  .reference-hero-mobile-only .reference-dynamic-island span {
+    height: calc(var(--phone-width) * 0.041);
+    width: calc(var(--phone-width) * 0.041);
   }
 
-  .reference-phone-app-header {
+  .reference-hero-mobile-only .reference-phone-app-header {
     grid-template-columns: 1.5rem 1fr 1.5rem;
     margin-bottom: 1.125rem;
   }
@@ -7404,27 +7252,17 @@ select {
     max-width: min(430px, 100%);
   }
 
-  .reference-phone {
-    border-radius: clamp(2.85rem, 11.2vw, 3.65rem);
-    max-width: 318px;
-    padding: 0;
-    width: clamp(16.75rem, 65vw, 18.35rem);
+  .reference-hero-mobile-only .reference-hero-stage {
+    --phone-width: clamp(16.75rem, 65vw, 18.85rem);
+    --phone-height: calc(var(--phone-width) * 1.504);
   }
 
-  .reference-phone-glass {
-    border-radius: clamp(2.55rem, 10vw, 3.25rem);
-    inset: clamp(0.52rem, 2.2vw, 0.72rem);
-  }
-
-  .reference-phone-screen {
-    border-radius: clamp(2.35rem, 9.4vw, 3rem);
-    padding: clamp(3.05rem, 12vw, 3.42rem) clamp(0.9rem, 3.55vw, 1.08rem) 1.35rem;
-  }
-
-  .reference-phone-home-indicator {
-    bottom: 0.48rem;
-    height: 0.28rem;
-    width: 31%;
+  .reference-hero-mobile-only .reference-phone-screen {
+    padding:
+      clamp(2.85rem, 11vw, 3.25rem)
+      calc(var(--phone-width) * 0.105)
+      calc(var(--phone-height) * 0.051)
+      calc(var(--phone-width) * 0.054);
   }
 
   .reference-phone-status {
