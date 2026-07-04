@@ -1,29 +1,31 @@
 import type { MetadataRoute } from "next";
 
-import { resolveConfiguredSiteUrl } from "@/lib/site-url";
+import { absoluteUrl } from "@/lib/seo/site";
 
 export default function robots(): MetadataRoute.Robots {
-  const siteUrl = resolveConfiguredSiteUrl();
-
   return {
     rules: {
       userAgent: "*",
       allow: "/",
       disallow: [
+        "/api/",
+        "/join/",
         "/dashboard/",
         "/admin/",
         "/platform-admin/",
-        "/api/",
         "/auth/",
         "/sign-in",
         "/signup",
         "/login",
+        "/register",
         "/forgot-password",
         "/onboarding",
         "/dashboard-preview",
+        "/book-call/ready",
+        "/book-call/questions",
         "/b/"
       ]
     },
-    sitemap: `${siteUrl}/sitemap.xml`
+    sitemap: absoluteUrl("/sitemap.xml")
   };
 }

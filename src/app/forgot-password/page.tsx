@@ -5,6 +5,9 @@ import { PageShell } from "@/components/layout/page-shell";
 import { Card } from "@/components/ui/card";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current";
+import { privatePageMetadata } from "@/lib/seo/private-metadata";
+
+export const metadata = privatePageMetadata;
 
 type ForgotPasswordPageProps = {
   searchParams: Promise<{

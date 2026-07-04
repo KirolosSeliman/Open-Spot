@@ -8,6 +8,9 @@ import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { signInAction } from "@/lib/auth/actions";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { redirectAuthenticatedUserByWorkspace } from "@/lib/organization/current";
+import { privatePageMetadata } from "@/lib/seo/private-metadata";
+
+export const metadata = privatePageMetadata;
 
 type SignInPageProps = {
   searchParams: Promise<{

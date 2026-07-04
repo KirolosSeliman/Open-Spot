@@ -1,34 +1,38 @@
 import type { MetadataRoute } from "next";
 
-import { resolveConfiguredSiteUrl } from "@/lib/site-url";
+import { articlePages, commercialPages } from "@/lib/seo/pages";
+import { absoluteUrl } from "@/lib/seo/site";
+import { coreSitemapEntries } from "@/lib/seo/structured-data";
 
-type SitemapEntry = {
-  path: string;
-  changeFrequency: NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
-  priority: number;
-};
-
-const publicSitemapEntries: SitemapEntry[] = [
-  { path: "/", changeFrequency: "weekly", priority: 1 },
-  { path: "/pricing", changeFrequency: "monthly", priority: 0.9 },
-  { path: "/how-it-works", changeFrequency: "monthly", priority: 0.9 },
-  { path: "/industries", changeFrequency: "monthly", priority: 0.8 },
-  { path: "/book-call/questions", changeFrequency: "monthly", priority: 0.85 },
-  { path: "/book-call/ready", changeFrequency: "monthly", priority: 0.75 },
-  { path: "/politique-confidentialite", changeFrequency: "yearly", priority: 0.4 },
-  { path: "/conditions-utilisation", changeFrequency: "yearly", priority: 0.4 },
-  { path: "/consentement-sms", changeFrequency: "yearly", priority: 0.4 }
-];
-
-const lastModified = new Date("2026-07-03");
+const lastModified = new Date("2026-07-04");
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = resolveConfiguredSiteUrl();
+  const entries: MetadataRoute.Sitemap = coreSitemapEntries.map(
+    ({ path, changeFrequency, priority }) => ({
+      url: absoluteUrl(path),
+      lastModified,
+      changeFrequency,
+      priority
+    })
+  );
 
-  return publicSitemapEntries.map(({ path, changeFrequency, priority }) => ({
-    url: path === "/" ? siteUrl : `${siteUrl}${path}`,
-    lastModified,
-    changeFrequency,
-    priority
-  }));
+  for (const page of Object.values(commercialPages)) {
+    entries.push({
+      url: absoluteUrl(page.path),
+      lastModified,
+      changeFrequency: page.sitemap.changeFrequency,
+      priority: page.sitemap.priority
+    });
+  }
+
+  for (const page of Object.values(articlePages)) {
+    entries.push({
+      url: absoluteUrl(page.path),
+      lastModified,
+      changeFrequency: page.sitemap.changeFrequency,
+      priority: page.sitemap.priority
+    });
+  }
+
+  return entries;
 }
