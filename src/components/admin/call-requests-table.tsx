@@ -158,13 +158,16 @@ function ContactActions({ request }: { request: BookCallRequestRow }) {
   );
 }
 
-function RequestRowForm({ request }: { request: BookCallRequestRow }) {
+function callRequestRowFormId(requestId: string) {
+  return `call-request-row-form-${requestId}`;
+}
+
+function RequestRowFormCells({ request }: { request: BookCallRequestRow }) {
+  const formId = callRequestRowFormId(request.id);
   const styles = statusStyles[request.status];
 
   return (
-    <form action={updateBookCallRequestAction} className="contents">
-      <input name="requestId" type="hidden" value={request.id} />
-
+    <>
       <td className="px-2 py-2.5 align-top xl:px-3 xl:py-3">
         <label className="sr-only" htmlFor={`status-${request.id}`}>
           Statut pour {request.full_name}
@@ -183,6 +186,7 @@ function RequestRowForm({ request }: { request: BookCallRequestRow }) {
               styles.select
             )}
             defaultValue={request.status}
+            form={formId}
             id={`status-${request.id}`}
             name="status"
           >
@@ -203,6 +207,7 @@ function RequestRowForm({ request }: { request: BookCallRequestRow }) {
         <textarea
           className="min-h-[44px] w-full min-w-0 resize-none rounded-[8px] border border-[#e3eaf5] bg-white px-2 py-1.5 text-[11px] leading-4 text-[#0b1328] outline-none transition placeholder:text-[#94a3b8] focus:border-[#2563ff] focus:ring-2 focus:ring-[#2563ff]/10"
           defaultValue={request.internal_notes ?? ""}
+          form={formId}
           id={`notes-${request.id}`}
           maxLength={2000}
           name="internalNotes"
@@ -215,6 +220,7 @@ function RequestRowForm({ request }: { request: BookCallRequestRow }) {
         <div className="flex w-full min-w-0 flex-col gap-1.5">
           <button
             className="inline-flex h-8 w-full items-center justify-center rounded-full border border-[#2563ff]/25 bg-white px-2 text-[11px] font-semibold text-[#2563ff] transition hover:bg-[#eef5ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563ff]"
+            form={formId}
             type="submit"
           >
             Enregistrer
@@ -228,7 +234,7 @@ function RequestRowForm({ request }: { request: BookCallRequestRow }) {
           </Link>
         </div>
       </td>
-    </form>
+    </>
   );
 }
 
@@ -375,7 +381,7 @@ export function CallRequestsTable({
     <>
       <div className="hidden h-full min-h-0 xl:block">
         <div className="h-full min-h-0 overflow-auto rounded-[16px] border border-[#e3eaf5] [scrollbar-color:#cbd5e1_#f8fbff] [scrollbar-width:thin]">
-          <table className="w-full table-fixed border-collapse text-left text-sm">
+          <table className="w-full min-w-[1280px] table-fixed border-collapse text-left text-sm">
             <colgroup>
               <col className="w-[9%]" />
               <col className="w-[21%]" />
@@ -460,12 +466,23 @@ export function CallRequestsTable({
                     <td className={tableCellClass}>
                       <ContactActions request={request} />
                     </td>
-                    <RequestRowForm request={request} />
+                    <RequestRowFormCells request={request} />
                   </tr>
                 );
               })}
             </tbody>
           </table>
+        </div>
+        <div className="hidden" aria-hidden="true">
+          {requests.map((request) => (
+            <form
+              key={request.id}
+              action={updateBookCallRequestAction}
+              id={callRequestRowFormId(request.id)}
+            >
+              <input name="requestId" type="hidden" value={request.id} />
+            </form>
+          ))}
         </div>
       </div>
 
