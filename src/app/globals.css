@@ -6938,34 +6938,41 @@ select {
   }
 
   .reference-hero-mobile-only .reference-reply-item {
-    gap: calc(8px * var(--phone-ui-scale));
+    gap: calc(5px * var(--phone-ui-scale));
     grid-template-columns:
-      calc(30px * var(--phone-ui-scale))
-      minmax(calc(58px * var(--phone-ui-scale)), 1fr)
+      calc(24px * var(--phone-ui-scale))
+      minmax(0, 1fr)
       auto auto auto;
   }
 
   .reference-hero-mobile-only .reference-reply-item img {
-    height: calc(30px * var(--phone-ui-scale));
-    width: calc(30px * var(--phone-ui-scale));
+    height: calc(24px * var(--phone-ui-scale));
+    width: calc(24px * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-reply-item strong {
-    font-size: calc(11.2px * var(--phone-ui-scale));
+    font-size: calc(10px * var(--phone-ui-scale));
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .reference-hero-mobile-only .reference-yes-badge {
-    font-size: calc(9.5px * var(--phone-ui-scale));
-    padding: calc(3px * var(--phone-ui-scale)) calc(5px * var(--phone-ui-scale));
+    font-size: calc(8px * var(--phone-ui-scale));
+    padding: calc(2px * var(--phone-ui-scale)) calc(4px * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-reply-time {
-    font-size: calc(9.5px * var(--phone-ui-scale));
+    font-size: calc(8px * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-confirm-pill {
-    font-size: calc(10px * var(--phone-ui-scale));
-    padding: calc(6px * var(--phone-ui-scale)) calc(10px * var(--phone-ui-scale));
+    font-size: calc(8px * var(--phone-ui-scale));
+    font-weight: 700;
+    line-height: 1.1;
+    min-width: 0;
+    padding: calc(3px * var(--phone-ui-scale)) calc(6px * var(--phone-ui-scale));
   }
 
   .reference-hero-footer {
