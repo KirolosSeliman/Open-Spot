@@ -4,6 +4,9 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { getCurrentPlatformAdminAccess } from "@/lib/auth/platform-admin";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
+import { privatePageMetadata } from "@/lib/seo/private-metadata";
+
+export const metadata = privatePageMetadata;
 
 export default async function DashboardLayout({
   children

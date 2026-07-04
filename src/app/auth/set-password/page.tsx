@@ -3,6 +3,9 @@ import { Suspense } from "react";
 import { SetPasswordForm } from "@/components/auth/set-password-form";
 import { AuthStateCard } from "@/components/auth/auth-state-card";
 import { PageShell } from "@/components/layout/page-shell";
+import { privatePageMetadata } from "@/lib/seo/private-metadata";
+
+export const metadata = privatePageMetadata;
 
 export default function SetPasswordPage() {
   return (

@@ -3,6 +3,9 @@ import { Suspense } from "react";
 import { AuthCallbackHandler } from "@/components/auth/auth-callback-handler";
 import { AuthStateCard } from "@/components/auth/auth-state-card";
 import { PageShell } from "@/components/layout/page-shell";
+import { privatePageMetadata } from "@/lib/seo/private-metadata";
+
+export const metadata = privatePageMetadata;
 
 export default function AuthCallbackPage() {
   return (

@@ -8,6 +8,7 @@ import type { CSSProperties, MouseEvent, PointerEvent, ReactNode } from "react";
 import { OpenSpotLogo } from "@/components/brand/open-spot-logo";
 import { BookingFlowSection } from "@/components/marketing/booking-flow-section";
 import { OpenSpotMetricsShowcase } from "@/components/marketing/open-spot-metrics-showcase";
+import { InternalSeoLinks } from "@/components/seo/InternalSeoLinks";
 import type { Locale } from "@/lib/i18n/types";
 import {
   calculateRevenueEstimate,
@@ -2217,6 +2218,9 @@ function Footer({ t }: { t: TemplateCopy }) {
         {t.footer.columns.map((column) => (
           <FooterColumn column={column} key={column.title} />
         ))}
+      </div>
+      <div className="mx-auto mt-12 max-w-[72rem] border-t border-white/10 pt-10">
+        <InternalSeoLinks variant="dark" />
       </div>
     </footer>
   );
