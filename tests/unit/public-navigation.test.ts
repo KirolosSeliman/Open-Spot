@@ -1126,7 +1126,10 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain(".reference-phone {");
     expect(mobileStyles).toContain("position: relative");
     expect(mobileStyles).toContain("left: auto");
-    expect(mobileStyles).toContain("rotateY(-1.4deg) rotateZ(0.45deg)");
+    expect(mobileStyles).toContain("rotateY(var(--mobile-phone-rotate-y))");
+    expect(mobileStyles).toContain("rotateZ(var(--mobile-phone-rotate-z))");
+    expect(mobileStyles).toContain("--mobile-phone-rotate-y: -8.5deg");
+    expect(mobileStyles).toContain("rotateX(var(--mobile-phone-rotate-x))");
     expect(mobileStyles).toContain("width: min(68vw, 292px)");
 
     expect(mobileStyles).toContain(".reference-floating-pill,");
