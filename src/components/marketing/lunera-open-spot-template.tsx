@@ -864,7 +864,7 @@ export function LuneraOpenSpotTemplate({
         }
 
         if (reduceMotion.matches) {
-          setFadeValues(fadeStage, 0.96, 208, 0, 0, 1, 120);
+          setFadeValues(fadeStage, 0.98, 224, 0, 0, 1, 168);
           return;
         }
 
@@ -874,11 +874,11 @@ export function LuneraOpenSpotTemplate({
         const rawProgress = Math.min(1, Math.max(0, -heroTop / Math.max(1, heroHeight * 0.42)));
         const progress = rawProgress;
         const easedProgress = progress * progress * (3 - 2 * progress);
-        const opacity = 0.92 + easedProgress * 0.08;
-        const height = 192 + easedProgress * 56;
+        const opacity = 0.94 + easedProgress * 0.06;
+        const height = 224 + easedProgress * 64;
         const phoneY = easedProgress * -10;
         const phoneRatio = 1 - easedProgress * 0.012;
-        const maskHeight = 120 + easedProgress * 72;
+        const maskHeight = 168 + easedProgress * 80;
 
         setFadeValues(fadeStage, opacity, height, progress, phoneY, phoneRatio, maskHeight);
       });

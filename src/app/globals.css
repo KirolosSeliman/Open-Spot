@@ -6640,16 +6640,16 @@ select {
   }
 
   .reference-hero-stage {
-    --mobile-phone-fade-height: clamp(12rem, 44vw, 16rem);
-    --mobile-phone-fade-opacity: 0.96;
+    --mobile-phone-fade-height: clamp(14.5rem, 54vw, 19rem);
+    --mobile-phone-fade-opacity: 0.98;
     --mobile-phone-fade-progress: 0;
-    --mobile-phone-mask-height: clamp(9rem, 34vw, 12rem);
-    --mobile-phone-mask-mid-height: clamp(4.5rem, 17vw, 6.5rem);
+    --mobile-phone-mask-height: clamp(12.5rem, 46vw, 16.5rem);
+    --mobile-phone-mask-mid-height: clamp(6rem, 23vw, 8.25rem);
     --mobile-phone-scale: 1;
     --mobile-phone-y: 0px;
     align-items: flex-start;
     display: flex;
-    height: clamp(34.5rem, 132vw, 38.5rem);
+    height: clamp(36rem, 138vw, 40rem);
     justify-content: center;
     margin: clamp(1.95rem, 7vw, 2.65rem) auto 0;
     max-width: min(390px, 100%);
@@ -6696,31 +6696,31 @@ select {
 
   .reference-hero-mobile-only .reference-hero-stage {
     --phone-width: clamp(17.25rem, 67vw, 19.5rem);
-    --phone-height: calc(var(--phone-width) * 1.625);
+    --phone-height: calc(var(--phone-width) * 1.68);
     --phone-ui-scale: calc(var(--phone-width) / 24.5rem);
   }
 
   .reference-hero-mobile-only .reference-phone {
     --phone-width: clamp(17.25rem, 67vw, 19.5rem);
-    --phone-height: calc(var(--phone-width) * 1.625);
+    --phone-height: calc(var(--phone-width) * 1.68);
     --phone-ui-scale: calc(var(--phone-width) / 24.5rem);
     background:
-      linear-gradient(118deg, rgba(255, 255, 255, 0.34) 0%, transparent 14%),
-      linear-gradient(92deg, #585f69 0%, #252932 20%, #07080a 42%, #323843 66%, #616873 100%);
+      linear-gradient(118deg, rgba(255, 255, 255, 0.38) 0%, transparent 16%),
+      linear-gradient(92deg, #6a717c 0%, #353b45 16%, #252932 28%, #07080a 46%, #3a404a 68%, #787f89 100%);
     border-radius: calc(var(--phone-width) * 0.158);
     box-shadow:
       0 38px 82px rgba(20, 33, 45, 0.26),
       0 12px 28px rgba(0, 0, 0, 0.22),
-      inset 0 1px 0 rgba(255, 255, 255, 0.46),
-      inset 0 0 0 calc(3px * var(--phone-ui-scale)) rgba(255, 255, 255, 0.62),
-      inset 0 0 0 calc(13px * var(--phone-ui-scale)) #08090c;
+      inset 0 1px 0 rgba(255, 255, 255, 0.52),
+      inset 0 0 0 calc(5px * var(--phone-ui-scale)) rgba(255, 255, 255, 0.72),
+      inset 0 0 0 calc(19px * var(--phone-ui-scale)) #08090c;
     height: var(--phone-height);
     left: auto;
     margin: 0 auto;
     max-height: none;
     max-width: min(var(--phone-width), calc(100% - 2rem));
     overflow: visible;
-    padding: calc(11px * var(--phone-ui-scale));
+    padding: calc(16px * var(--phone-ui-scale));
     position: relative;
     top: auto;
     transform: translate3d(0, var(--mobile-phone-y), 0) scale(var(--mobile-phone-scale))
@@ -6732,14 +6732,14 @@ select {
       to bottom,
       #000 0%,
       #000 calc(100% - var(--mobile-phone-mask-height)),
-      rgba(0, 0, 0, 0.55) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0.28) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
     mask-image: linear-gradient(
       to bottom,
       #000 0%,
       #000 calc(100% - var(--mobile-phone-mask-height)),
-      rgba(0, 0, 0, 0.55) calc(100% - var(--mobile-phone-mask-mid-height)),
+      rgba(0, 0, 0, 0.28) calc(100% - var(--mobile-phone-mask-mid-height)),
       rgba(0, 0, 0, 0) 100%
     );
     -webkit-mask-size: 100% 100%;
@@ -6763,9 +6763,9 @@ select {
 
   .reference-hero-mobile-only .reference-phone-side-rail {
     bottom: calc(var(--phone-height) * 0.068);
-    right: calc(var(--phone-width) * -0.028);
+    right: calc(var(--phone-width) * -0.034);
     top: calc(var(--phone-height) * 0.068);
-    width: calc(var(--phone-width) * 0.035);
+    width: calc(var(--phone-width) * 0.048);
   }
 
   .reference-hero-mobile-only .reference-phone-side-rail::before,
@@ -6785,9 +6785,9 @@ select {
 
   .reference-hero-mobile-only .reference-phone-side-button {
     height: calc(100px * var(--phone-ui-scale));
-    right: calc(-8px * var(--phone-ui-scale));
+    right: calc(-10px * var(--phone-ui-scale));
     top: 42%;
-    width: calc(8px * var(--phone-ui-scale));
+    width: calc(10px * var(--phone-ui-scale));
   }
 
   .reference-hero-mobile-only .reference-phone-screen {
@@ -7049,11 +7049,11 @@ select {
 
 @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
   .reference-hero-stage {
-    --mobile-phone-fade-height: 208px;
-    --mobile-phone-fade-opacity: 0.96;
+    --mobile-phone-fade-height: 224px;
+    --mobile-phone-fade-opacity: 0.98;
     --mobile-phone-fade-progress: 0;
-    --mobile-phone-mask-height: 120px;
-    --mobile-phone-mask-mid-height: 58px;
+    --mobile-phone-mask-height: 168px;
+    --mobile-phone-mask-mid-height: 80px;
     --mobile-phone-scale: 1;
     --mobile-phone-y: 0px;
   }
@@ -7304,17 +7304,17 @@ select {
 
   .reference-hero-stage,
   .lunera-template[data-locale="fr"] .reference-hero-stage {
-    --mobile-phone-fade-height: clamp(13rem, 48vw, 17rem) !important;
-    --mobile-phone-mask-height: clamp(9rem, 34vw, 12rem) !important;
-    --mobile-phone-mask-mid-height: clamp(4.5rem, 17vw, 6.5rem) !important;
-    height: clamp(34.5rem, 132vw, 38.5rem);
+    --mobile-phone-fade-height: clamp(14.5rem, 54vw, 19rem) !important;
+    --mobile-phone-mask-height: clamp(12.5rem, 46vw, 16.5rem) !important;
+    --mobile-phone-mask-mid-height: clamp(6rem, 23vw, 8.25rem) !important;
+    height: clamp(36rem, 138vw, 40rem);
     margin-top: clamp(1.55rem, 6.2vw, 2rem);
     max-width: min(430px, 100%);
   }
 
   .reference-hero-mobile-only .reference-hero-stage {
     --phone-width: clamp(17.25rem, 67vw, 19.5rem);
-    --phone-height: calc(var(--phone-width) * 1.625);
+    --phone-height: calc(var(--phone-width) * 1.68);
     --phone-ui-scale: calc(var(--phone-width) / 24.5rem);
   }
 
@@ -7322,8 +7322,8 @@ select {
     background:
       radial-gradient(ellipse at -2% 92%, rgba(255, 255, 255, 0.98) 0 4.8rem, rgba(255, 255, 255, 0.78) 6.7rem, rgba(255, 255, 255, 0) 9.7rem),
       radial-gradient(ellipse at 102% 92%, rgba(255, 255, 255, 0.98) 0 5.2rem, rgba(255, 255, 255, 0.76) 7.1rem, rgba(255, 255, 255, 0) 10rem),
-      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 22%, rgba(255, 255, 255, 0.72) 48%, rgba(255, 255, 255, 0.96) 68%, #ffffff 84%, #ffffff 100%);
-    bottom: clamp(-11.5rem, -42vw, -9rem);
+      linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 10%, rgba(255, 255, 255, 0.82) 38%, rgba(255, 255, 255, 0.98) 58%, #ffffff 74%, #ffffff 100%);
+    bottom: clamp(-12.5rem, -46vw, -10rem);
     opacity: 1 !important;
     z-index: 20;
   }

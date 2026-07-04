@@ -1119,7 +1119,7 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-hero-stage {");
     expect(styles).toContain("height: var(--phone-height)");
-    expect(mobileStyles).toContain("height: clamp(34.5rem, 132vw, 38.5rem)");
+    expect(mobileStyles).toContain("height: clamp(36rem, 138vw, 40rem)");
     expect(mobileStyles).toContain("overflow: visible");
     expect(mobileStyles).toContain("position: relative");
 
@@ -1128,7 +1128,7 @@ describe("public navigation", () => {
     expect(mobileStyles).toContain("left: auto");
     expect(mobileStyles).toContain("perspective(1500px) rotateY(-3deg) rotateZ(1.35deg)");
     expect(mobileStyles).toContain(".reference-hero-mobile-only .reference-phone {");
-    expect(mobileStyles).toContain("height: clamp(34.5rem, 132vw, 38.5rem)");
+    expect(mobileStyles).toContain("height: clamp(36rem, 138vw, 40rem)");
     expect(mobileStyles).toContain("--phone-width: clamp(17.25rem, 67vw, 19.5rem)");
     expect(mobileStyles).toContain("--phone-ui-scale: calc(var(--phone-width) / 24.5rem)");
     expect(mobileStyles).toContain("width: var(--phone-width)");
@@ -1140,7 +1140,7 @@ describe("public navigation", () => {
 
     expect(mobileStyles).toContain(".reference-mobile-phone-fade {");
     expect(mobileStyles).toContain("display: block !important");
-    expect(mobileStyles).toContain("--mobile-phone-fade-opacity: 0.96");
+    expect(mobileStyles).toContain("--mobile-phone-fade-opacity: 0.98");
     expect(mobileStyles).toContain("bottom: clamp(-10.5rem, -38vw, -8.25rem)");
 
     expect(mobileStyles).toContain(".reference-hero-footer {");
