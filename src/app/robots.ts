@@ -21,6 +21,8 @@ export default function robots(): MetadataRoute.Robots {
         "/forgot-password",
         "/onboarding",
         "/dashboard-preview",
+        // Public waitlist/kiosk links are business-specific and can create duplicate/private context.
+        // Keep /b/ out of search while leaving commercial SEO pages indexable.
         "/b/"
       ]
     },

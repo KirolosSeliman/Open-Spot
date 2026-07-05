@@ -1,30 +1,38 @@
 import Link from "next/link";
 
 import { PageShell } from "@/components/layout/page-shell";
+import { InternalLinks } from "@/components/marketing/internal-links";
+import { PageStructuredData } from "@/components/seo/page-structured-data";
 import { Card } from "@/components/ui/card";
 import { getRequestLocale } from "@/lib/i18n/locale";
+import { createPageMetadata } from "@/lib/seo/metadata";
+import { getPublicSeoPage } from "@/lib/seo/public-pages";
+
+const page = getPublicSeoPage("/pricing");
+
+export const metadata = createPageMetadata(page.metadata);
 
 const pricingCopy = {
   fr: {
     eyebrow: "Tarifs",
-    title: "Des tarifs adaptes a votre commerce.",
+    title: "Des tarifs adaptés à votre commerce.",
     description:
       "Le modèle commercial est défini après avoir compris votre volume d’annulations, vos services, votre usage SMS et votre façon de confirmer les rendez-vous.",
     cards: [
       ["Point de départ", "Discuté après un appel", "Aucun prix public fixe n’est affiché parce que le bon modèle dépend de votre réalité opérationnelle."],
       ["Usage SMS", "Clair avant l’envoi", "Le volume, les mots-clés d’opt-out et les limites d’usage doivent être compris avant le déploiement."],
-      ["Contrôle marchand", "Validation manuelle", "Open Spot ne promet pas de revenu garanti; le commerce garde toujours la validation finale."]
+      ["Contrôle marchand", "Validation manuelle", "Open Spot ne promet pas un résultat financier précis; le commerce garde toujours la validation finale."]
     ],
     bundlesTitle: "Des forfaits simples avant de parler facturation.",
     bundlesDescription:
-      "Open Spot reste centré sur la récupération d’annulations par SMS, pas sur une suite CRM complète.",
+      "Open Spot reste centré sur la récupération d’annulations par SMS, pas sur une suite de gestion client élargie.",
     bundles: [
       ["Essentiel SMS", "Liste d’attente, consentement, QR code et messages de base."],
       ["Anti No-Show", "Rappels sobres, suivi des réponses et respect des désinscriptions."],
       ["Recovery Pro", "Ouvertures, audiences admissibles, réponses classées et validation manuelle."],
       ["Support opérationnel", "Mise en place adaptée au commerce, sans changer le calendrier actuel."]
     ],
-    trust: ["SMS avec consentement", "Le commerce garde le controle", "STOP / ARRET supportes", "Aucune app client", "Validation manuelle"],
+    trust: ["SMS avec consentement", "Le commerce garde le contrôle", "STOP / ARRÊT supportés", "Aucune app client", "Validation manuelle"],
     cta: "Discuter des tarifs"
   },
   en: {
@@ -35,18 +43,18 @@ const pricingCopy = {
     cards: [
       ["Starting point", "Discussed after a call", "No fixed public price is shown because the right model depends on your operating reality."],
       ["SMS usage", "Clear before sending", "Volume, opt-out keywords, and usage limits should be understood before rollout."],
-      ["Merchant control", "Manual validation", "Open Spot does not promise guaranteed revenue; the merchant always keeps final validation."]
+      ["Merchant control", "Manual validation", "Open Spot does not promise a specific financial result; the merchant always keeps final validation."]
     ],
     bundlesTitle: "Simple bundles before billing tiers.",
     bundlesDescription:
-      "Open Spot stays focused on SMS cancellation recovery, not a full CRM suite.",
+      "Open Spot stays focused on SMS cancellation recovery, not a broad customer-management suite.",
     bundles: [
       ["Essential SMS", "Waitlist, consent, QR code, and core messages."],
       ["Anti No-Show", "Simple reminders, reply tracking, and opt-out respect."],
       ["Recovery Pro", "Openings, eligible audiences, ranked replies, and manual validation."],
       ["Operational support", "Setup adapted to the business without changing the current calendar."]
     ],
-    trust: ["SMS with consent", "Merchant keeps control", "STOP / ARRET supported", "No customer app", "Manual validation"],
+    trust: ["SMS with consent", "Merchant keeps control", "STOP / ARRÊT supported", "No customer app", "Manual validation"],
     cta: "Book a call"
   }
 } as const;
@@ -57,12 +65,19 @@ export default async function PricingPage() {
 
   return (
     <PageShell>
+      <PageStructuredData
+        breadcrumbs={[
+          { name: "Accueil", path: "/" },
+          { name: "Tarifs", path: "/pricing" }
+        ]}
+        path="/pricing"
+      />
       <section className="os-container-wide min-w-0 py-14 sm:py-20 lg:py-24">
         <div className="mx-auto max-w-3xl text-center">
           <p className="os-kicker">{t.eyebrow}</p>
           <h1 className="os-page-title mt-5">{t.title}</h1>
           <p className="os-body-large mt-6">{t.description}</p>
-          <Link className="os-primary-cta mt-8 w-full max-w-full sm:inline-flex sm:w-auto" href="/book-call">
+          <Link className="os-primary-cta mt-8 w-full max-w-full sm:inline-flex sm:w-auto" href="/book-call/questions">
             {t.cta}
           </Link>
         </div>
@@ -98,6 +113,17 @@ export default async function PricingPage() {
             </div>
           </div>
         </section>
+
+        <div className="mt-10">
+          <InternalLinks
+            links={[
+              { label: "Comment ça marche", href: "/how-it-works" },
+              { label: "Secteurs", href: "/industries" },
+              { label: "Annulations par SMS", href: "/annulations-rendez-vous-sms" },
+              { label: "Liste d’attente SMS", href: "/liste-attente-sms" }
+            ]}
+          />
+        </div>
       </section>
     </PageShell>
   );

@@ -13,6 +13,7 @@ export const brandConfig = {
     name: "Canada"
   },
   logoPath: "/brand/open-spot-logo-mark.png",
+  // Add only verified public Open Spot profiles here; leave empty until they exist.
   sameAs: [] as string[]
 } as const;
 

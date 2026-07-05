@@ -15,16 +15,16 @@ export async function SiteHeader() {
   const locale = await getRequestLocale();
   const t = dictionaries[locale];
   const desktopNavItems: NavItem[] = [
-    { href: "/#comment-ca-marche", label: t.marketing.howItWorks },
-    { href: "/#pourquoi-open-spot", label: t.marketing.whyOpenSpot },
+    { href: "/how-it-works", label: t.marketing.howItWorks },
+    { href: "/industries", label: t.marketing.whyOpenSpot },
     { href: "/pricing", label: t.navigation.pricing },
     { href: "/book-call/questions", label: t.marketing.bookCall }
   ];
   const mobileNavItems: NavItem[] = [
-    { href: "/#how-it-works", label: t.marketing.howItWorks },
-    { href: "/#features", label: t.marketing.whyOpenSpot },
-    { href: "/#pricing", label: t.navigation.pricing },
-    { href: "/book-call", label: t.marketing.bookCall }
+    { href: "/how-it-works", label: t.marketing.howItWorks },
+    { href: "/industries", label: t.marketing.whyOpenSpot },
+    { href: "/pricing", label: t.navigation.pricing },
+    { href: "/book-call/questions", label: t.marketing.bookCall }
   ];
   let isSignedIn = false;
 

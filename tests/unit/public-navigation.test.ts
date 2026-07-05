@@ -773,14 +773,17 @@ describe("public navigation", () => {
     expect(styles).toContain(".open-spot-faq-trigger:focus-visible");
   });
 
-  it("links the footer Product column to the existing FAQ anchor with scroll offset", () => {
+  it("links the footer Product column to durable product routes and the FAQ anchor", () => {
     const homepage = source(homepagePath);
     const styles = source("src/app/globals.css");
 
-    expect(homepage).toContain('{ label: "Features", href: "#features" }');
+    expect(homepage).toContain('{ label: "Features", href: "/industries" }');
+    expect(homepage).toContain('{ label: "How it works", href: "/how-it-works" }');
+    expect(homepage).toContain('{ label: "Pricing", href: "/pricing" }');
     expect(homepage).toContain('{ label: "FAQ", href: "#faq" }');
-    expect(homepage).toContain('{ label: "Fonctionnalités", href: "#features" }');
-    expect(homepage).toContain('{ label: "Comment ça marche", href: "#how-it-works" }');
+    expect(homepage).toContain('{ label: "Secteurs", href: "/industries" }');
+    expect(homepage).toContain('{ label: "Comment ça marche", href: "/how-it-works" }');
+    expect(homepage).toContain('{ label: "Prix", href: "/pricing" }');
     expect(homepage).toContain('{ label: "Confidentialité", href: "/politique-confidentialite" }');
     expect(homepage).toContain('{ label: "Conditions", href: "/conditions-utilisation" }');
     expect(homepage).toContain('{ label: "Consentement SMS", href: "/consentement-sms" }');
@@ -876,8 +879,8 @@ describe("public navigation", () => {
     expect(stepMiniUi).toContain("open-spot-how-confirm-mockup");
     expect(stepMiniUi).toContain("t.how.mockups.detected");
     expect(stepMiniUi).toContain("t.how.mockups.confirm");
-    expect(homepage).toContain("No appointment is validated automatically");
-    expect(homepage).toContain("Aucun rendez-vous n'est validé automatiquement");
+    expect(homepage).toContain("No appointment is assigned without review");
+    expect(homepage).toContain("Votre équipe garde la validation finale");
     expect(howSection).toContain('aria-labelledby="workflow-title"');
     expect(howSection).toContain('id="workflow-title"');
     expect(styles).toContain(".open-spot-how-shell");

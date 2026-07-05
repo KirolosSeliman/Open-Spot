@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 
 import type { LegalPageDefinition } from "@/lib/legal/types";
+import { createPageMetadata } from "@/lib/seo/metadata";
 
 export function createLegalMetadata(page: LegalPageDefinition): Metadata {
-  return {
-    title: `${page.title} | Open Spot`,
+  return createPageMetadata({
+    title: page.title,
     description: page.description,
-    robots: {
-      index: true,
-      follow: true
-    }
-  };
+    path: `/${page.slug}`,
+    locale: "fr-CA"
+  });
 }

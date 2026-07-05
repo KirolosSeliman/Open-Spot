@@ -189,7 +189,7 @@ const openSpotCopy = {
       {
         number: "03",
         title: "Confirm manually",
-        text: "Choose who to confirm. No appointment is validated automatically."
+        text: "Choose who to confirm. No appointment is assigned without review."
       }
     ],
     mockups: {
@@ -346,9 +346,9 @@ const openSpotCopy = {
       {
         title: "Product",
         links: [
-          { label: "Features", href: "#features" },
-          { label: "How it works", href: "#how-it-works" },
-          { label: "Pricing", href: "#pricing" },
+          { label: "Features", href: "/industries" },
+          { label: "How it works", href: "/how-it-works" },
+          { label: "Pricing", href: "/pricing" },
           { label: "FAQ", href: "#faq" }
         ]
       },
@@ -514,7 +514,7 @@ const openSpotFrCopy = {
       {
         number: "03",
         title: "Confirmer manuellement",
-        text: "Choisissez la personne à confirmer. Aucun rendez-vous n'est validé automatiquement."
+        text: "Choisissez la personne à confirmer. Votre équipe garde la validation finale."
       }
     ],
     mockups: {
@@ -545,7 +545,7 @@ const openSpotFrCopy = {
   },
   pricing: {
     tag: "Prix",
-    title: ["Tarification personnalisee pour", "chaque commerce sur rendez-vous."],
+    title: ["Tarification personnalisée pour", "chaque commerce sur rendez-vous."],
     subtitle:
       "Chaque équipe a des besoins différents. Réservez un appel et nous vous guiderons dans Open Spot, répondrons à vos questions et adapterons la configuration à votre workflow, votre volume et vos objectifs.",
     leftTitle: ["Trouvons la", "bonne configuration"],
@@ -560,15 +560,15 @@ const openSpotFrCopy = {
       "Volume SMS adapté à vos besoins",
       "Workflow adapté à votre commerce"
     ],
-    pill: "Reserver un appel",
+    pill: "Réserver un appel",
     rightTitle: ["Parlez-nous de votre commerce et", "nous recommanderons la meilleure configuration."],
     options: [
       "Emplacement unique ou multi-emplacements",
       "Volume SMS faible ou élevé",
       "Accompagnement de déploiement sur mesure"
     ],
-    primaryCta: "Reserver un appel",
-    primaryHref: "/book-call"
+    primaryCta: "Réserver un appel",
+    primaryHref: "/book-call/questions"
   },
   testimonials: {
     title: "Ce que les équipes locales disent d'Open Spot.",
@@ -591,7 +591,7 @@ const openSpotFrCopy = {
         quote:
           "Entre les walk-ins et les rendez-vous, on ne peut pas courir après chaque chaise vide. Les réponses arrivent maintenant au même endroit et je confirme quand ça fait vraiment du sens.",
         resultBadge: "Chaise remplie",
-        imageAlt: "Portrait representatif d'un gestionnaire de barbershop"
+        imageAlt: "Portrait représentatif d'un gestionnaire de barbershop"
       },
       {
         ...openSpotCopy.testimonials.cards[2],
@@ -604,7 +604,7 @@ const openSpotFrCopy = {
       },
       {
         ...openSpotCopy.testimonials.cards[3],
-        role: "Receptionniste de spa",
+        role: "Réceptionniste de spa",
         business: "Spa",
         quote:
           "Nos clientes régulières aiment savoir quand une place se libère. Les SMS basés sur le consentement restent personnels, et on décide toujours qui sera confirmé.",
@@ -630,7 +630,7 @@ const openSpotFrCopy = {
           "Lorsqu'une place se libère, votre équipe crée un créneau avec le service, l'heure et les détails utiles. Open Spot envoie une alerte SMS aux clients qui ont accepté ces mises à jour. Les clients répondent par texto et votre équipe choisit qui confirmer manuellement."
       },
       {
-        question: "Les clients sont-ils confirmes sans validation?",
+        question: "Les clients sont-ils confirmés sans validation?",
         answer:
           "Non. Open Spot garde la confirmation finale entre les mains du commerce. Même si plusieurs clients répondent rapidement, votre équipe révise les réponses et confirme le client qui convient le mieux à l'horaire, au service et à la disponibilité."
       },
@@ -640,12 +640,12 @@ const openSpotFrCopy = {
           "Non. Les clients reçoivent et répondent par SMS régulier. L'expérience reste simple et ne demande pas de créer un compte ou d'apprendre une nouvelle plateforme."
       },
       {
-        question: "Comment Open Spot gere-t-il le consentement SMS?",
+        question: "Comment Open Spot gère-t-il le consentement SMS?",
         answer:
           "Open Spot devrait être utilisé seulement avec des clients qui ont accepté de recevoir des mises à jour SMS liées aux rendez-vous de votre commerce. Le produit est conçu pour des workflows SMS basés sur le consentement, pas pour du cold texting ou du spam de masse."
       },
       {
-        question: "Que se passe-t-il si plusieurs clients repondent?",
+        question: "Que se passe-t-il si plusieurs clients répondent?",
         answer:
           "Les réponses sont regroupées au même endroit pour éviter les textos dispersés. Vous pouvez réviser les réponses, comparer le moment ou l'ajustement, puis confirmer le bon client."
       },
@@ -657,7 +657,7 @@ const openSpotFrCopy = {
       {
         question: "Open Spot est-il un outil de marketing SMS?",
         answer:
-          "Non. Open Spot ne sert pas à envoyer des promotions de masse. Il se concentre sur un workflow concret: aider les commerces sur rendez-vous à récupérer les places causées par des annulations, absences ou trous d'horaire."
+          "Non. Open Spot se concentre sur un workflow concret: aider les commerces sur rendez-vous à récupérer les places causées par des annulations, absences ou trous d'horaire."
       },
       {
         question: "Pour quels commerces Open Spot est-il conçu?",
@@ -683,9 +683,9 @@ const openSpotFrCopy = {
       {
         title: "Produit",
         links: [
-          { label: "Fonctionnalités", href: "#features" },
-          { label: "Comment ça marche", href: "#how-it-works" },
-          { label: "Prix", href: "#pricing" },
+          { label: "Secteurs", href: "/industries" },
+          { label: "Comment ça marche", href: "/how-it-works" },
+          { label: "Prix", href: "/pricing" },
           { label: "FAQ", href: "#faq" }
         ]
       },
