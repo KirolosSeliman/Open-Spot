@@ -57,6 +57,25 @@ const forbiddenPublicSeoPhrases = [
   "marketing SMS généraliste"
 ] as const;
 
+const publicSeoSourceFiles = [
+  "src/lib/seo/public-pages.ts",
+  "src/components/marketing/lunera-open-spot-template.tsx",
+  "src/components/marketing/industry-seo-page.tsx",
+  "src/components/marketing/seo-faq.tsx",
+  "src/app/page.tsx",
+  "src/app/pricing/page.tsx",
+  "src/app/how-it-works/page.tsx",
+  "src/app/industries/page.tsx",
+  "src/app/barbiers/page.tsx",
+  "src/app/coiffeurs/page.tsx",
+  "src/app/salons-esthetique/page.tsx",
+  "src/app/spas/page.tsx",
+  "src/app/cliniques-beaute/page.tsx",
+  "src/app/ongleries/page.tsx",
+  "src/app/liste-attente-sms/page.tsx",
+  "src/app/annulations-rendez-vous-sms/page.tsx"
+] as const;
+
 function source(path: string) {
   return readFileSync(join(process.cwd(), path), "utf8");
 }
@@ -74,7 +93,7 @@ describe("public SEO page registry", () => {
     expect(descriptions.size).toBe(publicSeoPages.length);
 
     for (const page of publicSeoPages) {
-      expect(page.metadata.title).toContain("Open Spot");
+      expect(page.metadata.title).not.toMatch(/^Open Spot\b/);
       expect(page.metadata.description.length).toBeGreaterThan(80);
       expect(page.metadata.path).toBe(page.path);
       expect(page.metadata.locale).toBe("fr-CA");
@@ -122,18 +141,23 @@ describe("public SEO page registry", () => {
   });
 
   it("keeps dangerous product claims out of public marketing and SEO source files", () => {
-    const publicMarketingSource = [
-      "src/components/marketing/lunera-open-spot-template.tsx",
-      "src/app/pricing/page.tsx",
-      "src/app/how-it-works/page.tsx",
-      "src/app/industries/page.tsx"
-    ]
-      .map(source)
-      .join("\n");
+    const publicMarketingSource = publicSeoSourceFiles.map(source).join("\n");
 
     const normalized = publicMarketingSource.toLowerCase();
     for (const phrase of forbiddenPublicSeoPhrases) {
       expect(normalized).not.toContain(phrase.toLowerCase());
     }
+  });
+
+  it("scans every commercial SEO page source and shared copy source for dangerous phrases", () => {
+    const scannedFiles = new Set(publicSeoSourceFiles);
+
+    for (const page of commercialSeoPages) {
+      expect(scannedFiles).toContain(`src/app${page.path}/page.tsx`);
+    }
+
+    expect(scannedFiles).toContain("src/lib/seo/public-pages.ts");
+    expect(scannedFiles).toContain("src/components/marketing/industry-seo-page.tsx");
+    expect(scannedFiles).toContain("src/components/marketing/seo-faq.tsx");
   });
 });

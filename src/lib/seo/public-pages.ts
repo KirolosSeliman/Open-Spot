@@ -161,7 +161,7 @@ const standardWorkflow = [
 export const commercialSeoPages: CommercialSeoPage[] = [
   makeCommercialPage({
     path: "/barbiers",
-    title: "Open Spot pour barbiers et barbershops",
+    title: "Annulations SMS pour barbiers et barbershops",
     description:
       "Remplissez les annulations de votre barbershop par SMS avec des clients consentants, des réponses centralisées et une confirmation manuelle par votre équipe.",
     eyebrow: "Barbiers",
@@ -183,7 +183,7 @@ export const commercialSeoPages: CommercialSeoPage[] = [
   }),
   makeCommercialPage({
     path: "/coiffeurs",
-    title: "Open Spot pour salons de coiffure",
+    title: "Annulations SMS pour salons de coiffure",
     description:
       "Récupérez les annulations de rendez-vous en salon de coiffure par SMS pour colorations, coupes et services longs avec confirmation manuelle finale.",
     eyebrow: "Coiffeurs",
@@ -205,7 +205,7 @@ export const commercialSeoPages: CommercialSeoPage[] = [
   }),
   makeCommercialPage({
     path: "/salons-esthetique",
-    title: "Open Spot pour salons d’esthétique",
+    title: "Annulations SMS pour salons d’esthétique",
     description:
       "Aidez votre salon d’esthétique à remplir les annulations de soins par SMS avec opt-in client, réponses simples et validation humaine finale.",
     eyebrow: "Salons d’esthétique",
@@ -227,7 +227,7 @@ export const commercialSeoPages: CommercialSeoPage[] = [
   }),
   makeCommercialPage({
     path: "/spas",
-    title: "Open Spot pour spas et soins bien-être",
+    title: "Annulations SMS pour spas et soins bien-être",
     description:
       "Transformez les annulations de dernière minute en créneaux récupérables pour spas, massages et soins grâce à des alertes SMS consenties.",
     eyebrow: "Spas",
@@ -249,7 +249,7 @@ export const commercialSeoPages: CommercialSeoPage[] = [
   }),
   makeCommercialPage({
     path: "/cliniques-beaute",
-    title: "Open Spot pour cliniques beauté",
+    title: "Annulations SMS pour cliniques beauté",
     description:
       "Ajoutez une couche SMS pour récupérer les annulations en clinique beauté tout en gardant le contrôle, le service client et la confirmation manuelle.",
     eyebrow: "Cliniques beauté",
@@ -271,7 +271,7 @@ export const commercialSeoPages: CommercialSeoPage[] = [
   }),
   makeCommercialPage({
     path: "/ongleries",
-    title: "Open Spot pour ongleries",
+    title: "Annulations SMS pour ongleries",
     description:
       "Remplissez les annulations de votre onglerie avec des alertes SMS aux clientes consentantes, des réponses centralisées et un choix final manuel.",
     eyebrow: "Ongleries",
@@ -293,7 +293,7 @@ export const commercialSeoPages: CommercialSeoPage[] = [
   }),
   makeCommercialPage({
     path: "/liste-attente-sms",
-    title: "Open Spot liste d’attente SMS",
+    title: "Liste d’attente SMS pour rendez-vous",
     description:
       "Créez une liste d’attente SMS simple pour commerces sur rendez-vous avec clients opt-in, réponses OUI / YES / 1, STOP et validation manuelle.",
     eyebrow: "Liste d’attente SMS",
@@ -316,7 +316,7 @@ export const commercialSeoPages: CommercialSeoPage[] = [
   }),
   makeCommercialPage({
     path: "/annulations-rendez-vous-sms",
-    title: "Open Spot annulations rendez-vous SMS",
+    title: "Annulations de rendez-vous par SMS",
     description:
       "Remplissez vos annulations de rendez-vous par SMS avec un workflow de récupération clair, des clients consentants et une confirmation manuelle.",
     eyebrow: "Annulations de rendez-vous SMS",
@@ -332,24 +332,6 @@ export const commercialSeoPages: CommercialSeoPage[] = [
       "Open Spot: une annulation vient de libérer une place aujourd’hui à 15 h. Répondez OUI si vous voulez être considéré. STOP pour arrêter.",
     relatedSectorLinks: [...sectors]
   })
-];
-
-export const homepageFaq: FaqItem[] = [
-  {
-    question: "Open Spot remplace-t-il mon système actuel?",
-    answer:
-      "Non. Open Spot complète votre système actuel pour récupérer les annulations de dernière minute par SMS."
-  },
-  {
-    question: "Qui confirme le client final?",
-    answer:
-      "Le commerce garde la confirmation manuelle finale après avoir révisé les réponses."
-  },
-  {
-    question: "Les clients peuvent-ils se désinscrire?",
-    answer:
-      "Oui. Le workflow SMS doit respecter les clients consentants et les demandes STOP."
-  }
 ];
 
 export const howItWorksFaq: FaqItem[] = [
@@ -376,7 +358,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/",
     metadata: {
-      title: "Open Spot récupère les annulations par SMS",
+      title: "Solution SMS pour annulations de rendez-vous",
       description:
         "Open Spot aide les salons, barbiers, spas et cliniques beauté à remplir les annulations de dernière minute par SMS avec clients consentants et confirmation manuelle.",
       path: "/",
@@ -388,7 +370,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/pricing",
     metadata: {
-      title: "Open Spot tarifs personnalisés",
+      title: "Tarifs personnalisés pour récupération SMS",
       description:
         "Découvrez une tarification Open Spot adaptée à votre volume d’annulations, votre usage SMS, vos services et votre workflow de confirmation manuelle.",
       path: "/pricing",
@@ -400,7 +382,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/how-it-works",
     metadata: {
-      title: "Open Spot comment ça marche",
+      title: "Comment remplir une annulation par SMS",
       description:
         "Comprenez comment Open Spot transforme une annulation de rendez-vous en alerte SMS aux clients consentants, réponses OUI / YES / 1 et confirmation manuelle.",
       path: "/how-it-works",
@@ -412,7 +394,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/industries",
     metadata: {
-      title: "Open Spot pour commerces sur rendez-vous",
+      title: "Commerces sur rendez-vous et annulations SMS",
       description:
         "Explorez comment Open Spot aide barbiers, coiffeurs, salons d’esthétique, spas, cliniques beauté et ongleries à récupérer des annulations par SMS.",
       path: "/industries",
@@ -424,7 +406,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/book-call/questions",
     metadata: {
-      title: "Open Spot réserver un appel questions",
+      title: "Questions sur la récupération SMS",
       description:
         "Posez vos questions sur Open Spot, le consentement SMS, les annulations de rendez-vous et le workflow de confirmation manuelle pour votre commerce.",
       path: "/book-call/questions",
@@ -436,7 +418,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/book-call/ready",
     metadata: {
-      title: "Open Spot réserver un appel de démarrage",
+      title: "Appel de démarrage pour annulations SMS",
       description:
         "Planifiez un appel Open Spot si vous êtes prêt à discuter de votre volume d’annulations, de votre liste d’attente SMS et de votre lancement.",
       path: "/book-call/ready",
@@ -448,7 +430,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/politique-confidentialite",
     metadata: {
-      title: "Open Spot politique de confidentialité",
+      title: "Politique de confidentialité",
       description:
         "Consultez la politique de confidentialité d’Open Spot pour comprendre la gestion des renseignements, des SMS et des données des commerces.",
       path: "/politique-confidentialite",
@@ -460,7 +442,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/conditions-utilisation",
     metadata: {
-      title: "Open Spot conditions d’utilisation",
+      title: "Conditions d’utilisation",
       description:
         "Consultez les conditions d’utilisation d’Open Spot pour les commerces qui utilisent le service de récupération d’annulations par SMS.",
       path: "/conditions-utilisation",
@@ -472,7 +454,7 @@ export const publicSeoPages: PublicSeoPage[] = [
   {
     path: "/consentement-sms",
     metadata: {
-      title: "Open Spot consentement SMS",
+      title: "Consentement SMS pour rendez-vous",
       description:
         "Comprenez le consentement SMS, les alertes de rendez-vous, la désinscription STOP et les responsabilités des commerces qui utilisent Open Spot.",
       path: "/consentement-sms",

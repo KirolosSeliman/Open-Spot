@@ -137,4 +137,11 @@ describe("structured data", () => {
     expect(layout).toContain("GlobalStructuredData");
     expect(structuredData).toContain('type="application/ld+json"');
   });
+
+  it("does not emit homepage FAQPage schema from a source separate from the visible client FAQ", () => {
+    const homepage = source("src/app/page.tsx");
+
+    expect(homepage).not.toContain("homepageFaq");
+    expect(homepage).not.toContain("<PageStructuredData faq=");
+  });
 });
