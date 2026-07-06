@@ -6,6 +6,7 @@ import { ImportExportPanel } from "@/components/import/import-export-panel";
 import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
 import { getRequestLocale } from "@/lib/i18n/locale";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
+import { defaultSmartSmsSettings } from "@/lib/sms/smart-recipient-engine";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Database } from "@/types/database";
 
@@ -25,6 +26,21 @@ type AutomationSettings = Pick<
   | "sms_monthly_limit"
 >;
 
+type SmartSmsDisplaySettings = Pick<
+  OrganizationSettingsRow,
+  | "smart_sending_enabled"
+  | "cooldown_after_completed_appointment_days"
+  | "cooldown_after_filled_spot_days"
+  | "max_sms_per_day"
+  | "max_sms_per_7_days"
+  | "max_sms_per_30_days"
+  | "block_if_future_appointment_exists"
+  | "future_appointment_window_days"
+  | "allowed_send_start_time"
+  | "allowed_send_end_time"
+  | "always_review_recipients_before_send"
+>;
+
 const conservativeAutomationSettings: AutomationSettings = {
   appointment_reminders_enabled: false,
   default_reminder_delay_hours: 24,
@@ -35,6 +51,25 @@ const conservativeAutomationSettings: AutomationSettings = {
   unavailable_sms_to_non_selected_enabled: false,
   sms_daily_limit: 50,
   sms_monthly_limit: 1000
+};
+
+const conservativeSmartSmsSettings: SmartSmsDisplaySettings = {
+  smart_sending_enabled: defaultSmartSmsSettings.smartSendingEnabled,
+  cooldown_after_completed_appointment_days:
+    defaultSmartSmsSettings.cooldownAfterCompletedAppointmentDays,
+  cooldown_after_filled_spot_days:
+    defaultSmartSmsSettings.cooldownAfterFilledSpotDays,
+  max_sms_per_day: defaultSmartSmsSettings.maxSmsPerDay,
+  max_sms_per_7_days: defaultSmartSmsSettings.maxSmsPer7Days,
+  max_sms_per_30_days: defaultSmartSmsSettings.maxSmsPer30Days,
+  block_if_future_appointment_exists:
+    defaultSmartSmsSettings.blockIfFutureAppointmentExists,
+  future_appointment_window_days:
+    defaultSmartSmsSettings.futureAppointmentWindowDays,
+  allowed_send_start_time: defaultSmartSmsSettings.allowedSendStartTime,
+  allowed_send_end_time: defaultSmartSmsSettings.allowedSendEndTime,
+  always_review_recipients_before_send:
+    defaultSmartSmsSettings.alwaysReviewRecipientsBeforeSend
 };
 
 const automationBundles = [
@@ -99,6 +134,29 @@ async function loadAutomationSettings(
   return data ?? conservativeAutomationSettings;
 }
 
+async function loadSmartSmsSettings(
+  organizationId: string | null
+): Promise<SmartSmsDisplaySettings> {
+  if (!organizationId) {
+    return conservativeSmartSmsSettings;
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("organization_settings")
+    .select(
+      "smart_sending_enabled, cooldown_after_completed_appointment_days, cooldown_after_filled_spot_days, max_sms_per_day, max_sms_per_7_days, max_sms_per_30_days, block_if_future_appointment_exists, future_appointment_window_days, allowed_send_start_time, allowed_send_end_time, always_review_recipients_before_send"
+    )
+    .eq("organization_id", organizationId)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ?? conservativeSmartSmsSettings;
+}
+
 function formatSettingValue({
   disabledLabel,
   enabledLabel,
@@ -119,6 +177,18 @@ function formatSettingValue({
   return String(value);
 }
 
+function formatSmartSmsBoolean({
+  disabledLabel,
+  enabledLabel,
+  value
+}: {
+  disabledLabel: string;
+  enabledLabel: string;
+  value: boolean;
+}) {
+  return value ? enabledLabel : disabledLabel;
+}
+
 export default async function SettingsPage() {
   const [workspace, locale] = await Promise.all([
     getActiveOrganizationWorkspace(),
@@ -127,9 +197,64 @@ export default async function SettingsPage() {
   const copy = getDashboardCopy(locale);
   const organization =
     workspace.status === "ready" ? workspace.organization : null;
-  const automationSettings = await loadAutomationSettings(organization?.id ?? null);
+  const [automationSettings, smartSmsSettings] = await Promise.all([
+    loadAutomationSettings(organization?.id ?? null),
+    loadSmartSmsSettings(organization?.id ?? null)
+  ]);
   const settingLabels = copy.settings.settingLabels;
   const settingKeys = Object.keys(settingLabels) as Array<keyof AutomationSettings>;
+  const smartSmsCopy = copy.settings.smartSms;
+  const smartSmsRows = [
+    {
+      label: smartSmsCopy.smartMode,
+      value: formatSmartSmsBoolean({
+        disabledLabel: copy.settings.disabled,
+        enabledLabel: copy.settings.enabled,
+        value: smartSmsSettings.smart_sending_enabled
+      })
+    },
+    {
+      label: smartSmsCopy.completedCooldown,
+      value: `${smartSmsSettings.cooldown_after_completed_appointment_days} ${smartSmsCopy.days}`
+    },
+    {
+      label: smartSmsCopy.filledSpotCooldown,
+      value: `${smartSmsSettings.cooldown_after_filled_spot_days} ${smartSmsCopy.days}`
+    },
+    {
+      label: smartSmsCopy.maxPerDay,
+      value: String(smartSmsSettings.max_sms_per_day)
+    },
+    {
+      label: smartSmsCopy.maxPer7Days,
+      value: String(smartSmsSettings.max_sms_per_7_days)
+    },
+    {
+      label: smartSmsCopy.maxPer30Days,
+      value: String(smartSmsSettings.max_sms_per_30_days)
+    },
+    {
+      label: smartSmsCopy.futureAppointment,
+      value: smartSmsSettings.block_if_future_appointment_exists
+        ? smartSmsCopy.futureAppointmentEnabled.replace(
+            "{days}",
+            String(smartSmsSettings.future_appointment_window_days)
+          )
+        : smartSmsCopy.futureAppointmentDisabled
+    },
+    {
+      label: smartSmsCopy.allowedHours,
+      value: `${smartSmsSettings.allowed_send_start_time} - ${smartSmsSettings.allowed_send_end_time}`
+    },
+    {
+      label: smartSmsCopy.alwaysReview,
+      value: formatSmartSmsBoolean({
+        disabledLabel: copy.settings.disabled,
+        enabledLabel: copy.settings.enabled,
+        value: smartSmsSettings.always_review_recipients_before_send
+      })
+    }
+  ];
 
   return (
     <div className="grid gap-6">
@@ -241,6 +366,29 @@ export default async function SettingsPage() {
             </label>
           ))}
         </div>
+      </Panel>
+      <Panel
+        description={smartSmsCopy.description}
+        title={smartSmsCopy.title}
+      >
+        <div className="grid gap-3 md:grid-cols-2">
+          {smartSmsRows.map((row) => (
+            <div
+              className="flex min-h-14 flex-col gap-2 rounded-2xl border border-[var(--line)] bg-slate-50 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3"
+              key={row.label}
+            >
+              <span className="min-w-0 font-bold text-[var(--foreground)]">
+                {row.label}
+              </span>
+              <span className="font-black text-[var(--foreground)]">
+                {row.value}
+              </span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+          {smartSmsCopy.complianceNote}
+        </p>
       </Panel>
       <Panel title={copy.settings.importExport}>
         <ImportExportPanel />

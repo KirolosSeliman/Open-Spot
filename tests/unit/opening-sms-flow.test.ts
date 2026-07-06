@@ -41,7 +41,7 @@ describe("opening SMS flow", () => {
     expect(dashboardActions).toContain("sendOrganizationSms");
     expect(dashboardActions).toContain("sendResult.fromNumber");
     expect(dashboardActions).toContain(
-      'consentByCustomer.get(offer.customer_id) === "opted_in"'
+      'consentByCustomer.get(decision.customer_id) === "opted_in"'
     );
     expect(dashboardActions).not.toContain("createSimulatorSmsProvider");
     expect(dashboardActions).not.toContain("SIMULATOR_SOURCE_NUMBER");
@@ -49,19 +49,22 @@ describe("opening SMS flow", () => {
   });
 
   it("creates provider-aware outbound context during opening creation", () => {
-    expect(dashboardActions).toContain("countEligibleOpeningRecipients");
-    expect(dashboardActions).toContain("filterEligibleOpeningRecipients");
+    expect(dashboardActions).toContain("prepareSmartRecipientDecisionsForOpening");
+    expect(dashboardActions).toContain("evaluateSmsRecipientEligibility");
+    expect(dashboardActions).toContain(".from(\"alert_recipient_decisions\")");
     expect(dashboardActions).toContain("sendOpeningSmsAlerts");
     expect(dashboardActions).toContain(
-      "No opted-in active waitlist recipients are eligible"
+      "Opening was created, but no SMS could be sent to selected recipients."
     );
     expect(dashboardActions).toContain(".from(\"sms_messages\")");
     expect(dashboardActions).toContain('direction: "outbound"');
   });
 
   it("keeps cancellation detail send controls production-safe", () => {
-    expect(cancellationDetailPage).toContain("pendingOffers.length > 0");
+    expect(cancellationDetailPage).toContain("unsentSelectedRecipientCount > 0");
     expect(cancellationDetailPage).toContain("smsStatus.canSendOpeningAlerts");
+    expect(cancellationDetailPage).toContain("Mode intelligent SMS");
+    expect(cancellationDetailPage).toContain("Envoyer aux clients selectionnes");
     expect(cancellationDetailPage).toContain("deliveryHistoryWarning");
     expect(cancellationDetailPage).toContain(
       "The SMS alert has already been sent to eligible customers."

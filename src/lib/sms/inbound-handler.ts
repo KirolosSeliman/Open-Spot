@@ -51,10 +51,12 @@ function getInboundContextType(context: InboundContext | null) {
 
 async function optOutCustomersByPhone({
   supabase,
-  fromNumber
+  fromNumber,
+  smsMessageId = null
 }: {
   supabase: SupabaseServiceClient;
   fromNumber: string;
+  smsMessageId?: string | null;
 }) {
   const { data: customers, error: customersError } = await supabase
     .from("customers")
@@ -89,7 +91,62 @@ async function optOutCustomersByPhone({
     throw new Error(consentError.message);
   }
 
+  await Promise.all(
+    customers.map((customer) =>
+      recordSmsOptOutActivityEvent({
+        supabase,
+        organizationId: customer.organization_id,
+        customerId: customer.id,
+        eventAt: now,
+        smsMessageId,
+        phoneE164: fromNumber
+      })
+    )
+  );
+
   return customers.length;
+}
+
+async function recordSmsOptOutActivityEvent({
+  supabase,
+  organizationId,
+  customerId,
+  eventAt,
+  smsMessageId,
+  phoneE164,
+  relatedAlertId = null,
+  relatedAppointmentId = null
+}: {
+  supabase: SupabaseServiceClient;
+  organizationId: string;
+  customerId: string;
+  eventAt: string;
+  smsMessageId: string | null;
+  phoneE164: string;
+  relatedAlertId?: string | null;
+  relatedAppointmentId?: string | null;
+}) {
+  const { error } = await supabase.from("customer_activity_events").insert({
+    organization_id: organizationId,
+    customer_id: customerId,
+    event_type: "sms_opted_out",
+    event_at: eventAt,
+    related_alert_id: relatedAlertId,
+    related_appointment_id: relatedAppointmentId,
+    metadata: {
+      sms_message_id: smsMessageId,
+      phone_last4: phoneE164.slice(-4),
+      source: "sms_opt_out_reply"
+    }
+  });
+
+  if (error) {
+    console.warn("Smart SMS opt-out activity event failed", {
+      organizationId,
+      customerId,
+      error: error.message
+    });
+  }
 }
 
 export async function handleInboundSmsRequest(
@@ -343,11 +400,20 @@ export async function handleInboundSmsRequest(
             },
             { onConflict: "organization_id,customer_id" }
           );
+          await recordSmsOptOutActivityEvent({
+            supabase,
+            organizationId: organizationSender.organization_id,
+            customerId: customer.id,
+            eventAt: now,
+            smsMessageId: inboundMessage.id,
+            phoneE164: fromNumber
+          });
           optOutCustomerCount = 1;
         } else if (classification === "opt_out") {
           optOutCustomerCount = await optOutCustomersByPhone({
             supabase,
-            fromNumber
+            fromNumber,
+            smsMessageId: inboundMessage.id
           });
         } else if (classification === "sms_unstop" && customer?.id) {
           const now = new Date().toISOString();
@@ -682,6 +748,17 @@ export async function handleInboundSmsRequest(
     if (consentError) {
       return NextResponse.json({ error: "Consent update failed." }, { status: 500 });
     }
+
+    await recordSmsOptOutActivityEvent({
+      supabase,
+      organizationId: context.organization_id,
+      customerId: context.customer_id,
+      eventAt: now,
+      smsMessageId: inboundMessage.id,
+      phoneE164: fromNumber,
+      relatedAlertId: context.opening_id,
+      relatedAppointmentId: context.appointment_id
+    });
 
     if (contextType === "consent" && activeConsentRequest.data) {
       await supabase

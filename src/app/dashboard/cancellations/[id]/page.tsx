@@ -7,6 +7,7 @@ import {
 } from "@/components/dashboard/dashboard-ui";
 import {
   sendOpeningAlertsAction,
+  updateOpeningRecipientDecisionAction,
   validateOpeningOfferAction
 } from "@/lib/dashboard/actions";
 import { loadOpeningDetail } from "@/lib/dashboard/operations-data";
@@ -18,7 +19,6 @@ import { getRequestLocale } from "@/lib/i18n/locale";
 import { getActiveOrganizationWorkspace } from "@/lib/organization/current";
 import { generateOpeningSmsMessage } from "@/lib/sms/message-generator";
 import {
-  getOpeningAlertButtonLabel,
   getOpeningAlertModeCopy,
   getSmsRuntimeStatus
 } from "@/lib/sms/runtime-status";
@@ -100,6 +100,35 @@ function hasMissingDeliveryCallback({
   return Number.isFinite(createdTime) && Date.now() - createdTime > 2 * 60 * 1000;
 }
 
+function getRecipientDecisionLabel(
+  decision: string,
+  locale: "fr" | "en"
+) {
+  if (decision === "eligible") {
+    return locale === "fr" ? "Eligible" : "Eligible";
+  }
+
+  if (decision === "protected") {
+    return locale === "fr"
+      ? "Protege par le Mode intelligent"
+      : "Protected by Smart SMS mode";
+  }
+
+  return locale === "fr" ? "Bloque" : "Blocked";
+}
+
+function getFinalDecisionLabel(decision: string, locale: "fr" | "en") {
+  if (decision === "send") {
+    return locale === "fr" ? "Selectionne" : "Selected";
+  }
+
+  if (decision === "locked_blocked") {
+    return locale === "fr" ? "Envoi impossible" : "Cannot send";
+  }
+
+  return locale === "fr" ? "Non selectionne" : "Not selected";
+}
+
 export default async function CancellationDetailPage({
   params,
   searchParams
@@ -107,12 +136,15 @@ export default async function CancellationDetailPage({
   const { id } = await params;
   const { error, sendError, validationError, confirmationSmsWarning, notice } =
     await searchParams;
-  const [{ opening, service, offers, deliveryHistoryWarning }, workspace, uiLocale] =
-    await Promise.all([
-      loadOpeningDetail(id),
-      getActiveOrganizationWorkspace(),
-      getRequestLocale()
-    ]);
+  const [
+    { opening, service, offers, recipientDecisions, deliveryHistoryWarning },
+    workspace,
+    uiLocale
+  ] = await Promise.all([
+    loadOpeningDetail(id),
+    getActiveOrganizationWorkspace(),
+    getRequestLocale()
+  ]);
 
   if (!opening) {
     notFound();
@@ -142,6 +174,27 @@ export default async function CancellationDetailPage({
   const respondedOffers = offers.filter((offer) => offer.status === "responded");
   const selectedOffers = offers.filter((offer) => offer.status === "selected");
   const rejectedOffers = offers.filter((offer) => offer.status === "rejected");
+  const selectedRecipientCount = recipientDecisions.filter(
+    (decision) => decision.final_decision === "send"
+  ).length;
+  const eligibleRecipientCount = recipientDecisions.filter(
+    (decision) => decision.base_decision === "eligible"
+  ).length;
+  const protectedRecipientCount = recipientDecisions.filter(
+    (decision) => decision.base_decision === "protected"
+  ).length;
+  const blockedRecipientCount = recipientDecisions.filter(
+    (decision) => decision.base_decision === "locked_blocked"
+  ).length;
+  const includedProtectedCount = recipientDecisions.filter(
+    (decision) =>
+      decision.base_decision === "protected" &&
+      decision.final_decision === "send" &&
+      decision.warning_required
+  ).length;
+  const unsentSelectedRecipientCount = recipientDecisions.filter(
+    (decision) => decision.final_decision === "send" && !decision.sent_at
+  ).length;
   const allOffersSentOrBeyond =
     offers.length > 0 &&
     offers.every((offer) =>
@@ -164,7 +217,7 @@ export default async function CancellationDetailPage({
             ? uiLocale === "fr"
               ? "L’alerte SMS a déjà été envoyée aux clients admissibles."
               : "The SMS alert has already been sent to eligible customers."
-            : pendingOffers.length > 0
+            : selectedRecipientCount > 0
               ? uiLocale === "fr"
                 ? "Des clients admissibles sont prêts pour l’envoi SMS."
                 : "Eligible customers are ready for SMS sending."
@@ -277,24 +330,212 @@ export default async function CancellationDetailPage({
           </div>
         </Panel>
       </div>
+      <Panel
+        description={
+          uiLocale === "fr"
+            ? "Protege vos clients contre les messages trop rapproches."
+            : "Protects your clients from messages that are too frequent."
+        }
+        title="Mode intelligent SMS"
+      >
+        <div className="grid gap-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4">
+              <p className="text-xs font-black uppercase text-[var(--muted)]">
+                {uiLocale === "fr" ? "Clients selectionnes" : "Selected clients"}
+              </p>
+              <p className="mt-2 text-3xl font-black text-[var(--foreground)]">
+                {selectedRecipientCount}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-[var(--line)] bg-slate-50 p-4">
+              <p className="text-xs font-black uppercase text-[var(--muted)]">
+                {uiLocale === "fr" ? "Clients eligibles" : "Eligible clients"}
+              </p>
+              <p className="mt-2 text-3xl font-black text-[var(--foreground)]">
+                {eligibleRecipientCount}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-[#f6d99d] bg-[#fff9eb] p-4">
+              <p className="text-xs font-black uppercase text-[#74510f]">
+                {uiLocale === "fr" ? "Clients proteges" : "Protected clients"}
+              </p>
+              <p className="mt-2 text-3xl font-black text-[#74510f]">
+                {protectedRecipientCount}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-[#f2b8b5] bg-[#fff7f6] p-4">
+              <p className="text-xs font-black uppercase text-[#8a1f17]">
+                {uiLocale === "fr" ? "Clients bloques" : "Blocked clients"}
+              </p>
+              <p className="mt-2 text-3xl font-black text-[#8a1f17]">
+                {blockedRecipientCount}
+              </p>
+            </div>
+          </div>
+          {includedProtectedCount > 0 ? (
+            <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+              {uiLocale === "fr"
+                ? "Vous avez inclus des clients proteges par le Mode intelligent. Cela peut augmenter le risque de desinscription."
+                : "You included clients protected by Smart SMS mode. This can increase unsubscribe risk."}
+            </p>
+          ) : null}
+          {unsentSelectedRecipientCount > 0 &&
+          smsStatus.canSendOpeningAlerts &&
+          !allOffersSentOrBeyond ? (
+            <form action={sendOpeningAlertsAction}>
+              <input name="openingId" type="hidden" value={opening.id} />
+              <button
+                className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
+                type="submit"
+              >
+                {uiLocale === "fr"
+                  ? `Envoyer aux clients selectionnes (${unsentSelectedRecipientCount})`
+                  : `Send to selected clients (${unsentSelectedRecipientCount})`}
+              </button>
+            </form>
+          ) : (
+            <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm font-bold text-[var(--muted)]">
+              {sendStatusMessage}
+            </p>
+          )}
+          {recipientDecisions.length > 0 ? (
+            <div className="grid gap-3">
+              {recipientDecisions.map((decision) => {
+                const isLocked = decision.base_decision === "locked_blocked";
+                const hasProtectedOverrideWarning = decision.warning_required;
+                const alreadySent = Boolean(decision.sent_at);
+                const includeDisabled =
+                  isLocked || alreadySent || decision.final_decision === "send";
+                const excludeDisabled =
+                  isLocked || alreadySent || decision.final_decision !== "send";
+
+                return (
+                  <div
+                    className="grid gap-4 rounded-2xl border border-[var(--line)] bg-slate-50 p-4 lg:grid-cols-[1fr_auto]"
+                    key={decision.id}
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="font-black text-[var(--foreground)]">
+                          {decision.customerName}
+                        </p>
+                        <StatusBadge>
+                          {getRecipientDecisionLabel(
+                            decision.base_decision,
+                            uiLocale
+                          )}
+                        </StatusBadge>
+                        <span className="rounded-full border border-[var(--line)] bg-white px-2.5 py-1 text-xs font-black text-[var(--muted)]">
+                          {getFinalDecisionLabel(
+                            decision.final_decision,
+                            uiLocale
+                          )}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm text-[var(--muted)]">
+                        {decision.customerPhone || decision.customer_id}
+                      </p>
+                      <p className="mt-3 text-sm leading-6 text-[var(--foreground)]">
+                        {decision.reason_label}
+                      </p>
+                      {hasProtectedOverrideWarning ? (
+                        <p className="mt-3 rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+                          {uiLocale === "fr"
+                            ? "Ce client est protege par le Mode intelligent. L'envoyer quand meme peut augmenter le risque de desinscription."
+                            : "This client is protected by Smart SMS mode. Sending anyway can increase unsubscribe risk."}
+                        </p>
+                      ) : null}
+                      {isLocked ? (
+                        <p className="mt-3 rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
+                          {uiLocale === "fr"
+                            ? "Impossible d'envoyer : ce client est desinscrit, sans consentement valide ou bloque pour conformite."
+                            : "Cannot send: this client has unsubscribed, lacks valid consent, or is blocked for compliance."}
+                        </p>
+                      ) : null}
+                      {alreadySent ? (
+                        <p className="mt-3 text-xs font-bold text-[var(--muted)]">
+                          {uiLocale === "fr"
+                            ? "SMS deja soumis pour ce client."
+                            : "SMS already submitted for this client."}
+                        </p>
+                      ) : null}
+                    </div>
+                    <div className="flex flex-wrap items-start gap-2 lg:justify-end">
+                      <form action={updateOpeningRecipientDecisionAction}>
+                        <input name="openingId" type="hidden" value={opening.id} />
+                        <input name="decisionId" type="hidden" value={decision.id} />
+                        <input name="manualOverride" type="hidden" value="auto" />
+                        <button
+                          className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)] transition hover:border-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-50"
+                          disabled={alreadySent || decision.manual_override === "auto"}
+                          type="submit"
+                        >
+                          Auto
+                        </button>
+                      </form>
+                      <form action={updateOpeningRecipientDecisionAction}>
+                        <input name="openingId" type="hidden" value={opening.id} />
+                        <input name="decisionId" type="hidden" value={decision.id} />
+                        <input name="manualOverride" type="hidden" value="include" />
+                        <input
+                          name="overrideReason"
+                          type="hidden"
+                          value="Manual include from Smart SMS review"
+                        />
+                        <button
+                          className="rounded-full border border-[var(--primary)] bg-white px-3 py-2 text-xs font-black text-[var(--primary)] transition hover:bg-[var(--primary-soft)] disabled:cursor-not-allowed disabled:border-[var(--line)] disabled:text-[var(--muted)] disabled:opacity-50"
+                          disabled={includeDisabled}
+                          type="submit"
+                        >
+                          {decision.base_decision === "protected"
+                            ? uiLocale === "fr"
+                              ? "Inclure quand meme"
+                              : "Include anyway"
+                            : uiLocale === "fr"
+                              ? "Inclure"
+                              : "Include"}
+                        </button>
+                      </form>
+                      <form action={updateOpeningRecipientDecisionAction}>
+                        <input name="openingId" type="hidden" value={opening.id} />
+                        <input name="decisionId" type="hidden" value={decision.id} />
+                        <input name="manualOverride" type="hidden" value="exclude" />
+                        <input
+                          name="overrideReason"
+                          type="hidden"
+                          value="Manual exclude from Smart SMS review"
+                        />
+                        <button
+                          className="rounded-full border border-[var(--line)] bg-white px-3 py-2 text-xs font-black text-[var(--foreground)] transition hover:border-[#8a1f17] hover:text-[#8a1f17] disabled:cursor-not-allowed disabled:opacity-50"
+                          disabled={excludeDisabled}
+                          type="submit"
+                        >
+                          {uiLocale === "fr"
+                            ? "Exclure de cet envoi"
+                            : "Exclude from this send"}
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="rounded-xl border border-[var(--line)] bg-white p-3 text-sm font-bold text-[var(--muted)]">
+              {uiLocale === "fr"
+                ? "Aucun destinataire SMS n'a encore ete analyse pour ce creneau."
+                : "No SMS recipients have been analyzed for this opening yet."}
+            </p>
+          )}
+        </div>
+      </Panel>
       <Panel title={uiLocale === "fr" ? "Offres préparées" : "Prepared offers"}>
         {offers.length > 0 ? (
           <div className="grid gap-3">
-            {pendingOffers.length > 0 && smsStatus.canSendOpeningAlerts ? (
-              <form action={sendOpeningAlertsAction}>
-                <input name="openingId" type="hidden" value={opening.id} />
-                <button
-                  className="mb-2 rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
-                  type="submit"
-                >
-                  {getOpeningAlertButtonLabel(smsStatus, uiLocale)}
-                </button>
-              </form>
-            ) : (
-              <p className="mb-2 rounded-xl border border-[var(--line)] bg-white p-3 text-sm font-bold text-[var(--muted)]">
-                {sendStatusMessage}
-              </p>
-            )}
+            <p className="mb-2 rounded-xl border border-[var(--line)] bg-white p-3 text-sm font-bold text-[var(--muted)]">
+              {sendStatusMessage}
+            </p>
             {offers.map((offer) => {
               const offerMessage = generateOpeningSmsMessage({
                 businessName,

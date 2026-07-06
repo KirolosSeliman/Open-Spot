@@ -44,6 +44,8 @@ describe("inbound SMS persistence route", () => {
     expect(inboundHandler).toContain('status: "received"');
     expect(inboundHandler).toContain('status: "opted_out"');
     expect(inboundHandler).toContain("unsubscribed_at");
+    expect(inboundHandler).toContain(".from(\"customer_activity_events\")");
+    expect(inboundHandler).toContain('event_type: "sms_opted_out"');
     expect(inboundHandler).toContain('action: "sms.inbound.linked"');
     expect(inboundHandler).toContain('action: "sms.opt_out.received"');
   });

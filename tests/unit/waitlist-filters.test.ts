@@ -146,8 +146,10 @@ describe("waitlist server-side consent safety", () => {
     );
 
     expect(source).toContain('select("status")');
-    expect(source).toContain("filterEligibleOpeningRecipients");
-    expect(source).toContain('consentByCustomer.get(entry.customer_id) ?? "needs_consent"');
+    expect(source).toContain("prepareSmartRecipientDecisionsForOpening");
+    expect(source).toContain("evaluateSmsRecipientEligibility");
+    expect(source).toContain('smsConsentStatus: consent?.status ?? "missing"');
+    expect(source).toContain("waitlistEntryMatchesOpeningService");
     expect(source).toContain('.eq("organization_id", organization.id)');
     expect(source).toContain('.eq("active", true)');
     expect(source).toContain("Client is already active.");

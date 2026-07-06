@@ -29,6 +29,8 @@ export type WaitlistEntryServiceRow =
 export type OpeningRow = Database["public"]["Tables"]["openings"]["Row"];
 export type OpeningOfferRow =
   Database["public"]["Tables"]["opening_offers"]["Row"];
+export type AlertRecipientDecisionRow =
+  Database["public"]["Tables"]["alert_recipient_decisions"]["Row"];
 export type OpeningValueSource = "booking_request" | "opening" | "service" | "unknown";
 export type OpeningView = OpeningRow & {
   displayValueCents: number | null;
@@ -57,11 +59,16 @@ export type OpeningDetailOffer = OpeningOfferRow & {
   lastOutboundFromNumber: string | null;
   lastOutboundToNumber: string | null;
 };
+export type OpeningRecipientDecisionView = AlertRecipientDecisionRow & {
+  customerName: string;
+  customerPhone: string;
+};
 
 export type OpeningDetailData = {
   opening: OpeningRow | null;
   service: Pick<ServiceRow, "id" | "name" | "normal_price_cents"> | null;
   offers: OpeningDetailOffer[];
+  recipientDecisions: OpeningRecipientDecisionView[];
   deliveryHistoryWarning: string | null;
 };
 
@@ -995,12 +1002,13 @@ export async function loadOpeningDetail(
       opening: null,
       service: null,
       offers: [],
+      recipientDecisions: [],
       deliveryHistoryWarning: null
     };
   }
 
   const supabase = await createSupabaseServerClient();
-  const [openingResult, offersResult] = await Promise.all([
+  const [openingResult, offersResult, recipientDecisionsResult] = await Promise.all([
     supabase
       .from("openings")
       .select("*")
@@ -1012,6 +1020,12 @@ export async function loadOpeningDetail(
       .select("*")
       .eq("organization_id", organizationId)
       .eq("opening_id", openingId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("alert_recipient_decisions")
+      .select("*")
+      .eq("organization_id", organizationId)
+      .eq("alert_id", openingId)
       .order("created_at", { ascending: true })
   ]);
 
@@ -1023,19 +1037,30 @@ export async function loadOpeningDetail(
     throw new Error(offersResult.error.message);
   }
 
+  if (recipientDecisionsResult.error) {
+    throw new Error(recipientDecisionsResult.error.message);
+  }
+
   const opening = openingResult.data ?? null;
   const offers = offersResult.data ?? [];
+  const recipientDecisions = recipientDecisionsResult.data ?? [];
 
   if (!opening) {
     return {
       opening: null,
       service: null,
       offers: [],
+      recipientDecisions: [],
       deliveryHistoryWarning: null
     };
   }
 
-  const customerIds = [...new Set(offers.map((offer) => offer.customer_id))];
+  const customerIds = [
+    ...new Set([
+      ...offers.map((offer) => offer.customer_id),
+      ...recipientDecisions.map((decision) => decision.customer_id)
+    ])
+  ];
   const [serviceResult, customersResult] = await Promise.all([
     opening.service_id
       ? supabase
@@ -1116,6 +1141,15 @@ export async function loadOpeningDetail(
     opening,
     service: serviceResult.data ?? null,
     deliveryHistoryWarning,
+    recipientDecisions: recipientDecisions.map((decision) => {
+      const customer = customerById.get(decision.customer_id);
+
+      return {
+        ...decision,
+        customerName: customer?.full_name ?? "Client inconnu",
+        customerPhone: customer?.phone_e164 ?? ""
+      };
+    }),
     offers: offers.map((offer) => {
       const customer = customerById.get(offer.customer_id);
       const lastOutbound = lastMessageByCustomer.get(offer.customer_id);

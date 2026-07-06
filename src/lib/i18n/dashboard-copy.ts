@@ -453,6 +453,25 @@ export const dashboardCopy = {
           "Unavailable SMS to non-selected respondents",
         sms_daily_limit: "Daily SMS limit",
         sms_monthly_limit: "Monthly SMS limit"
+      },
+      smartSms: {
+        title: "Smart SMS mode",
+        description: "Protects your clients from messages that are too frequent.",
+        smartMode: "Smart SMS mode",
+        completedCooldown: "Pause after completed appointment",
+        filledSpotCooldown: "Pause after filled last-minute spot",
+        maxPerDay: "Maximum SMS per day",
+        maxPer7Days: "Maximum SMS per 7 days",
+        maxPer30Days: "Maximum SMS per 30 days",
+        futureAppointment: "Future appointment protection",
+        futureAppointmentEnabled:
+          "Do not send if appointment is within {days} days",
+        futureAppointmentDisabled: "Disabled",
+        allowedHours: "Allowed sending hours",
+        alwaysReview: "Always review recipients before sending",
+        days: "days",
+        complianceNote:
+          "Unsubscribed clients or clients without valid consent will never receive SMS, even if Smart SMS mode is disabled."
       }
     }
   },
@@ -921,6 +940,25 @@ export const dashboardCopy = {
           "SMS d’indisponibilité aux répondants non retenus",
         sms_daily_limit: "Limite SMS quotidienne",
         sms_monthly_limit: "Limite SMS mensuelle"
+      },
+      smartSms: {
+        title: "Mode intelligent SMS",
+        description: "Protege vos clients contre les messages trop rapproches.",
+        smartMode: "Mode intelligent SMS",
+        completedCooldown: "Pause apres rendez-vous complete",
+        filledSpotCooldown: "Pause apres place derniere minute remplie",
+        maxPerDay: "Maximum SMS par jour",
+        maxPer7Days: "Maximum SMS par 7 jours",
+        maxPer30Days: "Maximum SMS par 30 jours",
+        futureAppointment: "Protection rendez-vous futur",
+        futureAppointmentEnabled:
+          "Ne pas envoyer si rendez-vous dans les {days} prochains jours",
+        futureAppointmentDisabled: "Desactive",
+        allowedHours: "Heures d'envoi autorisees",
+        alwaysReview: "Toujours revoir les destinataires avant envoi",
+        days: "jours",
+        complianceNote:
+          "Les clients desinscrits ou sans consentement valide ne recevront jamais de SMS, meme si le Mode intelligent est desactive."
       }
     }
   }
