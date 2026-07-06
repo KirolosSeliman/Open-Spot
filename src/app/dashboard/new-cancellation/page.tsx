@@ -25,10 +25,13 @@ export default async function NewCancellationPage({
   const copy = getDashboardCopy(locale);
   const smsStatus = getSmsRuntimeStatus();
   const canSendSmsAlerts =
-    smsStatus.canSendOpeningAlerts && data.smsPersistence.ready;
+    smsStatus.canSendOpeningAlerts &&
+    data.smsPersistence.ready &&
+    data.smartSmsPersistence.ready;
   const smsBlockingReasons = [
     ...smsStatus.blockingReasons,
-    ...data.smsPersistence.blockingReasons
+    ...data.smsPersistence.blockingReasons,
+    ...data.smartSmsPersistence.blockingReasons
   ];
 
   return (

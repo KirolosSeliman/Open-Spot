@@ -318,10 +318,21 @@ describe("Twilio webhook foundation", () => {
 
   it("classifies required bilingual reply keywords", () => {
     expect(classifyInboundSmsBody("STOP")).toBe("opt_out");
+    expect(classifyInboundSmsBody("stop svp")).toBe("opt_out");
     expect(classifyInboundSmsBody("ARRET")).toBe("opt_out");
     expect(classifyInboundSmsBody("ARRÊT")).toBe("opt_out");
     expect(classifyInboundSmsBody("unsubscribe")).toBe("opt_out");
+    expect(classifyInboundSmsBody("unsubscribe me")).toBe("opt_out");
     expect(classifyInboundSmsBody("cancel")).toBe("opt_out");
+    expect(classifyInboundSmsBody("arrêt merci")).toBe("opt_out");
+    expect(classifyInboundSmsBody("arrêtez svp")).toBe("opt_out");
+    expect(classifyInboundSmsBody("désinscrire moi")).toBe("opt_out");
+    expect(classifyInboundSmsBody("désinscris-moi")).toBe("opt_out");
+    expect(classifyInboundSmsBody("je veux me désinscrire")).toBe("opt_out");
+    expect(classifyInboundSmsBody("cancel please")).toBe("opt_out");
+    expect(classifyInboundSmsBody("retirez-moi")).toBe("opt_out");
+    expect(classifyInboundSmsBody("non", "waitlist")).not.toBe("opt_out");
+    expect(classifyInboundSmsBody("no", "waitlist")).not.toBe("opt_out");
     expect(classifyInboundSmsBody("OUI")).toBe("waitlist_positive");
     expect(classifyInboundSmsBody("YES")).toBe("waitlist_positive");
     expect(classifyInboundSmsBody("1")).toBe("waitlist_positive");

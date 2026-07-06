@@ -40,9 +40,8 @@ describe("opening SMS flow", () => {
     expect(dashboardActions).toContain("resolveOpeningAlertSmsBody");
     expect(dashboardActions).toContain("sendOrganizationSms");
     expect(dashboardActions).toContain("sendResult.fromNumber");
-    expect(dashboardActions).toContain(
-      'consentByCustomer.get(decision.customer_id) === "opted_in"'
-    );
+    expect(dashboardActions).toContain("consent?.status === \"opted_in\"");
+    expect(dashboardActions).toContain("!consent.unsubscribed_at");
     expect(dashboardActions).not.toContain("createSimulatorSmsProvider");
     expect(dashboardActions).not.toContain("SIMULATOR_SOURCE_NUMBER");
     expect(dashboardActions).not.toContain("last-minute appointment opened");

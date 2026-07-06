@@ -145,7 +145,7 @@ const reasonLabels: Record<ReasonCode, string> = {
   manual_include: "Client inclus manuellement.",
   manual_exclude: "Client exclu de cet envoi.",
   manual_never_send_last_minute:
-    "Client exclu des alertes de derniere minute.",
+    "Envoi impossible : ce client est exclu des alertes dernière minute. Modifiez sa préférence client pour le réactiver.",
   outside_allowed_sending_hours:
     "Protege par le Mode intelligent : hors heures d'envoi autorisees."
 };
@@ -342,7 +342,7 @@ export function evaluateSmsRecipientEligibility({
   }
 
   if (customer.manualSendMode === "never_send_last_minute") {
-    return protectedDecision("manual_never_send_last_minute");
+    return lockedBlock("manual_never_send_last_minute");
   }
 
   if (customer.manualSendMode === "prefer_exclude") {

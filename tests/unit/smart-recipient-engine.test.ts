@@ -94,10 +94,6 @@ describe("evaluateSmsRecipientEligibility", () => {
       {
         overrides: { manualSendMode: "prefer_exclude" },
         reason: "protected_manual_prefer_exclude"
-      },
-      {
-        overrides: { manualSendMode: "never_send_last_minute" },
-        reason: "manual_never_send_last_minute"
       }
     ] as const;
 
@@ -111,6 +107,25 @@ describe("evaluateSmsRecipientEligibility", () => {
         warningRequired: false
       });
     }
+  });
+
+  it("locks never_send_last_minute so it cannot be manually included per alert", () => {
+    const decision = evaluate({ manualSendMode: "never_send_last_minute" });
+
+    expect(decision).toMatchObject({
+      baseDecision: "locked_blocked",
+      finalDecision: "locked_blocked",
+      decisionType: "auto",
+      reasonCodes: ["manual_never_send_last_minute"],
+      canSend: false
+    });
+
+    expect(applyManualRecipientOverride(decision, "include")).toMatchObject({
+      finalDecision: "locked_blocked",
+      decisionType: "manual_locked",
+      canSend: false,
+      manuallyOverridden: false
+    });
   });
 
   it("returns eligible/send for a consenting valid recipient with no cooldowns or caps", () => {

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -9,6 +9,15 @@ const migrationPath = join(
   "migrations",
   "20260706093000_smart_sms_recipient_controls.sql"
 );
+const migrationsDir = join(process.cwd(), "supabase", "migrations");
+
+function readMigrationBySuffix(suffix: string) {
+  const file = readdirSync(migrationsDir).find((name) => name.endsWith(suffix));
+
+  expect(file).toBeTruthy();
+
+  return readFileSync(join(migrationsDir, file ?? ""), "utf8");
+}
 
 describe("smart SMS recipient controls migration", () => {
   it("adds recipient controls additively with RLS and no data destruction", () => {
@@ -43,5 +52,49 @@ describe("smart SMS recipient controls migration", () => {
 
     expect(sql).not.toMatch(/auto[_\s-]?(?:book|confirm)|first[_\s-]?reply[_\s-]?wins/i);
     expect(sql).not.toMatch(/confirmed[_\s-]?automatically/i);
+  });
+
+  it("adds multi-tenant FK and RLS hardening additively", () => {
+    const sql = readMigrationBySuffix("_smart_sms_multi_tenant_hardening.sql");
+
+    expect(sql).toContain("customers_id_organization_id_unique");
+    expect(sql).toContain("openings_id_organization_id_unique");
+    expect(sql).toContain("appointments_id_organization_id_unique");
+    expect(sql).toContain("customer_sms_preferences_customer_org_fk");
+    expect(sql).toContain("customer_activity_events_customer_org_fk");
+    expect(sql).toContain("alert_recipient_decisions_customer_org_fk");
+    expect(sql).toContain("alert_recipient_decisions_alert_org_fk");
+    expect(sql).toContain("exists (");
+    expect(sql).toContain("from public.customers c");
+    expect(sql).toContain("from public.openings o");
+    expect(sql).toContain("private.is_org_member(organization_id)");
+    expect(sql).toContain("private.has_org_role(");
+    expect(sql).not.toMatch(/\bgrant\s+.+\s+to\s+anon\b/i);
+    expect(sql).not.toMatch(/\bfor\s+delete\b/i);
+    expect(sql).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
+  });
+
+  it("prevents alert recipient decision audit regression at the database layer", () => {
+    const sql = readMigrationBySuffix("_smart_sms_decision_audit_guard.sql");
+
+    expect(sql).toContain("private.prevent_alert_recipient_decision_audit_regression");
+    expect(sql).toContain("before update on public.alert_recipient_decisions");
+    expect(sql).toContain("old.sent_at is not null and new.sent_at is null");
+    expect(sql).toContain("old.twilio_message_sid is not null");
+    expect(sql).toContain("old.delivery_status is not null and new.delivery_status is null");
+    expect(sql).toContain("old.sent_at is not null");
+    expect(sql).toContain("base_decision = 'locked_blocked'");
+    expect(sql).toContain("final_decision = 'send'");
+    expect(sql).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
+  });
+
+  it("documents sms_consents as the consent source of truth", () => {
+    const sql = readMigrationBySuffix("_smart_sms_consent_source_comments.sql");
+
+    expect(sql).toContain("comment on column public.customer_sms_preferences.sms_consent_status");
+    expect(sql).toContain("Source of truth is public.sms_consents");
+    expect(sql).toContain("comment on column public.customer_sms_preferences.consented_at");
+    expect(sql).toContain("comment on column public.customer_sms_preferences.opted_out_at");
+    expect(sql).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
   });
 });

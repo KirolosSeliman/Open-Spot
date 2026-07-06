@@ -40,6 +40,10 @@ const operationsData = readFileSync(
   join(process.cwd(), "src/lib/dashboard/operations-data.ts"),
   "utf8"
 );
+const settingsPage = readFileSync(
+  join(process.cwd(), "src/app/dashboard/settings/page.tsx"),
+  "utf8"
+);
 
 describe("smart SMS recipient dashboard flow", () => {
   it("prepares, persists, overrides, and revalidates recipient decisions before send", () => {
@@ -97,5 +101,87 @@ describe("smart SMS recipient dashboard flow", () => {
     expect(dashboardActions).toContain("redirectWithSendError");
     expect(dashboardActions).toContain("/dashboard/cancellations/${createdOpeningId}");
     expect(dashboardActions).toContain("console.warn");
+  });
+
+  it("guards Smart SMS surfaces when the persistence migration is missing", () => {
+    expect(dashboardActions).toContain("checkSmartSmsPersistenceReadiness");
+    expect(dashboardActions).toContain("smartSmsPersistence.blockingReasons.join");
+    expect(operationsData).toContain("smartSmsPersistence");
+    expect(operationsData).toContain("recipientDecisions: []");
+    expect(operationsData).toContain("smartSmsWarning");
+    expect(settingsPage).toContain("checkSmartSmsPersistenceReadiness");
+    expect(settingsPage).toContain("smartSmsReadiness");
+    expect(settingsPage).toContain(
+      "Mode intelligent SMS indisponible : migration non appliquée."
+    );
+  });
+
+  it("keeps sent or claimed recipient decisions immutable from manual overrides", () => {
+    expect(dashboardActions).toContain(
+      "sent_at, delivery_status, twilio_message_sid"
+    );
+    expect(dashboardActions).toContain("recipientDecisionClaimedStatuses");
+    expect(dashboardActions).toContain("\"failed\"");
+    expect(dashboardActions).toContain("Recipient decision was already sent or claimed.");
+    expect(dashboardActions).not.toContain("delivery_status: null");
+    expect(cancellationDetailPage).toContain("SMS failed. Retry is blocked");
+  });
+
+  it("revalidates consent, STOP, phone, and archived state immediately before sending", () => {
+    expect(dashboardActions).toContain(
+      "customer_id, status, unsubscribed_at"
+    );
+    expect(dashboardActions).toContain("finalSendHardBlockReasonsByCustomerId");
+    expect(dashboardActions).toContain("blocked_opted_out");
+    expect(dashboardActions).toContain("blocked_no_consent");
+    expect(dashboardActions).toContain("blocked_invalid_phone");
+    expect(dashboardActions).toContain("blocked_archived_customer");
+    expect(dashboardActions).toContain("markRecipientDecisionsLockedBeforeSend");
+    expect(dashboardActions).toContain("status: \"invalid\"");
+  });
+
+  it("keeps opening offers synchronized with recipient decisions", () => {
+    expect(dashboardActions).toContain("syncOpeningOffersWithRecipientDecisions");
+    expect(dashboardActions).toContain("ensureOpeningOffersForSendDecisions");
+    expect(dashboardActions).toContain("decision.final_decision === \"send\"");
+    expect(dashboardActions).toContain(".is(\"sent_at\", null)");
+    expect(dashboardActions).toContain(".is(\"responded_at\", null)");
+    expect(dashboardActions).toContain(".is(\"response_text\", null)");
+    expect(dashboardActions).toContain("phantomOfferIds");
+    expect(dashboardActions).toContain("status: \"invalid\"");
+  });
+
+  it("lets owners and managers update validated Smart SMS settings", () => {
+    expect(dashboardActions).toContain("updateSmartSmsSettingsAction");
+    expect(dashboardActions).toContain("canManageOrganizationSettings");
+    expect(dashboardActions).toContain("buildSmartSmsSettingsUpdateInput");
+    expect(dashboardActions).toContain("max: 90");
+    expect(dashboardActions).toContain("max: 120");
+    expect(dashboardActions).toContain("min: 1");
+    expect(dashboardActions).toContain(
+      "Smart SMS limits must follow day <= 7-day <= 30-day."
+    );
+    expect(dashboardActions).toContain("allowed_send_start_time");
+    expect(dashboardActions).toContain("allowed_send_end_time");
+    expect(settingsPage).toContain("updateSmartSmsSettingsAction");
+    expect(settingsPage).toContain("disabled={!smartSmsReadiness.ready");
+    expect(settingsPage).toContain("max={20}");
+    expect(settingsPage).toContain("max={50}");
+    expect(settingsPage).toContain("max={200}");
+  });
+
+  it("requires explicit UI and server confirmation before including protected recipients", () => {
+    expect(cancellationDetailPage).toContain("protectedOverrideConfirmed");
+    expect(cancellationDetailPage).toContain("required={decision.base_decision === \"protected\"");
+    expect(dashboardActions).toContain("protectedOverrideConfirmed");
+    expect(dashboardActions).toContain(
+      "Protected recipient inclusion requires confirmation."
+    );
+    expect(cancellationDetailPage).toContain("confirmProtectedRecipients");
+    expect(cancellationDetailPage).toContain("required={includedProtectedCount > 0}");
+    expect(dashboardActions).toContain("confirmProtectedRecipients");
+    expect(dashboardActions).toContain(
+      "You included clients protected by Smart SMS mode. Confirm that you want to send this alert despite the unsubscribe risk."
+    );
   });
 });

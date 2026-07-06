@@ -14,6 +14,11 @@ import {
   isSmsPersistenceSchemaError
 } from "@/lib/sms/persistence-readiness";
 import {
+  checkSmartSmsPersistenceReadiness,
+  isSmartSmsPersistenceSchemaError,
+  type SmartSmsPersistenceReadiness
+} from "@/lib/sms/smart-sms-persistence-readiness";
+import {
   getWaitlistSmsEligibility,
   type WaitlistSmsEligibility
 } from "@/lib/waitlist/eligibility";
@@ -70,6 +75,8 @@ export type OpeningDetailData = {
   offers: OpeningDetailOffer[];
   recipientDecisions: OpeningRecipientDecisionView[];
   deliveryHistoryWarning: string | null;
+  smartSmsWarning: string | null;
+  smartSmsPersistence: SmartSmsPersistenceReadiness | null;
 };
 
 export type ResponseQueueItem = OpeningOfferRow & {
@@ -765,15 +772,17 @@ export async function loadWaitlistView(): Promise<{
 }
 
 export async function loadOpeningCreationData() {
-  const [services, waitlist, smsPersistence] = await Promise.all([
+  const [services, waitlist, smsPersistence, smartSmsPersistence] = await Promise.all([
     loadServices(),
     loadWaitlistView(),
-    checkSmsDeliveryPersistenceReadiness()
+    checkSmsDeliveryPersistenceReadiness(),
+    checkSmartSmsPersistenceReadiness()
   ]);
 
   return {
     services,
     smsPersistence,
+    smartSmsPersistence,
     eligibleCustomers: waitlist.customers.filter(
       (customer) => customer.consentStatus === "opted_in"
     )
@@ -1003,12 +1012,14 @@ export async function loadOpeningDetail(
       service: null,
       offers: [],
       recipientDecisions: [],
-      deliveryHistoryWarning: null
+      deliveryHistoryWarning: null,
+      smartSmsWarning: null,
+      smartSmsPersistence: null
     };
   }
 
   const supabase = await createSupabaseServerClient();
-  const [openingResult, offersResult, recipientDecisionsResult] = await Promise.all([
+  const [openingResult, offersResult, smartSmsPersistence] = await Promise.all([
     supabase
       .from("openings")
       .select("*")
@@ -1021,12 +1032,7 @@ export async function loadOpeningDetail(
       .eq("organization_id", organizationId)
       .eq("opening_id", openingId)
       .order("created_at", { ascending: true }),
-    supabase
-      .from("alert_recipient_decisions")
-      .select("*")
-      .eq("organization_id", organizationId)
-      .eq("alert_id", openingId)
-      .order("created_at", { ascending: true })
+    checkSmartSmsPersistenceReadiness()
   ]);
 
   if (openingResult.error) {
@@ -1037,13 +1043,12 @@ export async function loadOpeningDetail(
     throw new Error(offersResult.error.message);
   }
 
-  if (recipientDecisionsResult.error) {
-    throw new Error(recipientDecisionsResult.error.message);
-  }
-
   const opening = openingResult.data ?? null;
   const offers = offersResult.data ?? [];
-  const recipientDecisions = recipientDecisionsResult.data ?? [];
+  let recipientDecisions: AlertRecipientDecisionRow[] = [];
+  let smartSmsWarning = smartSmsPersistence.ready
+    ? null
+    : smartSmsPersistence.blockingReasons[0] ?? null;
 
   if (!opening) {
     return {
@@ -1051,8 +1056,30 @@ export async function loadOpeningDetail(
       service: null,
       offers: [],
       recipientDecisions: [],
-      deliveryHistoryWarning: null
+      deliveryHistoryWarning: null,
+      smartSmsWarning,
+      smartSmsPersistence
     };
+  }
+
+  if (smartSmsPersistence.ready) {
+    const recipientDecisionsResult = await supabase
+      .from("alert_recipient_decisions")
+      .select("*")
+      .eq("organization_id", organizationId)
+      .eq("alert_id", openingId)
+      .order("created_at", { ascending: true });
+
+    if (recipientDecisionsResult.error) {
+      if (isSmartSmsPersistenceSchemaError(recipientDecisionsResult.error)) {
+        smartSmsWarning =
+          "Mode intelligent SMS indisponible : migration non appliquée.";
+      } else {
+        throw new Error(recipientDecisionsResult.error.message);
+      }
+    } else {
+      recipientDecisions = recipientDecisionsResult.data ?? [];
+    }
   }
 
   const customerIds = [
@@ -1141,6 +1168,8 @@ export async function loadOpeningDetail(
     opening,
     service: serviceResult.data ?? null,
     deliveryHistoryWarning,
+    smartSmsWarning,
+    smartSmsPersistence,
     recipientDecisions: recipientDecisions.map((decision) => {
       const customer = customerById.get(decision.customer_id);
 

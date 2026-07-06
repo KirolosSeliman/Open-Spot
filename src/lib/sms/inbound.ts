@@ -12,10 +12,23 @@ export type InboundSmsClassification =
 
 const optOutKeywords = new Set([
   "stop",
+  "stoppe",
+  "stoppez",
+  "stopp",
   "unsubscribe",
+  "unsub",
   "arret",
+  "arrete",
+  "arretez",
   "arreter",
+  "desinscrire",
+  "desinscris",
+  "desinscription",
+  "desabonne",
   "desabonner",
+  "retirer",
+  "retire",
+  "retirez",
   "cancel",
   "end",
   "quit",
@@ -55,10 +68,12 @@ export function classifyInboundSmsBody(
     .replace(/\p{Diacritic}/gu, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
-  const firstToken = normalized.split(/\s+/).filter(Boolean)[0] ?? "";
+  const tokens = normalized.split(/\s+/).filter(Boolean);
+  const firstToken = tokens[0] ?? "";
+  const hasOptOutToken = tokens.some((token) => optOutKeywords.has(token));
 
   if (context === "consent") {
-    if (optOutKeywords.has(normalized) || optOutKeywords.has(firstToken)) {
+    if (optOutKeywords.has(normalized) || hasOptOutToken) {
       return "opt_out";
     }
 
@@ -87,7 +102,7 @@ export function classifyInboundSmsBody(
     return "appointment_cancel";
   }
 
-  if (optOutKeywords.has(normalized) || optOutKeywords.has(firstToken)) {
+  if (optOutKeywords.has(normalized) || hasOptOutToken) {
     return "opt_out";
   }
 

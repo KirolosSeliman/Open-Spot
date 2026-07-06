@@ -137,7 +137,15 @@ export default async function CancellationDetailPage({
   const { error, sendError, validationError, confirmationSmsWarning, notice } =
     await searchParams;
   const [
-    { opening, service, offers, recipientDecisions, deliveryHistoryWarning },
+    {
+      opening,
+      service,
+      offers,
+      recipientDecisions,
+      deliveryHistoryWarning,
+      smartSmsWarning,
+      smartSmsPersistence
+    },
     workspace,
     uiLocale
   ] = await Promise.all([
@@ -200,7 +208,11 @@ export default async function CancellationDetailPage({
     offers.every((offer) =>
       ["sent", "responded", "selected", "rejected"].includes(offer.status)
     );
+  const smartSmsReady = smartSmsPersistence?.ready ?? false;
   const sendStatusMessage =
+    smartSmsWarning
+      ? smartSmsWarning
+      :
     selectedOffers.length > 0
       ? uiLocale === "fr"
         ? "Un client a été sélectionné manuellement."
@@ -279,6 +291,11 @@ export default async function CancellationDetailPage({
       {deliveryHistoryWarning ? (
         <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
           {deliveryHistoryWarning}
+        </p>
+      ) : null}
+      {smartSmsWarning ? (
+        <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+          {smartSmsWarning}
         </p>
       ) : null}
       <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
@@ -376,15 +393,32 @@ export default async function CancellationDetailPage({
           {includedProtectedCount > 0 ? (
             <p className="rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
               {uiLocale === "fr"
-                ? "Vous avez inclus des clients proteges par le Mode intelligent. Cela peut augmenter le risque de desinscription."
+                ? "Vous avez inclus des clients proteges par le Mode intelligent SMS. Confirmez que vous souhaitez leur envoyer cette alerte malgre le risque de desinscription."
                 : "You included clients protected by Smart SMS mode. This can increase unsubscribe risk."}
             </p>
           ) : null}
           {unsentSelectedRecipientCount > 0 &&
+          smartSmsReady &&
           smsStatus.canSendOpeningAlerts &&
           !allOffersSentOrBeyond ? (
             <form action={sendOpeningAlertsAction}>
               <input name="openingId" type="hidden" value={opening.id} />
+              {includedProtectedCount > 0 ? (
+                <label className="mb-3 flex max-w-2xl items-start gap-2 rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">
+                  <input
+                    className="mt-1"
+                    name="confirmProtectedRecipients"
+                    required={includedProtectedCount > 0}
+                    type="checkbox"
+                    value="true"
+                  />
+                  <span>
+                    {uiLocale === "fr"
+                      ? "Je confirme l'envoi aux clients proteges inclus."
+                      : "I confirm sending to the included protected clients."}
+                  </span>
+                </label>
+              ) : null}
               <button
                 className="rounded-full bg-[var(--primary)] px-4 py-2 text-sm font-black text-white shadow-[0_12px_24px_rgba(79,125,243,0.2)] transition hover:bg-[var(--primary-strong)]"
                 type="submit"
@@ -460,6 +494,13 @@ export default async function CancellationDetailPage({
                             : "SMS already submitted for this client."}
                         </p>
                       ) : null}
+                      {decision.delivery_status === "failed" ? (
+                        <p className="mt-3 rounded-xl border border-[#f2b8b5] bg-[#fff7f6] p-3 text-sm font-bold text-[#8a1f17]">
+                          {uiLocale === "fr"
+                            ? "Envoi SMS echoue. Reessayage bloque jusqu'a l'ajout d'une action de retry explicite."
+                            : "SMS failed. Retry is blocked until an explicit retry action is added."}
+                        </p>
+                      ) : null}
                     </div>
                     <div className="flex flex-wrap items-start gap-2 lg:justify-end">
                       <form action={updateOpeningRecipientDecisionAction}>
@@ -483,6 +524,22 @@ export default async function CancellationDetailPage({
                           type="hidden"
                           value="Manual include from Smart SMS review"
                         />
+                        {decision.base_decision === "protected" ? (
+                          <label className="mb-2 flex max-w-[18rem] items-start gap-2 rounded-lg border border-[#f3c76b] bg-[#fff8df] p-3 text-[11px] font-bold leading-relaxed text-[#8a5a00]">
+                            <input
+                              className="mt-0.5"
+                              name="protectedOverrideConfirmed"
+                              required={decision.base_decision === "protected"}
+                              type="checkbox"
+                              value="true"
+                            />
+                            <span>
+                              {uiLocale === "fr"
+                                ? "Je confirme l'inclusion de ce client protege pour cet envoi."
+                                : "I confirm including this protected client for this send."}
+                            </span>
+                          </label>
+                        ) : null}
                         <button
                           className="rounded-full border border-[var(--primary)] bg-white px-3 py-2 text-xs font-black text-[var(--primary)] transition hover:bg-[var(--primary-soft)] disabled:cursor-not-allowed disabled:border-[var(--line)] disabled:text-[var(--muted)] disabled:opacity-50"
                           disabled={includeDisabled}
