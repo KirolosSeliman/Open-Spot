@@ -44,8 +44,8 @@ export function WeekCalendarView({
 
   return (
     <div className="os-mobile-calendar-scroll max-w-full min-w-0">
-      <div className="min-w-[920px]">
-        <div className="grid grid-cols-[72px_repeat(7,minmax(0,1fr))] border-b border-[#e3eaf5]">
+      <div className="w-full min-w-0">
+        <div className="grid min-w-0 grid-cols-[56px_repeat(7,minmax(0,1fr))] border-b border-[#e3eaf5] sm:grid-cols-[72px_repeat(7,minmax(0,1fr))]">
           <div />
           {days.map((day) => {
             const isToday = isTodayDateKey(day.dateKey, timezone);
@@ -73,7 +73,7 @@ export function WeekCalendarView({
           })}
         </div>
 
-        <div className="grid grid-cols-[72px_repeat(7,minmax(0,1fr))]">
+        <div className="grid min-w-0 grid-cols-[56px_repeat(7,minmax(0,1fr))] sm:grid-cols-[72px_repeat(7,minmax(0,1fr))]">
           <div className="relative" style={{ height: gridHeight }}>
             {hours.map((hour, index) => (
               <div

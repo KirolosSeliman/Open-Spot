@@ -39,18 +39,18 @@ export function MonthCalendarView({
 
   return (
     <div className="os-mobile-calendar-scroll max-w-full min-w-0">
-      <div className="min-w-[760px]">
-        <div className="grid grid-cols-7 border-b border-[#e3eaf5]">
+      <div className="w-full min-w-0">
+        <div className="grid min-w-0 grid-cols-7 border-b border-[#e3eaf5]">
           {weekdayLabels.map((label) => (
             <div
-              className="px-2 py-3 text-center text-xs font-bold uppercase tracking-wide text-[#64748b]"
+              className="min-w-0 truncate px-1 py-3 text-center text-[10px] font-bold uppercase tracking-wide text-[#64748b] sm:px-2 sm:text-xs"
               key={label}
             >
               {label}
             </div>
           ))}
         </div>
-        <div className="grid grid-cols-7">
+        <div className="grid min-w-0 grid-cols-7">
           {days.map((day) => {
             const dayAppointments = grouped.get(day.dateKey) ?? [];
             const visible = dayAppointments.slice(0, MAX_VISIBLE);
@@ -60,7 +60,7 @@ export function MonthCalendarView({
 
             return (
               <div
-                className="min-h-[120px] border-b border-r border-[#e3eaf5] p-2 last:border-r-0"
+                className="min-h-[100px] min-w-0 border-b border-r border-[#e3eaf5] p-1.5 last:border-r-0 sm:min-h-[120px] sm:p-2"
                 key={day.dateKey}
               >
                 <div className="mb-2 flex justify-end">
