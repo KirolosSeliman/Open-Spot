@@ -121,6 +121,7 @@ function redirectWithWarning(path: string, message: string): never {
 }
 
 const genericClientSaveError = "Unable to save client. Please try again.";
+const MAX_MANUAL_RECIPIENT_EXCLUSIONS = 500;
 
 function redirectWithCustomerActionMessage(
   path: string,
@@ -139,6 +140,46 @@ function getSafeProviderErrorMessage(error: unknown) {
     : rawMessage;
 
   return withoutSecret.slice(0, 180);
+}
+
+function buildManualExcludedCustomerIds(formData: FormData) {
+  const rawValues = formData.getAll("manualExcludedCustomerIds");
+
+  if (rawValues.length > MAX_MANUAL_RECIPIENT_EXCLUSIONS) {
+    return {
+      ok: false as const,
+      error: "Too many manual recipient exclusions."
+    };
+  }
+
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const customerIds = [
+    ...new Set(
+      rawValues
+        .map((value) => String(value ?? "").trim())
+        .filter(Boolean)
+    )
+  ];
+
+  if (customerIds.length > MAX_MANUAL_RECIPIENT_EXCLUSIONS) {
+    return {
+      ok: false as const,
+      error: "Too many manual recipient exclusions."
+    };
+  }
+
+  if (customerIds.some((customerId) => !uuidPattern.test(customerId))) {
+    return {
+      ok: false as const,
+      error: "Invalid manual recipient exclusion."
+    };
+  }
+
+  return {
+    ok: true as const,
+    customerIds
+  };
 }
 
 type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
@@ -2481,13 +2522,16 @@ async function sendOpeningSmsAlerts({
 }
 
 export async function createOpeningAction(formData: FormData) {
-  const manualExcludedCustomerIds = [
-    ...new Set(
-      formData.getAll("manualExcludedCustomerIds")
-        .map((value) => String(value ?? "").trim())
-        .filter(Boolean)
-    )
-  ];
+  const manualExcludedCustomerIdsResult = buildManualExcludedCustomerIds(formData);
+
+  if (!manualExcludedCustomerIdsResult.ok) {
+    redirectWithError(
+      "/dashboard/new-cancellation",
+      manualExcludedCustomerIdsResult.error
+    );
+  }
+
+  const manualExcludedCustomerIds = manualExcludedCustomerIdsResult.customerIds;
   const input = buildOpeningCreateInput({
     title: formData.get("title"),
     serviceId: formData.get("serviceId"),
@@ -2534,6 +2578,8 @@ export async function createOpeningAction(formData: FormData) {
     if (error || !openingId) {
       throw new Error(error?.message ?? "Opening creation failed.");
     }
+
+    createdOpeningId = openingId;
 
     const actorProfileId =
       manualExcludedCustomerIds.length > 0
@@ -2589,7 +2635,11 @@ export async function createOpeningAction(formData: FormData) {
           );
 
         if (excludedEventError) {
-          throw new Error(excludedEventError.message);
+          console.warn("Smart SMS manual exclusion audit failed", {
+            openingId,
+            excludedCustomerCount: excludedDecisions?.length ?? 0,
+            error: excludedEventError.message
+          });
         }
       }
     }
@@ -2618,7 +2668,6 @@ export async function createOpeningAction(formData: FormData) {
       }
     }
 
-    createdOpeningId = openingId;
     await recordManagerModeDashboardAction({
       action: "admin.manager_mode.opening.created",
       entityType: "openings",
@@ -2653,6 +2702,16 @@ export async function createOpeningAction(formData: FormData) {
     revalidatePath("/dashboard/cancellations");
     revalidatePath("/dashboard/responses");
   } catch (error) {
+    if (createdOpeningId) {
+      revalidatePath("/dashboard");
+      revalidatePath("/dashboard/cancellations");
+      revalidatePath(`/dashboard/cancellations/${createdOpeningId}`);
+      redirectWithSendError(
+        `/dashboard/cancellations/${createdOpeningId}`,
+        error instanceof Error ? error.message : "Opening creation failed."
+      );
+    }
+
     redirectWithError(
       "/dashboard/new-cancellation",
       error instanceof Error ? error.message : "Opening creation failed."

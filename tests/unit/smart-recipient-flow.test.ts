@@ -76,13 +76,26 @@ describe("smart SMS recipient dashboard flow", () => {
     expect(newCancellationWorkspace).toContain("onToggleExcludedCustomer");
     expect(newCancellationFormCard).toContain('name="manualExcludedCustomerIds"');
     expect(eligibleCustomersPanel).toContain("<button");
+    expect(eligibleCustomersPanel).toContain("selectedCount");
+    expect(eligibleCustomersPanel).toContain("advanced protections");
     expect(eligibleCustomersPanel).toContain("Pourquoi admissible");
     expect(eligibleCustomersPanel).toContain("Retirer de cet envoi");
     expect(eligibleCustomersPanel).toContain("Remettre dans l'envoi");
-    expect(dashboardActions).toContain('formData.getAll("manualExcludedCustomerIds")');
+    expect(dashboardActions).toContain("buildManualExcludedCustomerIds");
     expect(dashboardActions).toContain('manualOverride: "exclude"');
     expect(dashboardActions).toContain(
       "Manual exclude from opening creation review"
     );
+  });
+
+  it("hardens manual exclusion payloads and preserves created openings on later SMS failures", () => {
+    expect(dashboardActions).toContain("MAX_MANUAL_RECIPIENT_EXCLUSIONS");
+    expect(dashboardActions).toContain("uuidPattern");
+    expect(dashboardActions).toContain("Invalid manual recipient exclusion.");
+    expect(dashboardActions).toContain("Too many manual recipient exclusions.");
+    expect(dashboardActions).toContain("createdOpeningId = openingId");
+    expect(dashboardActions).toContain("redirectWithSendError");
+    expect(dashboardActions).toContain("/dashboard/cancellations/${createdOpeningId}");
+    expect(dashboardActions).toContain("console.warn");
   });
 });

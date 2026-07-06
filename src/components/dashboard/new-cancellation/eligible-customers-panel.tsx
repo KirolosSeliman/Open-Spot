@@ -52,6 +52,11 @@ export function EligibleCustomersPanel({
   }, [customers, normalizedQuery]);
 
   const totalCount = customers.length;
+  const excludedCustomerIdSet = new Set(excludedCustomerIds);
+  const excludedCount = customers.filter((customer) =>
+    excludedCustomerIdSet.has(customer.id)
+  ).length;
+  const selectedCount = Math.max(totalCount - excludedCount, 0);
 
   return (
     <section className="flex h-full flex-col rounded-[24px] border border-[#e5edf7] bg-white p-[clamp(1rem,4vw,1.75rem)] shadow-[0_8px_30px_rgba(15,23,42,0.06)] sm:p-8">
@@ -65,9 +70,17 @@ export function EligibleCustomersPanel({
           </h2>
         </div>
         <span className="inline-flex shrink-0 rounded-full bg-[#f1f5f9] px-3 py-1 text-xs font-bold text-[#64748b]">
-          {formatEligibleClientCount(totalCount, locale)}
+          {formatEligibleClientCount(selectedCount, locale)}
         </span>
       </div>
+
+      {totalCount > 0 ? (
+        <p className="-mt-2 mb-5 text-xs leading-5 text-[#64748b]">
+          {locale === "fr"
+            ? "Présélection SMS : consentement actif, numéro utilisable et liste d'attente active. Les protections avancées seront recalculées après la création du créneau."
+            : "SMS preselection: active consent, usable phone, and active waitlist. Smart SMS advanced protections will be recalculated after the opening is created."}
+        </p>
+      ) : null}
 
       <div className="relative mb-5">
         <label className="sr-only" htmlFor="eligible-customer-search">
@@ -106,7 +119,7 @@ export function EligibleCustomersPanel({
           <ul className="divide-y divide-[#e5edf7]">
             {filteredCustomers.map((customer) => {
               const isExpanded = expandedCustomerId === customer.id;
-              const isExcluded = excludedCustomerIds.includes(customer.id);
+              const isExcluded = excludedCustomerIdSet.has(customer.id);
 
               return (
                 <li key={customer.id}>
@@ -208,7 +221,12 @@ export function EligibleCustomersPanel({
           <span className="font-medium">{copy.criterion}</span>
         </div>
         <span className="text-sm font-bold text-[#334155]">
-          {formatEligibleCountFooter(totalCount, locale)}
+          {formatEligibleCountFooter(selectedCount, locale)}
+          {excludedCount > 0
+            ? locale === "fr"
+              ? ` (${excludedCount} retiré${excludedCount === 1 ? "" : "s"})`
+              : ` (${excludedCount} removed)`
+            : ""}
         </span>
       </div>
     </section>

@@ -27,9 +27,21 @@ describe("smart SMS recipient controls migration", () => {
     expect(sql).toContain("alter table public.alert_recipient_decisions enable row level security");
     expect(sql).toContain("private.is_org_member(organization_id)");
     expect(sql).toContain("array['owner', 'manager', 'staff']::public.organization_role[]");
+    expect(sql).toMatch(/on public\.alert_recipient_decisions for select to authenticated/i);
+    expect(sql).toMatch(/on public\.alert_recipient_decisions for update to authenticated/i);
+    expect(sql).toContain("with check (");
+    expect(sql).not.toMatch(/\bfor\s+delete\b/i);
+    expect(sql).not.toMatch(/\bgrant\s+delete\b/i);
     expect(sql).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
     expect(sql).not.toMatch(
       /\bgrant\s+(?:select|insert|update|delete|all privileges)\s+on\s+(?:table\s+)?public\.(?:customer_sms_preferences|customer_activity_events|alert_recipient_decisions)\s+to\s+anon/i
     );
+  });
+
+  it("does not add any automatic booking or first-reply-wins primitive", () => {
+    const sql = readFileSync(migrationPath, "utf8");
+
+    expect(sql).not.toMatch(/auto[_\s-]?(?:book|confirm)|first[_\s-]?reply[_\s-]?wins/i);
+    expect(sql).not.toMatch(/confirmed[_\s-]?automatically/i);
   });
 });
