@@ -404,11 +404,20 @@ async function ensureOpeningOffersForSendDecisions({
 async function prepareSmartRecipientDecisionsForOpening({
   supabase,
   organization,
-  openingId
+  openingId,
+  manualOverridesByCustomerId = new Map()
 }: {
   supabase: SupabaseServerClient;
   organization: Awaited<ReturnType<typeof requireReadyOrganization>>;
   openingId: string;
+  manualOverridesByCustomerId?: Map<
+    string,
+    {
+      manualOverride: ManualOverride;
+      overrideReason: string | null;
+      overriddenBy: string | null;
+    }
+  >;
 }) {
   const now = new Date();
   const [settings, openingResult, waitlistResult, existingDecisionsResult] =
@@ -628,8 +637,11 @@ async function prepareSmartRecipientDecisionsForOpening({
     const events = eventsByCustomer.get(customerId) ?? [];
     const appointments = appointmentsByCustomer.get(customerId) ?? [];
     const messages = smsMessagesByCustomer.get(customerId) ?? [];
+    const requestedOverride = manualOverridesByCustomerId.get(customerId);
     const manualOverride =
-      existingDecisionByCustomer.get(customerId)?.manual_override ?? "auto";
+      requestedOverride?.manualOverride ??
+      existingDecisionByCustomer.get(customerId)?.manual_override ??
+      "auto";
     const decision = applyManualRecipientOverride(
       evaluateSmsRecipientEligibility({
         customer: {
@@ -675,8 +687,13 @@ async function prepareSmartRecipientDecisionsForOpening({
         decision,
         manualOverride: isManualOverride(manualOverride) ? manualOverride : "auto",
         overrideReason:
-          existingDecisionByCustomer.get(customerId)?.override_reason ?? null,
-        overriddenBy: existingDecisionByCustomer.get(customerId)?.overridden_by ?? null
+          requestedOverride?.overrideReason ??
+          existingDecisionByCustomer.get(customerId)?.override_reason ??
+          null,
+        overriddenBy:
+          requestedOverride?.overriddenBy ??
+          existingDecisionByCustomer.get(customerId)?.overridden_by ??
+          null
       })
     ];
   });
@@ -2464,6 +2481,13 @@ async function sendOpeningSmsAlerts({
 }
 
 export async function createOpeningAction(formData: FormData) {
+  const manualExcludedCustomerIds = [
+    ...new Set(
+      formData.getAll("manualExcludedCustomerIds")
+        .map((value) => String(value ?? "").trim())
+        .filter(Boolean)
+    )
+  ];
   const input = buildOpeningCreateInput({
     title: formData.get("title"),
     serviceId: formData.get("serviceId"),
@@ -2511,11 +2535,65 @@ export async function createOpeningAction(formData: FormData) {
       throw new Error(error?.message ?? "Opening creation failed.");
     }
 
+    const actorProfileId =
+      manualExcludedCustomerIds.length > 0
+        ? await getCurrentOrganizationProfileId({
+            supabase,
+            organizationId: organization.id
+          })
+        : null;
     const recipientPreparation = await prepareSmartRecipientDecisionsForOpening({
       supabase,
       organization,
-      openingId
+      openingId,
+      manualOverridesByCustomerId: new Map(
+        manualExcludedCustomerIds.map((customerId) => [
+          customerId,
+          {
+            manualOverride: "exclude" as const,
+            overrideReason: "Manual exclude from opening creation review",
+            overriddenBy: actorProfileId
+          }
+        ])
+      )
     });
+
+    if (manualExcludedCustomerIds.length > 0) {
+      const { data: excludedDecisions, error: excludedDecisionError } =
+        await supabase
+          .from("alert_recipient_decisions")
+          .select("id, customer_id")
+          .eq("organization_id", organization.id)
+          .eq("alert_id", openingId)
+          .eq("manual_override", "exclude")
+          .in("customer_id", manualExcludedCustomerIds);
+
+      if (excludedDecisionError) {
+        throw new Error(excludedDecisionError.message);
+      }
+
+      if ((excludedDecisions ?? []).length > 0) {
+        const { error: excludedEventError } = await supabase
+          .from("customer_activity_events")
+          .insert(
+            (excludedDecisions ?? []).map((decision) => ({
+              organization_id: organization.id,
+              customer_id: decision.customer_id,
+              event_type: "manual_recipient_excluded",
+              related_alert_id: openingId,
+              metadata: {
+                decision_id: decision.id,
+                source: "opening_creation_review"
+              }
+            }))
+          );
+
+        if (excludedEventError) {
+          throw new Error(excludedEventError.message);
+        }
+      }
+    }
+
     let smsResult = {
       sent: 0,
       failed: 0,

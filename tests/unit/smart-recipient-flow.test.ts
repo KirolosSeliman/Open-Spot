@@ -11,6 +11,31 @@ const cancellationDetailPage = readFileSync(
   join(process.cwd(), "src/app/dashboard/cancellations/[id]/page.tsx"),
   "utf8"
 );
+const newCancellationPage = readFileSync(
+  join(process.cwd(), "src/app/dashboard/new-cancellation/page.tsx"),
+  "utf8"
+);
+const eligibleCustomersPanel = readFileSync(
+  join(
+    process.cwd(),
+    "src/components/dashboard/new-cancellation/eligible-customers-panel.tsx"
+  ),
+  "utf8"
+);
+const newCancellationWorkspace = readFileSync(
+  join(
+    process.cwd(),
+    "src/components/dashboard/new-cancellation/new-cancellation-workspace.tsx"
+  ),
+  "utf8"
+);
+const newCancellationFormCard = readFileSync(
+  join(
+    process.cwd(),
+    "src/components/dashboard/new-cancellation/new-cancellation-form-card.tsx"
+  ),
+  "utf8"
+);
 const operationsData = readFileSync(
   join(process.cwd(), "src/lib/dashboard/operations-data.ts"),
   "utf8"
@@ -43,5 +68,21 @@ describe("smart SMS recipient dashboard flow", () => {
     expect(cancellationDetailPage).toContain("Inclure quand meme");
     expect(cancellationDetailPage).toContain("Exclure de cet envoi");
     expect(cancellationDetailPage).toContain("warning_required");
+  });
+
+  it("lets merchants inspect and exclude eligible clients before creating an opening", () => {
+    expect(newCancellationPage).toContain("NewCancellationWorkspace");
+    expect(newCancellationWorkspace).toContain("excludedCustomerIds");
+    expect(newCancellationWorkspace).toContain("onToggleExcludedCustomer");
+    expect(newCancellationFormCard).toContain('name="manualExcludedCustomerIds"');
+    expect(eligibleCustomersPanel).toContain("<button");
+    expect(eligibleCustomersPanel).toContain("Pourquoi admissible");
+    expect(eligibleCustomersPanel).toContain("Retirer de cet envoi");
+    expect(eligibleCustomersPanel).toContain("Remettre dans l'envoi");
+    expect(dashboardActions).toContain('formData.getAll("manualExcludedCustomerIds")');
+    expect(dashboardActions).toContain('manualOverride: "exclude"');
+    expect(dashboardActions).toContain(
+      "Manual exclude from opening creation review"
+    );
   });
 });

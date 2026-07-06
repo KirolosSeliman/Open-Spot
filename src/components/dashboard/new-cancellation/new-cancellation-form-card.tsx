@@ -23,6 +23,7 @@ type NewCancellationFormCardProps = {
   services: Service[];
   error?: string;
   canSendSmsAlerts: boolean;
+  excludedCustomerIds: string[];
   smsBlockingReasons: string[];
 };
 
@@ -37,6 +38,7 @@ export function NewCancellationFormCard({
   services,
   error,
   canSendSmsAlerts,
+  excludedCustomerIds,
   smsBlockingReasons
 }: NewCancellationFormCardProps) {
   const [internalNote, setInternalNote] = useState("");
@@ -73,6 +75,15 @@ export function NewCancellationFormCard({
       ) : null}
 
       <form action={createOpeningAction} className="grid gap-6">
+        {excludedCustomerIds.map((customerId) => (
+          <input
+            key={customerId}
+            name="manualExcludedCustomerIds"
+            type="hidden"
+            value={customerId}
+          />
+        ))}
+
         <div className="grid gap-2">
           <label className={labelClasses} htmlFor="title">
             {copy.titleLabel}

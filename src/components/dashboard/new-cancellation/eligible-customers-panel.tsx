@@ -24,15 +24,20 @@ type EligibleCustomer = {
 type EligibleCustomersPanelProps = {
   copy: EligibleCustomersCopy;
   customers: EligibleCustomer[];
+  excludedCustomerIds: string[];
   locale: Locale;
+  onToggleExcludedCustomer: (customerId: string) => void;
 };
 
 export function EligibleCustomersPanel({
   copy,
   customers,
-  locale
+  excludedCustomerIds,
+  locale,
+  onToggleExcludedCustomer
 }: EligibleCustomersPanelProps) {
   const [query, setQuery] = useState("");
+  const [expandedCustomerId, setExpandedCustomerId] = useState<string | null>(null);
   const normalizedQuery = query.trim().toLowerCase();
 
   const filteredCustomers = useMemo(() => {
@@ -99,24 +104,98 @@ export function EligibleCustomersPanel({
       ) : (
         <div className="overflow-hidden rounded-2xl border border-[#e5edf7]">
           <ul className="divide-y divide-[#e5edf7]">
-            {filteredCustomers.map((customer) => (
-              <li key={customer.id}>
-                <div className="flex items-center gap-3 px-4 py-4 sm:px-5">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-bold text-[#0f172a]">
-                      {customer.full_name}
-                    </p>
-                    <p className="mt-0.5 truncate text-sm text-[#64748b]">
-                      {customer.phone_e164}
-                    </p>
-                  </div>
-                  <span className="inline-flex shrink-0 rounded-full bg-[#ecfdf3] px-2.5 py-1 text-xs font-bold text-[#027a48]">
-                    {copy.smsAuthorized}
-                  </span>
-                  <ChevronRightIcon className="h-[18px] w-[18px] shrink-0 text-[#94a3b8]" />
-                </div>
-              </li>
-            ))}
+            {filteredCustomers.map((customer) => {
+              const isExpanded = expandedCustomerId === customer.id;
+              const isExcluded = excludedCustomerIds.includes(customer.id);
+
+              return (
+                <li key={customer.id}>
+                  <button
+                    aria-expanded={isExpanded}
+                    className="flex w-full items-center gap-3 px-4 py-4 text-left transition hover:bg-[#f8fafc] focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#0052ff] sm:px-5"
+                    onClick={() =>
+                      setExpandedCustomerId(isExpanded ? null : customer.id)
+                    }
+                    type="button"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-bold text-[#0f172a]">
+                        {customer.full_name}
+                      </p>
+                      <p className="mt-0.5 truncate text-sm text-[#64748b]">
+                        {customer.phone_e164}
+                      </p>
+                    </div>
+                    <span
+                      className={
+                        isExcluded
+                          ? "inline-flex shrink-0 rounded-full bg-[#fff7ed] px-2.5 py-1 text-xs font-bold text-[#9a3412]"
+                          : "inline-flex shrink-0 rounded-full bg-[#ecfdf3] px-2.5 py-1 text-xs font-bold text-[#027a48]"
+                      }
+                    >
+                      {isExcluded
+                        ? locale === "fr"
+                          ? "Retiré"
+                          : "Removed"
+                        : copy.smsAuthorized}
+                    </span>
+                    <ChevronRightIcon
+                      className={`h-[18px] w-[18px] shrink-0 text-[#94a3b8] transition ${isExpanded ? "rotate-90" : ""}`}
+                    />
+                  </button>
+                  {isExpanded ? (
+                    <div className="grid gap-3 border-t border-[#e5edf7] bg-[#f8fafc] px-4 py-4 sm:px-5">
+                      <div>
+                        <p className="text-sm font-bold text-[#0f172a]">
+                          {locale === "fr"
+                            ? "Pourquoi admissible"
+                            : "Why eligible"}
+                        </p>
+                        <ul className="mt-2 grid gap-1.5 text-sm leading-6 text-[#64748b]">
+                          <li>
+                            {locale === "fr"
+                              ? "Consentement SMS actif."
+                              : "Active SMS consent."}
+                          </li>
+                          <li>
+                            {locale === "fr"
+                              ? "Numéro de téléphone utilisable."
+                              : "Usable phone number."}
+                          </li>
+                          <li>
+                            {locale === "fr"
+                              ? "Client présent dans la liste d'attente active."
+                              : "Customer is on the active waitlist."}
+                          </li>
+                        </ul>
+                        <p className="mt-2 text-xs leading-5 text-[#64748b]">
+                          {locale === "fr"
+                            ? "Le Mode intelligent SMS recalculera aussi les protections avancées après la création du créneau."
+                            : "Smart SMS mode will also recalculate advanced protections after the opening is created."}
+                        </p>
+                      </div>
+                      <button
+                        className={
+                          isExcluded
+                            ? "inline-flex w-fit items-center justify-center rounded-[10px] border border-[#0052ff] bg-white px-3 py-2 text-xs font-bold text-[#0052ff] transition hover:bg-[#eef5ff]"
+                            : "inline-flex w-fit items-center justify-center rounded-[10px] border border-[#fed7aa] bg-white px-3 py-2 text-xs font-bold text-[#9a3412] transition hover:bg-[#fff7ed]"
+                        }
+                        onClick={() => onToggleExcludedCustomer(customer.id)}
+                        type="button"
+                      >
+                        {isExcluded
+                          ? locale === "fr"
+                            ? "Remettre dans l'envoi"
+                            : "Add back to this send"
+                          : locale === "fr"
+                            ? "Retirer de cet envoi"
+                            : "Remove from this send"}
+                      </button>
+                    </div>
+                  ) : null}
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

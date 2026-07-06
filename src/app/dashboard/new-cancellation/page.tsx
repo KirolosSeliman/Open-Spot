@@ -1,9 +1,8 @@
-import { EligibleCustomersPanel } from "@/components/dashboard/new-cancellation/eligible-customers-panel";
 import {
   pickEligibleCustomersCopy,
   pickNewCancellationFormCopy
 } from "@/components/dashboard/new-cancellation/new-cancellation-copy";
-import { NewCancellationFormCard } from "@/components/dashboard/new-cancellation/new-cancellation-form-card";
+import { NewCancellationWorkspace } from "@/components/dashboard/new-cancellation/new-cancellation-workspace";
 import { loadOpeningCreationData } from "@/lib/dashboard/operations-data";
 import { getDashboardCopy } from "@/lib/i18n/dashboard-copy";
 import { getRequestLocale } from "@/lib/i18n/locale";
@@ -48,25 +47,21 @@ export default async function NewCancellationPage({
         </p>
       </header>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-8">
-        <NewCancellationFormCard
-          canSendSmsAlerts={canSendSmsAlerts}
-          commonCopy={{
-            service: copy.common.service,
-            start: copy.common.start,
-            end: copy.common.end
-          }}
-          copy={pickNewCancellationFormCopy(copy.newCancellation)}
-          error={error}
-          services={data.services}
-          smsBlockingReasons={smsBlockingReasons}
-        />
-        <EligibleCustomersPanel
-          copy={pickEligibleCustomersCopy(copy.newCancellation)}
-          customers={data.eligibleCustomers}
-          locale={locale}
-        />
-      </div>
+      <NewCancellationWorkspace
+        canSendSmsAlerts={canSendSmsAlerts}
+        commonCopy={{
+          service: copy.common.service,
+          start: copy.common.start,
+          end: copy.common.end
+        }}
+        customers={data.eligibleCustomers}
+        eligibleCopy={pickEligibleCustomersCopy(copy.newCancellation)}
+        error={error}
+        formCopy={pickNewCancellationFormCopy(copy.newCancellation)}
+        locale={locale}
+        services={data.services}
+        smsBlockingReasons={smsBlockingReasons}
+      />
     </div>
   );
 }
