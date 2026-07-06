@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   applyManualRecipientOverride,
+  computeSmartRecipientRecommendationRank,
   evaluateSmsRecipientEligibility
 } from "@/lib/sms/smart-recipient-engine";
 
@@ -128,6 +129,30 @@ describe("evaluateSmsRecipientEligibility", () => {
     });
   });
 
+  it("protects low service matches after hard blocks but before normal eligibility", () => {
+    expect(evaluate({ serviceMatchScore: 0 })).toMatchObject({
+      baseDecision: "protected",
+      finalDecision: "do_not_send",
+      reasonCodes: ["protected_low_service_match"],
+      warningRequired: false
+    });
+
+    expect(
+      evaluate({ serviceMatchScore: 0, smsConsentStatus: "opted_out" })
+    ).toMatchObject({
+      baseDecision: "locked_blocked",
+      reasonCodes: ["blocked_opted_out"]
+    });
+
+    expect(
+      applyManualRecipientOverride(evaluate({ serviceMatchScore: 0 }), "include")
+    ).toMatchObject({
+      finalDecision: "send",
+      decisionType: "manual_include",
+      warningRequired: true
+    });
+  });
+
   it("returns eligible/send for a consenting valid recipient with no cooldowns or caps", () => {
     expect(evaluate()).toMatchObject({
       baseDecision: "eligible",
@@ -205,6 +230,63 @@ describe("evaluateSmsRecipientEligibility", () => {
       baseDecision: "protected",
       reasonCodes: ["outside_allowed_sending_hours"]
     });
+  });
+});
+
+describe("computeSmartRecipientRecommendationRank", () => {
+  it("prioritizes never-contacted eligible clients over recently contacted clients", () => {
+    expect(
+      computeSmartRecipientRecommendationRank({
+        baseDecision: "eligible",
+        smsSentLast24h: 0,
+        smsSentLast7d: 0,
+        smsSentLast30d: 0,
+        lastSmsAt: null,
+        now
+      }).rank
+    ).toBeLessThan(
+      computeSmartRecipientRecommendationRank({
+        baseDecision: "eligible",
+        smsSentLast24h: 1,
+        smsSentLast7d: 1,
+        smsSentLast30d: 1,
+        lastSmsAt: "2026-07-05T14:00:00.000Z",
+        now
+      }).rank
+    );
+  });
+
+  it("keeps eligible before protected and locked recipients without changing decisions", () => {
+    const eligible = computeSmartRecipientRecommendationRank({
+      baseDecision: "eligible",
+      smsSentLast24h: 0,
+      smsSentLast7d: 0,
+      smsSentLast30d: 0,
+      lastSmsAt: null,
+      now
+    });
+    const protectedRecipient = computeSmartRecipientRecommendationRank({
+      baseDecision: "protected",
+      smsSentLast24h: 0,
+      smsSentLast7d: 0,
+      smsSentLast30d: 0,
+      lastSmsAt: null,
+      now
+    });
+    const locked = computeSmartRecipientRecommendationRank({
+      baseDecision: "locked_blocked",
+      smsSentLast24h: 0,
+      smsSentLast7d: 0,
+      smsSentLast30d: 0,
+      lastSmsAt: null,
+      now
+    });
+
+    expect(eligible.rank).toBeLessThan(protectedRecipient.rank);
+    expect(protectedRecipient.rank).toBeLessThan(locked.rank);
+    expect(eligible.bucket).toBe("eligible");
+    expect(protectedRecipient.bucket).toBe("protected");
+    expect(locked.bucket).toBe("locked");
   });
 });
 

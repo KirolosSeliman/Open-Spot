@@ -10,6 +10,12 @@ const migrationPath = join(
   "20260706093000_smart_sms_recipient_controls.sql"
 );
 const migrationsDir = join(process.cwd(), "supabase", "migrations");
+const finalProductionChecksPath = join(
+  process.cwd(),
+  "supabase",
+  "tests",
+  "smart_sms_final_production_checks.sql"
+);
 
 function readMigrationBySuffix(suffix: string) {
   const file = readdirSync(migrationsDir).find((name) => name.endsWith(suffix));
@@ -85,6 +91,47 @@ describe("smart SMS recipient controls migration", () => {
     expect(sql).toContain("old.sent_at is not null");
     expect(sql).toContain("base_decision = 'locked_blocked'");
     expect(sql).toContain("final_decision = 'send'");
+    expect(sql).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
+  });
+
+  it("adds final production guards for claimed decisions and recommendation ranking", () => {
+    const sql = readMigrationBySuffix(
+      "_smart_sms_final_production_guard.sql"
+    );
+
+    expect(sql).toContain("add column if not exists recommendation_rank integer");
+    expect(sql).toContain("add column if not exists recommendation_bucket text");
+    expect(sql).toContain("old.delivery_status in (");
+    expect(sql).toContain("'pending_send'");
+    expect(sql).toContain("new.final_decision is distinct from old.final_decision");
+    expect(sql).toContain("new.manual_override is distinct from old.manual_override");
+    expect(sql).toContain("new.warning_required is distinct from old.warning_required");
+    expect(sql).toContain("new.override_reason is distinct from old.override_reason");
+    expect(sql).toContain("old.delivery_status is not null and new.delivery_status is null");
+    expect(sql).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
+  });
+
+  it("keeps an executable final-production database and RLS checklist", () => {
+    expect(existsSync(finalProductionChecksPath)).toBe(true);
+
+    const sql = readFileSync(finalProductionChecksPath, "utf8");
+
+    expect(sql).toContain("begin;");
+    expect(sql).toContain("rollback;");
+    expect(sql).toContain("relrowsecurity");
+    expect(sql).toContain("grantee = 'anon'");
+    expect(sql).toContain("cmd = 'DELETE'");
+    expect(sql).toContain("alert_recipient_decisions_customer_org_fk");
+    expect(sql).toContain("alert_recipient_decisions_alert_org_fk");
+    expect(sql).toContain("recommendation_rank");
+    expect(sql).toContain("recommendation_bucket");
+    expect(sql).toContain("opening_offer_status");
+    expect(sql).toContain("invalid");
+    expect(sql).toContain("pending_send");
+    expect(sql).toContain("failed");
+    expect(sql).toContain("new.final_decision is distinct from old.final_decision");
+    expect(sql).toContain("new.manual_override is distinct from old.manual_override");
+    expect(sql).toContain("old.delivery_status is not null and new.delivery_status is null");
     expect(sql).not.toMatch(/\bdrop\s+table\b|\btruncate\b|\bdelete\s+from\b/i);
   });
 

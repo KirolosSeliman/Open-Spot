@@ -6,6 +6,7 @@ import {
   StatusBadge
 } from "@/components/dashboard/dashboard-ui";
 import {
+  addManualRecipientToOpeningAction,
   sendOpeningAlertsAction,
   updateOpeningRecipientDecisionAction,
   validateOpeningOfferAction
@@ -142,6 +143,7 @@ export default async function CancellationDetailPage({
       service,
       offers,
       recipientDecisions,
+      manualRecipientCandidates,
       deliveryHistoryWarning,
       smartSmsWarning,
       smartSmsPersistence
@@ -585,6 +587,63 @@ export default async function CancellationDetailPage({
                 : "No SMS recipients have been analyzed for this opening yet."}
             </p>
           )}
+          {smartSmsReady ? (
+            <form
+              action={addManualRecipientToOpeningAction}
+              className="grid gap-3 rounded-2xl border border-[var(--line)] bg-white p-4"
+            >
+              <input name="openingId" type="hidden" value={opening.id} />
+              <label className="grid gap-2 text-sm font-bold text-[var(--foreground)]">
+                <span>
+                  {uiLocale === "fr"
+                    ? "Ajouter un client specifique"
+                    : "Add a specific client"}
+                </span>
+                <select
+                  className="rounded-xl border border-[var(--line)] bg-white px-3 py-2"
+                  name="customerId"
+                  required
+                >
+                  <option value="">
+                    {uiLocale === "fr" ? "Choisir un client" : "Choose a client"}
+                  </option>
+                  {manualRecipientCandidates.map((customer) => (
+                    <option
+                      disabled={customer.alreadyInAlert}
+                      key={customer.id}
+                      value={customer.id}
+                    >
+                      {customer.fullName} - {customer.phoneE164}
+                      {customer.alreadyInAlert
+                        ? uiLocale === "fr"
+                          ? " - deja ajoute"
+                          : " - already added"
+                        : ""}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex items-start gap-2 rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-xs font-bold text-[#74510f]">
+                <input
+                  className="mt-0.5"
+                  name="confirmProtectedRecipient"
+                  type="checkbox"
+                  value="true"
+                />
+                <span>
+                  {uiLocale === "fr"
+                    ? "Je confirme si ce client est protege par le Mode intelligent SMS."
+                    : "I confirm if this client is protected by Smart SMS mode."}
+                </span>
+              </label>
+              <button
+                className="w-fit rounded-full border border-[var(--primary)] bg-white px-3 py-2 text-xs font-black text-[var(--primary)] transition hover:bg-[var(--primary-soft)]"
+                type="submit"
+              >
+                {uiLocale === "fr" ? "Ajouter a cette alerte" : "Add to this alert"}
+              </button>
+            </form>
+          ) : null}
         </div>
       </Panel>
       <Panel title={uiLocale === "fr" ? "Offres préparées" : "Prepared offers"}>

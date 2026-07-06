@@ -63,6 +63,8 @@ export type Database = {
           sent_at: string | null;
           twilio_message_sid: string | null;
           delivery_status: string | null;
+          recommendation_rank: number | null;
+          recommendation_bucket: string | null;
         };
         Insert: {
           id?: string;
@@ -84,6 +86,8 @@ export type Database = {
           sent_at?: string | null;
           twilio_message_sid?: string | null;
           delivery_status?: string | null;
+          recommendation_rank?: number | null;
+          recommendation_bucket?: string | null;
         };
         Update: {
           id?: string;
@@ -105,6 +109,8 @@ export type Database = {
           sent_at?: string | null;
           twilio_message_sid?: string | null;
           delivery_status?: string | null;
+          recommendation_rank?: number | null;
+          recommendation_bucket?: string | null;
         };
         Relationships: [];
       };

@@ -68,12 +68,19 @@ export type OpeningRecipientDecisionView = AlertRecipientDecisionRow & {
   customerName: string;
   customerPhone: string;
 };
+export type OpeningManualRecipientCandidate = {
+  id: string;
+  fullName: string;
+  phoneE164: string;
+  alreadyInAlert: boolean;
+};
 
 export type OpeningDetailData = {
   opening: OpeningRow | null;
   service: Pick<ServiceRow, "id" | "name" | "normal_price_cents"> | null;
   offers: OpeningDetailOffer[];
   recipientDecisions: OpeningRecipientDecisionView[];
+  manualRecipientCandidates: OpeningManualRecipientCandidate[];
   deliveryHistoryWarning: string | null;
   smartSmsWarning: string | null;
   smartSmsPersistence: SmartSmsPersistenceReadiness | null;
@@ -1012,6 +1019,7 @@ export async function loadOpeningDetail(
       service: null,
       offers: [],
       recipientDecisions: [],
+      manualRecipientCandidates: [],
       deliveryHistoryWarning: null,
       smartSmsWarning: null,
       smartSmsPersistence: null
@@ -1056,6 +1064,7 @@ export async function loadOpeningDetail(
       service: null,
       offers: [],
       recipientDecisions: [],
+      manualRecipientCandidates: [],
       deliveryHistoryWarning: null,
       smartSmsWarning,
       smartSmsPersistence
@@ -1088,7 +1097,7 @@ export async function loadOpeningDetail(
       ...recipientDecisions.map((decision) => decision.customer_id)
     ])
   ];
-  const [serviceResult, customersResult] = await Promise.all([
+  const [serviceResult, customersResult, manualCandidatesResult] = await Promise.all([
     opening.service_id
       ? supabase
           .from("services")
@@ -1103,7 +1112,14 @@ export async function loadOpeningDetail(
           .select("id, full_name, phone_e164, preferred_language")
           .eq("organization_id", organizationId)
           .in("id", customerIds)
-      : Promise.resolve({ data: [], error: null })
+      : Promise.resolve({ data: [], error: null }),
+    supabase
+      .from("customers")
+      .select("id, full_name, phone_e164")
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null)
+      .order("full_name", { ascending: true })
+      .limit(100)
   ]);
 
   if (serviceResult.error) {
@@ -1112,6 +1128,10 @@ export async function loadOpeningDetail(
 
   if (customersResult.error) {
     throw new Error(customersResult.error.message);
+  }
+
+  if (manualCandidatesResult.error) {
+    throw new Error(manualCandidatesResult.error.message);
   }
 
   const messagesResult =
@@ -1178,7 +1198,20 @@ export async function loadOpeningDetail(
         customerName: customer?.full_name ?? "Client inconnu",
         customerPhone: customer?.phone_e164 ?? ""
       };
-    }),
+    }).sort(
+      (a, b) =>
+        (a.recommendation_rank ?? 999_999) -
+          (b.recommendation_rank ?? 999_999) ||
+        a.created_at.localeCompare(b.created_at)
+    ),
+    manualRecipientCandidates: (manualCandidatesResult.data ?? []).map((customer) => ({
+      id: customer.id,
+      fullName: customer.full_name,
+      phoneE164: customer.phone_e164,
+      alreadyInAlert: recipientDecisions.some(
+        (decision) => decision.customer_id === customer.id
+      )
+    })),
     offers: offers.map((offer) => {
       const customer = customerById.get(offer.customer_id);
       const lastOutbound = lastMessageByCustomer.get(offer.customer_id);

@@ -463,7 +463,7 @@ export default async function SettingsPage() {
             disabled={!smartSmsReadiness.ready || !organization}
             type="submit"
           >
-            Enregistrer
+            {copy.common.save}
           </button>
         </form>
         <p className="mt-4 rounded-xl border border-[#f6d99d] bg-[#fff9eb] p-3 text-sm font-bold text-[#74510f]">

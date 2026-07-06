@@ -25,6 +25,14 @@ function createFakeSupabase(results: Record<string, QueryResult>) {
   };
 }
 
+function createFakeSupabaseWithoutSchema(results: Record<string, QueryResult>) {
+  return {
+    from(table: string) {
+      return createQuery(table, results);
+    }
+  };
+}
+
 function createQuery(key: string, results: Record<string, QueryResult>) {
   const query = {
     select(columns: string) {
@@ -119,7 +127,7 @@ describe("smart SMS persistence readiness", () => {
     );
   });
 
-  it("returns a controlled not-ready result for a missing alert/customer unique constraint", async () => {
+  it("keeps runtime ready with a warning when the alert/customer unique constraint cannot be confirmed", async () => {
     const readiness = await checkSmartSmsPersistenceReadinessWithClient(
       createFakeSupabase({
         organization_settings: { data: [], error: null },
@@ -130,9 +138,50 @@ describe("smart SMS persistence readiness", () => {
       })
     );
 
-    expect(readiness.ready).toBe(false);
-    expect(readiness.missingObjects).toContain(
-      "public.alert_recipient_decisions.alert_id_customer_id_unique"
+    expect(readiness.ready).toBe(true);
+    expect(readiness.blockingReasons).toEqual([]);
+    expect(readiness.missingObjects).toEqual([]);
+    expect(readiness.warnings).toContain(
+      "Smart SMS persistence constraint check is unavailable."
+    );
+  });
+
+  it("stays ready when information_schema is not exposed but required runtime tables are queryable", async () => {
+    const readiness = await checkSmartSmsPersistenceReadinessWithClient(
+      createFakeSupabaseWithoutSchema({
+        organization_settings: { data: [], error: null },
+        customer_sms_preferences: { data: [], error: null },
+        customer_activity_events: { data: [], error: null },
+        alert_recipient_decisions: { data: [], error: null }
+      })
+    );
+
+    expect(readiness.ready).toBe(true);
+    expect(readiness.blockingReasons).toEqual([]);
+    expect(readiness.missingObjects).toEqual([]);
+  });
+
+  it("treats inaccessible information_schema as a non-blocking warning", async () => {
+    const readiness = await checkSmartSmsPersistenceReadinessWithClient(
+      createFakeSupabase({
+        organization_settings: { data: [], error: null },
+        customer_sms_preferences: { data: [], error: null },
+        customer_activity_events: { data: [], error: null },
+        alert_recipient_decisions: { data: [], error: null },
+        "information_schema.table_constraints": {
+          error: {
+            code: "42501",
+            message: "permission denied for schema information_schema"
+          }
+        }
+      })
+    );
+
+    expect(readiness.ready).toBe(true);
+    expect(readiness.blockingReasons).toEqual([]);
+    expect(readiness.missingObjects).toEqual([]);
+    expect(readiness.warnings).toContain(
+      "Smart SMS persistence constraint check is unavailable."
     );
   });
 

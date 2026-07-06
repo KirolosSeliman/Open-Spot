@@ -51,12 +51,14 @@ import { getSmsRuntimeStatus } from "@/lib/sms/runtime-status";
 import { checkSmartSmsPersistenceReadiness } from "@/lib/sms/smart-sms-persistence-readiness";
 import {
   applyManualRecipientOverride,
+  computeSmartRecipientRecommendationRank,
   defaultSmartSmsSettings,
   evaluateSmsRecipientEligibility,
   type BaseDecision,
   type FinalDecision,
   type ManualOverride,
   type ManualSendMode,
+  type RecommendationBucket,
   type ReasonCode,
   type SmsRecipientDecision,
   type SmartSmsSettings
@@ -189,6 +191,20 @@ type AlertRecipientDecisionRow =
   Database["public"]["Tables"]["alert_recipient_decisions"]["Row"];
 type OpeningOfferInsert =
   Database["public"]["Tables"]["opening_offers"]["Insert"];
+type SmartSmsSettingsUpdateInput = Pick<
+  Database["public"]["Tables"]["organization_settings"]["Update"],
+  | "smart_sending_enabled"
+  | "cooldown_after_completed_appointment_days"
+  | "cooldown_after_filled_spot_days"
+  | "max_sms_per_day"
+  | "max_sms_per_7_days"
+  | "max_sms_per_30_days"
+  | "block_if_future_appointment_exists"
+  | "future_appointment_window_days"
+  | "allowed_send_start_time"
+  | "allowed_send_end_time"
+  | "always_review_recipients_before_send"
+>;
 
 const smsSentStatuses = [
   "accepted",
@@ -204,6 +220,20 @@ const recipientDecisionClaimedStatuses = [
   "failed",
   ...smsSentStatuses
 ];
+
+function isRecipientDecisionClaimed(
+  decision: Pick<
+    AlertRecipientDecisionRow,
+    "sent_at" | "delivery_status" | "twilio_message_sid"
+  >
+) {
+  return Boolean(
+    decision.sent_at ||
+      decision.twilio_message_sid ||
+      (decision.delivery_status &&
+        recipientDecisionClaimedStatuses.includes(decision.delivery_status))
+  );
+}
 
 function isManualSendMode(value: string | null | undefined): value is ManualSendMode {
   return (
@@ -353,20 +383,7 @@ function buildSmartSmsSettingsUpdateInput(formData: FormData) {
       formData,
       "always_review_recipients_before_send"
     )
-  } satisfies Pick<
-    Database["public"]["Tables"]["organization_settings"]["Update"],
-    | "smart_sending_enabled"
-    | "cooldown_after_completed_appointment_days"
-    | "cooldown_after_filled_spot_days"
-    | "max_sms_per_day"
-    | "max_sms_per_7_days"
-    | "max_sms_per_30_days"
-    | "block_if_future_appointment_exists"
-    | "future_appointment_window_days"
-    | "allowed_send_start_time"
-    | "allowed_send_end_time"
-    | "always_review_recipients_before_send"
-  >;
+  } satisfies SmartSmsSettingsUpdateInput;
 
   if (
     input.max_sms_per_day > input.max_sms_per_7_days ||
@@ -409,7 +426,9 @@ function toRecipientDecisionWrite({
   decision,
   manualOverride = "auto",
   overrideReason = null,
-  overriddenBy = null
+  overriddenBy = null,
+  recommendationRank = null,
+  recommendationBucket = null
 }: {
   alertId: string;
   organizationId: string;
@@ -418,6 +437,8 @@ function toRecipientDecisionWrite({
   manualOverride?: ManualOverride;
   overrideReason?: string | null;
   overriddenBy?: string | null;
+  recommendationRank?: number | null;
+  recommendationBucket?: RecommendationBucket | null;
 }) {
   return {
     alert_id: alertId,
@@ -432,7 +453,9 @@ function toRecipientDecisionWrite({
     manually_overridden: decision.manuallyOverridden,
     warning_required: decision.warningRequired,
     override_reason: overrideReason,
-    overridden_by: overriddenBy
+    overridden_by: overriddenBy,
+    recommendation_rank: recommendationRank,
+    recommendation_bucket: recommendationBucket
   };
 }
 
@@ -529,6 +552,51 @@ function waitlistEntryMatchesOpeningService({
   return !entry.service_id || entry.service_id === openingServiceId;
 }
 
+function getWaitlistEntryServiceMatchScore({
+  entry,
+  serviceInterestIds,
+  openingServiceId
+}: {
+  entry: { service_id: string | null };
+  serviceInterestIds: string[];
+  openingServiceId: string | null;
+}) {
+  return waitlistEntryMatchesOpeningService({
+    entry,
+    serviceInterestIds,
+    openingServiceId
+  })
+    ? 1
+    : 0;
+}
+
+function getCustomerServiceMatchScores({
+  waitlistEntries,
+  serviceInterestsByEntry,
+  openingServiceId
+}: {
+  waitlistEntries: Array<{
+    id: string;
+    customer_id: string;
+    service_id: string | null;
+  }>;
+  serviceInterestsByEntry: Map<string, string[]>;
+  openingServiceId: string | null;
+}) {
+  const scores = new Map<string, number>();
+
+  for (const entry of waitlistEntries) {
+    const score = getWaitlistEntryServiceMatchScore({
+      entry,
+      serviceInterestIds: serviceInterestsByEntry.get(entry.id) ?? [],
+      openingServiceId
+    });
+    scores.set(entry.customer_id, Math.max(scores.get(entry.customer_id) ?? 0, score));
+  }
+
+  return scores;
+}
+
 async function ensureOpeningOffersForSendDecisions({
   supabase,
   organizationId,
@@ -573,7 +641,7 @@ async function syncOpeningOffersWithRecipientDecisions({
 }) {
   const { data: decisions, error: decisionsError } = await supabase
     .from("alert_recipient_decisions")
-    .select("customer_id, final_decision, sent_at")
+    .select("customer_id, final_decision, sent_at, delivery_status, twilio_message_sid")
     .eq("organization_id", organizationId)
     .eq("alert_id", openingId);
 
@@ -583,9 +651,15 @@ async function syncOpeningOffersWithRecipientDecisions({
 
   const sendCustomerIds = new Set(
     (decisions ?? [])
+      .filter((decision) => decision.final_decision === "send")
+      .map((decision) => decision.customer_id)
+  );
+  const creatableSendCustomerIds = new Set(
+    (decisions ?? [])
       .filter(
         (decision) =>
-          decision.final_decision === "send" && decision.sent_at === null
+          decision.final_decision === "send" &&
+          !isRecipientDecisionClaimed(decision)
       )
       .map((decision) => decision.customer_id)
   );
@@ -594,7 +668,7 @@ async function syncOpeningOffersWithRecipientDecisions({
     supabase,
     organizationId,
     openingId,
-    customerIds: [...sendCustomerIds]
+    customerIds: [...creatableSendCustomerIds]
   });
 
   const { data: pendingOffers, error: offersError } = await supabase
@@ -729,7 +803,9 @@ async function prepareSmartRecipientDecisionsForOpening({
         .eq("status", "active"),
       supabase
         .from("alert_recipient_decisions")
-        .select("customer_id, manual_override, override_reason, overridden_by")
+        .select(
+          "customer_id, base_decision, final_decision, manual_override, override_reason, overridden_by, sent_at, delivery_status, twilio_message_sid"
+        )
         .eq("organization_id", organization.id)
         .eq("alert_id", openingId)
     ]);
@@ -781,14 +857,12 @@ async function prepareSmartRecipientDecisionsForOpening({
     ]);
   }
 
-  const candidateEntries = waitlistEntries.filter((entry) =>
-    waitlistEntryMatchesOpeningService({
-      entry,
-      serviceInterestIds: serviceInterestsByEntry.get(entry.id) ?? [],
-      openingServiceId: opening.service_id
-    })
-  );
-  const customerIds = [...new Set(candidateEntries.map((entry) => entry.customer_id))];
+  const serviceMatchScoreByCustomer = getCustomerServiceMatchScores({
+    waitlistEntries,
+    serviceInterestsByEntry,
+    openingServiceId: opening.service_id
+  });
+  const customerIds = [...new Set(waitlistEntries.map((entry) => entry.customer_id))];
 
   if (customerIds.length === 0) {
     return {
@@ -880,6 +954,11 @@ async function prepareSmartRecipientDecisionsForOpening({
   const existingDecisionByCustomer = new Map(
     (existingDecisionsResult.data ?? []).map((row) => [row.customer_id, row])
   );
+  const existingClaimedDecisionByCustomer = new Map(
+    (existingDecisionsResult.data ?? [])
+      .filter((row) => isRecipientDecisionClaimed(row))
+      .map((row) => [row.customer_id, row])
+  );
   const eventsByCustomer = new Map<
     string,
     Array<{ event_type: string; event_at: string }>
@@ -919,6 +998,10 @@ async function prepareSmartRecipientDecisionsForOpening({
   }
 
   const rows = customerIds.flatMap((customerId) => {
+    if (existingClaimedDecisionByCustomer.has(customerId)) {
+      return [];
+    }
+
     const customer = customerById.get(customerId);
 
     if (!customer) {
@@ -930,6 +1013,10 @@ async function prepareSmartRecipientDecisionsForOpening({
     const events = eventsByCustomer.get(customerId) ?? [];
     const appointments = appointmentsByCustomer.get(customerId) ?? [];
     const messages = smsMessagesByCustomer.get(customerId) ?? [];
+    const lastSmsAt = messages
+      .map((message) => message.created_at)
+      .sort()
+      .at(-1) ?? null;
     const requestedOverride = manualOverridesByCustomerId.get(customerId);
     const manualOverride =
       requestedOverride?.manualOverride ??
@@ -963,7 +1050,8 @@ async function prepareSmartRecipientDecisionsForOpening({
             messages,
             new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
           ),
-          smsSentLast30d: messages.length
+          smsSentLast30d: messages.length,
+          serviceMatchScore: serviceMatchScoreByCustomer.get(customerId) ?? 1
         },
         settings,
         now,
@@ -971,6 +1059,20 @@ async function prepareSmartRecipientDecisionsForOpening({
       }),
       isManualOverride(manualOverride) ? manualOverride : "auto"
     );
+    const recommendation = computeSmartRecipientRecommendationRank({
+      baseDecision: decision.baseDecision,
+      smsSentLast24h: countMessagesSince(
+        messages,
+        new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      ),
+      smsSentLast7d: countMessagesSince(
+        messages,
+        new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      ),
+      smsSentLast30d: messages.length,
+      lastSmsAt,
+      now
+    });
 
     return [
       toRecipientDecisionWrite({
@@ -986,12 +1088,17 @@ async function prepareSmartRecipientDecisionsForOpening({
         overriddenBy:
           requestedOverride?.overriddenBy ??
           existingDecisionByCustomer.get(customerId)?.overridden_by ??
-          null
+          null,
+        recommendationRank: recommendation.rank,
+        recommendationBucket: recommendation.bucket
       })
     ];
   });
+  const preservedDecisionRows = [...existingClaimedDecisionByCustomer.values()];
+  const unclaimedRows = rows;
+  const countableRows = [...rows, ...preservedDecisionRows];
 
-  if (rows.length === 0) {
+  if (countableRows.length === 0) {
     return {
       settings,
       selectedCount: 0,
@@ -1001,9 +1108,12 @@ async function prepareSmartRecipientDecisionsForOpening({
     };
   }
 
-  const { error: upsertError } = await supabase
-    .from("alert_recipient_decisions")
-    .upsert(rows, { onConflict: "alert_id,customer_id" });
+  const { error: upsertError } =
+    unclaimedRows.length > 0
+      ? await supabase
+          .from("alert_recipient_decisions")
+          .upsert(unclaimedRows, { onConflict: "alert_id,customer_id" })
+      : { error: null };
 
   if (upsertError) {
     throw new Error(upsertError.message);
@@ -1017,10 +1127,15 @@ async function prepareSmartRecipientDecisionsForOpening({
 
   return {
     settings,
-    selectedCount: rows.filter((row) => row.final_decision === "send").length,
-    eligibleCount: rows.filter((row) => row.base_decision === "eligible").length,
-    protectedCount: rows.filter((row) => row.base_decision === "protected").length,
-    blockedCount: rows.filter((row) => row.base_decision === "locked_blocked").length
+    selectedCount: countableRows.filter((row) => row.final_decision === "send")
+      .length,
+    eligibleCount: countableRows.filter((row) => row.base_decision === "eligible")
+      .length,
+    protectedCount: countableRows.filter((row) => row.base_decision === "protected")
+      .length,
+    blockedCount: countableRows.filter(
+      (row) => row.base_decision === "locked_blocked"
+    ).length
   };
 }
 
@@ -2443,12 +2558,13 @@ async function sendOpeningSmsAlerts({
     supabase
       .from("alert_recipient_decisions")
       .select(
-        "id, customer_id, base_decision, reason_codes, reason_label, warning_required"
+        "id, customer_id, base_decision, reason_codes, reason_label, warning_required, delivery_status"
       )
       .eq("organization_id", organization.id)
       .eq("alert_id", openingId)
       .eq("final_decision", "send")
       .is("sent_at", null)
+      .is("delivery_status", null)
   ]);
 
   if (openingResult.error || !openingResult.data) {
@@ -3083,13 +3199,22 @@ export async function updateSmartSmsSettingsAction(formData: FormData) {
     }
 
     const input = buildSmartSmsSettingsUpdateInput(formData);
-    const { error } = await supabase
+    const { data: savedSettings, error } = await supabase
       .from("organization_settings")
-      .update(input)
-      .eq("organization_id", organization.id);
+      .upsert(
+        {
+          organization_id: organization.id,
+          ...input
+        },
+        { onConflict: "organization_id" }
+      )
+      .select("organization_id")
+      .single();
 
-    if (error) {
-      throw new Error(error.message);
+    if (error || !savedSettings) {
+      throw new Error(
+        error?.message ?? "Smart SMS settings were not persisted."
+      );
     }
 
     await recordManagerModeDashboardAction({
@@ -3262,6 +3387,309 @@ export async function updateOpeningRecipientDecisionAction(formData: FormData) {
   redirect(`/dashboard/cancellations/${openingId}`);
 }
 
+export async function addManualRecipientToOpeningAction(formData: FormData) {
+  const openingId = String(formData.get("openingId") ?? "").trim();
+  const customerId = String(formData.get("customerId") ?? "").trim();
+  const confirmProtectedRecipient =
+    formData.get("confirmProtectedRecipient") === "true";
+
+  if (!openingId || !customerId) {
+    redirectWithSendError(
+      `/dashboard/cancellations/${openingId}`,
+      "Opening and client are required."
+    );
+  }
+
+  const organization = await requireReadyOrganization({
+    canPerform: canValidateBookings
+  });
+  const supabase = await createSupabaseServerClient();
+
+  try {
+    const smartSmsPersistence = await checkSmartSmsPersistenceReadiness();
+
+    if (!smartSmsPersistence.ready) {
+      throw new Error(smartSmsPersistence.blockingReasons.join(" "));
+    }
+
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const [settings, openingResult, customerResult, existingDecisionResult] =
+      await Promise.all([
+        loadSmartSmsSettings({ supabase, organizationId: organization.id }),
+        supabase
+          .from("openings")
+          .select("id, service_id")
+          .eq("organization_id", organization.id)
+          .eq("id", openingId)
+          .maybeSingle(),
+        supabase
+          .from("customers")
+          .select("id, phone_e164, deleted_at")
+          .eq("organization_id", organization.id)
+          .eq("id", customerId)
+          .maybeSingle(),
+        supabase
+          .from("alert_recipient_decisions")
+          .select("*")
+          .eq("organization_id", organization.id)
+          .eq("alert_id", openingId)
+          .eq("customer_id", customerId)
+          .maybeSingle()
+      ]);
+
+    if (openingResult.error || !openingResult.data) {
+      throw new Error(openingResult.error?.message ?? "Opening not found.");
+    }
+
+    if (customerResult.error || !customerResult.data) {
+      throw new Error(customerResult.error?.message ?? "Client not found.");
+    }
+
+    if (existingDecisionResult.error) {
+      throw new Error(existingDecisionResult.error.message);
+    }
+
+    if (
+      existingDecisionResult.data &&
+      isRecipientDecisionClaimed(existingDecisionResult.data)
+    ) {
+      throw new Error("Recipient decision was already sent or claimed.");
+    }
+
+    const [
+      consentResult,
+      preferenceResult,
+      activityEventsResult,
+      appointmentsResult,
+      smsMessagesResult,
+      sameAlertMessagesResult,
+      waitlistResult
+    ] = await Promise.all([
+      supabase
+        .from("sms_consents")
+        .select("customer_id, status, unsubscribed_at")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customerId)
+        .maybeSingle(),
+      supabase
+        .from("customer_sms_preferences")
+        .select("customer_id, manual_send_mode, manual_snooze_until")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customerId)
+        .maybeSingle(),
+      supabase
+        .from("customer_activity_events")
+        .select("customer_id, event_type, event_at")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customerId)
+        .in("event_type", ["appointment_completed", "spot_filled"]),
+      supabase
+        .from("appointments")
+        .select("customer_id, starts_at, status")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customerId),
+      supabase
+        .from("sms_messages")
+        .select("customer_id, created_at")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customerId)
+        .eq("direction", "outbound")
+        .eq("message_type", "opening_alert")
+        .in("status", smsSentStatuses)
+        .gte("created_at", thirtyDaysAgo.toISOString()),
+      supabase
+        .from("sms_messages")
+        .select("customer_id")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customerId)
+        .eq("opening_id", openingId)
+        .eq("direction", "outbound")
+        .eq("message_type", "opening_alert")
+        .in("status", smsSentStatuses),
+      supabase
+        .from("waitlist_entries")
+        .select("id, customer_id, service_id, status")
+        .eq("organization_id", organization.id)
+        .eq("customer_id", customerId)
+        .eq("status", "active")
+    ]);
+
+    for (const result of [
+      consentResult,
+      preferenceResult,
+      activityEventsResult,
+      appointmentsResult,
+      smsMessagesResult,
+      sameAlertMessagesResult,
+      waitlistResult
+    ]) {
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+    }
+
+    const waitlistEntries = waitlistResult.data ?? [];
+    const serviceInterestsResult =
+      waitlistEntries.length > 0
+        ? await supabase
+            .from("waitlist_entry_services")
+            .select("waitlist_entry_id, service_id")
+            .eq("organization_id", organization.id)
+            .in(
+              "waitlist_entry_id",
+              waitlistEntries.map((entry) => entry.id)
+            )
+        : { data: [], error: null };
+
+    if (serviceInterestsResult.error) {
+      throw new Error(serviceInterestsResult.error.message);
+    }
+
+    const serviceInterestsByEntry = new Map<string, string[]>();
+    for (const interest of serviceInterestsResult.data ?? []) {
+      serviceInterestsByEntry.set(interest.waitlist_entry_id, [
+        ...(serviceInterestsByEntry.get(interest.waitlist_entry_id) ?? []),
+        interest.service_id
+      ]);
+    }
+
+    const serviceMatchScoreByCustomer =
+      waitlistEntries.length > 0
+        ? getCustomerServiceMatchScores({
+            waitlistEntries,
+            serviceInterestsByEntry,
+            openingServiceId: openingResult.data.service_id
+          })
+        : new Map([[customerId, 0]]);
+    const messages = smsMessagesResult.data ?? [];
+    const lastSmsAt =
+      messages.map((message) => message.created_at).sort().at(-1) ?? null;
+    const baseDecision = evaluateSmsRecipientEligibility({
+      customer: {
+        customerId,
+        smsConsentStatus: consentResult.data?.status ?? "missing",
+        phoneE164: customerResult.data.phone_e164,
+        phoneIsValid: /^\+[1-9][0-9]{7,14}$/.test(
+          customerResult.data.phone_e164
+        ),
+        isArchived: Boolean(customerResult.data.deleted_at),
+        alreadyReceivedAlert: (sameAlertMessagesResult.data ?? []).length > 0,
+        deliveryQuarantined: false,
+        optedOutAt: consentResult.data?.unsubscribed_at ?? null,
+        manualSendMode: isManualSendMode(preferenceResult.data?.manual_send_mode)
+          ? preferenceResult.data.manual_send_mode
+          : "auto",
+        manualSnoozeUntil: preferenceResult.data?.manual_snooze_until ?? null,
+        lastCompletedAppointmentAt:
+          getLatestEventAt(
+            activityEventsResult.data ?? [],
+            "appointment_completed"
+          ) ?? getLatestCompletedAppointmentAt(appointmentsResult.data ?? []),
+        lastFilledSpotAt: getLatestEventAt(
+          activityEventsResult.data ?? [],
+          "spot_filled"
+        ),
+        nextAppointmentAt: getNextFutureAppointmentAt(
+          appointmentsResult.data ?? [],
+          now
+        ),
+        smsSentLast24h: countMessagesSince(
+          messages,
+          new Date(now.getTime() - 24 * 60 * 60 * 1000)
+        ),
+        smsSentLast7d: countMessagesSince(
+          messages,
+          new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        ),
+        smsSentLast30d: messages.length,
+        serviceMatchScore: serviceMatchScoreByCustomer.get(customerId) ?? 0
+      },
+      settings,
+      now,
+      businessTimezone: organization.timezone
+    });
+
+    if (baseDecision.baseDecision === "locked_blocked") {
+      throw new Error(baseDecision.reasonLabel);
+    }
+
+    if (baseDecision.baseDecision === "protected" && !confirmProtectedRecipient) {
+      throw new Error("Protected recipient inclusion requires confirmation.");
+    }
+
+    const updatedDecision = applyManualRecipientOverride(baseDecision, "include");
+    const recommendation = computeSmartRecipientRecommendationRank({
+      baseDecision: updatedDecision.baseDecision,
+      smsSentLast24h: countMessagesSince(
+        messages,
+        new Date(now.getTime() - 24 * 60 * 60 * 1000)
+      ),
+      smsSentLast7d: countMessagesSince(
+        messages,
+        new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+      ),
+      smsSentLast30d: messages.length,
+      lastSmsAt,
+      now
+    });
+    const actorProfileId = await getCurrentOrganizationProfileId({
+      supabase,
+      organizationId: organization.id
+    });
+
+    const { data: savedDecision, error: decisionError } = await supabase
+      .from("alert_recipient_decisions")
+      .upsert(
+        toRecipientDecisionWrite({
+          alertId: openingId,
+          organizationId: organization.id,
+          customerId,
+          decision: updatedDecision,
+          manualOverride: "include",
+          overrideReason: "Manual include specific client from Smart SMS review",
+          overriddenBy: actorProfileId,
+          recommendationRank: recommendation.rank,
+          recommendationBucket: recommendation.bucket
+        }),
+        { onConflict: "alert_id,customer_id" }
+      )
+      .select("id")
+      .single();
+
+    if (decisionError || !savedDecision) {
+      throw new Error(decisionError?.message ?? "Recipient decision not saved.");
+    }
+
+    await syncOpeningOffersWithRecipientDecisions({
+      supabase,
+      organizationId: organization.id,
+      openingId
+    });
+
+    await supabase.from("customer_activity_events").insert({
+      organization_id: organization.id,
+      customer_id: customerId,
+      event_type: "manual_recipient_included",
+      related_alert_id: openingId,
+      metadata: {
+        decision_id: savedDecision.id,
+        source: "specific_client_review",
+        warning_required: updatedDecision.warningRequired
+      }
+    });
+  } catch (error) {
+    redirectWithSendError(
+      `/dashboard/cancellations/${openingId}`,
+      error instanceof Error ? error.message : "Recipient add failed."
+    );
+  }
+
+  revalidatePath(`/dashboard/cancellations/${openingId}`);
+  revalidatePath("/dashboard/responses");
+  redirect(`/dashboard/cancellations/${openingId}`);
+}
+
 export async function sendOpeningAlertsAction(formData: FormData) {
   const openingId = String(formData.get("openingId") ?? "");
   const confirmProtectedRecipients =
@@ -3346,6 +3774,13 @@ export async function validateOpeningOfferAction(formData: FormData) {
     redirectWithValidationError(
       `/dashboard/cancellations/${openingId}`,
       offerLookupError?.message ?? "Opening offer not found."
+    );
+  }
+
+  if (offer.status !== "responded") {
+    redirectWithValidationError(
+      `/dashboard/cancellations/${openingId}`,
+      "Only responded offers can be validated."
     );
   }
 

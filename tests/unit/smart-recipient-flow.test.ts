@@ -127,6 +127,16 @@ describe("smart SMS recipient dashboard flow", () => {
     expect(cancellationDetailPage).toContain("SMS failed. Retry is blocked");
   });
 
+  it("does not recalculate claimed recipient decisions during preparation", () => {
+    expect(dashboardActions).toContain(
+      "customer_id, base_decision, final_decision, manual_override, override_reason, overridden_by, sent_at, delivery_status, twilio_message_sid"
+    );
+    expect(dashboardActions).toContain("isRecipientDecisionClaimed");
+    expect(dashboardActions).toContain("preservedDecisionRows");
+    expect(dashboardActions).toContain("unclaimedRows");
+    expect(dashboardActions).toContain("existingClaimedDecisionByCustomer");
+  });
+
   it("revalidates consent, STOP, phone, and archived state immediately before sending", () => {
     expect(dashboardActions).toContain(
       "customer_id, status, unsubscribed_at"
@@ -144,11 +154,14 @@ describe("smart SMS recipient dashboard flow", () => {
     expect(dashboardActions).toContain("syncOpeningOffersWithRecipientDecisions");
     expect(dashboardActions).toContain("ensureOpeningOffersForSendDecisions");
     expect(dashboardActions).toContain("decision.final_decision === \"send\"");
-    expect(dashboardActions).toContain(".is(\"sent_at\", null)");
+    expect(dashboardActions).toContain("creatableSendCustomerIds");
+    expect(dashboardActions).toContain("!isRecipientDecisionClaimed(decision)");
     expect(dashboardActions).toContain(".is(\"responded_at\", null)");
     expect(dashboardActions).toContain(".is(\"response_text\", null)");
     expect(dashboardActions).toContain("phantomOfferIds");
     expect(dashboardActions).toContain("status: \"invalid\"");
+    expect(dashboardActions).toContain("offer.status !== \"responded\"");
+    expect(dashboardActions).toContain("Only responded offers can be validated.");
   });
 
   it("lets owners and managers update validated Smart SMS settings", () => {
@@ -168,6 +181,21 @@ describe("smart SMS recipient dashboard flow", () => {
     expect(settingsPage).toContain("max={20}");
     expect(settingsPage).toContain("max={50}");
     expect(settingsPage).toContain("max={200}");
+    expect(dashboardActions).toContain(".upsert(");
+    expect(dashboardActions).toContain("onConflict: \"organization_id\"");
+    expect(dashboardActions).toContain(".select(\"organization_id\")");
+    expect(dashboardActions).toContain("Smart SMS settings were not persisted.");
+    expect(settingsPage).toContain("copy.common.save");
+  });
+
+  it("surfaces low-service-match and specific-client add controls in review", () => {
+    expect(dashboardActions).toContain("serviceMatchScore");
+    expect(dashboardActions).toContain("addManualRecipientToOpeningAction");
+    expect(dashboardActions).toContain("confirmProtectedRecipient");
+    expect(operationsData).toContain("manualRecipientCandidates");
+    expect(cancellationDetailPage).toContain("addManualRecipientToOpeningAction");
+    expect(cancellationDetailPage).toContain("Ajouter un client specifique");
+    expect(cancellationDetailPage).toContain("confirmProtectedRecipient");
   });
 
   it("requires explicit UI and server confirmation before including protected recipients", () => {

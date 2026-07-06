@@ -56,6 +56,17 @@ export type SmsRecipientDecision = {
   warningRequired: boolean;
 };
 
+export type RecommendationBucket = "eligible" | "protected" | "locked";
+
+export type SmartRecipientRecommendationRankInput = {
+  baseDecision: BaseDecision;
+  smsSentLast24h?: number | null;
+  smsSentLast7d?: number | null;
+  smsSentLast30d?: number | null;
+  lastSmsAt?: string | null;
+  now?: Date;
+};
+
 export type SmartSmsSettings = {
   smartSendingEnabled?: boolean;
   cooldownAfterCompletedAppointmentDays?: number;
@@ -168,6 +179,40 @@ function parseOptionalDate(value: string | null | undefined) {
 
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function computeSmartRecipientRecommendationRank({
+  baseDecision,
+  smsSentLast24h = 0,
+  smsSentLast7d = 0,
+  smsSentLast30d = 0,
+  lastSmsAt = null,
+  now = new Date()
+}: SmartRecipientRecommendationRankInput) {
+  const bucket: RecommendationBucket =
+    baseDecision === "eligible"
+      ? "eligible"
+      : baseDecision === "protected"
+        ? "protected"
+        : "locked";
+  const basePenalty =
+    bucket === "eligible" ? 0 : bucket === "protected" ? 10_000 : 20_000;
+  const lastSmsDate = parseOptionalDate(lastSmsAt);
+  const daysSinceLastSms = lastSmsDate
+    ? Math.max(0, Math.floor((now.getTime() - lastSmsDate.getTime()) / millisecondsPerDay))
+    : null;
+  const recencyPenalty =
+    daysSinceLastSms === null ? 0 : Math.max(0, 30 - daysSinceLastSms) * 10;
+
+  return {
+    rank:
+      basePenalty +
+      (smsSentLast24h ?? 0) * 1000 +
+      (smsSentLast7d ?? 0) * 300 +
+      (smsSentLast30d ?? 0) * 100 +
+      recencyPenalty,
+    bucket
+  };
 }
 
 function hasRecentPastEvent({
@@ -353,6 +398,12 @@ export function evaluateSmsRecipientEligibility({
 
   if (snoozeUntil && snoozeUntil > now) {
     return protectedDecision("protected_manual_snooze");
+  }
+
+  if (customer.serviceMatchScore !== null && customer.serviceMatchScore !== undefined) {
+    if (customer.serviceMatchScore <= 0) {
+      return protectedDecision("protected_low_service_match");
+    }
   }
 
   if (resolvedSettings.smartSendingEnabled) {

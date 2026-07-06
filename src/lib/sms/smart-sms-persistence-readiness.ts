@@ -86,7 +86,9 @@ async function checkAlertRecipientUniqueConstraint(
     return {
       checked: false,
       exists: false,
-      error: null
+      error: {
+        message: "information_schema is not exposed by this Supabase client"
+      }
     };
   }
 
@@ -125,6 +127,7 @@ export async function checkSmartSmsPersistenceReadinessWithClient(
 ): Promise<SmartSmsPersistenceReadiness> {
   const missingObjects: string[] = [];
   const warnings: string[] = [];
+  let requiredObjectUnavailable = false;
 
   for (const check of requiredSmartSmsChecks) {
     const { error } = await supabase
@@ -142,32 +145,25 @@ export async function checkSmartSmsPersistenceReadinessWithClient(
     }
 
     warnings.push("Smart SMS persistence is temporarily unavailable.");
+    requiredObjectUnavailable = true;
   }
 
   const constraintCheck = await checkAlertRecipientUniqueConstraint(supabase);
 
   if (constraintCheck.error) {
-    if (isSmartSmsPersistenceSchemaError(constraintCheck.error)) {
-      missingObjects.push(
-        "public.alert_recipient_decisions.alert_id_customer_id_unique"
-      );
-    } else {
-      warnings.push("Smart SMS persistence constraint check is unavailable.");
-    }
+    warnings.push("Smart SMS persistence constraint check is unavailable.");
   } else if (constraintCheck.checked && !constraintCheck.exists) {
-    missingObjects.push(
-      "public.alert_recipient_decisions.alert_id_customer_id_unique"
-    );
+    warnings.push("Smart SMS persistence constraint check is unavailable.");
   }
 
-  const ready = missingObjects.length === 0 && warnings.length === 0;
+  const ready = missingObjects.length === 0 && !requiredObjectUnavailable;
 
   return {
     ready,
     blockingReasons:
       missingObjects.length > 0
         ? [smartSmsMigrationMessage]
-        : warnings.length > 0
+        : requiredObjectUnavailable
           ? ["Smart SMS persistence is temporarily unavailable."]
           : [],
     warnings,
